@@ -6,9 +6,6 @@
 #include <random>
 #include <cassert>
 
-#include "grad.h"
-
-
 template<typename T>
 class Tensor {
    private:
@@ -538,18 +535,6 @@ class Tensor {
         }
 
         return result;
-    }
-
-    Tensor<Value> to_value() const {
-        assert(std::is_scalar<T>::value);
-        std::vector<Value> d;
-
-        for (const T& t : this->data_)
-        {
-            d.push_back(static_cast<Value>(t));
-        }
-
-        return Tensor<Value>(d, this->shape_);
     }
 
     Tensor<T> argmax(int64_t _dim) const {
