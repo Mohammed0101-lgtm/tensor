@@ -45,21 +45,21 @@ class Tensor {
     std::vector<int64_t> strides() const { return this->strides_; }
 
     // for modifiable direct access
-    T& operator()(std::vector<int64_t> indices) {
-        if (indices.empty())
+    T& operator()(std::vector<int64_t> _idx) {
+        if (_idx.empty())
         {
             throw std::invalid_argument("Passing an empty vector as indices for a tensor");
         }
-        return this->data_[compute_index(indices)];
+        return this->data_[compute_index(_idx)];
     }
 
     // for read only direct access
-    const T& operator()(const std::vector<int64_t> indices) const {
-        if (indices.empty())
+    const T& operator()(const std::vector<int64_t> _idx) const {
+        if (_idx.empty())
         {
             throw std::invalid_argument("Passing an empty vector as indices for a tensor");
         }
-        return this->data_[compute_index(indices)];
+        return this->data_[compute_index(_idx)];
     }
 
     // same as above
@@ -111,15 +111,15 @@ class Tensor {
         return Tensor(new_data, this->shape_);
     }
 
-    Tensor<T> operator*(const Tensor<T>& other) const {
-        if (this->empty() || other.empty())
+    Tensor<T> operator*(const Tensor<T>& _other) const {
+        if (this->empty() || _other.empty())
         {
             throw std::invalid_argument("Cannot multiply empty tensors");
         }
-        return this->matmul(other);
+        return this->matmul(_other);
     }
 
-    Tensor<T> operator*(const T scalar) const {
+    Tensor<T> operator*(const T _scalar) const {
         if (!std::is_scalar<T>::value)
         {
             throw std::invalid_argument("Cannot multiply a tensor by a non scalar type");
@@ -132,16 +132,16 @@ class Tensor {
 
         for (int i = 0; i < this->data_.size(); i++)
         {
-            this->data_[i] *= scalar;
+            this->data_[i] *= _scalar;
         }
         return Tensor(*this);
     }
 
-    Tensor<T> operator-=(const Tensor<T>& other) const { return Tensor(*this - other); }
+    Tensor<T> operator-=(const Tensor<T>& _other) const { return Tensor(*this - _other); }
 
-    Tensor<T> operator+=(const Tensor<T>& other) const { return Tensor(*this + other); }
+    Tensor<T> operator+=(const Tensor<T>& _other) const { return Tensor(*this + _other); }
 
-    Tensor<T> operator+(const T scalar) const {
+    Tensor<T> operator+(const T _scalar) const {
         if (!std::is_scalar<T>::value)
         {
             throw std::invalid_argument("Cannot perform addition with a non scalar type");
@@ -149,11 +149,11 @@ class Tensor {
 
         for (size_t i = 0; i < this->data_.size(); i++)
         {
-            this->data_[i] += scalar;
+            this->data_[i] += _scalar;
         }
         return *this;
     }
-    Tensor<T> operator-(const T scalar) const {
+    Tensor<T> operator-(const T _scalar) const {
         if (!std::is_scalar<T>::value)
         {
             throw std::invalid_argument("Cannot perform substraction with a non scalar type");
@@ -161,29 +161,29 @@ class Tensor {
 
         for (size_t i = 0; i < this->data_.size(); i++)
         {
-            this->data_[i] -= scalar;
+            this->data_[i] -= _scalar;
         }
         return *this;
     }
 
-    Tensor<T> operator*=(const Tensor<T>& other) const { return Tensor(*this * other); }
+    Tensor<T> operator*=(const Tensor<T>& _other) const { return Tensor(*this * _other); }
 
-    Tensor<T> operator+=(const T scalar) const { return Tensor(*this + scalar); }
-    Tensor<T> operator-=(const T scalar) const { return Tensor(*this - scalar); }
-    Tensor<T> operator*=(const T scalar) const { return Tensor(*this * scalar); }
+    Tensor<T> operator+=(const T _scalar) const { return Tensor(*this + _scalar); }
+    Tensor<T> operator-=(const T _scalar) const { return Tensor(*this - _scalar); }
+    Tensor<T> operator*=(const T _scalar) const { return Tensor(*this * _scalar); }
 
-    bool operator==(const Tensor<T>& other) const {
-        if ((this->shape_ != other.shape()) && (this->strides_ != other.strides()))
+    bool operator==(const Tensor<T>& _other) const {
+        if ((this->shape_ != _other.shape()) && (this->strides_ != _other.strides()))
         {
             return false;
         }
-        return this->data_ == other.storage();
+        return this->data_ == _other.storage();
     }
 
     bool operator!=(const Tensor<T>& other) const { return !(*this == other); }
 
-    Tensor<T> matmul(const Tensor<T>& other) const {
-        if (this->shape_.size() != 2 || other.shape().size() != 2)
+    Tensor<T> matmul(const Tensor<T>& _other) const {
+        if (this->shape_.size() != 2 || _other.shape().size() != 2)
         {
             throw std::invalid_argument("matmul is only supported for 2D tensors");
         }
@@ -193,7 +193,7 @@ class Tensor {
             throw std::invalid_argument("Shape mismatch for matrix multiplication");
         }
 
-        std::vector<int64_t> result_shape = {this->shape_[0], other.shape()[1]};
+        std::vector<int64_t> result_shape = {this->shape_[0], _other.shape()[1]};
         std::vector<T>       result_data(result_shape[0] * result_shape[1]);
 
         for (int64_t i = 0; i < result_shape[0]; ++i)
@@ -204,7 +204,7 @@ class Tensor {
 
                 for (int64_t k = 0; k < this->shape_[1]; ++k)
                 {
-                    sum += (*this)({i, k}) * other({k, j});
+                    sum += (*this)({i, k}) * _other({k, j});
                 }
                 result_data[i * result_shape[1] + j] = sum;
             }
@@ -247,19 +247,19 @@ class Tensor {
         return transposed;
     }
 
-    Tensor<T> sum(const int64_t axis) const {
+    Tensor<T> sum(const int64_t _axis) const {
         if (!std::is_scalar<T>::value)
         {
             throw std::runtime_error("Cannot reduce tensor with non scalar type");
         }
 
-        if (axis < 0 || axis >= this->shape_.size())
+        if (_axis < 0 || _axis >= this->shape_.size())
         {
             throw std::invalid_argument("Invalid axis for sum");
         }
 
         std::vector<int64_t> result_shape = this->shape_;
-        result_shape[axis]                = 1;
+        result_shape[_axis]               = 1;
 
         int64_t result_size =
           std::accumulate(result_shape.begin(), result_shape.end(), 1, std::multiplies<int64_t>());
@@ -276,7 +276,7 @@ class Tensor {
                 index /= this->shape_[j];
             }
 
-            original_indices[axis] = 0;
+            original_indices[_axis] = 0;
 
             int64_t result_index = 0;
             int64_t stride       = 1;
@@ -292,30 +292,30 @@ class Tensor {
         return Tensor(result_data, result_shape);
     }
 
-    Tensor<T> row(const int64_t index) const {
+    Tensor<T> row(const int64_t _index) const {
         if (this->shape_.size() != 2)
         {
             throw std::runtime_error("Cannot get a row from a non two dimensional tensor");
         }
 
-        if (this->shape_[0] <= index || index < 0)
+        if (this->shape_[0] <= _index || _index < 0)
         {
             throw std::invalid_argument("Index input is out of range");
         }
 
-        std::vector<T> R(this->data_.begin() + (this->shape_[1] * index),
-                         this->data_.begin() + (this->shape_[1] * index + this->shape_[1]));
+        std::vector<T> R(this->data_.begin() + (this->shape_[1] * _index),
+                         this->data_.begin() + (this->shape_[1] * _index + this->shape_[1]));
 
         return Tensor(R, {this->shape_[1]});
     }
 
-    Tensor<T> col(const int64_t index) const {
+    Tensor<T> col(const int64_t _index) const {
         if (this->shape_.size() != 2)
         {
             throw std::runtime_error("Cannot get a column from a non two dimensional tensor");
         }
 
-        if (this->shape_[1] <= index || index < 0)
+        if (this->shape_[1] <= _index || _index < 0)
         {
             throw std::invalid_argument("Index input out of range");
         }
@@ -324,16 +324,16 @@ class Tensor {
 
         for (int64_t i = 0; i < this->shape_[0]; i++)
         {
-            C.push_back(this->data_[this->compute_index({i, index})]);
+            C.push_back(this->data_[this->compute_index({i, _index})]);
         }
 
         return Tensor(C, {this->shape_[0]});
     }
 
     Tensor<T> slice(int64_t                _dim,
-                    std::optional<int64_t> start,
-                    std::optional<int64_t> end,
-                    int64_t                step) const {
+                    std::optional<int64_t> _start,
+                    std::optional<int64_t> _end,
+                    int64_t                _step) const {
         Tensor<T> ret;
 
         if (_dim < 0ULL || _dim >= static_cast<int64_t>(this->shape_.size()))
@@ -342,8 +342,8 @@ class Tensor {
         }
 
         int64_t size      = this->shape_[_dim];
-        int64_t start_idx = start.value_or(0ULL);
-        int64_t end_idx   = end.value_or(size);
+        int64_t start_idx = _start.value_or(0ULL);
+        int64_t end_idx   = _end.value_or(size);
 
         if (start_idx < 0ULL)
         {
@@ -357,13 +357,13 @@ class Tensor {
         start_idx = std::max(int64_t(0ULL), std::min(start_idx, size));
         end_idx   = std::max(int64_t(0ULL), std::min(end_idx, size));
 
-        int64_t              slice_size  = (end_idx - start_idx + step - 1) / step;
+        int64_t              slice_size  = (end_idx - start_idx + _step - 1) / _step;
         std::vector<int64_t> result_dims = this->shape_;
 
         result_dims[_dim] = slice_size;
         ret               = Tensor<T>(result_dims);
 
-        for (int64_t i = start_idx, j = 0ULL; i < end_idx; i += step, ++j)
+        for (int64_t i = start_idx, j = 0ULL; i < end_idx; i += _step, ++j)
         {
             ret({j}) = this->data_[compute_index({i})];
         }
@@ -470,7 +470,7 @@ class Tensor {
         return Tensor(d, _sh);
     }
 
-    static Tensor<T> randomize(const std::vector<int64_t>& _sh, bool bounded= false) {
+    static Tensor<T> randomize(const std::vector<int64_t>& _sh, bool _bounded = false) {
         assert(std::is_scalar<T>::value);
 
         std::srand(time(nullptr));
@@ -483,7 +483,7 @@ class Tensor {
         std::vector<T> d(_size);
         for (int64_t i = 0; i < _size; i++)
         {
-            d[i] = bounded ? static_cast<float>(rand() % RAND_MAX) : static_cast<float>(rand());
+            d[i] = _bounded ? static_cast<float>(rand() % RAND_MAX) : static_cast<float>(rand());
         }
         return Tensor(d, _sh);
     }
@@ -618,8 +618,8 @@ class Tensor {
         }
     }
 
-    size_t compute_index(const std::vector<int64_t>& indices) const {
-        if (indices.size() != this->shape_.size())
+    size_t compute_index(const std::vector<int64_t>& _idx) const {
+        if (_idx.size() != this->shape_.size())
         {
             throw std::out_of_range("input indices does not match the tensor shape_");
         }
@@ -627,7 +627,7 @@ class Tensor {
         size_t index = 0;
         for (size_t i = 0; i < this->shape_.size(); i++)
         {
-            index += indices[i] * this->strides_[i];
+            index += _idx[i] * this->strides_[i];
         }
         return index;
     }
