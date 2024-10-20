@@ -212,6 +212,79 @@ class Tensor {
         return Tensor(result_data, result_shape);
     }
 
+    template<typename T>
+    Tensor<T> cross_product(const Tensor<T>& _other) const {
+        if (this->empty() || _other.empty())
+        {
+            throw std::invalid_argument("Cannot cross product an empty vector");
+        }
+
+        if (!std::is_arithmetic<T>::value)
+        {
+            throw std::runtime_error("Cannot perform a cross product on non-scalar data types");
+        }
+
+        if (this->shape() != std::vector<int>{3} || _other.shape() != std::vector<int>{3})
+        {
+            throw std::invalid_argument("Cross product can only be performed on 3-element vectors");
+        }
+
+        Tensor<T> ret({3});
+
+        const T& a1 = this->data()[0];
+        const T& a2 = this->data()[1];
+        const T& a3 = this->data()[2];
+
+        const T& b1 = _other.data()[0];
+        const T& b2 = _other.data()[1];
+        const T& b3 = _other.data()[2];
+
+        ret.data()[0] = a2 * b3 - a3 * b2;
+        ret.data()[1] = a3 * b1 - a1 * b3;
+        ret.data()[2] = a1 * b2 - a2 * b1;
+
+        return ret;
+    }
+
+    Tensor<T> dot(const Tensor<T>& _other) const {
+        if (this->empty() || _other.empty())
+        {
+            throw std::invalid_argument("Cannot dot product an empty vector");
+        }
+
+        if (!std::is_scalar<T>::value)
+        {
+            throw std::runtime_error("Cannot perform a dot product on non scalar data types");
+        }
+
+        // if this is a vector dot product
+        if (this->shape().size() == 1 && _other.shape().size())
+        {
+            assert(this->shape()[0] == _other.shape()[0]);
+
+            T ret = 0;
+
+            for (int64_t i = 0; i < this->data_.size(); i++)
+            {
+                ret_data += this->data_[i] * _other.storage()[i];
+            }
+
+            return Tensor(ret, {1});
+        }
+
+        if (this->shape().size() == 2 && _other.shape().size())
+        {
+            return this->matmul(_other);
+        }
+
+        if (this->shape().size() == 3 && _other.shape().size())
+        {
+            return this->cross_product(_other);
+        }
+
+        return Tensor();
+    }
+
     Tensor<T> relu() {
         if (!std::is_scalar<T>::value)
         {
