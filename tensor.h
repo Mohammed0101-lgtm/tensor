@@ -212,7 +212,6 @@ class Tensor {
         return Tensor(result_data, result_shape);
     }
 
-    template<typename T>
     Tensor<T> cross_product(const Tensor<T>& _other) const {
         if (this->empty() || _other.empty())
         {
@@ -257,7 +256,6 @@ class Tensor {
             throw std::runtime_error("Cannot perform a dot product on non scalar data types");
         }
 
-        // if this is a vector dot product
         if (this->shape().size() == 1 && _other.shape().size())
         {
             assert(this->shape()[0] == _other.shape()[0]);
