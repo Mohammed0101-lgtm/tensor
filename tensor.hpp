@@ -322,9 +322,8 @@ class tensor
   tensor() = default;
 
   explicit tensor(const shape_type __sh, const value_type __v) :
-      __shape_(__sh) {
-    index_type __s = this->__computeSize(__sh);
-    this->__data_  = data_container(__s, __v);
+      __shape_(__sh),
+      __data_(this->__computeSize(__sh), __v) {
     this->__compute_strides();
   }
 
@@ -369,16 +368,9 @@ class tensor
   class __destroy_tensor
   {
    public:
-    _LIBCPP_CONSTEXPR __destroy_tensor(tensor& __tens) :
+    __destroy_tensor(tensor& __tens) :
         __tens_(__tens) {}
-    void operator()() {
-      if (__tens_.begin() != __tens_.end())
-      {
-        __tens_.__data_.~vector();
-        __tens_.__shape_.~vector();
-        __tens_.__strides_.~vector();
-      }
-    }
+    void operator()() {}
 
    private:
     tensor& __tens_;
@@ -567,6 +559,7 @@ class tensor
   index_type lcm() const;
   void       sqrt_() {
     this->__check_is_scalar_type("Cannot get the exponential of non scalar values");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -576,6 +569,7 @@ class tensor
 
   void exp_() {
     this->__check_is_scalar_type("Cannot get the exponential of non scalar values");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -584,6 +578,7 @@ class tensor
   }
   void log2_() {
     this->__check_is_integral_type("Given data type must be an integral");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -593,6 +588,7 @@ class tensor
 
   void log10_() {
     this->__check_is_integral_type("Given data type must be an integral");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -602,6 +598,7 @@ class tensor
 
   void log_() {
     this->__check_is_integral_type("Given data type must be an integral");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -611,6 +608,7 @@ class tensor
 
   void frac_() {
     this->__check_is_scalar_type("Cannot get the fraction of a non-scalar type");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -622,6 +620,7 @@ class tensor
 
   void cos_() {
     this->__check_is_scalar_type("Cannot perform a cosine on non-scalar data type");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -631,6 +630,7 @@ class tensor
 
   void cosh_() {
     this->__check_is_scalar_type("Cannot perform a cosh on non-scalar data type");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -640,6 +640,7 @@ class tensor
 
   void acosh_() {
     this->__check_is_scalar_type("Cannot perform a acosh on non-scalar data type");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -649,6 +650,7 @@ class tensor
 
   void sinh_() {
     this->__check_is_scalar_type("Cannot perform a sin on non-scalar data type");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -658,6 +660,7 @@ class tensor
 
   void asinh_() {
     this->__check_is_scalar_type("Cannot perform a sin on non-scalar data type");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -667,6 +670,7 @@ class tensor
 
   void ceil_() {
     this->__check_is_scalar_type("Cannot get the ceiling of a non scalar value");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -676,6 +680,7 @@ class tensor
 
   void floor_() {
     this->__check_is_scalar_type("Cannot get the floor of a non scalar value");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -685,6 +690,7 @@ class tensor
 
   void sin_() const {
     this->__check_is_scalar_type("Cannot perform a sin on non-scalar data type");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -711,6 +717,7 @@ class tensor
 
   void pow_(const value_type __val) const {
     this->__check_is_integral_type("cannot get the power of a non integral value");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -720,6 +727,7 @@ class tensor
 
   void bitwise_left_shift_(const int __amount) {
     this->__check_is_integral_type("Cannot perform a bitwise left shift on non-integral values");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -729,6 +737,7 @@ class tensor
 
   void bitwise_right_shift_(const int __amount) {
     this->__check_is_integral_type("Cannot perform a bitwise right shift on non-integral values");
+
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
@@ -834,8 +843,8 @@ class tensor
     return __index;
   }
 
-  uint64_t __computeSize(const shape_type& __dims) const {
-    uint64_t __ret = 0ULL;
+  static uint64_t __computeSize(const shape_type& __dims) {
+    uint64_t __ret = 1ULL;
     for (const index_type& __d : __dims)
     {
       __ret *= __d;
@@ -876,20 +885,6 @@ tensor<_Tp> tensor<_Tp>::sin() const {
   for (; __i < this->__data_.size(); __i++)
   {
     __ret[__i] = static_cast<value_type>(std::sin(static_cast<double>(this->__data_[__i])));
-  }
-
-  return __self(__ret, this->__shape_);
-}
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::frac() const {
-  this->__check_is_scalar_type("Cannot get the fraction of a non-scalar type");
-  std::vector<value_type> __ret(this->__data_.size());
-
-  size_t __i = 0;
-  for (; __i < this->__data_.size(); __i++)
-  {
-    __ret[__i] = static_cast<value_type>(this->__frac(this->__data_[__i]));
   }
 
   return __self(__ret, this->__shape_);
@@ -1036,7 +1031,7 @@ tensor<_Tp> tensor<_Tp>::exp() const {
 }
 
 template<class _Tp>
-tensor<_Tp>::index_type tensor<_Tp>::lcm() const {
+typename tensor<_Tp>::index_type tensor<_Tp>::lcm() const {
   this->__check_is_scalar_type("Given template type must be an int");
   index_type __ret = static_cast<index_type>(this->__data_[0]);
 
@@ -1173,15 +1168,25 @@ tensor<_Tp>& tensor<_Tp>::operator=(tensor&& __other) noexcept {
 template<class _Tp>
 void tensor<_Tp>::print() const noexcept {
   std::cout << "Shape: [";
-  for (size_t i = 0; i < this->__shape_.size(); i++)
+  for (size_t i = 0; i < this->__shape_.size(); ++i)
   {
-    std::cout << this->__shape_[i] << (i < this->__shape_.size() - 1 ? ", " : "");
+    std::cout << this->__shape_[i];
+    if (i < this->__shape_.size() - 1)
+    {
+      std::cout << ", ";
+    }
   }
 
   std::cout << "]\nData: ";
-  for (const value_type& val : this->__data_)
+  if (!this->__data_.empty())
   {
-    std::cout << val << " ";
+    for (const auto& __v : this->__data_)
+    {
+      std::cout << __v << " ";
+    }
+  } else
+  {
+    std::cout << "Empty";
   }
 
   std::cout << std::endl;
@@ -1342,20 +1347,14 @@ tensor<_Tp> tensor<_Tp>::randomize(const shape_type& __sh, bool __bounded) {
   __check_is_scalar_type("template class must be a scalar type");
 
   std::srand(time(nullptr));
-  index_type __s = 1;
-  for (index_type __d : __sh)
-  {
-    __s *= __d;
-  }
-
+  size_t         __s = __computeSize(__sh);
   data_container __d(__s);
 
   index_type __i = 0;
-  for (; __i < __s; __i++)
+  for (; __i < static_cast<index_type>(__s); __i++)
   {
     __d[__i] = value_type(__bounded ? static_cast<float>(rand() % RAND_MAX) : static_cast<float>(rand()));
   }
-
   return __self(__d, __sh);
 }
 
@@ -1679,7 +1678,7 @@ size_t tensor<_Tp>::count_nonzero(index_type __dim) const {
 
   if (__dim == -1)
   {
-    for (const value_type& __el : this->__data_)
+    for (const_reference __el : this->__data_)
     {
       if (__el != 0)
       {
@@ -1713,7 +1712,7 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
   shape_type     __ret_sh = {this->__shape_[0], __other.shape()[1]};
   data_container __ret_d(__ret_sh[0] * __ret_sh[1], 0);
 
-  const int blockSize = 64;  // Example block size, can be tuned for performance
+  const int blockSize = 64;
 
   for (int i = 0; i < __ret_sh[0]; i += blockSize)
   {
@@ -1721,12 +1720,12 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
     {
       for (int k = 0; k < this->__shape_[1]; k += blockSize)
       {
-        for (int ii = i; ii < std::min(i + blockSize, __ret_sh[0]); ++ii)
+        for (int ii = i; ii < std::min(static_cast<index_type>(i + blockSize), __ret_sh[0]); ++ii)
         {
-          for (int jj = j; jj < std::min(j + blockSize, __ret_sh[1]); ++jj)
+          for (int jj = j; jj < std::min(static_cast<index_type>(j + blockSize), __ret_sh[1]); ++jj)
           {
             value_type __sum = 0;
-            for (int kk = k; kk < std::min(k + blockSize, this->__shape_[1]); ++kk)
+            for (int kk = k; kk < std::min(static_cast<index_type>(k + blockSize), this->__shape_[1]); ++kk)
             {
               __sum += this->at({ii, kk}) * __other.at({kk, jj});
             }
@@ -1736,6 +1735,7 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
       }
     }
   }
+
   return __self(__ret_d, __ret_sh);
 }
 
