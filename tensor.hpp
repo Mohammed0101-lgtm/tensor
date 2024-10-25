@@ -303,15 +303,14 @@ class tensor
   typedef value_type&             reference;
   typedef const value_type&       const_reference;
   typedef value_type*             pointer;
-  typedef const pointer           const_pointer;
+  typedef const value_type*       const_pointer;
   typedef std::vector<value_type> data_container;
   typedef const data_container    const_data_container;
 
-  typedef std::__wrap_iter<typename std::allocator_traits<std::allocator<_Tp>>::pointer> __iterator;
-  typedef std::__wrap_iter<typename std::allocator_traits<std::allocator<_Tp>>::const_pointer>
-                                                  __const_iterator;
-  typedef std::reverse_iterator<__iterator>       reverse_iterator;
-  typedef std::reverse_iterator<__const_iterator> const_reverse_iterator;
+  typedef typename data_container::iterator               iterator;
+  typedef typename data_container::const_iterator         const_iterator;
+  typedef typename data_container::reverse_iterator       reverse_iterator;
+  typedef typename data_container::const_reverse_iterator const_reverse_iterator;
 
 
  private:
@@ -322,26 +321,26 @@ class tensor
  public:
   tensor() = default;
 
-  explicit tensor(const shape_type __sh, const value_type __v) :
+  explicit tensor(const shape_type& __sh, const value_type& __v) :
       __shape_(__sh),
       __data_(this->__computeSize(__sh), __v) {
     this->__compute_strides();
   }
 
-  explicit tensor(const shape_type __sh) :
+  explicit tensor(const shape_type& __sh) :
       __shape_(__sh) {
     index_type __s = this->__computeSize(__sh);
     this->__data_  = data_container(__s);
     this->__compute_strides();
   }
 
-  explicit tensor(const data_container __d, const shape_type __sh) :
+  explicit tensor(const data_container& __d, const shape_type& __sh) :
       __data_(__d),
       __shape_(__sh) {
     this->__compute_strides();
   }
 
-  explicit tensor(const tensor& __t) :
+  tensor(const tensor& __t) :
       __data_(__t.storage()),
       __shape_(__t.shape()),
       __strides_(__t.strides()) {}
@@ -351,10 +350,11 @@ class tensor
       __shape_(std::move(__t.shape())),
       __strides_(std::move(__t.strides())) {}
 
-  tensor(const shape_type __sh, std::initializer_list<value_type> init_list) :
+  tensor(const shape_type& __sh, std::initializer_list<value_type> init_list) :
       __shape_(__sh) {
     index_type __s = this->__computeSize(__sh);
-    assert(init_list.size() == __s && "Initializer list size must match tensor size");
+    assert(init_list.size() == static_cast<size_t>(__s)
+           && "Initializer list size must match tensor size");
     this->__data_ = data_container(init_list);
     this->__compute_strides();
   }
@@ -369,7 +369,7 @@ class tensor
   class __destroy_tensor
   {
    public:
-    __destroy_tensor(tensor& __tens) :
+    explicit __destroy_tensor(tensor& __tens) :
         __tens_(__tens) {}
     void operator()() {}
 
@@ -383,8 +383,8 @@ class tensor
   tensor& operator=(const tensor& __other);
   tensor& operator=(tensor&& __other) noexcept;
 
-  __const_iterator begin() const { return this->__data_.begin(); }
-  __const_iterator end() const { return this->__data_.end(); }
+  const_iterator begin() const { return this->__data_.begin(); }
+  const_iterator end() const { return this->__data_.end(); }
 
   const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
   const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
@@ -1433,25 +1433,140 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
     __inner_size *= this->__shape_[__i];
   }
 
-  for (__i = 0; __i < __outer_size; __i++)
+#if defined(__AVX2__)
+  if constexpr (std::is_same_v<_Tp, float>)
   {
-    index_type __j = 0;
-    for (; __j < __inner_size; __j++)
+    for (__i = 0; __i < __outer_size; __i++)
     {
-      index_type __max_index = 0;
-      value_type __max_value = this->__data_[__i * this->__shape_[__dim] * __inner_size + __j];
-
-      index_type __k = 1;
-      for (; __k < this->__shape_[__dim]; __k++)
+      for (index_type __j = 0; __j < __inner_size; __j++)
       {
-        value_type __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
-        if (__v > __max_value)
+        __m256  max_vec       = _mm256_set1_ps(-std::numeric_limits<float>::infinity());
+        __m256i index_vec     = _mm256_setzero_si256();
+        __m256i increment     = _mm256_set1_epi32(1);
+        __m256i current_index = _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7);
+
+        index_type __k = 0;
+        for (; __k + 8 <= this->__shape_[__dim]; __k += 8)
         {
-          __max_value = __v;
-          __max_index = __k;
+          __m256 data_vec = _mm256_loadu_ps(
+            &this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j]);
+          __m256 mask   = _mm256_cmp_ps(data_vec, max_vec, _CMP_GT_OQ);
+          max_vec       = _mm256_blendv_ps(max_vec, data_vec, mask);
+          index_vec     = _mm256_blendv_epi8(index_vec, current_index, _mm256_castps_si256(mask));
+          current_index = _mm256_add_epi32(current_index, increment);
         }
+
+        // Find the maximum value and its index
+        float   max_values[8];
+        int32_t indices[8];
+        _mm256_storeu_ps(max_values, max_vec);
+        _mm256_storeu_si256((__m256i*) indices, index_vec);
+
+        float      max_value = max_values[0];
+        index_type max_index = indices[0];
+        for (int i = 1; i < 8; ++i)
+        {
+          if (max_values[i] > max_value)
+          {
+            max_value = max_values[i];
+            max_index = indices[i];
+          }
+        }
+
+        // Handle remaining elements
+        for (; __k < this->__shape_[__dim]; __k++)
+        {
+          float __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+          if (__v > max_value)
+          {
+            max_value = __v;
+            max_index = __k;
+          }
+        }
+
+        __ret.__data_[__i * __inner_size + __j] = max_index;
       }
-      __ret.__data_[__i * __inner_size + __j] = __max_index;
+    }
+  }
+  else
+#elif defined(__ARM_NEON)
+  if constexpr (std::is_same_v<_Tp, float>)
+  {
+    for (__i = 0; __i < __outer_size; __i++)
+    {
+      for (index_type __j = 0; __j < __inner_size; __j++)
+      {
+        float32x4_t max_vec       = vdupq_n_f32(-std::numeric_limits<float>::infinity());
+        uint32x4_t  index_vec     = vdupq_n_u32(0);
+        uint32x4_t  increment     = vdupq_n_u32(1);
+        uint32x4_t  current_index = {0, 1, 2, 3};
+
+        index_type __k = 0;
+        for (; __k + 4 <= this->__shape_[__dim]; __k += 4)
+        {
+          float32x4_t data_vec =
+            vld1q_f32(&this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j]);
+          uint32x4_t mask = vcgtq_f32(data_vec, max_vec);
+          max_vec         = vbslq_f32(mask, data_vec, max_vec);
+          index_vec       = vbslq_u32(mask, current_index, index_vec);
+          current_index   = vaddq_u32(current_index, increment);
+        }
+
+        // Find the maximum value and its index
+        float    max_values[4];
+        uint32_t indices[4];
+        vst1q_f32(max_values, max_vec);
+        vst1q_u32(indices, index_vec);
+
+        float      max_value = max_values[0];
+        index_type max_index = indices[0];
+        for (int i = 1; i < 4; ++i)
+        {
+          if (max_values[i] > max_value)
+          {
+            max_value = max_values[i];
+            max_index = indices[i];
+          }
+        }
+
+        // Handle remaining elements
+        for (; __k < this->__shape_[__dim]; __k++)
+        {
+          float __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+          if (__v > max_value)
+          {
+            max_value = __v;
+            max_index = __k;
+          }
+        }
+
+        __ret.__data_[__i * __inner_size + __j] = max_index;
+      }
+    }
+  }
+  else
+#endif
+  {
+    for (__i = 0; __i < __outer_size; __i++)
+    {
+      index_type __j = 0;
+      for (; __j < __inner_size; __j++)
+      {
+        index_type __max_index = 0;
+        value_type __max_value = this->__data_[__i * this->__shape_[__dim] * __inner_size + __j];
+
+        index_type __k = 1;
+        for (; __k < this->__shape_[__dim]; __k++)
+        {
+          value_type __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+          if (__v > __max_value)
+          {
+            __max_value = __v;
+            __max_index = __k;
+          }
+        }
+        __ret.__data_[__i * __inner_size + __j] = __max_index;
+      }
     }
   }
 
@@ -1485,23 +1600,78 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type __dim) const {
     __inner_size *= this->__shape_[__i];
   }
 
-  for (__i = 0; __i < __outer_size; __i++)
+#if defined(__AVX2__)
+  if constexpr (std::is_same_v<_Tp, float>)
   {
-    index_type __j = 0;
-    for (; __j < __inner_size; __j++)
+    for (__i = 0; __i < __outer_size; __i++)
     {
-      value_type __max_value = this->__data_[__i * this->__shape_[__dim] * __inner_size + __j];
-
-      index_type __k = 1;
-      for (; __k < this->__shape_[__dim]; __k++)
+      for (index_type __j = 0; __j < __inner_size; __j++)
       {
-        value_type __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
-        if (__v > __max_value)
+        __m256     max_vec = _mm256_set1_ps(-std::numeric_limits<float>::infinity());
+        index_type __k     = 0;
+        for (; __k + 8 <= this->__shape_[__dim]; __k += 8)
         {
-          __max_value = __v;
+          __m256 data_vec = _mm256_loadu_ps(
+            &this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j]);
+          max_vec = _mm256_max_ps(max_vec, data_vec);
         }
+        float max_value = _mm256_reduce_max_ps(max_vec);
+        for (; __k < this->__shape_[__dim]; __k++)
+        {
+          float __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+          max_value = std::max(max_value, __v);
+        }
+        __ret.__data_[__i * __inner_size + __j] = max_value;
       }
-      __ret.__data_[__i * __inner_size + __j] = __max_value;
+    }
+  }
+  else
+#elif defined(__ARM_NEON)
+  if constexpr (std::is_same_v<_Tp, float>)
+  {
+    for (__i = 0; __i < __outer_size; __i++)
+    {
+      for (index_type __j = 0; __j < __inner_size; __j++)
+      {
+        float32x4_t max_vec = vdupq_n_f32(-std::numeric_limits<float>::infinity());
+        index_type  __k     = 0;
+        for (; __k + 4 <= this->__shape_[__dim]; __k += 4)
+        {
+          float32x4_t data_vec =
+            vld1q_f32(&this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j]);
+          max_vec = vmaxq_f32(max_vec, data_vec);
+        }
+        float max_value = vmaxvq_f32(max_vec);
+        for (; __k < this->__shape_[__dim]; __k++)
+        {
+          float __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+          max_value = std::max(max_value, __v);
+        }
+        __ret.__data_[__i * __inner_size + __j] = max_value;
+      }
+    }
+  }
+  else
+#endif
+  {
+    for (__i = 0; __i < __outer_size; __i++)
+    {
+      index_type __j = 0;
+      for (; __j < __inner_size; __j++)
+      {
+        value_type __max_value = this->__data_[__i * this->__shape_[__dim] * __inner_size + __j];
+
+        index_type __k = 1;
+        for (; __k < this->__shape_[__dim]; __k++)
+        {
+          value_type __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+          if (__v > __max_value)
+          {
+            __max_value = __v;
+          }
+        }
+        __ret.__data_[__i * __inner_size + __j] = __max_value;
+      }
     }
   }
 
@@ -1577,11 +1747,37 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_type __dim) const {
     data_container __ret(__flat.size());
     __ret[0] = __flat[0];
 
+#if defined(__AVX2__)
+    if constexpr (std::is_same_v<_Tp, float>)
+    {
+      size_t __i = 1;
+      for (; __i + 8 <= __flat.size(); __i += 8)
+      {
+        __m256 prev   = _mm256_loadu_ps(&__ret[__i - 1]);
+        __m256 curr   = _mm256_loadu_ps(&__flat[__i]);
+        __m256 result = _mm256_mul_ps(prev, curr);
+        _mm256_storeu_ps(&__ret[__i], result);
+      }
+      for (; __i < __flat.size(); __i++)
+      {
+        __ret[__i] = __ret[__i - 1] * __flat[__i];
+      }
+    }
+    else
+    {
+      size_t __i = 1;
+      for (; __i < __flat.size(); __i++)
+      {
+        __ret[__i] = __ret[__i - 1] * __flat[__i];
+      }
+    }
+#else
     size_t __i = 1;
     for (; __i < __flat.size(); __i++)
     {
       __ret[__i] = __ret[__i - 1] * __flat[__i];
     }
+#endif
 
     return __self(__ret, {__flat.size()});
   }
@@ -1599,6 +1795,44 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_type __dim) const {
 
     size_t __st = this->__strides_[__dim];
 
+#if defined(__AVX2__)
+    if constexpr (std::is_same_v<_Tp, float>)
+    {
+      for (size_t __i = 0; __i < __outer_size; ++__i)
+      {
+        size_t __base = __i * __st;
+        __ret[__base] = __data_[__base];
+
+        size_t __j = 1;
+        for (; __j + 8 <= __inner_size; __j += 8)
+        {
+          __m256 prev   = _mm256_loadu_ps(&__ret[__base + __j - 1]);
+          __m256 curr   = _mm256_loadu_ps(&__data_[__base + __j]);
+          __m256 result = _mm256_mul_ps(prev, curr);
+          _mm256_storeu_ps(&__ret[__base + __j], result);
+        }
+        for (; __j < __inner_size; __j++)
+        {
+          size_t __curr = __base + __j;
+          __ret[__curr] = __ret[__base + __j - 1] * __data_[__curr];
+        }
+      }
+    }
+    else
+    {
+      for (size_t __i = 0; __i < __outer_size; ++__i)
+      {
+        size_t __base = __i * __st;
+        __ret[__base] = __data_[__base];
+
+        for (size_t __j = 1; __j < __inner_size; __j++)
+        {
+          size_t __curr = __base + __j;
+          __ret[__curr] = __ret[__base + __j - 1] * __data_[__curr];
+        }
+      }
+    }
+#else
     size_t __i = 0;
     for (; __i < __outer_size; ++__i)
     {
@@ -1612,6 +1846,7 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_type __dim) const {
         __ret[__curr] = __ret[__base + __j - 1] * __data_[__curr];
       }
     }
+#endif
 
     return __self(__ret, this->__shape_);
   }
@@ -1651,11 +1886,70 @@ tensor<_Tp> tensor<_Tp>::slice(index_type                __dim,
   __ret_dims[-__dim]      = __slice_size;
   __ret                   = tensor(__ret_dims);
 
-  index_type __i = __start_i, __j = 0ULL;
-  for (; __i < __end_i; __i += __step, __j++)
-  {
-    __ret({__j}) = this->at({__i});
+#if defined(__CUDACC__)
+  // CUDA implementation
+  if (this->__data_.size() >= 1024)
+  {  // Arbitrary threshold for CUDA
+    // Allocate device memory
+    _Tp* d_input;
+    _Tp* d_output;
+    cudaMalloc(&d_input, this->__data_.size() * sizeof(_Tp));
+    cudaMalloc(&d_output, __ret.__data_.size() * sizeof(_Tp));
+
+    // Copy input data to device
+    cudaMemcpy(d_input, this->__data_.data(), this->__data_.size() * sizeof(_Tp),
+               cudaMemcpyHostToDevice);
+
+    // Launch kernel
+    dim3 block(256);
+    dim3 grid(((__slice_size + block.x - 1) / block.x));
+    slice_kernel<<<grid, block>>>(d_input, d_output, __start_i, __end_i, __step, __slice_size);
+
+    // Copy result back to host
+    cudaMemcpy(__ret.__data_.data(), d_output, __ret.__data_.size() * sizeof(_Tp),
+               cudaMemcpyDeviceToHost);
+
+    // Free device memory
+    cudaFree(d_input);
+    cudaFree(d_output);
   }
+  else
+  {
+#endif
+
+#if defined(__ARM_NEON)
+    if constexpr (std::is_same_v<_Tp, float> && __step == 1)
+    {
+      const int  vector_size = 4;
+      index_type vector_end  = __start_i + ((__end_i - __start_i) / vector_size) * vector_size;
+
+      for (index_type i = __start_i, j = 0; i < vector_end; i += vector_size, j += vector_size)
+      {
+        float32x4_t vec = vld1q_f32(&(this->__data_[i]));
+        vst1q_f32(&(__ret.__data_[j]), vec);
+      }
+
+      // Handle remaining elements
+      for (index_type i = vector_end, j = vector_end - __start_i; i < __end_i; ++i, ++j)
+      {
+        __ret.__data_[j] = this->__data_[i];
+      }
+    }
+    else
+    {
+#endif
+      index_type __i = __start_i, __j = 0ULL;
+      for (; __i < __end_i; __i += __step, __j++)
+      {
+        __ret({__j}) = this->at({__i});
+      }
+#if defined(__ARM_NEON)
+    }
+#endif
+
+#if defined(__CUDACC__)
+  }
+#endif
 
   return __ret;
 }
@@ -2808,31 +3102,71 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
     std::accumulate(__ret_sh.begin(), __ret_sh.end(), 1, std::multiplies<index_type>());
   data_container __ret_data(__ret_size, value_type(0.0f));
 
-  index_type __i = 0;
-  for (; __i < static_cast<index_type>(this->__data_.size()); __i++)
+#if defined(__ARM_NEON)
+  if constexpr (std::is_same_v<_Tp, float>)
   {
-    std::vector<index_type> __orig(this->__shape_.size());
-    index_type              __index = __i;
+    const index_type __axis_size  = this->__shape_[__axis];
+    const index_type __outer_size = this->__compute_outer_size(__axis);
+    const index_type __inner_size = this->size(0) / (__outer_size * __axis_size);
 
-    index_type __j = static_cast<index_type>(this->__shape_.size()) - 1;
-    for (; __j >= 0; __j--)
+    for (index_type __outer = 0; __outer < __outer_size; ++__outer)
     {
-      __orig[__j] = __index % this->__shape_[__j];
-      __index /= this->__shape_[__j];
+      for (index_type __inner = 0; __inner < __inner_size; ++__inner)
+      {
+        float32x4_t sum_vec = vdupq_n_f32(0.0f);
+        index_type  __i     = __outer * __axis_size * __inner_size + __inner;
+        index_type  __j     = 0;
+
+        for (; __j + 4 <= __axis_size; __j += 4)
+        {
+          float32x4_t data_vec = vld1q_f32(&this->__data_[__i]);
+          sum_vec              = vaddq_f32(sum_vec, data_vec);
+          __i += __inner_size * 4;
+        }
+
+        float sum = vaddvq_f32(sum_vec);
+
+        for (; __j < __axis_size; ++__j)
+        {
+          sum += this->__data_[__i];
+          __i += __inner_size;
+        }
+
+        __ret_data[__outer * __inner_size + __inner] = sum;
+      }
     }
-
-    __orig[__axis]         = 0LL;
-    index_type __ret_index = 0LL;
-    index_type __st        = 1LL;
-
-    for (__j = static_cast<index_type>(this->__shape_.size()) - 1; __j >= 0; __j--)
-    {
-      __ret_index += __orig[__j] * __st;
-      __st *= __ret_sh[__j];
-    }
-
-    __ret_data[__ret_index] += this->__data_[__i];
   }
+  else
+  {
+#endif
+    index_type __i = 0;
+    for (; __i < static_cast<index_type>(this->__data_.size()); __i++)
+    {
+      std::vector<index_type> __orig(this->__shape_.size());
+      index_type              __index = __i;
+
+      index_type __j = static_cast<index_type>(this->__shape_.size()) - 1;
+      for (; __j >= 0; __j--)
+      {
+        __orig[__j] = __index % this->__shape_[__j];
+        __index /= this->__shape_[__j];
+      }
+
+      __orig[__axis]         = 0LL;
+      index_type __ret_index = 0LL;
+      index_type __st        = 1LL;
+
+      for (__j = static_cast<index_type>(this->__shape_.size()) - 1; __j >= 0; __j--)
+      {
+        __ret_index += __orig[__j] * __st;
+        __st *= __ret_sh[__j];
+      }
+
+      __ret_data[__ret_index] += this->__data_[__i];
+    }
+#if defined(__ARM_NEON)
+  }
+#endif
 
   return __self(__ret_data, __ret_sh);
 }
@@ -2910,6 +3244,31 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::clamp(const_pointer __min_val, const_pointer __max_val) const {
   data_container __ret(this->__data_.size());
 
+#if defined(__AVX2__)
+  const size_t simd_size = 8;
+  const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+
+  __m256 min_vec = _mm256_set1_ps(__min_val ? *__min_val : std::numeric_limits<_Tp>::lowest());
+  __m256 max_vec = _mm256_set1_ps(__max_val ? *__max_val : std::numeric_limits<_Tp>::max());
+
+  for (size_t __i = 0; __i < simd_end; __i += simd_size)
+  {
+    __m256 data_vec = _mm256_loadu_ps(&this->__data_[__i]);
+    __m256 clamped  = _mm256_min_ps(_mm256_max_ps(data_vec, min_vec), max_vec);
+    _mm256_storeu_ps(&__ret[__i], clamped);
+  }
+
+  // Handle remaining elements
+  for (size_t __i = simd_end; __i < this->__data_.size(); __i++)
+  {
+    value_type __v = this->__data_[__i];
+    if (__min_val)
+      __v = std::max(*__min_val, __v);
+    if (__max_val)
+      __v = std::min(*__max_val, __v);
+    __ret[__i] = __v;
+  }
+#else
   size_t __i = 0;
   for (; __i < this->__data_.size(); __i++)
   {
@@ -2926,12 +3285,36 @@ tensor<_Tp> tensor<_Tp>::clamp(const_pointer __min_val, const_pointer __max_val)
 
     __ret[__i] = __v;
   }
+#endif
 
   return __self(__ret, this->__shape_);
 }
 
 template<class _Tp>
 void tensor<_Tp>::clamp_(const_pointer __min_val, const_pointer __max_val) {
+#if defined(__AVX2__)
+  const size_t simd_size = 8;
+  const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+
+  __m256 min_vec = _mm256_set1_ps(__min_val ? *__min_val : std::numeric_limits<_Tp>::lowest());
+  __m256 max_vec = _mm256_set1_ps(__max_val ? *__max_val : std::numeric_limits<_Tp>::max());
+
+  for (size_t __i = 0; __i < simd_end; __i += simd_size)
+  {
+    __m256 data_vec = _mm256_loadu_ps(&this->__data_[__i]);
+    __m256 clamped  = _mm256_min_ps(_mm256_max_ps(data_vec, min_vec), max_vec);
+    _mm256_storeu_ps(&this->__data_[__i], clamped);
+  }
+
+  // Handle remaining elements
+  for (size_t __i = simd_end; __i < this->__data_.size(); __i++)
+  {
+    if (__min_val)
+      this->__data_[__i] = std::max(*__min_val, this->__data_[__i]);
+    if (__max_val)
+      this->__data_[__i] = std::min(*__max_val, this->__data_[__i]);
+  }
+#else
   size_t __i = 0;
   for (; __i < this->__data_.size(); __i++)
   {
@@ -2945,4 +3328,5 @@ void tensor<_Tp>::clamp_(const_pointer __min_val, const_pointer __max_val) {
       this->__data_[__i] = std::min(*__max_val, this->__data_[__i]);
     }
   }
+#endif
 }
