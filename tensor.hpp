@@ -2715,12 +2715,15 @@ void tensor<_Tp>::bitwise_or_(const tensor& __other) {
     }
 
     assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
-
+#ifdef __ARM_NEON
+    
+#else
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
         this->__data_[__i] |= __other[__i];
     }
+#endif
 }
 
 
@@ -2732,164 +2735,73 @@ void tensor<_Tp>::bitwise_xor_(const tensor& __other) {
     }
 
     assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
-
-    size_t __i = 0;
-    for (; __i < this->__data_.size(); __i++)
-    {
-        this->__data_[__i] ^= __other[__i];
-    }
-}
-
-
-template<class _Tp>
-tensor<bool> tensor<_Tp>::logical_not() const {
-    if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-    {
-        throw std::runtime_error("Cannot get the element wise not of non-integral and non-boolean value");
-    }
-
-    std::vector<bool> __ret(this->__data_.size());
-
-    size_t __i = 0;
-    for (; __i < this->__data_.size(); __i++)
-    {
-        __ret[__i] = ~(this->__data_[__i]);
-    }
-
-    return tensor<bool>(__ret, this->__shape_);
-}
-
-
-template<class _Tp>
-tensor<bool> tensor<_Tp>::logical_or(const value_type __val) const {
-    if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-    {
-        throw std::runtime_error("Cannot get the element wise or of non-integral and non-boolean value");
-    }
-
-    std::vector<bool> __ret(this->__data_.size());
-
-    size_t __i = 0;
-    for (; __i < this->__data_.size(); __i++)
-    {
-        __ret[__i] = (this->__data_[__i] || __val);
-    }
-    return tensor<bool>(__ret, this->__shape_);
-}
-
-
-template<class _Tp>
-tensor<bool> tensor<_Tp>::logical_or(const tensor<_Tp>& __other) const {
-    if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-    {
-        throw std::runtime_error("Cannot get the element wise or of non-integral and non-boolean value");
-    }
-
-    assert(this->__shape_ == __other.shape());
-    std::vector<bool> __ret(this->__data_.size());
-
-    size_t __i = 0;
-    for (; __i < this->__data_.size(); __i++)
-    {
-        __ret[__i] = (this->__data_[__i] || __other[__i]);
-    }
-    return tensor<bool>(__ret, this->__shape_);
-}
-
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::logical_xor(const tensor& __other) const {
-    if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-    {
-        throw std::runtime_error("Cannot get the element wise xor of non-integral and non-boolean value");
-    }
-
-    assert(this->__shape_ == __other.shape());
-    std::vector<bool> __ret(this->__data_.size());
-
-    size_t __i = 0;
-    for (; __i < this->__data_.size(); __i++)
-    {
-        __ret[__i] = (this->__data_[__i] ^ __other[__i]);
-    }
-    return tensor<bool>(__ret, this->__shape_);
-}
-
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::logical_xor(const value_type __val) const {
-    if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-    {
-        throw std::runtime_error("Cannot get the element wise xor of non-integral and non-boolean value");
-    }
-
-    std::vector<bool> __ret(this->__data_.size());
-
-    size_t __i = 0;
-    for (; __i < this->__data_.size(); __i++)
-    {
-        __ret[__i] = (this->__data_[__i] ^ __val);
-    }
-    return tensor<bool>(__ret, this->__shape_);
-}
-
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::logical_and(const tensor& __other) const {
-    if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-    {
-        throw std::runtime_error("Cannot get the element wise and of non-integral and non-boolean value");
-    }
-
-    assert(this->__shape_ == __other.shape());
-    std::vector<bool> __ret(this->__data_.size());
-
-    size_t __i = 0;
-    for (; __i < this->__data_.size(); __i++)
-    {
-        __ret[__i] = (this->__data_[__i] && __other[__i]);
-    }
-    return tensor<bool>(__ret, this->__shape_);
-}
-
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::logical_and(const value_type __val) const {
-    if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-    {
-        throw std::runtime_error("Cannot get the element wise and of non-integral and non-boolean value");
-    }
-
-    std::vector<bool> __ret(this->__data_.size());
 #ifdef __ARM_NEON
     const size_t simd_size = 4;
     const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
 
-    uint32x4_t val_vec = vdupq_n_u32(static_cast<uint32_t>(__val));
-
     for (size_t __i = 0; __i < simd_end; __i += simd_size)
     {
-        uint32x4_t data_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
-        uint32x4_t and_vec  = vandq_u32(data_vec, val_vec);
+        uint32x4_t data_vec  = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
+        uint32x4_t other_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other[__i]));
 
-        for (size_t j = 0; j < simd_size; ++j)
-        {
-            __ret[__i + j] = (vgetq_lane_u32(and_vec, j) != 0);
-        }
+        uint32x4_t xor_vec = veorq_u32(data_vec, other_vec);
+
+        vst1q_u32(reinterpret_cast<uint32_t*>(&this->__data_[__i]), xor_vec);
     }
 
     for (size_t __i = simd_end; __i < this->__data_.size(); __i++)
     {
-        __ret[__i] = (this->__data_[__i] && __val);
+        this->__data_[__i] = (this->__data_[__i] ^ __other[__i]);
     }
 #else
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
-        __ret[__i] = (this->__data_[__i] && __val);
+        this->__data_[__i] ^= __other[__i];
     }
 #endif
-    return tensor<bool>(__ret, this->__shape_);
+}
+
+
+template<class _Tp>
+tensor<bool> tensor<_Tp>::logical_not() const {
+    return __self(*this).logical_not_();
+}
+
+
+template<class _Tp>
+tensor<bool> tensor<_Tp>::logical_or(const value_type __val) const {
+    return __self(*this).logical_or_(__val);
+}
+
+
+template<class _Tp>
+tensor<bool> tensor<_Tp>::logical_or(const tensor<_Tp>& __other) const {
+    return __self(*this).logical_or_(__other);
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::logical_xor(const tensor& __other) const {
+    return __self(*this).logical_xor_(__other);
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::logical_xor(const value_type __val) const {
+    return __self(*this).logical_xor_(__val);
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::logical_and(const tensor& __other) const {
+    return __self(*this).logical_and_(__other);
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::logical_and(const value_type __val) const {
+    return __self(*this).logical_and_(__val);
 }
 
 
@@ -3666,51 +3578,9 @@ tensor<_Tp> tensor<_Tp>::floor() const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::clamp(const_pointer __min_val, const_pointer __max_val) const {
-    data_t __ret(this->__data_.size());
-
-#if defined(__AVX2__)
-    const size_t simd_size = 8;
-    const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
-
-    __m256 min_vec = _mm256_set1_ps(__min_val ? *__min_val : std::numeric_limits<_Tp>::lowest());
-    __m256 max_vec = _mm256_set1_ps(__max_val ? *__max_val : std::numeric_limits<_Tp>::max());
-
-    for (size_t __i = 0; __i < simd_end; __i += simd_size)
-    {
-        __m256 data_vec = _mm256_loadu_ps(&this->__data_[__i]);
-        __m256 clamped  = _mm256_min_ps(_mm256_max_ps(data_vec, min_vec), max_vec);
-        _mm256_storeu_ps(&__ret[__i], clamped);
-    }
-
-    for (size_t __i = simd_end; __i < this->__data_.size(); __i++)
-    {
-        value_type __v = this->__data_[__i];
-        if (__min_val)
-            __v = std::max(*__min_val, __v);
-        if (__max_val)
-            __v = std::min(*__max_val, __v);
-        __ret[__i] = __v;
-    }
-#else
-    size_t __i = 0;
-    for (; __i < this->__data_.size(); __i++)
-    {
-        value_type __v = this->__data_[__i];
-        if (__min_val)
-        {
-            __v = std::max(*__min_val, __v);
-        }
-
-        if (__max_val)
-        {
-            __v = std::min(*__max_val, __v);
-        }
-
-        __ret[__i] = __v;
-    }
-#endif
-
-    return __self(__ret, this->__shape_);
+    tensor<value_type> __t = __self(*this);
+    __t.clamp_(__min_val, __max_val);
+    return __t;
 }
 
 
