@@ -23,273 +23,277 @@
 template<class _Tp>
 class tensor
 {
- public:
-  typedef tensor                  __self;
-  typedef _Tp                     value_type;
-  typedef int64_t                 index_type;
-  typedef std::vector<index_type> shape_type;
-  typedef value_type&             reference;
-  typedef const value_type&       const_reference;
-  typedef value_type*             pointer;
-  typedef const pointer           const_pointer;
-  typedef std::vector<value_type> data_t;
-  typedef const data_t    const_data_container;
-
-  typedef std::__wrap_iter<typename std::allocator_traits<std::allocator<_Tp>>::pointer>       __iterator;
-  typedef std::__wrap_iter<typename std::allocator_traits<std::allocator<_Tp>>::const_pointer> __const_iterator;
-  typedef std::reverse_iterator<__iterator>                                                    reverse_iterator;
-  typedef std::reverse_iterator<__const_iterator>                                              const_reverse_iterator;
-
-
- private:
-  data_t          __data_;
-  shape_type              __shape_;
-  std::vector<index_type> __strides_;
-
- public:
-  tensor() = default;
-
-  explicit tensor(const shape_type __sh, const value_type __v);
-  explicit tensor(const shape_type __sh);
-  explicit tensor(const data_t __d, const shape_type __sh);
-  explicit tensor(const tensor& __t);
-
-  tensor(tensor&& __t) noexcept;
-  tensor(const shape_type __sh, std::initializer_list<value_type> init_list);
-  tensor(const shape_type& __sh, const tensor& __other);
-
- private:
-  class __destroy_tensor
-  {
    public:
-    __destroy_tensor(tensor& __tens);
-    void operator()();
+    typedef tensor                  __self;
+    typedef _Tp                     value_type;
+    typedef int64_t                 index_type;
+    typedef std::vector<index_type> shape_type;
+    typedef value_type&             reference;
+    typedef const value_type&       const_reference;
+    typedef value_type*             pointer;
+    typedef const pointer           const_pointer;
+    typedef std::vector<value_type> data_t;
+    typedef const data_t            const_data_container;
+
+    typedef std::__wrap_iter<typename std::allocator_traits<std::allocator<_Tp>>::pointer>
+        __iterator;
+    typedef std::__wrap_iter<typename std::allocator_traits<std::allocator<_Tp>>::const_pointer>
+                                                    __const_iterator;
+    typedef std::reverse_iterator<__iterator>       reverse_iterator;
+    typedef std::reverse_iterator<__const_iterator> const_reverse_iterator;
+
 
    private:
-    tensor& __tens_;
-  };
+    data_t                  __data_;
+    shape_type              __shape_;
+    std::vector<index_type> __strides_;
 
- public:
-  ~tensor();
+   public:
+    tensor() = default;
 
-  tensor& operator=(const tensor& __other);
-  tensor& operator=(tensor&& __other) noexcept;
+    explicit tensor(const shape_type __sh, const value_type __v);
+    explicit tensor(const shape_type __sh);
+    explicit tensor(const data_t __d, const shape_type __sh);
+    explicit tensor(const tensor& __t);
 
-  __const_iterator begin() const;
-  __const_iterator end() const;
+    tensor(tensor&& __t) noexcept;
+    tensor(const shape_type __sh, std::initializer_list<value_type> init_list);
+    tensor(const shape_type& __sh, const tensor& __other);
 
-  const_reverse_iterator rbegin() const;
-  const_reverse_iterator rend() const;
+   private:
+    class __destroy_tensor
+    {
+       public:
+        __destroy_tensor(tensor& __tens);
+        void operator()();
 
-  data_t storage() const;
-  shape_type     shape() const;
-  shape_type     strides() const;
-  size_t         n_dims() const;
+       private:
+        tensor& __tens_;
+    };
 
-  size_t size(const index_type __dim) const;
+   public:
+    ~tensor();
 
-  size_t          capacity() const noexcept;
-  reference       at(shape_type __idx);
-  const_reference at(const shape_type __idx) const;
+    tensor& operator=(const tensor& __other);
+    tensor& operator=(tensor&& __other) noexcept;
 
-  reference operator[](const size_t __in);
+    __const_iterator begin() const;
+    __const_iterator end() const;
 
-  const_reference operator[](const size_t __in) const;
+    const_reverse_iterator rbegin() const;
+    const_reverse_iterator rend() const;
 
-  tensor operator+(const tensor& __other) const;
-  tensor operator-(const tensor& __other) const;
-  tensor operator-=(const tensor& __other) const;
-  tensor operator+=(const tensor& __other) const;
-  tensor operator+(const value_type _scalar) const;
-  tensor operator-(const value_type _scalar) const;
-  tensor operator+=(const_reference __scalar) const;
-  tensor operator-=(const_reference __scalar) const;
+    data_t     storage() const;
+    shape_type shape() const;
+    shape_type strides() const;
+    size_t     n_dims() const;
 
-  bool operator==(const tensor& __other) const;
-  bool operator!=(const tensor& __other) const { return !(*this == __other); }
+    size_t size(const index_type __dim) const;
 
-  bool empty() const { return this->__data_.empty(); }
+    size_t          capacity() const noexcept;
+    reference       at(shape_type __idx);
+    const_reference at(const shape_type __idx) const;
 
-  double mean() const;
+    reference operator[](const size_t __in);
 
-  tensor<bool> logical_not() const;
-  tensor<bool> logical_or(const value_type __val) const;
-  tensor<bool> logical_or(const tensor& __other) const;
+    const_reference operator[](const size_t __in) const;
 
-  tensor<bool> less_equal(const tensor& __other) const;
-  tensor<bool> less_equal(const value_type __val) const;
+    tensor operator+(const tensor& __other) const;
+    tensor operator-(const tensor& __other) const;
+    tensor operator-=(const tensor& __other) const;
+    tensor operator+=(const tensor& __other) const;
+    tensor operator+(const value_type _scalar) const;
+    tensor operator-(const value_type _scalar) const;
+    tensor operator+=(const_reference __scalar) const;
+    tensor operator-=(const_reference __scalar) const;
 
-  tensor<bool> greater_equal(const tensor& __other) const;
-  tensor<bool> greater_equal(const value_type __val) const;
+    bool operator==(const tensor& __other) const;
+    bool operator!=(const tensor& __other) const { return !(*this == __other); }
 
-  tensor<bool> equal(const tensor& __other) const;
-  tensor<bool> equal(const value_type __val) const;
+    bool empty() const { return this->__data_.empty(); }
 
-  size_t count_nonzero(index_type __dim = -1LL) const;
+    double mean() const;
 
-  tensor
-  slice(index_type __dim, std::optional<index_type> __start, std::optional<index_type> __end, index_type __step) const;
+    tensor<bool> logical_not() const;
+    tensor<bool> logical_or(const value_type __val) const;
+    tensor<bool> logical_or(const tensor& __other) const;
 
-  tensor fmax(const tensor& __other) const;
-  tensor fmod(const tensor& __other) const;
+    tensor<bool> less_equal(const tensor& __other) const;
+    tensor<bool> less_equal(const value_type __val) const;
 
-  tensor frac() const;
-  tensor log() const;
-  tensor log10() const;
-  tensor log2() const;
+    tensor<bool> greater_equal(const tensor& __other) const;
+    tensor<bool> greater_equal(const value_type __val) const;
 
-  tensor exp() const;
+    tensor<bool> equal(const tensor& __other) const;
+    tensor<bool> equal(const value_type __val) const;
 
-  tensor sqrt() const;
+    size_t count_nonzero(index_type __dim = -1LL) const;
 
-  tensor sum(const index_type __axis) const;
+    tensor slice(index_type                __dim,
+                 std::optional<index_type> __start,
+                 std::optional<index_type> __end,
+                 index_type                __step) const;
 
-  tensor row(const index_type __index) const;
-  tensor col(const index_type __index) const;
+    tensor fmax(const tensor& __other) const;
+    tensor fmod(const tensor& __other) const;
 
-  tensor ceil() const;
-  tensor floor() const;
+    tensor frac() const;
+    tensor log() const;
+    tensor log10() const;
+    tensor log2() const;
 
-  tensor clone() const;
+    tensor exp() const;
 
-  tensor clamp(const_pointer __min_val = nullptr, const_pointer __max_val = nullptr) const;
+    tensor sqrt() const;
 
-  tensor cos() const;
-  tensor sin() const;
-  tensor sinh() const;
-  tensor asinh() const;
-  tensor cosh() const;
-  tensor acosh() const;
+    tensor sum(const index_type __axis) const;
 
-  tensor logical_xor(const tensor& __other) const;
-  tensor logical_xor(const value_type __val) const;
+    tensor row(const index_type __index) const;
+    tensor col(const index_type __index) const;
 
-  tensor logical_and(const tensor& __other) const;
-  tensor logical_and(const value_type __val) const;
+    tensor ceil() const;
+    tensor floor() const;
 
-  tensor bitwise_not() const;
+    tensor clone() const;
 
-  tensor bitwise_and(const value_type __val) const;
-  tensor bitwise_and(const tensor& __other) const;
+    tensor clamp(const_pointer __min_val = nullptr, const_pointer __max_val = nullptr) const;
 
-  tensor bitwise_or(const value_type __val) const;
-  tensor bitwise_or(const tensor& __other) const;
+    tensor cos() const;
+    tensor sin() const;
+    tensor sinh() const;
+    tensor asinh() const;
+    tensor cosh() const;
+    tensor acosh() const;
 
-  tensor bitwise_xor(const value_type __val) const;
-  tensor bitwise_xor(const tensor& __other) const;
+    tensor logical_xor(const tensor& __other) const;
+    tensor logical_xor(const value_type __val) const;
 
-  tensor bitwise_left_shift(const int __amount) const;
-  tensor bitwise_right_shift(const int __amount) const;
+    tensor logical_and(const tensor& __other) const;
+    tensor logical_and(const value_type __val) const;
 
-  tensor matmul(const tensor& __other) const;
+    tensor bitwise_not() const;
 
-  tensor reshape(const shape_type __shape) const;
-  tensor reshape_as(const tensor& __other) { return this->reshape(__other.__shape_); }
+    tensor bitwise_and(const value_type __val) const;
+    tensor bitwise_and(const tensor& __other) const;
 
-  tensor cross_product(const tensor& __other) const;
+    tensor bitwise_or(const value_type __val) const;
+    tensor bitwise_or(const tensor& __other) const;
 
-  tensor absolute(const tensor& __tensor) const;
+    tensor bitwise_xor(const value_type __val) const;
+    tensor bitwise_xor(const tensor& __other) const;
 
-  tensor dot(const tensor& __other) const;
+    tensor bitwise_left_shift(const int __amount) const;
+    tensor bitwise_right_shift(const int __amount) const;
 
-  tensor relu() const;
+    tensor matmul(const tensor& __other) const;
 
-  tensor transpose() const;
+    tensor reshape(const shape_type __shape) const;
+    tensor reshape_as(const tensor& __other) { return this->reshape(__other.__shape_); }
 
-  tensor pow(const tensor& __other) const;
-  tensor pow(const value_type __val) const;
+    tensor cross_product(const tensor& __other) const;
 
-  tensor cumprod(index_type __dim = -1) const;
+    tensor absolute(const tensor& __tensor) const;
 
-  tensor cat(const std::vector<tensor>& _others, index_type _dim) const;
+    tensor dot(const tensor& __other) const;
 
-  tensor argmax(index_type __dim) const;
+    tensor relu() const;
 
-  tensor unsqueeze(index_type __dim) const;
+    tensor transpose() const;
 
-  index_type lcm() const;
+    tensor pow(const tensor& __other) const;
+    tensor pow(const value_type __val) const;
 
-  void sqrt_();
+    tensor cumprod(index_type __dim = -1) const;
 
-  void exp_();
+    tensor cat(const std::vector<tensor>& _others, index_type _dim) const;
 
-  void log2_();
-  void log10_();
-  void log_();
+    tensor argmax(index_type __dim) const;
 
-  void frac_();
+    tensor unsqueeze(index_type __dim) const;
 
-  void fmod_(const tensor& __other);
+    index_type lcm() const;
 
-  void cos_();
-  void cosh_();
-  void acosh_();
-  void sin_() const;
-  void sinh_();
-  void asinh_();
+    void sqrt_();
 
-  void ceil_();
-  void floor_();
+    void exp_();
 
-  void relu_();
+    void log2_();
+    void log10_();
+    void log_();
 
-  void clamp_(const_pointer __min_val = nullptr, const_pointer __max_val = nullptr);
+    void frac_();
 
-  void logical_not_() const;
+    void fmod_(const tensor& __other);
 
-  void logical_or_(const tensor& __other);
-  void logical_or_(const value_type __val);
+    void cos_();
+    void cosh_();
+    void acosh_();
+    void sin_() const;
+    void sinh_();
+    void asinh_();
 
-  void logical_xor_(const tensor& __other);
-  void logical_xor_(const value_type __val);
+    void ceil_();
+    void floor_();
 
-  void logical_and_(const tensor& __other);
-  void logical_and_(const value_type __val);
+    void relu_();
 
-  void pow_(const tensor& __other) const;
-  void pow_(const value_type __val) const;
+    void clamp_(const_pointer __min_val = nullptr, const_pointer __max_val = nullptr);
 
-  void bitwise_left_shift_(const int __amount);
-  void bitwise_right_shift_(const int __amount);
+    void logical_not_() const;
 
-  void bitwise_and_(const value_type __val);
-  void bitwise_and_(const tensor& __other);
+    void logical_or_(const tensor& __other);
+    void logical_or_(const value_type __val);
 
-  void bitwise_or_(const value_type __val);
-  void bitwise_or_(const tensor& __other);
+    void logical_xor_(const tensor& __other);
+    void logical_xor_(const value_type __val);
 
-  void bitwise_xor_(const value_type __val);
-  void bitwise_xor_(const tensor& __other);
+    void logical_and_(const tensor& __other);
+    void logical_and_(const value_type __val);
 
-  void bitwise_not_();
+    void pow_(const tensor& __other) const;
+    void pow_(const value_type __val) const;
 
-  void view(std::initializer_list<index_type> __new_sh);
+    void bitwise_left_shift_(const int __amount);
+    void bitwise_right_shift_(const int __amount);
 
-  void print() const noexcept;
+    void bitwise_and_(const value_type __val);
+    void bitwise_and_(const tensor& __other);
 
-  static tensor zeros(const shape_type& __sh);
+    void bitwise_or_(const value_type __val);
+    void bitwise_or_(const tensor& __other);
 
-  static tensor ones(const shape_type& __sh);
+    void bitwise_xor_(const value_type __val);
+    void bitwise_xor_(const tensor& __other);
 
-  static tensor randomize(const shape_type& __sh, bool __bounded = false);
+    void bitwise_not_();
 
-  tensor<index_type> argmax_(index_type __dim) const;
-  tensor<index_type> argsort(index_type __dim = -1LL, bool __ascending = true) const;
+    void view(std::initializer_list<index_type> __new_sh);
 
- private:
-  static void __check_is_scalar_type(const std::string __msg);
+    void print() const noexcept;
 
-  static void __check_is_integral_type(const std::string __msg);
+    static tensor zeros(const shape_type& __sh);
 
-  template<typename __t>
-  static void __check_is_same_type(const std::string __msg);
-  static void __check_is_arithmetic_type(const std::string __msg);
-  void        __compute_strides();
-  size_t      __compute_index(const std::vector<index_type>& __idx) const;
-  uint64_t    __computeSize(const shape_type& __dims) const;
-  uint64_t    __compute_outer_size(const index_type __dim) const;
-  float       __frac(const_reference __scalar);
-  index_type  __lcm(const index_type __a, const index_type __b);
+    static tensor ones(const shape_type& __sh);
+
+    static tensor randomize(const shape_type& __sh, bool __bounded = false);
+
+    tensor<index_type> argmax_(index_type __dim) const;
+    tensor<index_type> argsort(index_type __dim = -1LL, bool __ascending = true) const;
+
+   private:
+    static void __check_is_scalar_type(const std::string __msg);
+
+    static void __check_is_integral_type(const std::string __msg);
+
+    template<typename __t>
+    static void __check_is_same_type(const std::string __msg);
+    static void __check_is_arithmetic_type(const std::string __msg);
+    void        __compute_strides();
+    size_t      __compute_index(const std::vector<index_type>& __idx) const;
+    uint64_t    __computeSize(const shape_type& __dims) const;
+    uint64_t    __compute_outer_size(const index_type __dim) const;
+    float       __frac(const_reference __scalar);
+    index_type  __lcm(const index_type __a, const index_type __b);
 };  // tensor class
 */
 
@@ -364,11 +368,14 @@ class tensor
         __strides_(std::move(__t.strides())),
         __device_(std::move(__t.device())) {}
 
-    tensor(const shape_type& __sh, std::initializer_list<value_type> init_list, Device __d = Device::CPU) :
+    tensor(const shape_type&                 __sh,
+           std::initializer_list<value_type> init_list,
+           Device                            __d = Device::CPU) :
         __shape_(__sh),
         __device_(__d) {
         index_type __s = this->__computeSize(__sh);
-        assert(init_list.size() == static_cast<size_t>(__s) && "Initializer list size must match tensor size");
+        assert(init_list.size() == static_cast<size_t>(__s)
+               && "Initializer list size must match tensor size");
         this->__data_ = data_t(init_list);
         this->__compute_strides();
     }
@@ -650,7 +657,8 @@ class tensor
         size_t __i = 0;
         for (; __i < this->__data_.size(); __i++)
         {
-            this->__data_[__i] = static_cast<value_type>(std::cos(static_cast<double>(this->__data_[__i])));
+            this->__data_[__i] =
+                static_cast<value_type>(std::cos(static_cast<double>(this->__data_[__i])));
         }
     }
 
@@ -660,7 +668,8 @@ class tensor
         size_t __i = 0;
         for (; __i < this->__data_.size(); __i++)
         {
-            this->__data_[__i] = static_cast<value_type>(std::cosh(static_cast<double>(this->__data_[__i])));
+            this->__data_[__i] =
+                static_cast<value_type>(std::cosh(static_cast<double>(this->__data_[__i])));
         }
     }
 
@@ -670,7 +679,8 @@ class tensor
         size_t __i = 0;
         for (; __i < this->__data_.size(); __i++)
         {
-            this->__data_[__i] = static_cast<value_type>(std::acosh(static_cast<double>(this->__data_[__i])));
+            this->__data_[__i] =
+                static_cast<value_type>(std::acosh(static_cast<double>(this->__data_[__i])));
         }
     }
 
@@ -678,37 +688,45 @@ class tensor
         this->__check_is_scalar_type("Cannot perform a sin on non-scalar data type");
 
         std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                       [](const_reference __v) { return static_cast<value_type>(std::sinh(static_cast<double>(__v))) });
+                       [](const_reference __v) {
+                           return static_cast<value_type>(std::sinh(static_cast<double>(__v)))
+                       });
     }
 
     void asinh_() {
         this->__check_is_scalar_type("Cannot perform asinh on non-scalar data type");
 
-        std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [](const_reference __v) {
-            return static_cast<value_type>(std::asinh(static_cast<double>(__v)))
-        });
+        std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+                       [](const_reference __v) {
+                           return static_cast<value_type>(std::asinh(static_cast<double>(__v)))
+                       });
     }
 
     void ceil_() {
         this->__check_is_scalar_type("Cannot get the ceiling of a non scalar value");
 
         std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                       [](const_reference __v) { return static_cast<value_type>(std::ceil(static_cast<double>(__v))) });
+                       [](const_reference __v) {
+                           return static_cast<value_type>(std::ceil(static_cast<double>(__v)))
+                       });
     }
 
     void floor_() {
         this->__check_is_scalar_type("Cannot get the floor of a non scalar value");
 
-        std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [](const_reference __v) {
-            return static_cast<value_type>(std::floor(static_cast<double>(__v)))
-        });
+        std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+                       [](const_reference __v) {
+                           return static_cast<value_type>(std::floor(static_cast<double>(__v)))
+                       });
     }
 
     void sin_() const {
         this->__check_is_scalar_type("Cannot perform a sin on non-scalar data type");
 
         std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                       [](const_reference __v) { return static_cast<value_type>(std::sin(static_cast<double>(__v))) });
+                       [](const_reference __v) {
+                           return static_cast<value_type>(std::sin(static_cast<double>(__v)))
+                       });
     }
 
     void relu_();
@@ -731,21 +749,24 @@ class tensor
     void pow_(const value_type __val) const {
         this->__check_is_integral_type("cannot get the power of a non integral value");
 
-        std::transform(
-            this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [&__val](const_reference __v) {
-                return static_cast<value_type>(std::pow(static_cast<double>(__v), static_cast<double>(__val)))
-            });
+        std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+                       [&__val](const_reference __v) {
+                           return static_cast<value_type>(
+                               std::pow(static_cast<double>(__v), static_cast<double>(__val)))
+                       });
     }
 
     void bitwise_left_shift_(const int __amount) {
-        this->__check_is_integral_type("Cannot perform a bitwise left shift on non-integral values");
+        this->__check_is_integral_type(
+            "Cannot perform a bitwise left shift on non-integral values");
 
         std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                        [&__amount](const_reference __v) { return __v <<= __amount; });
     }
 
     void bitwise_right_shift_(const int __amount) {
-        this->__check_is_integral_type("Cannot perform a bitwise right shift on non-integral values");
+        this->__check_is_integral_type(
+            "Cannot perform a bitwise right shift on non-integral values");
 
         std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                        [&__amount](const_reference __v) { return __v >>= amount; });
@@ -767,13 +788,15 @@ class tensor
 
     static tensor zeros(const shape_type& __sh) {
         __check_is_scalar_type("template type must be a scalar : tensor.zeros()");
-        data_t __d(std::accumulate(__sh.begin(), __sh.end(), 1, std::multiplies<index_type>()), value_type(0));
+        data_t __d(std::accumulate(__sh.begin(), __sh.end(), 1, std::multiplies<index_type>()),
+                   value_type(0));
         return __self(__d, __sh);
     }
 
     static tensor ones(const shape_type& __sh) {
         __check_is_scalar_type("template type must be a scalar : tensor.ones()");
-        data_t __d(std::accumulate(__sh.begin(), __sh.end(), 1, std::multiplies<index_type>()), value_type(1));
+        data_t __d(std::accumulate(__sh.begin(), __sh.end(), 1, std::multiplies<index_type>()),
+                   value_type(1));
         return __self(__d, __sh);
     }
 
@@ -784,7 +807,8 @@ class tensor
         }
 
         this->__data_ =
-            data_t(std::accumulate(__sh.begin(), __sh.end(), 1, std::multiplies<index_type>()), value_type(0));
+            data_t(std::accumulate(__sh.begin(), __sh.end(), 1, std::multiplies<index_type>()),
+                   value_type(0));
     }
 
     void ones_(const shape_type& __sh = {}) {
@@ -794,7 +818,8 @@ class tensor
         }
 
         this->__data_ =
-            data_t(std::accumulate(__sh.begin(), __sh.end(), 1, std::multiplies<index_type>()), value_type(0));
+            data_t(std::accumulate(__sh.begin(), __sh.end(), 1, std::multiplies<index_type>()),
+                   value_type(0));
     }
 
     tensor randomize(const shape_type& __sh, bool __bounded = false);
@@ -885,8 +910,10 @@ class tensor
         return 0ULL;
     }
 
-    float      __frac(const_reference __scalar) { return std::fmod(static_cast<float>(__scalar), 1.0f); }
-    index_type __lcm(const index_type __a, const index_type __b) { return (__a * __b) / std::gcd(__a, __b); }
+    float __frac(const_reference __scalar) { return std::fmod(static_cast<float>(__scalar), 1.0f); }
+    index_type __lcm(const index_type __a, const index_type __b) {
+        return (__a * __b) / std::gcd(__a, __b);
+    }
 };  // tensor class
 
 
@@ -896,7 +923,9 @@ tensor<_Tp> tensor<_Tp>::sinh() const {
     data_t __ret(this->__data_.size());
 
     std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(),
-                   [](const_reference __v) { return static_cast<value_type>(std::sinh(static_cast<double>(__v))); });
+                   [](const_reference __v) {
+                       return static_cast<value_type>(std::sinh(static_cast<double>(__v)));
+                   });
 
     return __self(__ret, this->__shape_);
 }
@@ -908,7 +937,9 @@ tensor<_Tp> tensor<_Tp>::sin() const {
     data_t __ret(this->__data_.size());
 
     std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(),
-                   [](const_reference __v) { return static_cast<value_type>(std::sin(static_cast<double>(__v))); });
+                   [](const_reference __v) {
+                       return static_cast<value_type>(std::sin(static_cast<double>(__v)));
+                   });
 
     return __self(__ret, this->__shape_);
 }
@@ -918,8 +949,9 @@ tensor<_Tp> tensor<_Tp>::frac() const {
     this->__check_is_scalar_type("Cannot get the fraction of a non-scalar type");
     data_t __ret(this->__data_.size());
 
-    std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(),
-                   [this](const_reference __v) { return static_cast<value_type>(this->__frac(__v)); });
+    std::transform(
+        this->__data_.begin(), this->__data_.end(), __ret.begin(),
+        [this](const_reference __v) { return static_cast<value_type>(this->__frac(__v)); });
 
     return __self(__ret, this->__shape_);
 }
@@ -931,7 +963,9 @@ tensor<_Tp> tensor<_Tp>::cos() const {
     data_t __ret(this->__data_.size());
 
     std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(),
-                   [](const_reference __v) { return static_cast<value_type>(std::cos(static_cast<double>(__v))); });
+                   [](const_reference __v) {
+                       return static_cast<value_type>(std::cos(static_cast<double>(__v)));
+                   });
 
     return __self(__ret, this->__shape_);
 }
@@ -943,7 +977,9 @@ tensor<_Tp> tensor<_Tp>::log() const {
     std::vector<value_type> __ret(this->__data_.size());
 
     std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(),
-                   [](const_reference __v) { return static_cast<value_type>(std::log(static_cast<double>(__v))); });
+                   [](const_reference __v) {
+                       return static_cast<value_type>(std::log(static_cast<double>(__v)));
+                   });
 
     return __self(__ret, this->__shape_);
 }
@@ -955,7 +991,9 @@ tensor<_Tp> tensor<_Tp>::asinh() const {
     data_t __ret(this->__data_.size());
 
     std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(),
-                   [](const_reference __v) { return static_cast<value_type>(std::asinh(static_cast<double>(__v))); });
+                   [](const_reference __v) {
+                       return static_cast<value_type>(std::asinh(static_cast<double>(__v)));
+                   });
 
     return __self(__ret, this->__shape_);
 }
@@ -967,7 +1005,9 @@ tensor<_Tp> tensor<_Tp>::cosh() const {
     data_t __ret(this->__data_.size());
 
     std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(),
-                   [](const_reference __v) { return static_cast<value_type>(std::cosh(static_cast<double>(__v))); });
+                   [](const_reference __v) {
+                       return static_cast<value_type>(std::cosh(static_cast<double>(__v)));
+                   });
 
     return __self(__ret, this->__shape_);
 }
@@ -978,8 +1018,9 @@ tensor<_Tp> tensor<_Tp>::sqrt() const {
     this->__check_is_scalar_type("Cannot get the square root of non scalar values");
     data_t __ret(this->__data_.size());
 
-    std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(),
-                   [](const auto& val) { return static_cast<value_type>(std::sqrt(static_cast<double>(val))); });
+    std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(), [](const auto& val) {
+        return static_cast<value_type>(std::sqrt(static_cast<double>(val)));
+    });
 
     return __self(__ret, this->__shape_);
 }
@@ -990,8 +1031,9 @@ tensor<_Tp> tensor<_Tp>::acosh() const {
     this->__check_is_scalar_type("Cannot perform a acosh on non-scalar data type");
     data_t __ret(this->__data_.size());
 
-    std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(),
-                   [](const auto& val) { return static_cast<value_type>(std::acosh(static_cast<double>(val))); });
+    std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(), [](const auto& val) {
+        return static_cast<value_type>(std::acosh(static_cast<double>(val)));
+    });
 
     return __self(__ret, this->__shape_);
 }
@@ -1002,8 +1044,9 @@ tensor<_Tp> tensor<_Tp>::log10() const {
     this->__check_is_integral_type("Given data type must be an integral");
     data_t __ret(this->__data_.size());
 
-    std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(),
-                   [](const auto& val) { return static_cast<value_type>(std::acosh(static_cast<double>(val))); });
+    std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(), [](const auto& val) {
+        return static_cast<value_type>(std::acosh(static_cast<double>(val)));
+    });
 
     return __self(__ret, this->__shape_);
 }
@@ -1015,7 +1058,9 @@ tensor<_Tp> tensor<_Tp>::log2() const {
     std::vector<value_type> __ret(this->__data_.size());
 
     std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(),
-                   [](const_reference __v) { return static_cast<value_type>(std::log2(static_cast<double>(__v))); });
+                   [](const_reference __v) {
+                       return static_cast<value_type>(std::log2(static_cast<double>(__v)));
+                   });
 
     return __self(__ret, this->__shape_);
 }
@@ -1027,7 +1072,9 @@ tensor<_Tp> tensor<_Tp>::exp() const {
     std::vector<value_type> __ret(this->__data_.size());
 
     std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(),
-                   [](const_reference __v) { return static_cast<value_type>(std::exp(static_cast<double>(__v))); });
+                   [](const_reference __v) {
+                       return static_cast<value_type>(std::exp(static_cast<double>(__v)));
+                   });
 
     return __self(__ret, this->__shape_);
 }
@@ -1054,7 +1101,9 @@ tensor<_Tp> tensor<_Tp>::sinh() const {
     data_t __ret(this->__data_.size());
 
     std::transform(this->__data_.begin(), this->__data_.end(), this->__ret.begin(),
-                   [](const_reference __v) { return static_cast<value_type>(std::sinh(static_cast<double>(__v))); });
+                   [](const_reference __v) {
+                       return static_cast<value_type>(std::sinh(static_cast<double>(__v)));
+                   });
 
     return __self(__ret, this->__shape_);
 }
@@ -1064,7 +1113,8 @@ template<class _Tp>
 void tensor<_Tp>::logical_or_(const value_type __val) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
     {
-        throw std::runtime_error("Cannot get the element wise not of non-integral and non-boolean value");
+        throw std::runtime_error(
+            "Cannot get the element wise not of non-integral and non-boolean value");
     }
 
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
@@ -1076,7 +1126,8 @@ template<class _Tp>
 void tensor<_Tp>::logical_xor_(const value_type __val) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
     {
-        throw std::runtime_error("Cannot get the element wise xor of non-integral and non-boolean value");
+        throw std::runtime_error(
+            "Cannot get the element wise xor of non-integral and non-boolean value");
     }
 
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
@@ -1088,7 +1139,8 @@ template<class _Tp>
 void tensor<_Tp>::logical_and_(const value_type __val) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
     {
-        throw std::runtime_error("Cannot get the element wise and of non-integral and non-boolean value");
+        throw std::runtime_error(
+            "Cannot get the element wise and of non-integral and non-boolean value");
     }
 
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
@@ -1100,7 +1152,8 @@ template<class _Tp>
 void tensor<_Tp>::bitwise_or_(const value_type __val) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
     {
-        throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
+        throw std::runtime_error(
+            "Cannot perform a bitwise OR on non-integral or non-boolean values");
     }
 
     size_t __i = 0;
@@ -1115,7 +1168,8 @@ template<class _Tp>
 void tensor<_Tp>::bitwise_xor_(const value_type __val) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
     {
-        throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
+        throw std::runtime_error(
+            "Cannot perform a bitwise XOR on non-integral or non-boolean values");
     }
 
     size_t __i = 0;
@@ -1145,7 +1199,8 @@ template<class _Tp>
 void tensor<_Tp>::bitwise_and_(const value_type __val) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
     {
-        throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
+        throw std::runtime_error(
+            "Cannot perform a bitwise AND on non-integral or non-boolean values");
     }
 
     size_t __i = 0;
@@ -1253,8 +1308,10 @@ tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
 
     data_t __d(this->__data_.size());
 
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), __d.begin(),
-                   [](const_reference __v, const_reference __w) { return static_cast<value_type>(__v + __w); });
+    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
+                   __d.begin(), [](const_reference __v, const_reference __w) {
+                       return static_cast<value_type>(__v + __w);
+                   });
 
     return __self(__d, this->__shape_);
 }
@@ -1270,8 +1327,10 @@ tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
 
     data_t __d(this->__data_.size());
 
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), __d.begin(),
-                   [](const_reference __v, const_reference __w) { return static_cast<value_type>(__v - __w); });
+    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
+                   __d.begin(), [](const_reference __v, const_reference __w) {
+                       return static_cast<value_type>(__v - __w);
+                   });
 
     return __self(__d, this->__shape_);
 }
@@ -1281,8 +1340,9 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator+(const value_type __scalar) const {
     this->__check_is_arithmetic_type("template class must be an arithmetic type");
 
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [&__scalar](const_reference __v) { return static_cast<value_type>(__v + __scalar); });
+    std::transform(
+        this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+        [&__scalar](const_reference __v) { return static_cast<value_type>(__v + __scalar); });
 
     return __self(*this);
 }
@@ -1292,8 +1352,9 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator-(const value_type __scalar) const {
     this->__check_is_arithmetic_type("template class must be an arithmetic type");
 
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [&__scalar](const_reference __v) { return static_cast<value_type>(__v - __scalar); });
+    std::transform(
+        this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+        [&__scalar](const_reference __v) { return static_cast<value_type>(__v - __scalar); });
 
     return __self(*this);
 }
@@ -1304,8 +1365,10 @@ tensor<_Tp> tensor<_Tp>::operator+=(const tensor& __other) const {
     this->__check_is_arithmetic_type("template class must be an arithmetic type");
     assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
 
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), this->__data_.begin(),
-                   [](const_reference __v, const_reference __w) { return static_cast<value_type>(__v + __w); });
+    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
+                   this->__data_.begin(), [](const_reference __v, const_reference __w) {
+                       return static_cast<value_type>(__v + __w);
+                   });
 
     return *this;
 }
@@ -1315,8 +1378,9 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator+=(const_reference __scalar) const {
     this->__check_is_arithmetic_type("template class must be an arithmetic type");
 
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [&__scalar](const_reference __v) { return static_cast<value_type>(__v + __scalar); });
+    std::transform(
+        this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+        [&__scalar](const_reference __v) { return static_cast<value_type>(__v + __scalar); });
     return *this;
 }
 
@@ -1326,8 +1390,10 @@ tensor<_Tp> tensor<_Tp>::operator-=(const tensor& __other) const {
     this->__check_is_arithmetic_type("template class must be an arithmetic type");
     assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
 
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), this->__data_.begin(),
-                   [](const_reference __v, const_reference __w) { return static_cast<value_type>(__v - __w); });
+    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
+                   this->__data_.begin(), [](const_reference __v, const_reference __w) {
+                       return static_cast<value_type>(__v - __w);
+                   });
     return *this;
 }
 
@@ -1337,8 +1403,10 @@ tensor<_Tp> tensor<_Tp>::operator*=(const tensor& __other) const {
     this->__check_is_arithmetic_type("template class must be an arithmetic type");
     assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
 
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), this->__data_.begin(),
-                   [](const_reference __v, const_reference __w) { return static_cast<value_type>(__v * __w); });
+    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
+                   this->__data_.begin(), [](const_reference __v, const_reference __w) {
+                       return static_cast<value_type>(__v * __w);
+                   });
     return *this;
 }
 
@@ -1356,8 +1424,10 @@ tensor<_Tp> tensor<_Tp>::operator/=(const tensor& __other) const {
     this->__check_is_arithmetic_type("template class must be an arithmetic type");
     assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
 
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), this->__data_.begin(),
-                   [](const_reference __v, const_reference __w) { return static_cast<value_type>(__v / __w); });
+    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
+                   this->__data_.begin(), [](const_reference __v, const_reference __w) {
+                       return static_cast<value_type>(__v / __w);
+                   });
     return *this;
 }
 
@@ -1376,7 +1446,9 @@ tensor<_Tp> tensor<_Tp>::operator-=(const_reference __scalar) const {
     this->__check_is_arithmetic_type("template class must be an arithmetic type");
 
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [](const_reference __v, const_reference __w) { return static_cast<value_type>(__v - __w); });
+                   [](const_reference __v, const_reference __w) {
+                       return static_cast<value_type>(__v - __w);
+                   });
     return *this;
 }
 
@@ -1418,9 +1490,9 @@ void tensor<_Tp>::randomize_(const shape_type& __sh, bool __bounded) {
     const __m256 scale = _mm256_set1_ps(__bounded ? static_cast<float>(RAND_MAX) : 1.0f);
     for (; __i + 8 <= static_cast<index_type>(__s); __i += 8)
     {
-        __m256 random_values =
-            _mm256_setr_ps(bounded_dist(gen), bounded_dist(gen), bounded_dist(gen), bounded_dist(gen),
-                           bounded_dist(gen), bounded_dist(gen), bounded_dist(gen), bounded_dist(gen));
+        __m256 random_values = _mm256_setr_ps(
+            bounded_dist(gen), bounded_dist(gen), bounded_dist(gen), bounded_dist(gen),
+            bounded_dist(gen), bounded_dist(gen), bounded_dist(gen), bounded_dist(gen));
         if (!__bounded)
         {
             random_values = _mm256_div_ps(random_values, scale);
@@ -1431,7 +1503,8 @@ void tensor<_Tp>::randomize_(const shape_type& __sh, bool __bounded) {
     const __m128 scale = _mm_set1_ps(__bounded ? static_cast<float>(RAND_MAX) : 1.0f);
     for (; __i + 4 <= static_cast<index_type>(__s); __i += 4)
     {
-        __m128 random_values = _mm_setr_ps(bounded_dist(gen), bounded_dist(gen), bounded_dist(gen), bounded_dist(gen));
+        __m128 random_values =
+            _mm_setr_ps(bounded_dist(gen), bounded_dist(gen), bounded_dist(gen), bounded_dist(gen));
         if (!__bounded)
         {
             random_values = _mm_div_ps(random_values, scale);
@@ -1500,11 +1573,12 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
                 index_type __k = 0;
                 for (; __k + 8 <= this->__shape_[__dim]; __k += 8)
                 {
-                    __m256 __data_vec =
-                        _mm256_loadu_ps(&this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j]);
+                    __m256 __data_vec = _mm256_loadu_ps(
+                        &this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j]);
                     __m256 __mask   = _mm256_cmp_ps(__data_vec, __max_vec, _CMP_GT_OQ);
                     __max_vec       = _mm256_blendv_ps(__max_vec, __data_vec, __mask);
-                    __index_vec     = _mm256_blendv_epi8(__index_vec, __current_index, _mm256_castps_si256(__mask));
+                    __index_vec     = _mm256_blendv_epi8(__index_vec, __current_index,
+                                                         _mm256_castps_si256(__mask));
                     __current_index = _mm256_add_epi32(__current_index, __increment);
                 }
 
@@ -1526,7 +1600,8 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
 
                 for (; __k < this->__shape_[__dim]; __k++)
                 {
-                    float __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+                    float __v =
+                        this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
                     if (__v > __max_value)
                     {
                         __max_value = __v;
@@ -1554,8 +1629,8 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
                 index_type __k = 0;
                 for (; __k + 4 <= this->__shape_[__dim]; __k += 4)
                 {
-                    float32x4_t data_vec =
-                        vld1q_f32(&this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j]);
+                    float32x4_t data_vec = vld1q_f32(
+                        &this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j]);
                     uint32x4_t mask = vcgtq_f32(data_vec, max_vec);
                     max_vec         = vbslq_f32(mask, data_vec, max_vec);
                     index_vec       = vbslq_u32(mask, current_index, index_vec);
@@ -1580,7 +1655,8 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
 
                 for (; __k < this->__shape_[__dim]; __k++)
                 {
-                    float __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+                    float __v =
+                        this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
                     if (__v > max_value)
                     {
                         max_value = __v;
@@ -1601,12 +1677,14 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
             for (; __j < __inner_size; __j++)
             {
                 index_type __max_index = 0;
-                value_type __max_value = this->__data_[__i * this->__shape_[__dim] * __inner_size + __j];
+                value_type __max_value =
+                    this->__data_[__i * this->__shape_[__dim] * __inner_size + __j];
 
                 index_type __k = 1;
                 for (; __k < this->__shape_[__dim]; __k++)
                 {
-                    value_type __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+                    value_type __v =
+                        this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
                     if (__v > __max_value)
                     {
                         __max_value = __v;
@@ -1660,14 +1738,15 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type __dim) const {
                 index_type __k     = 0;
                 for (; __k + 8 <= this->__shape_[__dim]; __k += 8)
                 {
-                    __m256 data_vec =
-                        _mm256_loadu_ps(&this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j]);
+                    __m256 data_vec = _mm256_loadu_ps(
+                        &this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j]);
                     max_vec = _mm256_max_ps(max_vec, data_vec);
                 }
                 float max_value = _mm256_reduce_max_ps(max_vec);
                 for (; __k < this->__shape_[__dim]; __k++)
                 {
-                    float __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+                    float __v =
+                        this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
                     max_value = std::max(max_value, __v);
                 }
                 __ret.__data_[__i * __inner_size + __j] = max_value;
@@ -1686,14 +1765,15 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type __dim) const {
                 index_type  __k     = 0;
                 for (; __k + 4 <= this->__shape_[__dim]; __k += 4)
                 {
-                    float32x4_t data_vec =
-                        vld1q_f32(&this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j]);
+                    float32x4_t data_vec = vld1q_f32(
+                        &this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j]);
                     max_vec = vmaxq_f32(max_vec, data_vec);
                 }
                 float max_value = vmaxvq_f32(max_vec);
                 for (; __k < this->__shape_[__dim]; __k++)
                 {
-                    float __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+                    float __v =
+                        this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
                     max_value = std::max(max_value, __v);
                 }
                 __ret.__data_[__i * __inner_size + __j] = max_value;
@@ -1708,12 +1788,14 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type __dim) const {
             index_type __j = 0;
             for (; __j < __inner_size; __j++)
             {
-                value_type __max_value = this->__data_[__i * this->__shape_[__dim] * __inner_size + __j];
+                value_type __max_value =
+                    this->__data_[__i * this->__shape_[__dim] * __inner_size + __j];
 
                 index_type __k = 1;
                 for (; __k < this->__shape_[__dim]; __k++)
                 {
-                    value_type __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+                    value_type __v =
+                        this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
                     if (__v > __max_value)
                     {
                         __max_value = __v;
@@ -1948,13 +2030,15 @@ tensor<_Tp> tensor<_Tp>::slice(index_type                __dim,
         cudaMalloc(&d_input, this->__data_.size() * sizeof(_Tp));
         cudaMalloc(&d_output, __ret.__data_.size() * sizeof(_Tp));
 
-        cudaMemcpy(d_input, this->__data_.data(), this->__data_.size() * sizeof(_Tp), cudaMemcpyHostToDevice);
+        cudaMemcpy(d_input, this->__data_.data(), this->__data_.size() * sizeof(_Tp),
+                   cudaMemcpyHostToDevice);
 
         dim3 block(256);
         dim3 grid(((__slice_size + block.x - 1) / block.x));
         slice_kernel<<<grid, block>>>(d_input, d_output, __start_i, __end_i, __step, __slice_size);
 
-        cudaMemcpy(__ret.__data_.data(), d_output, __ret.__data_.size() * sizeof(_Tp), cudaMemcpyDeviceToHost);
+        cudaMemcpy(__ret.__data_.data(), d_output, __ret.__data_.size() * sizeof(_Tp),
+                   cudaMemcpyDeviceToHost);
 
         cudaFree(d_input);
         cudaFree(d_output);
@@ -1967,9 +2051,10 @@ tensor<_Tp> tensor<_Tp>::slice(index_type                __dim,
         if constexpr (std::is_same_v<_Tp, float> && __step == 1)
         {
             const int  vector_size = 4;
-            index_type vector_end  = __start_i + ((__end_i - __start_i) / vector_size) * vector_size;
+            index_type vector_end = __start_i + ((__end_i - __start_i) / vector_size) * vector_size;
 
-            for (index_type i = __start_i, j = 0; i < vector_end; i += vector_size, j += vector_size)
+            for (index_type i = __start_i, j = 0; i < vector_end;
+                 i += vector_size, j += vector_size)
             {
                 float32x4_t vec = vld1q_f32(&(this->__data_[i]));
                 vst1q_f32(&(__ret.__data_[j]), vec);
@@ -2013,7 +2098,8 @@ tensor<_Tp> tensor<_Tp>::fmod(const tensor<_Tp>& __other) const {
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
-        __ret[__i] = static_cast<value_type>(std::fmod(double(this->__data_[__i]), double(__other[__i])));
+        __ret[__i] =
+            static_cast<value_type>(std::fmod(double(this->__data_[__i]), double(__other[__i])));
     }
 
     return __self(__ret, this->__shape_);
@@ -2031,7 +2117,8 @@ void tensor<_Tp>::fmod_(const tensor<_Tp>& __other) {
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
-        this->__data_[__i] = static_cast<value_type>(std::fmax(double(this->__data_[__i]), double(__other[__i])));
+        this->__data_[__i] =
+            static_cast<value_type>(std::fmax(double(this->__data_[__i]), double(__other[__i])));
     }
 }
 
@@ -2049,12 +2136,14 @@ tensor<_Tp> tensor<_Tp>::fmax(const tensor& __other) const {
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
-        __ret[__i] = static_cast<value_type>(std::fmax(double(this->__data_[__i]), double(__other[__i])));
+        __ret[__i] =
+            static_cast<value_type>(std::fmax(double(this->__data_[__i]), double(__other[__i])));
     }
 
     std::transform(this->__data_.begin(), this->__data_.end(), __other.begin(), __ret.begin(),
                    [](const_reference __v, const_reference __w) {
-                       return static_cast<value_type>(std::fmax(static_cast<double>(__v), static_cast<double>(__w)));
+                       return static_cast<value_type>(
+                           std::fmax(static_cast<double>(__v), static_cast<double>(__w)));
                    });
 
     return __self(__ret, this->__shape_);
@@ -2148,12 +2237,16 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
         {
             for (int k = 0; k < this->__shape_[1]; k += blockSize)
             {
-                for (int ii = i; ii < std::min(static_cast<index_type>(i + blockSize), __ret_sh[0]); ++ii)
+                for (int ii = i; ii < std::min(static_cast<index_type>(i + blockSize), __ret_sh[0]);
+                     ++ii)
                 {
-                    for (int jj = j; jj < std::min(static_cast<index_type>(j + blockSize), __ret_sh[1]); ++jj)
+                    for (int jj = j;
+                         jj < std::min(static_cast<index_type>(j + blockSize), __ret_sh[1]); ++jj)
                     {
                         value_type __sum = 0;
-                        for (int kk = k; kk < std::min(static_cast<index_type>(k + blockSize), this->__shape_[1]); ++kk)
+                        for (int kk = k; kk < std::min(static_cast<index_type>(k + blockSize),
+                                                       this->__shape_[1]);
+                             ++kk)
                         {
                             __sum += this->at({ii, kk}) * __other.at({kk, jj});
                         }
@@ -2173,18 +2266,24 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
         {
             for (int k = 0; k < this->__shape_[1]; k += neonBlockSize)
             {
-                for (int ii = i; ii < std::min(static_cast<index_type>(i + neonBlockSize), __ret_sh[0]); ++ii)
+                for (int ii = i;
+                     ii < std::min(static_cast<index_type>(i + neonBlockSize), __ret_sh[0]); ++ii)
                 {
-                    for (int jj = j; jj < std::min(static_cast<index_type>(j + neonBlockSize), __ret_sh[1]); ++jj)
+                    for (int jj = j;
+                         jj < std::min(static_cast<index_type>(j + neonBlockSize), __ret_sh[1]);
+                         ++jj)
                     {
                         float32x4_t sum_vec = vdupq_n_f32(0);
 
-                        for (int kk = k; kk < std::min(static_cast<index_type>(k + neonBlockSize), this->__shape_[1]);
+                        for (int kk = k; kk < std::min(static_cast<index_type>(k + neonBlockSize),
+                                                       this->__shape_[1]);
                              kk += 4)
                         {
-                            float32x4_t a_vec = vld1q_f32(&this->__data_[ii * this->__shape_[1] + kk]);
-                            float32x4_t b_vec = vld1q_f32(&__other.__data_[kk * __other.shape()[1] + jj]);
-                            sum_vec           = vmlaq_f32(sum_vec, a_vec, b_vec);
+                            float32x4_t a_vec =
+                                vld1q_f32(&this->__data_[ii * this->__shape_[1] + kk]);
+                            float32x4_t b_vec =
+                                vld1q_f32(&__other.__data_[kk * __other.shape()[1] + jj]);
+                            sum_vec = vmlaq_f32(sum_vec, a_vec, b_vec);
                         }
 
                         float32x2_t sum_low  = vget_low_f32(sum_vec);
@@ -2209,11 +2308,13 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
     cudaMalloc(&d_b, __other.__data_.size() * sizeof(_Tp));
     cudaMalloc(&d_c, __ret_d.size() * sizeof(_Tp));
 
-    cudaMemcpy(d_a, this->__data_.data(), this->__data_.size() * sizeof(_Tp), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_b, __other.__data_.data(), __other.__data_.size() * sizeof(_Tp), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_a, this->__data_.data(), this->__data_.size() * sizeof(_Tp),
+               cudaMemcpyHostToDevice);
+    cudaMemcpy(d_b, __other.__data_.data(), __other.__data_.size() * sizeof(_Tp),
+               cudaMemcpyHostToDevice);
 
-    matmul_kernel<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_c, this->__shape_[0], this->__shape_[1],
-                                                      __other.shape()[1]);
+    matmul_kernel<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_c, this->__shape_[0],
+                                                      this->__shape_[1], __other.shape()[1]);
 
     cudaMemcpy(__ret_d.data(), d_c, __ret_d.size() * sizeof(_Tp), cudaMemcpyDeviceToHost);
 
@@ -2430,8 +2531,8 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
         if (this->__is_cuda_tensor && __other.__is_cuda_tensor)
         {
             thrust::device_vector<value_type> d_result(1);
-            thrust::transform(thrust::device, __this_data, __this_data + __size, __other_data, d_result.begin(),
-                              thrust::multiplies<value_type>());
+            thrust::transform(thrust::device, __this_data, __this_data + __size, __other_data,
+                              d_result.begin(), thrust::multiplies<value_type>());
             __ret = thrust::reduce(d_result.begin(), d_result.end());
         }
         else
@@ -2473,7 +2574,8 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
             else
 #endif
             {
-                __ret = std::inner_product(__this_data, __this_data + __size, __other_data, value_type(0));
+                __ret = std::inner_product(__this_data, __this_data + __size, __other_data,
+                                           value_type(0));
             }
         }
 
@@ -2586,7 +2688,8 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
         dim3 gridDim((cols + blockDim.x - 1) / blockDim.x, (rows + blockDim.y - 1) / blockDim.y);
 
         transpose_kernel<<<gridDim, blockDim>>>(thrust::raw_pointer_cast(this->__data_.data()),
-                                                thrust::raw_pointer_cast(__ret.__data_.data()), rows, cols);
+                                                thrust::raw_pointer_cast(__ret.__data_.data()),
+                                                rows, cols);
         cudaDeviceSynchronize();
         return __ret;
     }
@@ -2658,7 +2761,8 @@ __global__ void transpose_kernel(_Tp* input, _Tp* output, int rows, int cols) {
 
 
 template<class _Tp>
-tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argsort(index_type __d, bool __ascending) const {
+tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argsort(index_type __d,
+                                                              bool       __ascending) const {
     index_type __adjusted = (__d < 0LL) ? __d + this->__data_.size() : __d;
 
     if (__adjusted != 0LL)
@@ -2671,7 +2775,8 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argsort(index_type __d, bo
     std::iota(__indices.begin(), __indices.end(), 0);
 
     std::sort(__indices.begin(), __indices.end(), [&](index_type __a, index_type __b) {
-        return __ascending ? this->__data_[__a] < this->__data_[__b] : this->__data_[__a] > this->__data_[__b];
+        return __ascending ? this->__data_[__a] < this->__data_[__b]
+                           : this->__data_[__a] > this->__data_[__b];
     });
 
     return tensor<index_type>(__indices);
@@ -2700,7 +2805,8 @@ template<class _Tp>
 void tensor<_Tp>::bitwise_and_(const tensor& __other) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
     {
-        throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
+        throw std::runtime_error(
+            "Cannot perform a bitwise AND on non-integral or non-boolean values");
     }
 
     assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
@@ -2736,7 +2842,8 @@ template<class _Tp>
 void tensor<_Tp>::bitwise_or_(const tensor& __other) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
     {
-        throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
+        throw std::runtime_error(
+            "Cannot perform a bitwise OR on non-integral or non-boolean values");
     }
 
     assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
@@ -2772,7 +2879,8 @@ template<class _Tp>
 void tensor<_Tp>::bitwise_xor_(const tensor& __other) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
     {
-        throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
+        throw std::runtime_error(
+            "Cannot perform a bitwise XOR on non-integral or non-boolean values");
     }
 
     assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
@@ -2850,7 +2958,8 @@ template<class _Tp>
 void tensor<_Tp>::logical_or_(const tensor<_Tp>& __other) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
     {
-        throw std::runtime_error("Cannot get the element wise not of non-integral and non-boolean value");
+        throw std::runtime_error(
+            "Cannot get the element wise not of non-integral and non-boolean value");
     }
 
     assert(this->__shape_ == __other.shape());
@@ -2886,7 +2995,8 @@ template<class _Tp>
 void tensor<_Tp>::logical_xor_(const tensor<_Tp>& __other) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
     {
-        throw std::runtime_error("Cannot get the element wise xor of non-integral and non-boolean value");
+        throw std::runtime_error(
+            "Cannot get the element wise xor of non-integral and non-boolean value");
     }
 
     assert(this->__shape_ == __other.shape());
@@ -2922,7 +3032,8 @@ template<class _Tp>
 void tensor<_Tp>::logical_and_(const tensor<_Tp>& __other) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
     {
-        throw std::runtime_error("Cannot get the element-wise and of non-integral and non-boolean value");
+        throw std::runtime_error(
+            "Cannot get the element-wise and of non-integral and non-boolean value");
     }
 
     assert(this->__shape_ == __other.shape());
@@ -3001,10 +3112,11 @@ void tensor<_Tp>::pow_(const tensor& __other) const {
         float32x4_t base_vec = vld1q_f32(reinterpret_cast<const float*>(&this->__data_[__i]));
         float32x4_t exp_vec  = vld1q_f32(reinterpret_cast<const float*>(&__other[__i]));
 
-        float32x4_t result_vec = {std::pow(vgetq_lane_f32(base_vec, 0), vgetq_lane_f32(exp_vec, 0)),
-                                  std::pow(vgetq_lane_f32(base_vec, 1), vgetq_lane_f32(exp_vec, 1)),
-                                  std::pow(vgetq_lane_f32(base_vec, 2), vgetq_lane_f32(exp_vec, 2)),
-                                  std::pow(vgetq_lane_f32(base_vec, 3), vgetq_lane_f32(exp_vec, 3))};
+        float32x4_t result_vec = {
+            std::pow(vgetq_lane_f32(base_vec, 0), vgetq_lane_f32(exp_vec, 0)),
+            std::pow(vgetq_lane_f32(base_vec, 1), vgetq_lane_f32(exp_vec, 1)),
+            std::pow(vgetq_lane_f32(base_vec, 2), vgetq_lane_f32(exp_vec, 2)),
+            std::pow(vgetq_lane_f32(base_vec, 3), vgetq_lane_f32(exp_vec, 3))};
 
         vst1q_f32(&this->__data_[__i], result_vec);
     }
@@ -3018,7 +3130,8 @@ void tensor<_Tp>::pow_(const tensor& __other) const {
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
-        this->__data_[__i] = static_cast<value_type>(std::pow(double(this->__data_[__i]), double(__other[__i])));
+        this->__data_[__i] =
+            static_cast<value_type>(std::pow(double(this->__data_[__i]), double(__other[__i])));
     }
 #endif
 }
@@ -3364,8 +3477,9 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
     shape_type __ret_sh = this->__shape_;
     __ret_sh[__axis]    = 1LL;
 
-    index_type __ret_size = std::accumulate(__ret_sh.begin(), __ret_sh.end(), 1, std::multiplies<index_type>());
-    data_t     __ret_data(__ret_size, value_type(0.0f));
+    index_type __ret_size =
+        std::accumulate(__ret_sh.begin(), __ret_sh.end(), 1, std::multiplies<index_type>());
+    data_t __ret_data(__ret_size, value_type(0.0f));
 
 #if defined(__ARM_NEON)
     if constexpr (std::is_same_v<_Tp, float>)
