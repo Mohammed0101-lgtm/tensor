@@ -2238,15 +2238,15 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
             for (int k = 0; k < this->__shape_[1]; k += blockSize)
             {
                 for (int ii = i; ii < std::min(static_cast<index_type>(i + blockSize), __ret_sh[0]);
-                     ++ii)
+                     ii++)
                 {
                     for (int jj = j;
-                         jj < std::min(static_cast<index_type>(j + blockSize), __ret_sh[1]); ++jj)
+                         jj < std::min(static_cast<index_type>(j + blockSize), __ret_sh[1]); jj++)
                     {
                         value_type __sum = 0;
                         for (int kk = k; kk < std::min(static_cast<index_type>(k + blockSize),
                                                        this->__shape_[1]);
-                             ++kk)
+                             kk++)
                         {
                             __sum += this->at({ii, kk}) * __other.at({kk, jj});
                         }
@@ -2267,11 +2267,11 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
             for (int k = 0; k < this->__shape_[1]; k += neonBlockSize)
             {
                 for (int ii = i;
-                     ii < std::min(static_cast<index_type>(i + neonBlockSize), __ret_sh[0]); ++ii)
+                     ii < std::min(static_cast<index_type>(i + neonBlockSize), __ret_sh[0]); ii++)
                 {
                     for (int jj = j;
                          jj < std::min(static_cast<index_type>(j + neonBlockSize), __ret_sh[1]);
-                         ++jj)
+                         jj++)
                     {
                         float32x4_t sum_vec = vdupq_n_f32(0);
 
@@ -2336,7 +2336,7 @@ __global__ void matmul_kernel(_Tp* a, _Tp* b, _Tp* c, int m, int n, int k) {
     if (row < m && col < k)
     {
         _Tp sum = 0;
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < n; i++)
         {
             sum += a[row * n + i] * b[i * k + col];
         }
@@ -2549,7 +2549,7 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
                     sum      = _mm256_add_ps(sum, _mm256_mul_ps(a, b));
                 }
                 __ret = _mm256_reduce_add_ps(sum);
-                for (size_t i = __size - (__size % 8); i < __size; ++i)
+                for (size_t i = __size - (__size % 8); i < __size; i++)
                 {
                     __ret += __this_data[i] * __other_data[i];
                 }
@@ -2566,7 +2566,7 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
                     sum      = _mm_add_ps(sum, _mm_mul_ps(a, b));
                 }
                 __ret = _mm_reduce_add_ps(sum);
-                for (size_t i = __size - (__size % 4); i < __size; ++i)
+                for (size_t i = __size - (__size % 4); i < __size; i++)
                 {
                     __ret += __this_data[i] * __other_data[i];
                 }
@@ -2705,23 +2705,23 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
                 if (i + 4 <= rows && j + 4 <= cols)
                 {
                     float32x4x4_t input;
-                    for (int k = 0; k < 4; ++k)
+                    for (int k = 0; k < 4; k++)
                     {
                         input.val[k] = vld1q_f32(&this->__data_[(i + k) * cols + j]);
                     }
 
                     float32x4x4_t output = vld4q_f32(reinterpret_cast<const float*>(&input));
 
-                    for (int k = 0; k < 4; ++k)
+                    for (int k = 0; k < 4; k++)
                     {
                         vst1q_f32(&__ret.__data_[(j + k) * rows + i], output.val[k]);
                     }
                 }
                 else
                 {
-                    for (index_type ii = i; ii < std::min(i + 4, rows); ++ii)
+                    for (index_type ii = i; ii < std::min(i + 4, rows); ii++)
                     {
-                        for (index_type jj = j; jj < std::min(j + 4, cols); ++jj)
+                        for (index_type jj = j; jj < std::min(j + 4, cols); jj++)
                         {
                             __ret.at({jj, ii}) = this->at({ii, jj});
                         }
@@ -3488,9 +3488,9 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
         const index_type __outer_size = this->__compute_outer_size(__axis);
         const index_type __inner_size = this->size(0) / (__outer_size * __axis_size);
 
-        for (index_type __outer = 0; __outer < __outer_size; ++__outer)
+        for (index_type __outer = 0; __outer < __outer_size; __outer++)
         {
-            for (index_type __inner = 0; __inner < __inner_size; ++__inner)
+            for (index_type __inner = 0; __inner < __inner_size; __inner++)
             {
                 float32x4_t sum_vec = vdupq_n_f32(0.0f);
                 index_type  __i     = __outer * __axis_size * __inner_size + __inner;
@@ -3505,7 +3505,7 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
 
                 float sum = vaddvq_f32(sum_vec);
 
-                for (; __j < __axis_size; ++__j)
+                for (; __j < __axis_size; __j++)
                 {
                     sum += this->__data_[__i];
                     __i += __inner_size;
