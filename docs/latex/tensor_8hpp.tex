@@ -1,0 +1,49 @@
+\doxysection{tensor.\+hpp File Reference}
+\hypertarget{tensor_8hpp}{}\label{tensor_8hpp}\index{tensor.hpp@{tensor.hpp}}
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$stdexcept$>$}\newline
+{\ttfamily \#include $<$random$>$}\newline
+{\ttfamily \#include $<$cassert$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$algorithm$>$}\newline
+{\ttfamily \#include $<$cstdint$>$}\newline
+{\ttfamily \#include $<$cmath$>$}\newline
+{\ttfamily \#include $<$array$>$}\newline
+{\ttfamily \#include $<$arm\+\_\+neon.\+h$>$}\newline
+{\ttfamily \#include $<$type\+\_\+traits$>$}\newline
+{\ttfamily \#include $<$immintrin.\+h$>$}\newline
+{\ttfamily \#include $<$omp.\+h$>$}\newline
+{\ttfamily \#include $<$\+\_\+\+\_\+iterator/iterator\+\_\+traits.\+h$>$}\newline
+{\ttfamily \#include $<$\+\_\+\+\_\+iterator/reverse\+\_\+iterator.\+h$>$}\newline
+{\ttfamily \#include $<$\+\_\+\+\_\+iterator/wrap\+\_\+iter.\+h$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classtensor}{tensor$<$ \+\_\+\+Tp $>$}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum class \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}} \{ \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{CPU}}
+, \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8aa33b7755e5f9b504d2d038eaca4ff28d}{CUDA}}
+ \}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}\index{tensor.hpp@{tensor.hpp}!Device@{Device}}
+\index{Device@{Device}!tensor.hpp@{tensor.hpp}}
+\doxysubsubsection{\texorpdfstring{Device}{Device}}
+{\footnotesize\ttfamily \label{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8} 
+enum class \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CPU@{CPU}!tensor.hpp@{tensor.hpp}}\index{tensor.hpp@{tensor.hpp}!CPU@{CPU}}}\Hypertarget{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}\label{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8} 
+CPU&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CUDA@{CUDA}!tensor.hpp@{tensor.hpp}}\index{tensor.hpp@{tensor.hpp}!CUDA@{CUDA}}}\Hypertarget{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8aa33b7755e5f9b504d2d038eaca4ff28d}\label{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8} 
+CUDA&\\
+\hline
+
+\end{DoxyEnumFields}

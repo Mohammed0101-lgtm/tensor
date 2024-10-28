@@ -1,0 +1,2066 @@
+\doxysection{synopsis.\+h}
+\hypertarget{synopsis_8h_source}{}\label{synopsis_8h_source}\mbox{\hyperlink{synopsis_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <cassert>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <type\_traits>}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ \_Tp>}
+\DoxyCodeLine{00013\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classtensor}{tensor}}\ \{}
+\DoxyCodeLine{00014\ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00015\ \ \ \ \ std::vector<\_Tp>\ \ \ \ \ data\_;}
+\DoxyCodeLine{00016\ \ \ \ \ std::vector<int64\_t>\ shape\_;}
+\DoxyCodeLine{00017\ \ \ \ \ std::vector<int64\_t>\ strides\_;}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00020\ \ \ \ \ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \ \ \ \ \mbox{\hyperlink{classtensor_ad22a32030600f96df9fc5a7e2b0ab392}{tensor}}(\textcolor{keyword}{const}\ std::vector<int64\_t>\ \_\_sh,\ \textcolor{keyword}{const}\ \_Tp\ val)\ :}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ shape\_(\_\_sh)\ \{}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ int64\_t\ \_size\ =\ 1LL;}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ d\ :\ \_\_sh)}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \ \ \ \ \_size\ *=\ d;}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ this-\/>data\_\ =\ std::vector<\_Tp>(\_size,\ val);}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ compute\_strides();}
+\DoxyCodeLine{00032\ \ \ \ \ \}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \ \ \ \ \mbox{\hyperlink{classtensor_add431218c82f5859a13e30022cb2933d}{tensor}}(\textcolor{keyword}{const}\ std::vector<int64\_t>\ \_\_sh)\ :}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ shape\_(\_\_sh)\ \{}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ int64\_t\ \_size\ =\ 1;}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ dim\ :\ \_\_sh)}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \ \ \ \ \_size\ *=\ dim;}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ this-\/>data\_\ =\ std::vector<\_Tp>(\_size);}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ compute\_strides();}
+\DoxyCodeLine{00044\ \ \ \ \ \}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ \mbox{\hyperlink{classtensor_a5e09dbab50ebd24cc3d9cc35657c165d}{tensor}}(\textcolor{keyword}{const}\ std::vector<\_Tp>\ \_\_d,\ \textcolor{keyword}{const}\ std::vector<int64\_t>\ \_\_sh)\ :}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ data\_(\_\_d),}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ shape\_(\_\_sh)\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ compute\_strides();}
+\DoxyCodeLine{00050\ \ \ \ \ \}}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ \_Tp\&\ \mbox{\hyperlink{classtensor_a52d5b20bef2ffe824342736d731f1002}{begin}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ this-\/>data\_.begin();\ \}}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \ \ \_Tp\&\ \mbox{\hyperlink{classtensor_ad2b9af5d0aa22943a4332420b0cc91fc}{end}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ this-\/>data\_.end();\ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \ \ std::vector<\_Tp>\ \mbox{\hyperlink{classtensor_a4302a45c6c164b54316d6b869affca78}{storage}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ this-\/>data\_;\ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ std::vector<int64\_t>\ \mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ this-\/>shape\_;\ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \ \ std::vector<int64\_t>\ \mbox{\hyperlink{classtensor_a0c7bf412aa5a913b58b26dd0a1069077}{strides}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ this-\/>strides\_;\ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classtensor_a38f03e844bade0d29ac6268585764d99}{n\_dims}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ this-\/>shape\_.size();\ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \_Tp\&\ \mbox{\hyperlink{classtensor_ae08663d7fd46cc622f032ae7cac90c5a}{at}}(std::vector<int64\_t>\ \_idx)\ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_idx.empty())}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Passing\ an\ empty\ vector\ as\ indices\ for\ a\ tensor"{}});}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ this-\/>data\_[compute\_index(\_idx)];}
+\DoxyCodeLine{00070\ \ \ \ \ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keyword}{const}\ \_Tp\&\ \mbox{\hyperlink{classtensor_a65ee2c0f9c5bb4ecb9ee2aa0534f88c1}{at}}(\textcolor{keyword}{const}\ std::vector<int64\_t>\ \_idx)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_idx.empty())}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Passing\ an\ empty\ vector\ as\ indices\ for\ a\ tensor"{}});}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ this-\/>data\_[compute\_index(\_idx)];}
+\DoxyCodeLine{00078\ \ \ \ \ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \ \ \_Tp\&\ \mbox{\hyperlink{classtensor_a04d2c1e1b7d9ffba1cd0912d136736ec}{operator[]}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ \_\_in)\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_\_in\ >=\ this-\/>data\_.size()\ ||\ \_\_in\ <\ 0)}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}Access\ index\ is\ out\ of\ range"{}});}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ this-\/>data\_[\_\_in];}
+\DoxyCodeLine{00086\ \ \ \ \ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keyword}{const}\ \_Tp\&\ \mbox{\hyperlink{classtensor_a53792ad2abbc35bc22c4edb874c641da}{operator[]}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ \_\_in)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_\_in\ >=\ this-\/>data\_.size()\ ||\ \_\_in\ <\ 0)}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}Access\ index\ is\ out\ of\ range"{}});}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ this-\/>data\_[\_\_in];}
+\DoxyCodeLine{00094\ \ \ \ \ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a3b3893269c8e207c05b789e53821ab1e}{operator+}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ !=\ this-\/>shape\_)}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Cannot\ add\ two\ tensors\ with\ different\ shapes"{}});}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ other\_data\ =\ \_other.\mbox{\hyperlink{classtensor_a4302a45c6c164b54316d6b869affca78}{storage}}();}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ new\_data(this-\/>data\_.size());}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ new\_data[i]\ =\ this-\/>data\_[i]\ +\ other\_data[i];}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(new\_data,\ this-\/>shape\_);}
+\DoxyCodeLine{00110\ \ \ \ \ \}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a08700f946c6be4444fc5367d18021dc3}{operator-\/}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ !=\ this-\/>shape\_)}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Cannot\ add\ two\ tensors\ with\ different\ shapes"{}});}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ other\_data\ =\ \_other.\mbox{\hyperlink{classtensor_a4302a45c6c164b54316d6b869affca78}{storage}}();}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ new\_data(this-\/>data\_.size());}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ new\_data[i]\ =\ this-\/>data\_[i]\ -\/\ other\_data[i];}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(new\_data,\ this-\/>shape\_);}
+\DoxyCodeLine{00126\ \ \ \ \ \}}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a1ca1c4f33eab08a7db94c46c9257f901}{operator*}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>\mbox{\hyperlink{classtensor_ab1dc32444636d6005543f47cd07aee56}{empty}}()\ ||\ \_other.\mbox{\hyperlink{classtensor_ab1dc32444636d6005543f47cd07aee56}{empty}}())}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Cannot\ multiply\ empty\ tensors"{}});}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ this-\/>\mbox{\hyperlink{classtensor_a4b6d934fc3b4ff83203af2a01329bc08}{matmul}}(\_other);}
+\DoxyCodeLine{00134\ \ \ \ \ \}}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a2a4ffdc3bb920c69fba8801ef55136f3}{operator*}}(\textcolor{keyword}{const}\ \_Tp\ \_scalar)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Cannot\ multiply\ a\ tensor\ by\ a\ non\ scalar\ type"{}});}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>\mbox{\hyperlink{classtensor_ab1dc32444636d6005543f47cd07aee56}{empty}}())}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Cannot\ scale\ an\ empty\ tensor"{}});}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ *=\ \_scalar;}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(*\textcolor{keyword}{this});}
+\DoxyCodeLine{00152\ \ \ \ \ \}}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a29a72fe362d2919b391b19abb8501fc1}{operator-\/=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(*\textcolor{keyword}{this}\ -\/\ \_other);\ \}}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a46ca2fdc27adf2fcf91315733d840f88}{operator+=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(*\textcolor{keyword}{this}\ +\ \_other);\ \}}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00158\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a8dbd3b3844d6c87be2ce173b64a26998}{operator+}}(\textcolor{keyword}{const}\ \_Tp\ \_scalar)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Cannot\ perform\ addition\ with\ a\ non\ scalar\ type"{}});}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ +=\ \_scalar;}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(*\textcolor{keyword}{this});}
+\DoxyCodeLine{00169\ \ \ \ \ \}}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a460a7aa8d47d21138f9918a6a7e8ca04}{operator-\/}}(\textcolor{keyword}{const}\ \_Tp\ \_scalar)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Cannot\ perform\ substraction\ with\ a\ non\ scalar\ type"{}});}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ -\/=\ \_scalar;}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(*\textcolor{keyword}{this});}
+\DoxyCodeLine{00182\ \ \ \ \ \}}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a49c9436fd5ca973697d23f7ee522dc19}{operator*=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(*\textcolor{keyword}{this}\ *\ \_other);\ \}}
+\DoxyCodeLine{00185\ }
+\DoxyCodeLine{00186\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a11477cbd7ae70b8c3fe9c282a29d6403}{operator+=}}(\textcolor{keyword}{const}\ \_Tp\&\ \_scalar)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(*\textcolor{keyword}{this}\ +\ \_scalar);\ \}}
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00188\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_aeaf933fa2d2d4d20387f2897ce251e6f}{operator-\/=}}(\textcolor{keyword}{const}\ \_Tp\&\ \_scalar)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(*\textcolor{keyword}{this}\ -\/\ \_scalar);\ \}}
+\DoxyCodeLine{00189\ }
+\DoxyCodeLine{00190\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_aff9a85a813cfe492b9c63fc754d10343}{operator*=}}(\textcolor{keyword}{const}\ \_Tp\&\ \_scalar)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(*\textcolor{keyword}{this}\ *\ \_scalar);\ \}}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classtensor_af77012fb4cab5b02d74235eaa105f7e6}{operator==}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((this-\/>shape\_\ !=\ \_other.shape())\ \&\&\ (this-\/>strides\_\ !=\ \_other.strides()))}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ this-\/>data\_\ ==\ \_other.storage();}
+\DoxyCodeLine{00198\ \ \ \ \ \}}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classtensor_aa3079e5c659d10a6c5b5eba886fbaeba}{operator!=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ other)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ !(*\textcolor{keyword}{this}\ ==\ other);\ \}}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a4b6d934fc3b4ff83203af2a01329bc08}{matmul}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>shape\_.size()\ !=\ 2\ ||\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}().size()\ !=\ 2)}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}matmul\ is\ only\ supported\ for\ 2D\ tensors"{}});}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00207\ }
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>shape\_[1]\ !=\ other.shape()[0])}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Shape\ mismatch\ for\ matrix\ multiplication"{}});}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00212\ }
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ std::vector<int64\_t>\ ret\_shape\ =\ \{this-\/>shape\_[0],\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()[1]\};}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ \ \ \ \ ret\_data(ret\_shape[0]\ *\ ret\_shape[1]);}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ i\ =\ 0;\ i\ <\ ret\_shape[0];\ ++i)}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ j\ =\ 0;\ j\ <\ ret\_shape[1];\ ++j)}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_Tp\ \mbox{\hyperlink{classtensor_a521640ea7d5e3549f376612ec7aaf335}{sum}}\ =\ 0.0f;}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ k\ =\ 0;\ k\ <\ this-\/>shape\_[1];\ ++k)}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classtensor_a521640ea7d5e3549f376612ec7aaf335}{sum}}\ +=\ this-\/>\mbox{\hyperlink{classtensor_ae08663d7fd46cc622f032ae7cac90c5a}{at}}(\{i,\ k\})\ *\ \_other.\mbox{\hyperlink{classtensor_ae08663d7fd46cc622f032ae7cac90c5a}{at}}(\{k,\ j\});}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ret\_data[i\ *\ ret\_shape[1]\ +\ j]\ =\ \mbox{\hyperlink{classtensor_a521640ea7d5e3549f376612ec7aaf335}{sum}};}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret\_data,\ ret\_shape);}
+\DoxyCodeLine{00230\ \ \ \ \ \}}
+\DoxyCodeLine{00231\ }
+\DoxyCodeLine{00232\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_af80b79db3a2ac60e6cae9a419040a612}{reshape}}(\textcolor{keyword}{const}\ std::vector<int64\_t>\ \_shape)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ d\ =\ this-\/>data\_;}
+\DoxyCodeLine{00234\ }
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \_size\ =\ this-\/>computeSize(\_shape);}
+\DoxyCodeLine{00236\ }
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_size\ !=\ this-\/>data\_.size())}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}input\ shape\ must\ have\ size\ of\ elements\ equal\ to\ the\ current\ number\ of\ elements\ in\ the\ tensor\ data"{}});}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00242\ }
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_T>}}(d,\ \_shape);}
+\DoxyCodeLine{00244\ \ \ \ \ \}}
+\DoxyCodeLine{00245\ }
+\DoxyCodeLine{00246\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a5ef8dd87e411bb61e57ebdb441733ece}{reshape\_as}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\ \{\ \textcolor{keywordflow}{return}\ this-\/>\mbox{\hyperlink{classtensor_af80b79db3a2ac60e6cae9a419040a612}{reshape}}(\_other.shape\_);\ \}}
+\DoxyCodeLine{00247\ }
+\DoxyCodeLine{00248\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a8ec46219b01d394ec7fb5f1e4af168c2}{cross\_product}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>\mbox{\hyperlink{classtensor_ab1dc32444636d6005543f47cd07aee56}{empty}}()\ ||\ \_other.\mbox{\hyperlink{classtensor_ab1dc32444636d6005543f47cd07aee56}{empty}}())}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Cannot\ cross\ product\ an\ empty\ vector"{}});}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00253\ }
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_arithmetic<\_Tp>::value)}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ cross\ product\ on\ non-\/scalar\ data\ types"{}});}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ !=\ std::vector<int>\{3\}\ ||\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ !=\ std::vector<int>\{3\})}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Cross\ product\ can\ only\ be\ performed\ on\ 3-\/element\ vectors"{}});}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00263\ }
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ ret(\{3\});}
+\DoxyCodeLine{00265\ }
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \_Tp\&\ a1\ =\ this-\/>\mbox{\hyperlink{classtensor_a4302a45c6c164b54316d6b869affca78}{storage}}()[0];}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \_Tp\&\ a2\ =\ this-\/>\mbox{\hyperlink{classtensor_a4302a45c6c164b54316d6b869affca78}{storage}}()[1];}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \_Tp\&\ a3\ =\ this-\/>\mbox{\hyperlink{classtensor_a4302a45c6c164b54316d6b869affca78}{storage}}()[2];}
+\DoxyCodeLine{00269\ }
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \_Tp\&\ b1\ =\ \_other.\mbox{\hyperlink{classtensor_a4302a45c6c164b54316d6b869affca78}{storage}}()[0];}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \_Tp\&\ b2\ =\ \_other.\mbox{\hyperlink{classtensor_a4302a45c6c164b54316d6b869affca78}{storage}}()[1];}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \_Tp\&\ b3\ =\ \_other.\mbox{\hyperlink{classtensor_a4302a45c6c164b54316d6b869affca78}{storage}}()[2];}
+\DoxyCodeLine{00273\ }
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ ret.storage()[0]\ =\ a2\ *\ b3\ -\/\ a3\ *\ b2;}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ ret.storage()[1]\ =\ a3\ *\ b1\ -\/\ a1\ *\ b3;}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ ret.\mbox{\hyperlink{classtensor_a4302a45c6c164b54316d6b869affca78}{storage}}()[2]\ =\ a1\ *\ b2\ -\/\ a2\ *\ b1;}
+\DoxyCodeLine{00277\ }
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00279\ \ \ \ \ \}}
+\DoxyCodeLine{00280\ }
+\DoxyCodeLine{00281\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a74176f5911b900cec9c36673b4ff8f7e}{absolute}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_tensor)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Cannot\ call\ absolute\ on\ non\ scalar\ value"{}});}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00286\ }
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ a;}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \_Tp\&\ v\ :\ \_tensor.\mbox{\hyperlink{classtensor_a4302a45c6c164b54316d6b869affca78}{storage}}())}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ a.push\_back(\textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::fabs(\textcolor{keywordtype}{float}(v))));}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(a,\ \_tensor.shape\_);}
+\DoxyCodeLine{00293\ \ \ \ \ \}}
+\DoxyCodeLine{00294\ }
+\DoxyCodeLine{00295\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a22993114d4bb3c73f7e1165be394a4be}{dot}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>\mbox{\hyperlink{classtensor_ab1dc32444636d6005543f47cd07aee56}{empty}}()\ ||\ \_other.\mbox{\hyperlink{classtensor_ab1dc32444636d6005543f47cd07aee56}{empty}}())}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Cannot\ dot\ product\ an\ empty\ vector"{}});}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00300\ }
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ dot\ product\ on\ non\ scalar\ data\ types"{}});}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00305\ }
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}().\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}()\ ==\ 1\ \&\&\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}().size())}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ assert(this-\/>\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()[0]\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()[0]);}
+\DoxyCodeLine{00309\ }
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \_Tp\ ret\ =\ 0;}
+\DoxyCodeLine{00311\ }
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ret\_data\ +=\ this-\/>data\_[i]\ *\ \_other[i];}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00316\ }
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(\{ret\},\ \{1\});}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00319\ }
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}().\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}()\ ==\ 2\ \&\&\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}().size())}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ this-\/>\mbox{\hyperlink{classtensor_a4b6d934fc3b4ff83203af2a01329bc08}{matmul}}(\_other);}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00324\ }
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}().\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}()\ ==\ 3\ \&\&\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}().size())}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ this-\/>\mbox{\hyperlink{classtensor_a8ec46219b01d394ec7fb5f1e4af168c2}{cross\_product}}(\_other);}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00329\ }
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}();}
+\DoxyCodeLine{00331\ \ \ \ \ \}}
+\DoxyCodeLine{00332\ }
+\DoxyCodeLine{00333\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a4d690db0fb6abfd5492d46819dc4e51e}{relu}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ relu\ non-\/scalar\ type"{}});}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00338\ }
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \ \ \ \ \ \ \ \ \ \ \_size\ =\ this-\/>data\_.size();}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ new\_data(\_size);}
+\DoxyCodeLine{00341\ }
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ \_size;\ i++)}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ new\_data[i]\ =\ std::max(this-\/>data\_[i],\ \_Tp(0));}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(new\_data,\ this-\/>shape\_);}
+\DoxyCodeLine{00347\ \ \ \ \ \}}
+\DoxyCodeLine{00348\ }
+\DoxyCodeLine{00349\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a0e71c49ca5485d2407842ee72c1e5aad}{relu\_}}()\ \{}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ relu\ non-\/scalar\ type"{}});}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00354\ }
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \_size\ =\ this-\/>data\_.size();}
+\DoxyCodeLine{00356\ }
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ \_size;\ i++)}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ std::max(this-\/>data\_[i],\ \_Tp(0));}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00361\ \ \ \ \ \}}
+\DoxyCodeLine{00362\ }
+\DoxyCodeLine{00363\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_ad7baf3a8a2c4a9ad44ba04132454590e}{transpose}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>shape\_.size()\ !=\ 2)}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Matrix\ transposition\ can\ only\ be\ done\ on\ 2D\ tensors"{}}\ <<\ std::endl;}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ std::exit(EXIT\_FAILURE);}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00369\ }
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ transposed(\{this-\/>shape\_[1],\ this-\/>shape\_[0]\});}
+\DoxyCodeLine{00371\ }
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ i\ =\ 0;\ i\ <\ this-\/>shape\_[0];\ i++)}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ j\ =\ 0;\ j\ <\ this-\/>shape\_[1];\ j++)}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ transposed.at(\{j,\ i\})\ =\ this-\/>\mbox{\hyperlink{classtensor_ae08663d7fd46cc622f032ae7cac90c5a}{at}}(\{i,\ j\});}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ transposed;}
+\DoxyCodeLine{00380\ \ \ \ \ \}}
+\DoxyCodeLine{00381\ }
+\DoxyCodeLine{00382\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<int64\_t>}}\ \mbox{\hyperlink{classtensor_a841f49974f95a3e39c71b04f8a748218}{argsort}}(int64\_t\ \_dim\ =\ -\/1LL,\ \textcolor{keywordtype}{bool}\ \_ascending\ =\ \textcolor{keyword}{true})\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ int64\_t\ adjusted\_dim\ =\ (\_dim\ <\ 0LL)\ ?\ \_dim\ +\ data\_.size()\ :\ \_dim;}
+\DoxyCodeLine{00384\ }
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (adjusted\_dim\ <\ 0LL\ ||\ adjusted\_dim\ >=\ \textcolor{keyword}{static\_cast<}int64\_t\textcolor{keyword}{>}(data\_.size()))}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}Invalid\ dimension\ for\ argsort"{}});}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00389\ }
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ std::vector<std::vector<int64\_t>>\ indices\ =\ this-\/>data\_;}
+\DoxyCodeLine{00391\ }
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ data\_.size();\ i++)}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<int64\_t>\ idx(data\_[i].\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}());}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ std::iota(idx.begin(),\ idx.end(),\ 0);}
+\DoxyCodeLine{00396\ }
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ std::sort(idx.begin(),\ idx.end(),\ [\&](int64\_t\ a,\ int64\_t\ b)\ \{}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ return\ \_ascending\ ?\ data\_[i][a]\ <\ data\_[i][b]\ :\ data\_[i][a]\ >\ data\_[i][b];}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00400\ }
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ indices[i]\ =\ idx;}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<int64\_t>}}(indices);}
+\DoxyCodeLine{00404\ \ \ \ \ \}}
+\DoxyCodeLine{00405\ }
+\DoxyCodeLine{00406\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_abc7217706d712a42cd634db812ae766b}{bitwise\_not}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ not\ on\ non\ integral\ or\ boolean\ value"{}});}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ d;}
+\DoxyCodeLine{00413\ }
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ \ \ d.push\_back(\string~(this-\/>data\_[i]));}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(d,\ this-\/>shape\_);}
+\DoxyCodeLine{00419\ \ \ \ \ \}}
+\DoxyCodeLine{00420\ }
+\DoxyCodeLine{00421\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a932953ddb13f493b61179b65a96979d2}{bitwise\_and}}(\textcolor{keyword}{const}\ \_Tp\ value)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ AND\ on\ non-\/integral\ or\ non-\/boolean\ values"{}});}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00427\ }
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00429\ }
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ this-\/>data\_[i]\ \&\ value;}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00435\ \ \ \ \ \}}
+\DoxyCodeLine{00436\ }
+\DoxyCodeLine{00437\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a956005cd8e956ff1cce414ee479d8a50}{bitwise\_and}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ AND\ on\ non-\/integral\ or\ non-\/boolean\ values"{}});}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00443\ }
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ \&\&\ this-\/>size(0)\ ==\ \_other.\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}(0));}
+\DoxyCodeLine{00445\ }
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00447\ }
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ (this-\/>data\_[i]\ \&\ \_other[i]);}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00453\ \ \ \ \ \}}
+\DoxyCodeLine{00454\ }
+\DoxyCodeLine{00455\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a379a35df62a4dcb038ec448beb903bc6}{bitwise\_or}}(\textcolor{keyword}{const}\ \_Tp\ value)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ OR\ on\ non-\/integral\ or\ non-\/boolean\ values"{}});}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00461\ }
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00463\ }
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ this-\/>data\_[i]\ |\ value;}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00469\ \ \ \ \ \}}
+\DoxyCodeLine{00470\ }
+\DoxyCodeLine{00471\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_af757a75a9f317fe064ab7be2dd37a186}{bitwise\_or}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ OR\ on\ non-\/integral\ or\ non-\/boolean\ values"{}});}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00477\ }
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ \&\&\ this-\/>size(0)\ ==\ \_other.\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}(0));}
+\DoxyCodeLine{00479\ }
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00481\ }
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ this-\/>data\_[i]\ |\ \_other[i];}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00487\ \ \ \ \ \}}
+\DoxyCodeLine{00488\ }
+\DoxyCodeLine{00489\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a97fdba6da40a710924ad6b896f2a002a}{bitwise\_xor}}(\textcolor{keyword}{const}\ \_Tp\ value)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00490\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ XOR\ on\ non-\/integral\ or\ non-\/boolean\ values"{}});}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00495\ }
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00497\ }
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00499\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ this-\/>data\_[i]\ \string^\ value;}
+\DoxyCodeLine{00501\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00503\ \ \ \ \ \}}
+\DoxyCodeLine{00504\ }
+\DoxyCodeLine{00505\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_aeecad5513cd026b4b2c522bf543e7c18}{bitwise\_xor}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00509\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ XOR\ on\ non-\/integral\ or\ non-\/boolean\ values"{}});}
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00511\ }
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ assert(this-\/>\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ \&\&\ this-\/>size(0)\ ==\ \_other.\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}(0));}
+\DoxyCodeLine{00513\ }
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00515\ }
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ this-\/>data\_[i]\ \string^\ \_other[i];}
+\DoxyCodeLine{00519\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00521\ \ \ \ \ \}}
+\DoxyCodeLine{00522\ }
+\DoxyCodeLine{00523\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_ad70d7b170b910e960bf857e46c28e8af}{bitwise\_left\_shift}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ \_amount)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value)}
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ left\ shift\ on\ non-\/integral\ values"{}});}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00528\ }
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00530\ }
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ this-\/>data\_[i]\ <<\ \_amount;}
+\DoxyCodeLine{00534\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00535\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00536\ \ \ \ \ \}}
+\DoxyCodeLine{00537\ }
+\DoxyCodeLine{00538\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a33b542481b4ed30f21c745735f1f2efd}{bitwise\_right\_shift}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ \_amount)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00539\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value)}
+\DoxyCodeLine{00540\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ right\ shift\ on\ non-\/integral\ values"{}});}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00543\ }
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00545\ }
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00547\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00548\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ this-\/>data\_[i]\ >>\ \_amount;}
+\DoxyCodeLine{00549\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00550\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00551\ \ \ \ \ \}}
+\DoxyCodeLine{00552\ }
+\DoxyCodeLine{00553\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a732fe1edf7a808073d0aae4f1e2aa3b6}{bitwise\_left\_shift\_}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ \_amount)\ \{}
+\DoxyCodeLine{00554\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value)}
+\DoxyCodeLine{00555\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00556\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ left\ shift\ on\ non-\/integral\ values"{}});}
+\DoxyCodeLine{00557\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00558\ }
+\DoxyCodeLine{00559\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00560\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00561\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ <<=\ \_amount;}
+\DoxyCodeLine{00562\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00563\ \ \ \ \ \}}
+\DoxyCodeLine{00564\ }
+\DoxyCodeLine{00565\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_aaac594832e9bc8e55a2493f61ef3705e}{bitwise\_right\_shift\_}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ \_amount)\ \{}
+\DoxyCodeLine{00566\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value)}
+\DoxyCodeLine{00567\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00568\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ right\ shift\ on\ non-\/integral\ values"{}});}
+\DoxyCodeLine{00569\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00570\ }
+\DoxyCodeLine{00571\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00573\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ >>=\ amount;}
+\DoxyCodeLine{00574\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00575\ \ \ \ \ \}}
+\DoxyCodeLine{00576\ }
+\DoxyCodeLine{00577\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_addc040f1f7b20849180f04bcfac0a77c}{bitwise\_and\_}}(\textcolor{keyword}{const}\ \_Tp\ value)\ \{}
+\DoxyCodeLine{00578\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00579\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00580\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00581\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ AND\ on\ non-\/integral\ or\ non-\/boolean\ values"{}});}
+\DoxyCodeLine{00582\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00583\ }
+\DoxyCodeLine{00584\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00585\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00586\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ \&=\ value;}
+\DoxyCodeLine{00587\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00588\ \ \ \ \ \}}
+\DoxyCodeLine{00589\ }
+\DoxyCodeLine{00590\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a60691e0cc440f4965621d31d1d93ce83}{bitwise\_and\_}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\ \{}
+\DoxyCodeLine{00591\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00592\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00593\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00594\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ AND\ on\ non-\/integral\ or\ non-\/boolean\ values"{}});}
+\DoxyCodeLine{00595\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00596\ }
+\DoxyCodeLine{00597\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ \&\&\ this-\/>size(0)\ ==\ \_other.\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}(0));}
+\DoxyCodeLine{00598\ }
+\DoxyCodeLine{00599\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00600\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00601\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ \&=\ \_other[i];}
+\DoxyCodeLine{00602\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00603\ \ \ \ \ \}}
+\DoxyCodeLine{00604\ }
+\DoxyCodeLine{00605\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_aa40e092a039ef0ad7c7354b7afd093a2}{bitwise\_or\_}}(\textcolor{keyword}{const}\ \_Tp\ value)\ \{}
+\DoxyCodeLine{00606\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00607\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00608\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00609\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ OR\ on\ non-\/integral\ or\ non-\/boolean\ values"{}});}
+\DoxyCodeLine{00610\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00611\ }
+\DoxyCodeLine{00612\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00613\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00614\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ |=\ value;}
+\DoxyCodeLine{00615\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00616\ \ \ \ \ \}}
+\DoxyCodeLine{00617\ }
+\DoxyCodeLine{00618\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a4674befacebdd429dcccc07c97d95e61}{bitwise\_or\_}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\ \{}
+\DoxyCodeLine{00619\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00620\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00621\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00622\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ OR\ on\ non-\/integral\ or\ non-\/boolean\ values"{}});}
+\DoxyCodeLine{00623\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00624\ }
+\DoxyCodeLine{00625\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ \&\&\ this-\/>size(0)\ ==\ \_other.\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}(0));}
+\DoxyCodeLine{00626\ }
+\DoxyCodeLine{00627\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00628\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00629\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ |=\ \_other[i];}
+\DoxyCodeLine{00630\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00631\ \ \ \ \ \}}
+\DoxyCodeLine{00632\ }
+\DoxyCodeLine{00633\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a9f73f1a3264e3f3ca69755b68ec1d0df}{bitwise\_xor\_}}(\textcolor{keyword}{const}\ \_Tp\ value)\ \{}
+\DoxyCodeLine{00634\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00635\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00636\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00637\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ XOR\ on\ non-\/integral\ or\ non-\/boolean\ values"{}});}
+\DoxyCodeLine{00638\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00639\ }
+\DoxyCodeLine{00640\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00641\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00642\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ \string^=\ value;}
+\DoxyCodeLine{00643\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00644\ \ \ \ \ \}}
+\DoxyCodeLine{00645\ }
+\DoxyCodeLine{00646\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a6b0b0908457247b2ed109d42a16596e3}{bitwise\_xor\_}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\ \{}
+\DoxyCodeLine{00647\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00648\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00649\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00650\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ XOR\ on\ non-\/integral\ or\ non-\/boolean\ values"{}});}
+\DoxyCodeLine{00651\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00652\ }
+\DoxyCodeLine{00653\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ \&\&\ this-\/>size(0)\ ==\ \_other.\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}(0));}
+\DoxyCodeLine{00654\ }
+\DoxyCodeLine{00655\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00656\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00657\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ \string^=\ \_other[i];}
+\DoxyCodeLine{00658\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00659\ \ \ \ \ \}}
+\DoxyCodeLine{00660\ }
+\DoxyCodeLine{00661\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a094082f2e570f061d5ab0286deefd28b}{bitwise\_not\_}}()\ \{}
+\DoxyCodeLine{00662\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00663\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00664\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00665\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ perform\ a\ bitwise\ not\ on\ non\ integral\ or\ boolean\ value"{}});}
+\DoxyCodeLine{00666\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00667\ }
+\DoxyCodeLine{00668\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00669\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00670\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \string~this-\/>data\_[i];}
+\DoxyCodeLine{00671\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00672\ \ \ \ \ \}}
+\DoxyCodeLine{00673\ }
+\DoxyCodeLine{00674\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<bool>}}\ \mbox{\hyperlink{classtensor_a96c722c8d9061c254da18c193a158014}{logical\_not}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00675\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00676\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00677\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00678\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ get\ the\ element\ wise\ not\ of\ non-\/integral\ and\ non-\/boolean\ value"{}});}
+\DoxyCodeLine{00679\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00680\ }
+\DoxyCodeLine{00681\ \ \ \ \ \ \ \ \ std::vector<bool>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00682\ }
+\DoxyCodeLine{00683\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00684\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00685\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \string~(this-\/>data\_[i]);}
+\DoxyCodeLine{00686\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00687\ }
+\DoxyCodeLine{00688\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<bool>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00689\ \ \ \ \ \}}
+\DoxyCodeLine{00690\ }
+\DoxyCodeLine{00691\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<bool>}}\ \mbox{\hyperlink{classtensor_a92e2e2c55765f5b3f64de8f105c0d1a5}{logical\_or}}(\textcolor{keyword}{const}\ \_Tp\ value)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00692\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00693\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00694\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00695\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ get\ the\ element\ wise\ or\ of\ non-\/integral\ and\ non-\/boolean\ value"{}});}
+\DoxyCodeLine{00696\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00697\ }
+\DoxyCodeLine{00698\ \ \ \ \ \ \ \ \ std::vector<bool>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00699\ }
+\DoxyCodeLine{00700\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00701\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00702\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ (this-\/>data\_[i]\ ||\ value);}
+\DoxyCodeLine{00703\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00704\ }
+\DoxyCodeLine{00705\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<bool>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00706\ \ \ \ \ \}}
+\DoxyCodeLine{00707\ }
+\DoxyCodeLine{00708\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<bool>}}\ \mbox{\hyperlink{classtensor_a5279d5c7ddbf833c0288c9ccebbed4ba}{logical\_or}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00709\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00710\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00711\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00712\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ get\ the\ element\ wise\ or\ of\ non-\/integral\ and\ non-\/boolean\ value"{}});}
+\DoxyCodeLine{00713\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00714\ }
+\DoxyCodeLine{00715\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}());}
+\DoxyCodeLine{00716\ }
+\DoxyCodeLine{00717\ \ \ \ \ \ \ \ \ std::vector<bool>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00718\ }
+\DoxyCodeLine{00719\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00720\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00721\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ (this-\/>data\_[i]\ ||\ \_other[i]);}
+\DoxyCodeLine{00722\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00723\ }
+\DoxyCodeLine{00724\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<bool>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00725\ \ \ \ \ \}}
+\DoxyCodeLine{00726\ }
+\DoxyCodeLine{00727\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a3a5c80da988c106ff3162d7b97c5a724}{logical\_xor}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00728\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00729\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00730\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00731\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ get\ the\ element\ wise\ xor\ of\ non-\/integral\ and\ non-\/boolean\ value"{}});}
+\DoxyCodeLine{00732\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00733\ }
+\DoxyCodeLine{00734\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}());}
+\DoxyCodeLine{00735\ }
+\DoxyCodeLine{00736\ \ \ \ \ \ \ \ \ std::vector<bool>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00737\ }
+\DoxyCodeLine{00738\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00739\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00740\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ (this-\/>data\_[i]\ \string^\ \_other[i]);}
+\DoxyCodeLine{00741\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00742\ }
+\DoxyCodeLine{00743\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<bool>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00744\ \ \ \ \ \}}
+\DoxyCodeLine{00745\ }
+\DoxyCodeLine{00746\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_ab4305d0a0f432af184efcaf62ab0b612}{logical\_xor}}(\textcolor{keyword}{const}\ \_Tp\ value)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00747\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00748\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00749\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00750\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ get\ the\ element\ wise\ xor\ of\ non-\/integral\ and\ non-\/boolean\ value"{}});}
+\DoxyCodeLine{00751\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00752\ }
+\DoxyCodeLine{00753\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.shape());}
+\DoxyCodeLine{00754\ }
+\DoxyCodeLine{00755\ \ \ \ \ \ \ \ \ std::vector<bool>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00756\ }
+\DoxyCodeLine{00757\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00758\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00759\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ (this-\/>data\_[i]\ \string^\ value);}
+\DoxyCodeLine{00760\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00761\ }
+\DoxyCodeLine{00762\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<bool>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00763\ \ \ \ \ \}}
+\DoxyCodeLine{00764\ }
+\DoxyCodeLine{00765\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a77404d7822e3893f6336345c3165874b}{logical\_and}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00766\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00767\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00768\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00769\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ get\ the\ element\ wise\ and\ of\ non-\/integral\ and\ non-\/boolean\ value"{}});}
+\DoxyCodeLine{00770\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00771\ }
+\DoxyCodeLine{00772\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}());}
+\DoxyCodeLine{00773\ }
+\DoxyCodeLine{00774\ \ \ \ \ \ \ \ \ std::vector<bool>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00775\ }
+\DoxyCodeLine{00776\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00777\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00778\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ (this-\/>data\_[i]\ \&\&\ \_other[i]);}
+\DoxyCodeLine{00779\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00780\ }
+\DoxyCodeLine{00781\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<bool>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00782\ \ \ \ \ \}}
+\DoxyCodeLine{00783\ }
+\DoxyCodeLine{00784\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a9d5c9e1d5f7c2870b950b226715ae104}{logical\_and}}(\textcolor{keyword}{const}\ \_Tp\ value)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00785\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00786\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00787\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00788\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ get\ the\ element\ wise\ and\ of\ non-\/integral\ and\ non-\/boolean\ value"{}});}
+\DoxyCodeLine{00789\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00790\ }
+\DoxyCodeLine{00791\ \ \ \ \ \ \ \ \ std::vector<bool>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00792\ }
+\DoxyCodeLine{00793\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00794\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00795\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ (this-\/>data\_[i]\ \&\&\ \_other[i]);}
+\DoxyCodeLine{00796\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00797\ }
+\DoxyCodeLine{00798\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<bool>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00799\ \ \ \ \ \}}
+\DoxyCodeLine{00800\ }
+\DoxyCodeLine{00801\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_ac57983dd6df8f7ca1928e163617e3f39}{logical\_not\_}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00802\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00803\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00804\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00805\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ get\ the\ element\ wise\ not\ of\ non-\/integral\ and\ non-\/boolean\ value"{}});}
+\DoxyCodeLine{00806\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00807\ }
+\DoxyCodeLine{00808\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00809\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00810\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \string~(this-\/>data\_[i]);}
+\DoxyCodeLine{00811\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00812\ \ \ \ \ \}}
+\DoxyCodeLine{00813\ }
+\DoxyCodeLine{00814\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a48821b85b60d6c1f0be8e42b9a66d788}{logical\_or\_}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\ \{}
+\DoxyCodeLine{00815\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00816\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00817\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00818\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ get\ the\ element\ wise\ not\ of\ non-\/integral\ and\ non-\/boolean\ value"{}});}
+\DoxyCodeLine{00819\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00820\ }
+\DoxyCodeLine{00821\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}());}
+\DoxyCodeLine{00822\ }
+\DoxyCodeLine{00823\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00824\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00825\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ (this-\/>data\_[i]\ ||\ \_other[i]);}
+\DoxyCodeLine{00826\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00827\ \ \ \ \ \}}
+\DoxyCodeLine{00828\ }
+\DoxyCodeLine{00829\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a75504ffaf44992c9fa0767d595471094}{logical\_or\_}}(\textcolor{keyword}{const}\ \_Tp\ value)\ \{}
+\DoxyCodeLine{00830\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00831\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00832\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00833\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ get\ the\ element\ wise\ not\ of\ non-\/integral\ and\ non-\/boolean\ value"{}});}
+\DoxyCodeLine{00834\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00835\ }
+\DoxyCodeLine{00836\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00837\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00838\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ (this-\/>data\_[i]\ ||\ value);}
+\DoxyCodeLine{00839\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00840\ \ \ \ \ \}}
+\DoxyCodeLine{00841\ }
+\DoxyCodeLine{00842\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a09f18e7b94ea88dc3138b147cba926c2}{logical\_xor\_}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\ \{}
+\DoxyCodeLine{00843\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00844\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00845\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00846\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ get\ the\ element\ wise\ xor\ of\ non-\/integral\ and\ non-\/boolean\ value"{}});}
+\DoxyCodeLine{00847\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00848\ }
+\DoxyCodeLine{00849\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}());}
+\DoxyCodeLine{00850\ }
+\DoxyCodeLine{00851\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00852\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00853\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ (this-\/>data\_[i]\ \string^\ \_other[i]);}
+\DoxyCodeLine{00854\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00855\ \ \ \ \ \}}
+\DoxyCodeLine{00856\ }
+\DoxyCodeLine{00857\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_ab9d9440c1065958e733f1ee3e02d3624}{logical\_xor\_}}(\textcolor{keyword}{const}\ \_Tp\ value)\ \{}
+\DoxyCodeLine{00858\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00859\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00860\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00861\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ get\ the\ element\ wise\ xor\ of\ non-\/integral\ and\ non-\/boolean\ value"{}});}
+\DoxyCodeLine{00862\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00863\ }
+\DoxyCodeLine{00864\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00865\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00866\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ (this-\/>data\_[i]\ \string^\ value);}
+\DoxyCodeLine{00867\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00868\ \ \ \ \ \}}
+\DoxyCodeLine{00869\ }
+\DoxyCodeLine{00870\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a6372653f612ae3268766a0b6a6e9ca30}{logical\_and\_}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\ \{}
+\DoxyCodeLine{00871\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00872\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00873\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00874\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ get\ the\ element\ wise\ and\ of\ non-\/integral\ and\ non-\/boolean\ value"{}});}
+\DoxyCodeLine{00875\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00876\ }
+\DoxyCodeLine{00877\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}());}
+\DoxyCodeLine{00878\ }
+\DoxyCodeLine{00879\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00880\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00881\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ (this-\/>data\_[i]\ \&\&\ \_other[i]);}
+\DoxyCodeLine{00882\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00883\ \ \ \ \ \}}
+\DoxyCodeLine{00884\ }
+\DoxyCodeLine{00885\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_ac17ec90d10443b37d8618c9cf6049a72}{logical\_and\_}}(\textcolor{keyword}{const}\ \_Tp\ value)\ \{}
+\DoxyCodeLine{00886\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_same<\_Tp,\ bool>::value)}
+\DoxyCodeLine{00887\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00888\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00889\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ get\ the\ element\ wise\ and\ of\ non-\/integral\ and\ non-\/boolean\ value"{}});}
+\DoxyCodeLine{00890\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00891\ }
+\DoxyCodeLine{00892\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00893\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00894\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ (this-\/>data\_[i]\ \&\&\ value);}
+\DoxyCodeLine{00895\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00896\ \ \ \ \ \}}
+\DoxyCodeLine{00897\ }
+\DoxyCodeLine{00898\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{classtensor_ad42a4223b51afd28b81182034b0abe1d}{mean}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00899\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value)}
+\DoxyCodeLine{00900\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00901\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}input\ must\ be\ of\ integral\ type\ to\ get\ the\ mean\ average"{}});}
+\DoxyCodeLine{00902\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00903\ }
+\DoxyCodeLine{00904\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{classtensor_ad42a4223b51afd28b81182034b0abe1d}{mean}}\ =\ 0.0lf;}
+\DoxyCodeLine{00905\ }
+\DoxyCodeLine{00906\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>\mbox{\hyperlink{classtensor_ab1dc32444636d6005543f47cd07aee56}{empty}}())}
+\DoxyCodeLine{00907\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00908\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0.0lf;}
+\DoxyCodeLine{00909\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00910\ }
+\DoxyCodeLine{00911\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00912\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00913\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classtensor_ad42a4223b51afd28b81182034b0abe1d}{mean}}\ +=\ this-\/>data\_[i];}
+\DoxyCodeLine{00914\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00915\ }
+\DoxyCodeLine{00916\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(\mbox{\hyperlink{classtensor_ad42a4223b51afd28b81182034b0abe1d}{mean}}\ /\ double(this-\/>data\_.size()));}
+\DoxyCodeLine{00917\ \ \ \ \ \}}
+\DoxyCodeLine{00918\ }
+\DoxyCodeLine{00919\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a78676cccd7482013cc9ff4e2e7e409de}{pow}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00920\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value)}
+\DoxyCodeLine{00921\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00922\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}cannot\ get\ the\ power\ of\ a\ non\ integral\ value"{}});}
+\DoxyCodeLine{00923\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00924\ }
+\DoxyCodeLine{00925\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ \&\&\ this-\/>size(0)\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}());}
+\DoxyCodeLine{00926\ }
+\DoxyCodeLine{00927\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00928\ }
+\DoxyCodeLine{00929\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00930\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00931\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::pow(\textcolor{keywordtype}{double}(this-\/>data\_[i]),\ \textcolor{keywordtype}{double}(\_other[i])));}
+\DoxyCodeLine{00932\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00933\ }
+\DoxyCodeLine{00934\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00935\ \ \ \ \ \}}
+\DoxyCodeLine{00936\ }
+\DoxyCodeLine{00937\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a5f4150b3ea9b64570452afddc7a1f934}{pow}}(\textcolor{keyword}{const}\ \_Tp\ value)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00938\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value)}
+\DoxyCodeLine{00939\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00940\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}cannot\ get\ the\ power\ of\ a\ non\ integral\ value"{}});}
+\DoxyCodeLine{00941\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00942\ }
+\DoxyCodeLine{00943\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00944\ }
+\DoxyCodeLine{00945\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00946\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00947\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::pow(\textcolor{keywordtype}{double}(this-\/>data\_[i]),\ \textcolor{keywordtype}{double}(value)));}
+\DoxyCodeLine{00948\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00949\ }
+\DoxyCodeLine{00950\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00951\ \ \ \ \ \}}
+\DoxyCodeLine{00952\ }
+\DoxyCodeLine{00953\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a9948794b20f5511a51072ec98ecc2c0e}{pow\_}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00954\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value)}
+\DoxyCodeLine{00955\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00956\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}cannot\ get\ the\ power\ of\ a\ non\ integral\ value"{}});}
+\DoxyCodeLine{00957\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00958\ }
+\DoxyCodeLine{00959\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ \&\&\ this-\/>data\_.size()\ ==\ \_other.\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}(0));}
+\DoxyCodeLine{00960\ }
+\DoxyCodeLine{00961\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00962\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00963\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::pow(\textcolor{keywordtype}{double}(this-\/>data\_[i]),\ \textcolor{keywordtype}{double}(\_other[i])));}
+\DoxyCodeLine{00964\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00965\ \ \ \ \ \}}
+\DoxyCodeLine{00966\ }
+\DoxyCodeLine{00967\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a9b1063d7a15f2b92042982d0cf61fac0}{pow\_}}(\textcolor{keyword}{const}\ \_Tp\ value)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00968\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value)}
+\DoxyCodeLine{00969\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00970\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}cannot\ get\ the\ power\ of\ a\ non\ integral\ value"{}});}
+\DoxyCodeLine{00971\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00972\ }
+\DoxyCodeLine{00973\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00974\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00975\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::pow(\textcolor{keywordtype}{double}(this-\/>data\_[i]),\ \textcolor{keywordtype}{double}(value)));}
+\DoxyCodeLine{00976\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00977\ \ \ \ \ \}}
+\DoxyCodeLine{00978\ }
+\DoxyCodeLine{00979\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<bool>}}\ \mbox{\hyperlink{classtensor_a5c8e449d77ffc41ca8528e5c5238efc0}{less\_equal}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00980\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{00981\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00982\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ compare\ non-\/integral\ or\ scalar\ value"{}});}
+\DoxyCodeLine{00983\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00984\ }
+\DoxyCodeLine{00985\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ \&\&\ this-\/>size(0)\ ==\ \_other.\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}(0));}
+\DoxyCodeLine{00986\ }
+\DoxyCodeLine{00987\ \ \ \ \ \ \ \ \ std::vector<bool>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{00988\ }
+\DoxyCodeLine{00989\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{00990\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00991\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ (this-\/>data\_[i]\ <=\ \_other[i])\ ?\ \textcolor{keyword}{true}\ :\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00992\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00993\ }
+\DoxyCodeLine{00994\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<bool>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{00995\ \ \ \ \ \}}
+\DoxyCodeLine{00996\ }
+\DoxyCodeLine{00997\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<bool>}}\ \mbox{\hyperlink{classtensor_a8a92575c30c5fd64311a2dcdc81e340f}{less\_equal}}(\textcolor{keyword}{const}\ \_Tp\ value)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00998\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{00999\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01000\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ compare\ non-\/integral\ or\ scalar\ value"{}});}
+\DoxyCodeLine{01001\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01002\ }
+\DoxyCodeLine{01003\ \ \ \ \ \ \ \ \ std::vector<bool>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01004\ }
+\DoxyCodeLine{01005\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01006\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01007\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ (this-\/>data\_[i]\ <=\ value)\ ?\ \textcolor{keyword}{true}\ :\ \textcolor{keyword}{false};}
+\DoxyCodeLine{01008\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01009\ }
+\DoxyCodeLine{01010\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<bool>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01011\ \ \ \ \ \}}
+\DoxyCodeLine{01012\ }
+\DoxyCodeLine{01013\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<bool>}}\ \mbox{\hyperlink{classtensor_a666f0d3aa2b9769cf4fcc7614addefd7}{greater\_equal}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01014\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01015\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01016\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ compare\ non-\/integral\ or\ scalar\ value"{}});}
+\DoxyCodeLine{01017\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01018\ }
+\DoxyCodeLine{01019\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ \&\&\ this-\/>size(0)\ ==\ \_other.\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}(0));}
+\DoxyCodeLine{01020\ }
+\DoxyCodeLine{01021\ \ \ \ \ \ \ \ \ std::vector<bool>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01022\ }
+\DoxyCodeLine{01023\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01024\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01025\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ (this-\/>data\_[i]\ >=\ \_other[i])\ ?\ \textcolor{keyword}{true}\ :\ \textcolor{keyword}{false};}
+\DoxyCodeLine{01026\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01027\ }
+\DoxyCodeLine{01028\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<bool>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01029\ \ \ \ \ \}}
+\DoxyCodeLine{01030\ }
+\DoxyCodeLine{01031\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<bool>}}\ \mbox{\hyperlink{classtensor_a6a80718cdefb274b32606ade7efd7a8f}{greater\_equal}}(\textcolor{keyword}{const}\ \_Tp\ value)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01032\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01033\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01034\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ compare\ non-\/integral\ or\ scalar\ value"{}});}
+\DoxyCodeLine{01035\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01036\ }
+\DoxyCodeLine{01037\ \ \ \ \ \ \ \ \ std::vector<bool>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01038\ }
+\DoxyCodeLine{01039\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01040\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01041\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ (this-\/>data\_[i]\ >=\ value)\ ?\ \textcolor{keyword}{true}\ :\ \textcolor{keyword}{false};}
+\DoxyCodeLine{01042\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01043\ }
+\DoxyCodeLine{01044\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<bool>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01045\ \ \ \ \ \}}
+\DoxyCodeLine{01046\ }
+\DoxyCodeLine{01047\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<bool>}}\ \mbox{\hyperlink{classtensor_a196183ab50b3d7a78de0da02e7fac6e1}{equal}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01048\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01049\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01050\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ compare\ non-\/integral\ or\ scalar\ value"{}});}
+\DoxyCodeLine{01051\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01052\ }
+\DoxyCodeLine{01053\ \ \ \ \ \ \ \ \ assert(this-\/>shape\_\ ==\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ \&\&\ this-\/>size(0)\ ==\ \_other.\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}(0));}
+\DoxyCodeLine{01054\ }
+\DoxyCodeLine{01055\ \ \ \ \ \ \ \ \ std::vector<bool>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01056\ }
+\DoxyCodeLine{01057\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01058\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01059\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ (this-\/>data\_[i]\ ==\ \_other[i])\ ?\ \textcolor{keyword}{true}\ :\ \textcolor{keyword}{false};}
+\DoxyCodeLine{01060\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01061\ }
+\DoxyCodeLine{01062\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<bool>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01063\ \ \ \ \ \}}
+\DoxyCodeLine{01064\ }
+\DoxyCodeLine{01065\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<bool>}}\ \mbox{\hyperlink{classtensor_a734dd261859bfe4549ddb5dc91616381}{equal}}(\textcolor{keyword}{const}\ \_Tp\ value)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value\ \&\&\ !std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01067\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01068\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ compare\ non-\/integral\ or\ scalar\ value"{}});}
+\DoxyCodeLine{01069\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01070\ }
+\DoxyCodeLine{01071\ \ \ \ \ \ \ \ \ std::vector<bool>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01072\ }
+\DoxyCodeLine{01073\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01074\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01075\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ (this-\/>data\_[i]\ >=\ value)\ ?\ \textcolor{keyword}{true}\ :\ \textcolor{keyword}{false};}
+\DoxyCodeLine{01076\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01077\ }
+\DoxyCodeLine{01078\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<bool>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01079\ \ \ \ \ \}}
+\DoxyCodeLine{01080\ }
+\DoxyCodeLine{01081\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a521640ea7d5e3549f376612ec7aaf335}{sum}}(\textcolor{keyword}{const}\ int64\_t\ \_axis)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01082\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01083\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01084\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ reduce\ tensor\ with\ non\ scalar\ type"{}});}
+\DoxyCodeLine{01085\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01086\ }
+\DoxyCodeLine{01087\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_axis\ <\ 0LL\ ||\ \_axis\ >=\ \textcolor{keyword}{static\_cast<}int64\_t\textcolor{keyword}{>}(this-\/>shape\_.size()))}
+\DoxyCodeLine{01088\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01089\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Invalid\ axis\ for\ sum"{}});}
+\DoxyCodeLine{01090\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01091\ }
+\DoxyCodeLine{01092\ \ \ \ \ \ \ \ \ std::vector<int64\_t>\ ret\_shape\ =\ this-\/>shape\_;}
+\DoxyCodeLine{01093\ \ \ \ \ \ \ \ \ ret\_shape[\_axis]\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 1LL;}
+\DoxyCodeLine{01094\ }
+\DoxyCodeLine{01095\ \ \ \ \ \ \ \ \ int64\_t\ ret\_size\ =}
+\DoxyCodeLine{01096\ \ \ \ \ \ \ \ \ \ \ std::accumulate(ret\_shape.begin(),\ ret\_shape.end(),\ 1,\ std::multiplies<int64\_t>());}
+\DoxyCodeLine{01097\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret\_data(ret\_size,\ \_Tp(0.0f));}
+\DoxyCodeLine{01098\ }
+\DoxyCodeLine{01099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ i\ =\ 0;\ i\ <\ static\_cast<int64\_t>(this-\/>data\_.size());\ ++i)}
+\DoxyCodeLine{01100\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01101\ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<int64\_t>\ original\_indices(this-\/>shape\_.size());}
+\DoxyCodeLine{01102\ \ \ \ \ \ \ \ \ \ \ \ \ int64\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ index\ =\ i;}
+\DoxyCodeLine{01103\ }
+\DoxyCodeLine{01104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ j\ =\ \textcolor{keyword}{static\_cast<}int64\_t\textcolor{keyword}{>}(this-\/>shape\_.size())\ -\/\ 1LL;\ j\ >=\ 0LL;\ j-\/-\/)}
+\DoxyCodeLine{01105\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ original\_indices[j]\ =\ index\ \%\ this-\/>shape\_[j];}
+\DoxyCodeLine{01107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ index\ /=\ this-\/>shape\_[j];}
+\DoxyCodeLine{01108\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01109\ }
+\DoxyCodeLine{01110\ \ \ \ \ \ \ \ \ \ \ \ \ original\_indices[\_axis]\ =\ 0LL;}
+\DoxyCodeLine{01111\ }
+\DoxyCodeLine{01112\ \ \ \ \ \ \ \ \ \ \ \ \ int64\_t\ ret\_index\ =\ 0LL;}
+\DoxyCodeLine{01113\ \ \ \ \ \ \ \ \ \ \ \ \ int64\_t\ stride\ \ \ \ =\ 1LL;}
+\DoxyCodeLine{01114\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ j\ =\ \textcolor{keyword}{static\_cast<}int64\_t\textcolor{keyword}{>}(this-\/>shape\_.size())\ -\/\ 1LL;\ j\ >=\ 0LL;\ j-\/-\/)}
+\DoxyCodeLine{01115\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ret\_index\ +=\ original\_indices[j]\ *\ stride;}
+\DoxyCodeLine{01117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stride\ *=\ ret\_shape[j];}
+\DoxyCodeLine{01118\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01119\ }
+\DoxyCodeLine{01120\ \ \ \ \ \ \ \ \ \ \ \ \ ret\_data[ret\_index]\ +=\ this-\/>data\_[i];}
+\DoxyCodeLine{01121\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01122\ }
+\DoxyCodeLine{01123\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret\_data,\ ret\_shape);}
+\DoxyCodeLine{01124\ \ \ \ \ \}}
+\DoxyCodeLine{01125\ }
+\DoxyCodeLine{01126\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a8e7e1aa11f5bc41d0f25ecf915c152a0}{row}}(\textcolor{keyword}{const}\ int64\_t\ \_index)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01127\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>shape\_.size()\ !=\ 2)}
+\DoxyCodeLine{01128\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01129\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ get\ a\ row\ from\ a\ non\ two\ dimensional\ tensor"{}});}
+\DoxyCodeLine{01130\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01131\ }
+\DoxyCodeLine{01132\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>shape\_[0]\ <=\ \_index\ ||\ \_index\ <\ 0LL)}
+\DoxyCodeLine{01133\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01134\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Index\ input\ is\ out\ of\ range"{}});}
+\DoxyCodeLine{01135\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01136\ }
+\DoxyCodeLine{01137\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ R(this-\/>data\_.begin()\ +\ (this-\/>shape\_[1]\ *\ \_index),}
+\DoxyCodeLine{01138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_.begin()\ +\ (this-\/>shape\_[1]\ *\ \_index\ +\ this-\/>shape\_[1]));}
+\DoxyCodeLine{01139\ }
+\DoxyCodeLine{01140\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(R,\ \{this-\/>shape\_[1]\});}
+\DoxyCodeLine{01141\ \ \ \ \ \}}
+\DoxyCodeLine{01142\ }
+\DoxyCodeLine{01143\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a33f95c40071191f85037dc5ea6c51961}{col}}(\textcolor{keyword}{const}\ int64\_t\ \_index)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01144\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>shape\_.size()\ !=\ 2)}
+\DoxyCodeLine{01145\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01146\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ get\ a\ column\ from\ a\ non\ two\ dimensional\ tensor"{}});}
+\DoxyCodeLine{01147\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01148\ }
+\DoxyCodeLine{01149\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>shape\_[1]\ <=\ \_index\ ||\ \_index\ <\ 0LL)}
+\DoxyCodeLine{01150\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01151\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Index\ input\ out\ of\ range"{}});}
+\DoxyCodeLine{01152\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01153\ }
+\DoxyCodeLine{01154\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ C;}
+\DoxyCodeLine{01155\ }
+\DoxyCodeLine{01156\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ i\ =\ 0LL;\ i\ <\ this-\/>shape\_[0];\ i++)}
+\DoxyCodeLine{01157\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01158\ \ \ \ \ \ \ \ \ \ \ \ \ C.push\_back(this-\/>data\_[this-\/>compute\_index(\{i,\ \_index\})]);}
+\DoxyCodeLine{01159\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01160\ }
+\DoxyCodeLine{01161\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(C,\ \{this-\/>shape\_[0]\});}
+\DoxyCodeLine{01162\ \ \ \ \ \}}
+\DoxyCodeLine{01163\ }
+\DoxyCodeLine{01164\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a3062f36e627469c71bce1a4e268cdf95}{ceil}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01165\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01166\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01167\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ get\ the\ ceiling\ of\ a\ non\ scalar\ value"{}});}
+\DoxyCodeLine{01168\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01169\ }
+\DoxyCodeLine{01170\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01171\ }
+\DoxyCodeLine{01172\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01173\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01174\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ std::ceil(this-\/>data\_[i]);}
+\DoxyCodeLine{01175\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01176\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01177\ \ \ \ \ \}}
+\DoxyCodeLine{01178\ }
+\DoxyCodeLine{01179\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a8f7be6564c752719db37e23ad4960c8f}{floor}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01180\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01181\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01182\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ get\ the\ floor\ of\ a\ non\ scalar\ value"{}});}
+\DoxyCodeLine{01183\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01184\ }
+\DoxyCodeLine{01185\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01186\ }
+\DoxyCodeLine{01187\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01188\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01189\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ std::floor(this-\/>data\_[i]);}
+\DoxyCodeLine{01190\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01191\ }
+\DoxyCodeLine{01192\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01193\ \ \ \ \ \}}
+\DoxyCodeLine{01194\ }
+\DoxyCodeLine{01195\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a8b43919732fd6187b53ff8ddd18ee860}{ceil\_}}()\ \{}
+\DoxyCodeLine{01196\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01197\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01198\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ get\ the\ ceiling\ of\ a\ non\ scalar\ value"{}});}
+\DoxyCodeLine{01199\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01200\ }
+\DoxyCodeLine{01201\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01202\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01203\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ std::ceil(this-\/>data\_[i]);}
+\DoxyCodeLine{01204\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01205\ \ \ \ \ \}}
+\DoxyCodeLine{01206\ }
+\DoxyCodeLine{01207\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a6318a92fdf6474f9b2f8cde820f2230d}{floor\_}}()\ \{}
+\DoxyCodeLine{01208\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01209\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01210\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ get\ the\ floor\ of\ a\ non\ scalar\ value"{}});}
+\DoxyCodeLine{01211\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01212\ }
+\DoxyCodeLine{01213\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01214\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01215\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ std::floor(this-\/>data\_[i]);}
+\DoxyCodeLine{01216\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01217\ \ \ \ \ \}}
+\DoxyCodeLine{01218\ }
+\DoxyCodeLine{01219\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_ad36b019cc3d3e5b34d437a3155d9dac7}{clone}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01220\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ \ \ \ new\_data\ \ =\ this-\/>data\_;}
+\DoxyCodeLine{01221\ \ \ \ \ \ \ \ \ std::vector<size\_t>\ new\_shape\ =\ this-\/>shape\_;}
+\DoxyCodeLine{01222\ }
+\DoxyCodeLine{01223\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(new\_data,\ new\_shape);}
+\DoxyCodeLine{01224\ \ \ \ \ \}}
+\DoxyCodeLine{01225\ }
+\DoxyCodeLine{01226\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_ae3c45dc71c1090025661005112a1f834}{clamp}}(\textcolor{keyword}{const}\ \_Tp*\ \_min\_val\ =\ \textcolor{keyword}{nullptr},\ \textcolor{keyword}{const}\ \_Tp*\ \_max\_val\ =\ \textcolor{keyword}{nullptr})\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01227\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01228\ }
+\DoxyCodeLine{01229\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01230\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01231\ \ \ \ \ \ \ \ \ \ \ \ \ \_Tp\ value\ =\ this-\/>data\_[i];}
+\DoxyCodeLine{01232\ }
+\DoxyCodeLine{01233\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_min\_val)}
+\DoxyCodeLine{01234\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ value\ =\ std::max(*\_min\_val,\ value);}
+\DoxyCodeLine{01236\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01237\ }
+\DoxyCodeLine{01238\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_max\_val)}
+\DoxyCodeLine{01239\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ value\ =\ std::min(*\_max\_val,\ value);}
+\DoxyCodeLine{01241\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01242\ }
+\DoxyCodeLine{01243\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ value;}
+\DoxyCodeLine{01244\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01245\ }
+\DoxyCodeLine{01246\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01247\ \ \ \ \ \}}
+\DoxyCodeLine{01248\ }
+\DoxyCodeLine{01249\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a611871f79215f582779adbea1a661882}{clamp\_}}(\textcolor{keyword}{const}\ \_Tp*\ \_min\_val\ =\ \textcolor{keyword}{nullptr},\ \textcolor{keyword}{const}\ \_Tp*\ \_max\_val\ =\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{01250\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01251\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01252\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_min\_val)}
+\DoxyCodeLine{01253\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ std::max(*\_min\_val,\ this-\/>data\_[i]);}
+\DoxyCodeLine{01255\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01256\ }
+\DoxyCodeLine{01257\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_max\_val)}
+\DoxyCodeLine{01258\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ std::min(*\_max\_val,\ this-\/>data\_[i]);}
+\DoxyCodeLine{01260\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01261\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01262\ \ \ \ \ \}}
+\DoxyCodeLine{01263\ }
+\DoxyCodeLine{01264\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a8fa5f80cbf67d5ca587a465864dee9c2}{cos}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01265\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01266\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01267\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ cosine\ on\ non-\/scalar\ data\ type"{}});}
+\DoxyCodeLine{01268\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01269\ }
+\DoxyCodeLine{01270\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01271\ }
+\DoxyCodeLine{01272\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01273\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01274\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::cos(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(this-\/>data\_[i])));}
+\DoxyCodeLine{01275\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01276\ }
+\DoxyCodeLine{01277\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01278\ \ \ \ \ \}}
+\DoxyCodeLine{01279\ }
+\DoxyCodeLine{01280\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a508054bde4c1ac37263453b019d876ed}{sin}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01281\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01282\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01283\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ sin\ on\ non-\/scalar\ data\ type"{}});}
+\DoxyCodeLine{01284\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01285\ }
+\DoxyCodeLine{01286\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01287\ }
+\DoxyCodeLine{01288\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01289\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01290\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::sin(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(this-\/>data\_[i])));}
+\DoxyCodeLine{01291\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01292\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01293\ \ \ \ \ \}}
+\DoxyCodeLine{01294\ }
+\DoxyCodeLine{01295\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a5d175d2c6884b43e1530fead8df35aed}{sin\_}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01296\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01297\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01298\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ sin\ on\ non-\/scalar\ data\ type"{}});}
+\DoxyCodeLine{01299\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01300\ }
+\DoxyCodeLine{01301\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01302\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01303\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::sin(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(this-\/>data\_[i])));}
+\DoxyCodeLine{01304\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01305\ \ \ \ \ \}}
+\DoxyCodeLine{01306\ }
+\DoxyCodeLine{01307\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_afe674f1017845d278d6cbe2641763184}{sinh}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01308\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01309\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01310\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ sin\ on\ non-\/scalar\ data\ type"{}});}
+\DoxyCodeLine{01311\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01312\ }
+\DoxyCodeLine{01313\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01314\ }
+\DoxyCodeLine{01315\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01316\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01317\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::sinh(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(this-\/>data\_[i])));}
+\DoxyCodeLine{01318\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01319\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01320\ \ \ \ \ \}}
+\DoxyCodeLine{01321\ }
+\DoxyCodeLine{01322\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a80b175c420c2be54331d14bf73ffb210}{sinh\_}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01323\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01324\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01325\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ sin\ on\ non-\/scalar\ data\ type"{}});}
+\DoxyCodeLine{01326\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01327\ }
+\DoxyCodeLine{01328\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01329\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01330\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::sinh(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(this-\/>data\_[i])));}
+\DoxyCodeLine{01331\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01332\ \ \ \ \ \}}
+\DoxyCodeLine{01333\ }
+\DoxyCodeLine{01334\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_adfe7048b3f768e46ed347d50161c0dae}{asinh}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01335\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01336\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01337\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ sin\ on\ non-\/scalar\ data\ type"{}});}
+\DoxyCodeLine{01338\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01339\ }
+\DoxyCodeLine{01340\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01341\ }
+\DoxyCodeLine{01342\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01343\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01344\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::asinh(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(this-\/>data\_[i])));}
+\DoxyCodeLine{01345\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01346\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01347\ \ \ \ \ \}}
+\DoxyCodeLine{01348\ }
+\DoxyCodeLine{01349\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_abd515c373d8f6299ee6e8dd63959c8b6}{asinh\_}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01350\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01351\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01352\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ sin\ on\ non-\/scalar\ data\ type"{}});}
+\DoxyCodeLine{01353\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01354\ }
+\DoxyCodeLine{01355\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01356\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01357\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::asinh(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(this-\/>data\_[i])));}
+\DoxyCodeLine{01358\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01359\ \ \ \ \ \}}
+\DoxyCodeLine{01360\ }
+\DoxyCodeLine{01361\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a05c63c610aa4fa8f3aabe57e5662477e}{cosh}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01362\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01363\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01364\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ cosh\ on\ non-\/scalar\ data\ type"{}});}
+\DoxyCodeLine{01365\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01366\ }
+\DoxyCodeLine{01367\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01368\ }
+\DoxyCodeLine{01369\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01370\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01371\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::cosh(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(this-\/>data\_[i])));}
+\DoxyCodeLine{01372\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01373\ }
+\DoxyCodeLine{01374\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01375\ \ \ \ \ \}}
+\DoxyCodeLine{01376\ }
+\DoxyCodeLine{01377\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a2d6aaf42a08ff10a3b306c6acf44fe0b}{acosh}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01378\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01379\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01380\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ acosh\ on\ non-\/scalar\ data\ type"{}});}
+\DoxyCodeLine{01381\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01382\ }
+\DoxyCodeLine{01383\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01384\ }
+\DoxyCodeLine{01385\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01386\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01387\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::acosh(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(this-\/>data\_[i])));}
+\DoxyCodeLine{01388\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01389\ }
+\DoxyCodeLine{01390\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01391\ \ \ \ \ \}}
+\DoxyCodeLine{01392\ }
+\DoxyCodeLine{01393\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_af8d95d60da860cd5658c368afbac8382}{acosh\_}}()\ \{}
+\DoxyCodeLine{01394\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01395\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01396\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ acosh\ on\ non-\/scalar\ data\ type"{}});}
+\DoxyCodeLine{01397\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01398\ }
+\DoxyCodeLine{01399\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01400\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01401\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::acosh(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(this-\/>data\_[i])));}
+\DoxyCodeLine{01402\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01403\ \ \ \ \ \}}
+\DoxyCodeLine{01404\ }
+\DoxyCodeLine{01405\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a6be46341930fb272ae132eb81cb78e99}{cosh\_}}()\ \{}
+\DoxyCodeLine{01406\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01407\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01408\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ cosh\ on\ non-\/scalar\ data\ type"{}});}
+\DoxyCodeLine{01409\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01410\ }
+\DoxyCodeLine{01411\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01412\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01413\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::cosh(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(this-\/>data\_[i])));}
+\DoxyCodeLine{01414\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01415\ \ \ \ \ \}}
+\DoxyCodeLine{01416\ }
+\DoxyCodeLine{01417\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_aa7466d7c1c7eac81e1500964807c6a87}{cos\_}}()\ \{}
+\DoxyCodeLine{01418\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01419\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01420\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ cosine\ on\ non-\/scalar\ data\ type"{}});}
+\DoxyCodeLine{01421\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01422\ }
+\DoxyCodeLine{01423\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01424\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01425\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::cos(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(this-\/>data\_[i])));}
+\DoxyCodeLine{01426\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01427\ \ \ \ \ \}}
+\DoxyCodeLine{01428\ }
+\DoxyCodeLine{01429\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classtensor_a45218616edeefdc8558691ad83ebe1bc}{count\_nonzero}}(int64\_t\ dim\ =\ -\/1LL)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01430\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01431\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01432\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ compare\ a\ non\ scalar\ value\ to\ zero"{}});}
+\DoxyCodeLine{01433\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01434\ }
+\DoxyCodeLine{01435\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ count\ =\ 0;}
+\DoxyCodeLine{01436\ }
+\DoxyCodeLine{01437\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dim\ ==\ -\/1)}
+\DoxyCodeLine{01438\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01439\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \_Tp\&\ elem\ :\ data\_)}
+\DoxyCodeLine{01440\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01441\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (elem\ !=\ 0)}
+\DoxyCodeLine{01442\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01443\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{01444\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01445\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01446\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01447\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{01448\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01449\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dim\ <\ 0\ ||\ dim\ >=\ \textcolor{keyword}{static\_cast<}int64\_t\textcolor{keyword}{>}(shape\_.size()))}
+\DoxyCodeLine{01450\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01451\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Invalid\ dimension\ provided."{}});}
+\DoxyCodeLine{01452\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01453\ }
+\DoxyCodeLine{01454\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{01455\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Dimension-\/specific\ non-\/zero\ counting\ is\ not\ implemented\ yet."{}});}
+\DoxyCodeLine{01456\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01457\ }
+\DoxyCodeLine{01458\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{01459\ \ \ \ \ \}}
+\DoxyCodeLine{01460\ }
+\DoxyCodeLine{01461\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a58d80942a05a2ccd93a1ae69b0c3812e}{fmax}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01462\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>shape\_\ !=\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ ||\ this-\/>data\_.size()\ !=\ \_other.\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}(0))}
+\DoxyCodeLine{01463\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01464\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Cannot\ compare\ two\ tensors\ of\ different\ shapes\ :\ fmax"{}});}
+\DoxyCodeLine{01465\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01466\ }
+\DoxyCodeLine{01467\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01468\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01469\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ deduce\ the\ maximum\ of\ non\ scalar\ values"{}});}
+\DoxyCodeLine{01470\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01471\ }
+\DoxyCodeLine{01472\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01473\ }
+\DoxyCodeLine{01474\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01475\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01476\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::fmax(\textcolor{keywordtype}{double}(this-\/>data\_[i]),\ \textcolor{keywordtype}{double}(\_other[i])));}
+\DoxyCodeLine{01477\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01478\ }
+\DoxyCodeLine{01479\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01480\ \ \ \ \ \}}
+\DoxyCodeLine{01481\ }
+\DoxyCodeLine{01482\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a20da53aa9024aff12cc0d640c42069a1}{fmod}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01483\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>shape\_\ !=\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ ||\ this-\/>data\_.size()\ !=\ \_other.\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}(0))}
+\DoxyCodeLine{01484\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01485\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Cannot\ divide\ two\ tensors\ of\ different\ shapes\ :\ fmax"{}});}
+\DoxyCodeLine{01486\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01487\ }
+\DoxyCodeLine{01488\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01489\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01490\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ divide\ non\ scalar\ values"{}});}
+\DoxyCodeLine{01491\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01492\ }
+\DoxyCodeLine{01493\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01494\ }
+\DoxyCodeLine{01495\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01496\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01497\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::fmod(\textcolor{keywordtype}{double}(this-\/>data\_[i]),\ \textcolor{keywordtype}{double}(\_other[i])));}
+\DoxyCodeLine{01498\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01499\ }
+\DoxyCodeLine{01500\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01501\ \ \ \ \ \}}
+\DoxyCodeLine{01502\ }
+\DoxyCodeLine{01503\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a0aa2f12fca6336546f5a692cd5fe03a1}{fmod\_}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ \_other)\ \{}
+\DoxyCodeLine{01504\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>shape\_\ !=\ \_other.\mbox{\hyperlink{classtensor_a33e40f89c3247e27e6bd03a992d73868}{shape}}()\ ||\ this-\/>data\_.size()\ !=\ \_other.\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}(0))}
+\DoxyCodeLine{01505\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01506\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Cannot\ divide\ two\ tensors\ of\ different\ shapes\ :\ fmax"{}});}
+\DoxyCodeLine{01507\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01508\ }
+\DoxyCodeLine{01509\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01510\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01511\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ divide\ non\ scalar\ values"{}});}
+\DoxyCodeLine{01512\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01513\ }
+\DoxyCodeLine{01514\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01515\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01516\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::fmax(\textcolor{keywordtype}{double}(this-\/>data\_[i]),\ \textcolor{keywordtype}{double}(\_other[i])));}
+\DoxyCodeLine{01517\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01518\ \ \ \ \ \}}
+\DoxyCodeLine{01519\ }
+\DoxyCodeLine{01520\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a8143b6d554738a2476e4ec9f77b0724a}{frac}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01521\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<T>::value)}
+\DoxyCodeLine{01522\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01523\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ get\ the\ fraction\ of\ a\ non-\/scalar\ type"{}});}
+\DoxyCodeLine{01524\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01525\ }
+\DoxyCodeLine{01526\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01527\ }
+\DoxyCodeLine{01528\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01529\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01530\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(this-\/>\_\_frac(this-\/>data\_[i]));}
+\DoxyCodeLine{01531\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01532\ }
+\DoxyCodeLine{01533\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01534\ \ \ \ \ \}}
+\DoxyCodeLine{01535\ }
+\DoxyCodeLine{01536\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_affbb069c3c362649a62f1a71c33a9a21}{frac\_}}()\ \{}
+\DoxyCodeLine{01537\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<T>::value)}
+\DoxyCodeLine{01538\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01539\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ get\ the\ fraction\ of\ a\ non-\/scalar\ type"{}});}
+\DoxyCodeLine{01540\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01541\ }
+\DoxyCodeLine{01542\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01543\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01544\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(this-\/>\_\_frac(this-\/>data\_[i]));}
+\DoxyCodeLine{01545\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01546\ \ \ \ \ \}}
+\DoxyCodeLine{01547\ }
+\DoxyCodeLine{01548\ \ \ \ \ int64\_t\ \mbox{\hyperlink{classtensor_a2110f98d54f02024c7c591fec2967b0e}{lcm}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01549\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01550\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01551\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Given\ template\ type\ must\ be\ an\ int"{}});}
+\DoxyCodeLine{01552\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01553\ }
+\DoxyCodeLine{01554\ \ \ \ \ \ \ \ \ int64\_t\ ret\ =\ \textcolor{keyword}{static\_cast<}int64\_t\textcolor{keyword}{>}(this-\/>data\_[0]);}
+\DoxyCodeLine{01555\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 1;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01556\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01557\ \ \ \ \ \ \ \ \ \ \ \ \ ret\ =\ this-\/>\_\_lcm(\textcolor{keyword}{static\_cast<}int64\_t\textcolor{keyword}{>}(this-\/>data\_[i]),\ ret);}
+\DoxyCodeLine{01558\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01559\ }
+\DoxyCodeLine{01560\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01561\ \ \ \ \ \}}
+\DoxyCodeLine{01562\ }
+\DoxyCodeLine{01563\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a4abdae5ad99250f19b77be41b4dc23af}{log}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01564\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value)}
+\DoxyCodeLine{01565\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01566\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Given\ data\ type\ must\ be\ an\ integral"{}});}
+\DoxyCodeLine{01567\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01568\ }
+\DoxyCodeLine{01569\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01570\ }
+\DoxyCodeLine{01571\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01572\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01573\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::log(\textcolor{keywordtype}{double}(this-\/>data\_[i])));}
+\DoxyCodeLine{01574\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01575\ }
+\DoxyCodeLine{01576\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01577\ \ \ \ \ \}}
+\DoxyCodeLine{01578\ }
+\DoxyCodeLine{01579\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_aa9fc20caa8cf9a1a57a44c74edd2be2b}{log\_}}()\ \{}
+\DoxyCodeLine{01580\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value)}
+\DoxyCodeLine{01581\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01582\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Given\ data\ type\ must\ be\ an\ integral"{}});}
+\DoxyCodeLine{01583\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01584\ }
+\DoxyCodeLine{01585\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01586\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01587\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::log(\textcolor{keywordtype}{double}(this-\/>data\_[i])));}
+\DoxyCodeLine{01588\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01589\ \ \ \ \ \}}
+\DoxyCodeLine{01590\ }
+\DoxyCodeLine{01591\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_ae731c9e97a8bc5818b99d33330467758}{log10}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01592\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value)}
+\DoxyCodeLine{01593\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01594\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Given\ data\ type\ must\ be\ an\ integral"{}});}
+\DoxyCodeLine{01595\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01596\ }
+\DoxyCodeLine{01597\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01598\ }
+\DoxyCodeLine{01599\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01600\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01601\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::log10(\textcolor{keywordtype}{double}(this-\/>data\_[i])));}
+\DoxyCodeLine{01602\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01603\ }
+\DoxyCodeLine{01604\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01605\ \ \ \ \ \}}
+\DoxyCodeLine{01606\ }
+\DoxyCodeLine{01607\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_aa68d8032a606f2001d0730ad6aec7ed7}{log10\_}}()\ \{}
+\DoxyCodeLine{01608\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value)}
+\DoxyCodeLine{01609\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01610\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Given\ data\ type\ must\ be\ an\ integral"{}});}
+\DoxyCodeLine{01611\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01612\ }
+\DoxyCodeLine{01613\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01614\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01615\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::log10(\textcolor{keywordtype}{double}(this-\/>data\_[i])));}
+\DoxyCodeLine{01616\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01617\ \ \ \ \ \}}
+\DoxyCodeLine{01618\ }
+\DoxyCodeLine{01619\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a6fba338f86ca32decab9a86096fae745}{log2}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01620\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value)}
+\DoxyCodeLine{01621\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01622\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Given\ data\ type\ must\ be\ an\ integral"{}});}
+\DoxyCodeLine{01623\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01624\ }
+\DoxyCodeLine{01625\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01626\ }
+\DoxyCodeLine{01627\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01628\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01629\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::log2(\textcolor{keywordtype}{double}(this-\/>data\_[i])));}
+\DoxyCodeLine{01630\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01631\ }
+\DoxyCodeLine{01632\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01633\ \ \ \ \ \}}
+\DoxyCodeLine{01634\ }
+\DoxyCodeLine{01635\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_aff085a6faf6db3c4c390076be3b29ef2}{log2\_}}()\ \{}
+\DoxyCodeLine{01636\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_integral<\_Tp>::value)}
+\DoxyCodeLine{01637\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01638\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Given\ data\ type\ must\ be\ an\ integral"{}});}
+\DoxyCodeLine{01639\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01640\ }
+\DoxyCodeLine{01641\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01642\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01643\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::log2(\textcolor{keywordtype}{double}(this-\/>data\_[i])));}
+\DoxyCodeLine{01644\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01645\ \ \ \ \ \}}
+\DoxyCodeLine{01646\ }
+\DoxyCodeLine{01647\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a9966cc57b6cabfd62fc620ff13c7040b}{exp}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01648\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01649\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01650\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ get\ the\ exponential\ of\ non\ scalar\ values"{}});}
+\DoxyCodeLine{01651\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01652\ }
+\DoxyCodeLine{01653\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01654\ }
+\DoxyCodeLine{01655\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01656\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01657\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::exp(\textcolor{keywordtype}{double}(this-\/>data\_[i])));}
+\DoxyCodeLine{01658\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01659\ }
+\DoxyCodeLine{01660\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01661\ \ \ \ \ \}}
+\DoxyCodeLine{01662\ }
+\DoxyCodeLine{01663\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_af157a541d53f179a11390a5150c8616c}{exp\_}}()\ \{}
+\DoxyCodeLine{01664\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01665\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01666\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ get\ the\ exponential\ of\ non\ scalar\ values"{}});}
+\DoxyCodeLine{01667\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01668\ }
+\DoxyCodeLine{01669\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01670\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01671\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::exp(\textcolor{keywordtype}{double}(this-\/>data\_[i])));}
+\DoxyCodeLine{01672\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01673\ \ \ \ \ \}}
+\DoxyCodeLine{01674\ }
+\DoxyCodeLine{01675\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a5ca28d9559d416be2e480bb0b5faf71d}{sqrt}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01676\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01677\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01678\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ get\ the\ exponential\ of\ non\ scalar\ values"{}});}
+\DoxyCodeLine{01679\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01680\ }
+\DoxyCodeLine{01681\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_.size());}
+\DoxyCodeLine{01682\ }
+\DoxyCodeLine{01683\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01684\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01685\ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::sqrt(\textcolor{keywordtype}{double}(this-\/>data\_[i])));}
+\DoxyCodeLine{01686\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01687\ }
+\DoxyCodeLine{01688\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01689\ \ \ \ \ \}}
+\DoxyCodeLine{01690\ }
+\DoxyCodeLine{01691\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a5558b4bd06c2493e3fff919f7bcf3f28}{sqrt\_}}()\ \{}
+\DoxyCodeLine{01692\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01693\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01694\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ get\ the\ exponential\ of\ non\ scalar\ values"{}});}
+\DoxyCodeLine{01695\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01696\ }
+\DoxyCodeLine{01697\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>data\_.size();\ i++)}
+\DoxyCodeLine{01698\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01699\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>data\_[i]\ =\ \textcolor{keyword}{static\_cast<}\_Tp\textcolor{keyword}{>}(std::exp(\textcolor{keywordtype}{double}(this-\/>data\_[i])));}
+\DoxyCodeLine{01700\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01701\ \ \ \ \ \}}
+\DoxyCodeLine{01702\ }
+\DoxyCodeLine{01703\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a76c0a553a8d693702352808474007f50}{slice}}(int64\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_dim,}
+\DoxyCodeLine{01704\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::optional<int64\_t>\ \_start,}
+\DoxyCodeLine{01705\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::optional<int64\_t>\ \_end,}
+\DoxyCodeLine{01706\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ int64\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_step)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01707\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ ret;}
+\DoxyCodeLine{01708\ }
+\DoxyCodeLine{01709\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_dim\ <\ 0ULL\ ||\ \_dim\ >=\ \textcolor{keyword}{static\_cast<}int64\_t\textcolor{keyword}{>}(this-\/>shape\_.size()))}
+\DoxyCodeLine{01710\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01711\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}Dimension\ out\ of\ range."{}});}
+\DoxyCodeLine{01712\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01713\ }
+\DoxyCodeLine{01714\ \ \ \ \ \ \ \ \ int64\_t\ \mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}\ \ \ \ \ \ =\ this-\/>shape\_[\_dim];}
+\DoxyCodeLine{01715\ \ \ \ \ \ \ \ \ int64\_t\ start\_idx\ =\ \_start.value\_or(0ULL);}
+\DoxyCodeLine{01716\ \ \ \ \ \ \ \ \ int64\_t\ end\_idx\ \ \ =\ \_end.value\_or(\mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}});}
+\DoxyCodeLine{01717\ }
+\DoxyCodeLine{01718\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (start\_idx\ <\ 0ULL)}
+\DoxyCodeLine{01719\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01720\ \ \ \ \ \ \ \ \ \ \ \ \ start\_idx\ +=\ \mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}};}
+\DoxyCodeLine{01721\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01722\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (end\_idx\ <\ 0ULL)}
+\DoxyCodeLine{01723\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01724\ \ \ \ \ \ \ \ \ \ \ \ \ end\_idx\ +=\ \mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}};}
+\DoxyCodeLine{01725\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01726\ }
+\DoxyCodeLine{01727\ \ \ \ \ \ \ \ \ start\_idx\ =\ std::max(int64\_t(0ULL),\ std::min(start\_idx,\ \mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}));}
+\DoxyCodeLine{01728\ \ \ \ \ \ \ \ \ end\_idx\ \ \ =\ std::max(int64\_t(0ULL),\ std::min(end\_idx,\ \mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}));}
+\DoxyCodeLine{01729\ }
+\DoxyCodeLine{01730\ \ \ \ \ \ \ \ \ int64\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ slice\_size\ =\ (end\_idx\ -\/\ start\_idx\ +\ \_step\ -\/\ 1)\ /\ \_step;}
+\DoxyCodeLine{01731\ \ \ \ \ \ \ \ \ std::vector<int64\_t>\ ret\_dims\ \ \ =\ this-\/>shape\_;}
+\DoxyCodeLine{01732\ }
+\DoxyCodeLine{01733\ \ \ \ \ \ \ \ \ ret\_dims[\_dim]\ =\ slice\_size;}
+\DoxyCodeLine{01734\ \ \ \ \ \ \ \ \ ret\ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret\_dims);}
+\DoxyCodeLine{01735\ }
+\DoxyCodeLine{01736\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ i\ =\ start\_idx,\ j\ =\ 0ULL;\ i\ <\ end\_idx;\ i\ +=\ \_step,\ ++j)}
+\DoxyCodeLine{01737\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01738\ \ \ \ \ \ \ \ \ \ \ \ \ ret(\{j\})\ =\ this-\/>data\_[compute\_index(\{i\})];}
+\DoxyCodeLine{01739\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01740\ }
+\DoxyCodeLine{01741\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01742\ \ \ \ \ \}}
+\DoxyCodeLine{01743\ }
+\DoxyCodeLine{01744\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a949fa89abc9832f91f7ba551dd641d22}{cumprod}}(int64\_t\ \_dim\ =\ -\/1)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01745\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_dim\ ==\ -\/1)}
+\DoxyCodeLine{01746\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01747\ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ flattened\_data\ =\ this-\/>data\_;}
+\DoxyCodeLine{01748\ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(flattened\_data.size());}
+\DoxyCodeLine{01749\ }
+\DoxyCodeLine{01750\ \ \ \ \ \ \ \ \ \ \ \ \ ret[0]\ =\ flattened\_data[0];}
+\DoxyCodeLine{01751\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 1;\ i\ <\ flattened\_data.size();\ ++i)}
+\DoxyCodeLine{01752\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01753\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ret[i]\ =\ ret[i\ -\/\ 1]\ *\ flattened\_data[i];}
+\DoxyCodeLine{01754\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01755\ }
+\DoxyCodeLine{01756\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ \{flattened\_data.size()\});}
+\DoxyCodeLine{01757\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01758\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{01759\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01760\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_dim\ <\ 0\ ||\ \_dim\ >=\ \textcolor{keyword}{static\_cast<}int64\_t\textcolor{keyword}{>}(this-\/>shape\_.size()))}
+\DoxyCodeLine{01761\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01762\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Invalid\ dimension\ provided."{}});}
+\DoxyCodeLine{01763\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01764\ }
+\DoxyCodeLine{01765\ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ ret(this-\/>data\_);}
+\DoxyCodeLine{01766\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ :\ compute\_outer\_size()\ implementation}}
+\DoxyCodeLine{01767\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ outer\_size\ =\ this-\/>compute\_outer\_size(\_dim);}
+\DoxyCodeLine{01768\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ inner\_size\ =\ this-\/>shape\_[\_dim];}
+\DoxyCodeLine{01769\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ stride\ \ \ \ \ =\ this-\/>strides\_[\_dim];}
+\DoxyCodeLine{01770\ }
+\DoxyCodeLine{01771\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ outer\_size;\ ++i)}
+\DoxyCodeLine{01772\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01773\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ base\_index\ =\ i\ *\ stride;}
+\DoxyCodeLine{01774\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ret[base\_index]\ \ \ =\ data\_[base\_index];}
+\DoxyCodeLine{01775\ }
+\DoxyCodeLine{01776\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ j\ =\ 1;\ j\ <\ inner\_size;\ ++j)}
+\DoxyCodeLine{01777\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01778\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ current\_index\ =\ base\_index\ +\ j;}
+\DoxyCodeLine{01779\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ret[current\_index]\ \ \ =\ ret[base\_index\ +\ j\ -\/\ 1]\ *\ data\_[current\_index];}
+\DoxyCodeLine{01780\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01781\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01782\ }
+\DoxyCodeLine{01783\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(ret,\ this-\/>shape\_);}
+\DoxyCodeLine{01784\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01785\ \ \ \ \ \}}
+\DoxyCodeLine{01786\ }
+\DoxyCodeLine{01787\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_ac40335f8961d05a0a4c4ec306dcd0dbd}{cat}}(\textcolor{keyword}{const}\ std::vector<\mbox{\hyperlink{classtensor}{tensor<\_Tp>}}>\&\ \_others,\ int64\_t\ \_dim)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01788\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ t\ :\ \_others)}
+\DoxyCodeLine{01789\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01790\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ i\ =\ 0;\ i\ <\ this-\/>shape\_.size();\ ++i)}
+\DoxyCodeLine{01791\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01792\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (i\ !=\ \_dim\ \&\&\ this-\/>shape\_[i]\ !=\ t.shape\_[i])}
+\DoxyCodeLine{01793\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01794\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(}
+\DoxyCodeLine{01795\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ concatenate\ tensors\ with\ different\ shapes\ along\ non-\/concatenation\ dimensions"{}});}
+\DoxyCodeLine{01796\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01797\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01798\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01799\ }
+\DoxyCodeLine{01800\ \ \ \ \ \ \ \ \ std::vector<int64\_t>\ ret\_sh\ =\ this-\/>shape\_;}
+\DoxyCodeLine{01801\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ t\ :\ \_others)}
+\DoxyCodeLine{01802\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01803\ \ \ \ \ \ \ \ \ \ \ \ \ ret\_sh[\_dim]\ +=\ t.shape\_[\_dim];}
+\DoxyCodeLine{01804\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01805\ }
+\DoxyCodeLine{01806\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ c\_data;}
+\DoxyCodeLine{01807\ \ \ \ \ \ \ \ \ c\_data.reserve(this-\/>data\_.size());}
+\DoxyCodeLine{01808\ \ \ \ \ \ \ \ \ c\_data.insert(c\_data.end(),\ this-\/>data\_.begin(),\ this-\/>data\_.end());}
+\DoxyCodeLine{01809\ }
+\DoxyCodeLine{01810\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\&\ t\ :\ \_others)}
+\DoxyCodeLine{01811\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01812\ \ \ \ \ \ \ \ \ \ \ \ \ c\_data.insert(c\_data.end(),\ t.data\_.begin(),\ t.data\_.end());}
+\DoxyCodeLine{01813\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01814\ }
+\DoxyCodeLine{01815\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ ret(c\_data,\ ret\_sh);}
+\DoxyCodeLine{01816\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01817\ \ \ \ \ \}}
+\DoxyCodeLine{01818\ }
+\DoxyCodeLine{01819\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a763bcc5fef28ac840b848b65d63ca1ed}{view}}(std::initializer\_list<int64\_t>\ \_new\_sh)\ \{}
+\DoxyCodeLine{01820\ \ \ \ \ \ \ \ \ int64\_t\ new\_size\ =\ 1LL;}
+\DoxyCodeLine{01821\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ d\ :\ \_new\_sh)}
+\DoxyCodeLine{01822\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01823\ \ \ \ \ \ \ \ \ \ \ \ \ new\_size\ *=\ d;}
+\DoxyCodeLine{01824\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01825\ }
+\DoxyCodeLine{01826\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (new\_size\ !=\ this-\/>data\_.size())}
+\DoxyCodeLine{01827\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01828\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}\_Tpotal\ elements\ do\ not\ match\ for\ new\ shape"{}});}
+\DoxyCodeLine{01829\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01830\ }
+\DoxyCodeLine{01831\ \ \ \ \ \ \ \ \ this-\/>shape\_\ =\ \_new\_sh;}
+\DoxyCodeLine{01832\ \ \ \ \ \ \ \ \ compute\_strides();}
+\DoxyCodeLine{01833\ \ \ \ \ \}}
+\DoxyCodeLine{01834\ }
+\DoxyCodeLine{01835\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classtensor_a98ff9eb7aa9a40b88c9a64397238bb5a}{print}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01836\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}Shape:\ ["{}};}
+\DoxyCodeLine{01837\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>shape\_.size();\ ++i)}
+\DoxyCodeLine{01838\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01839\ \ \ \ \ \ \ \ \ \ \ \ \ std::cout\ <<\ this-\/>shape\_[i]\ <<\ (i\ <\ this-\/>shape\_.size()\ -\/\ 1\ ?\ \textcolor{stringliteral}{"{},\ "{}}\ :\ \textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{01840\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01841\ }
+\DoxyCodeLine{01842\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}]\(\backslash\)nData:\ "{}};}
+\DoxyCodeLine{01843\ }
+\DoxyCodeLine{01844\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \_Tp\&\ val\ :\ this-\/>data\_)}
+\DoxyCodeLine{01845\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01846\ \ \ \ \ \ \ \ \ \ \ \ \ std::cout\ <<\ val\ <<\ \textcolor{stringliteral}{"{}\ "{}};}
+\DoxyCodeLine{01847\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01848\ \ \ \ \ \ \ \ \ std::cout\ <<\ std::endl;}
+\DoxyCodeLine{01849\ \ \ \ \ \}}
+\DoxyCodeLine{01850\ }
+\DoxyCodeLine{01851\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classtensor_ab1dc32444636d6005543f47cd07aee56}{empty}}()\ const\ noexcept\ \{}
+\DoxyCodeLine{01852\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ this-\/>data\_.empty();}
+\DoxyCodeLine{01853\ \ \ \ \ \}}
+\DoxyCodeLine{01854\ }
+\DoxyCodeLine{01855\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}}(\textcolor{keyword}{const}\ int64\_t\ \_dim)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01856\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_dim\ <\ 0\ ||\ \_dim\ >=\ \textcolor{keyword}{static\_cast<}int64\_t\textcolor{keyword}{>}(this-\/>shape\_.size()))}
+\DoxyCodeLine{01857\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01858\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}dimension\ input\ is\ out\ of\ range"{}});}
+\DoxyCodeLine{01859\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01860\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ this-\/>shape\_[\_dim];}
+\DoxyCodeLine{01861\ \ \ \ \ \}}
+\DoxyCodeLine{01862\ }
+\DoxyCodeLine{01863\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a208ccff9884d31ed1039902622e9472e}{zeros}}(\textcolor{keyword}{const}\ std::vector<int64\_t>\&\ \_sh)\ \{}
+\DoxyCodeLine{01864\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01865\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01866\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ zero\ non\ scalar\ tensor"{}});}
+\DoxyCodeLine{01867\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01868\ }
+\DoxyCodeLine{01869\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ d(std::accumulate(\_sh.begin(),\ \_sh.end(),\ 1,\ std::multiplies<int64\_t>()),}
+\DoxyCodeLine{01870\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_Tp(0));}
+\DoxyCodeLine{01871\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(d,\ \_sh);}
+\DoxyCodeLine{01872\ \ \ \ \ \}}
+\DoxyCodeLine{01873\ }
+\DoxyCodeLine{01874\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_aa873303356fcce38e3f762c325e33920}{ones}}(\textcolor{keyword}{const}\ std::vector<int64\_t>\&\ \_sh)\ \{}
+\DoxyCodeLine{01875\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
+\DoxyCodeLine{01876\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01877\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ one\ non\ scalar\ tensor"{}});}
+\DoxyCodeLine{01878\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01879\ }
+\DoxyCodeLine{01880\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ d(std::accumulate(\_sh.begin(),\ \_sh.end(),\ 1,\ std::multiplies<int64\_t>()),}
+\DoxyCodeLine{01881\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_Tp(1));}
+\DoxyCodeLine{01882\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(d,\ \_sh);}
+\DoxyCodeLine{01883\ \ \ \ \ \}}
+\DoxyCodeLine{01884\ }
+\DoxyCodeLine{01885\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_a0206a53b82db00a90635877556a9b987}{randomize}}(\textcolor{keyword}{const}\ std::vector<int64\_t>\&\ \_sh,\ \textcolor{keywordtype}{bool}\ \_bounded\ =\ \textcolor{keyword}{false})\ \{}
+\DoxyCodeLine{01886\ \ \ \ \ \ \ \ \ assert(std::is\_scalar<\_Tp>::value);}
+\DoxyCodeLine{01887\ }
+\DoxyCodeLine{01888\ \ \ \ \ \ \ \ \ std::srand(time(\textcolor{keyword}{nullptr}));}
+\DoxyCodeLine{01889\ \ \ \ \ \ \ \ \ int64\_t\ \_size\ =\ 1;}
+\DoxyCodeLine{01890\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ dim\ :\ \_sh)}
+\DoxyCodeLine{01891\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01892\ \ \ \ \ \ \ \ \ \ \ \ \ \_size\ *=\ dim;}
+\DoxyCodeLine{01893\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01894\ }
+\DoxyCodeLine{01895\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ d(\_size);}
+\DoxyCodeLine{01896\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ i\ =\ 0;\ i\ <\ \_size;\ i++)}
+\DoxyCodeLine{01897\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01898\ \ \ \ \ \ \ \ \ \ \ \ \ d[i]\ =\ \_bounded\ ?\ \_Tp(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{float}\textcolor{keyword}{>}(rand()\ \%\ RAND\_MAX)}
+\DoxyCodeLine{01899\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{float}\textcolor{keyword}{>}(rand());)}
+\DoxyCodeLine{01900\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01901\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor<\_Tp>}}(d,\ \_sh);}
+\DoxyCodeLine{01902\ \ \ \ \ \}}
+\DoxyCodeLine{01903\ }
+\DoxyCodeLine{01904\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<int64\_t>}}\ \mbox{\hyperlink{classtensor_ad56d35a65d0417510a087e55fd35ab0a}{argmax\_}}(int64\_t\ \_dim)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01905\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_dim\ <\ 0\ ||\ \_dim\ >=\ this-\/>shape\_.size())}
+\DoxyCodeLine{01906\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01907\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}Dimension\ out\ of\ range\ in\ argmax"{}});}
+\DoxyCodeLine{01908\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01909\ }
+\DoxyCodeLine{01910\ \ \ \ \ \ \ \ \ std::vector<int64\_t>\ ret\_shape\ =\ this-\/>shape\_;}
+\DoxyCodeLine{01911\ \ \ \ \ \ \ \ \ ret\_shape.erase(ret\_shape.begin()\ +\ \_dim);}
+\DoxyCodeLine{01912\ }
+\DoxyCodeLine{01913\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<int64\_t>}}\ ret;}
+\DoxyCodeLine{01914\ \ \ \ \ \ \ \ \ ret.shape\_\ =\ ret\_shape;}
+\DoxyCodeLine{01915\ \ \ \ \ \ \ \ \ ret.data\_.resize(this-\/>computeSize(ret\_shape),\ 0);}
+\DoxyCodeLine{01916\ }
+\DoxyCodeLine{01917\ \ \ \ \ \ \ \ \ int64\_t\ outer\_size\ =\ 1LL;}
+\DoxyCodeLine{01918\ \ \ \ \ \ \ \ \ int64\_t\ inner\_size\ =\ 1LL;}
+\DoxyCodeLine{01919\ }
+\DoxyCodeLine{01920\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ i\ =\ 0;\ i\ <\ \_dim;\ ++i)}
+\DoxyCodeLine{01921\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01922\ \ \ \ \ \ \ \ \ \ \ \ \ outer\_size\ *=\ this-\/>shape\_[i];}
+\DoxyCodeLine{01923\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01924\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ i\ =\ \_dim\ +\ 1;\ i\ <\ this-\/>shape\_.size();\ ++i)}
+\DoxyCodeLine{01925\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01926\ \ \ \ \ \ \ \ \ \ \ \ \ inner\_size\ *=\ this-\/>shape\_[i];}
+\DoxyCodeLine{01927\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01928\ }
+\DoxyCodeLine{01929\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ i\ =\ 0;\ i\ <\ outer\_size;\ ++i)}
+\DoxyCodeLine{01930\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01931\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ j\ =\ 0;\ j\ <\ inner\_size;\ ++j)}
+\DoxyCodeLine{01932\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01933\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ int64\_t\ max\_index\ =\ 0;}
+\DoxyCodeLine{01934\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_Tp\ \ \ \ \ max\_value\ =\ this-\/>data\_[i\ *\ this-\/>shape\_[\_dim]\ *\ inner\_size\ +\ j];}
+\DoxyCodeLine{01935\ }
+\DoxyCodeLine{01936\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ k\ =\ 1;\ k\ <\ this-\/>shape\_[\_dim];\ ++k)}
+\DoxyCodeLine{01937\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01938\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_Tp\ value\ =\ this-\/>data\_[(i\ *\ this-\/>shape\_[\_dim]\ +\ k)\ *\ inner\_size\ +\ j];}
+\DoxyCodeLine{01939\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (value\ >\ max\_value)}
+\DoxyCodeLine{01940\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01941\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_value\ =\ value;}
+\DoxyCodeLine{01942\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_index\ =\ k;}
+\DoxyCodeLine{01943\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01944\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01945\ }
+\DoxyCodeLine{01946\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ret.data\_[i\ *\ inner\_size\ +\ j]\ =\ max\_index;}
+\DoxyCodeLine{01947\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01948\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01949\ }
+\DoxyCodeLine{01950\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01951\ \ \ \ \ \}}
+\DoxyCodeLine{01952\ }
+\DoxyCodeLine{01953\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_af8ff9002a615c25b587b2de6d75dc206}{argmax}}(int64\_t\ \_dim)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01954\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_dim\ <\ 0\ ||\ \_dim\ >=\ this-\/>shape\_.size())}
+\DoxyCodeLine{01955\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01956\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}Dimension\ out\ of\ range\ in\ argmax"{}});}
+\DoxyCodeLine{01957\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01958\ }
+\DoxyCodeLine{01959\ \ \ \ \ \ \ \ \ std::vector<int64\_t>\ ret\_shape\ =\ this-\/>shape\_;}
+\DoxyCodeLine{01960\ \ \ \ \ \ \ \ \ ret\_shape.erase(ret\_shape.begin()\ +\ \_dim);}
+\DoxyCodeLine{01961\ }
+\DoxyCodeLine{01962\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ ret;}
+\DoxyCodeLine{01963\ \ \ \ \ \ \ \ \ ret.shape\_\ =\ ret\_shape;}
+\DoxyCodeLine{01964\ \ \ \ \ \ \ \ \ ret.data\_.resize(this-\/>computeSize(ret\_shape),\ \_Tp(0));}
+\DoxyCodeLine{01965\ }
+\DoxyCodeLine{01966\ \ \ \ \ \ \ \ \ int64\_t\ outer\_size\ =\ 1;}
+\DoxyCodeLine{01967\ \ \ \ \ \ \ \ \ int64\_t\ inner\_size\ =\ 1;}
+\DoxyCodeLine{01968\ }
+\DoxyCodeLine{01969\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ i\ =\ 0;\ i\ <\ \_dim;\ ++i)}
+\DoxyCodeLine{01970\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01971\ \ \ \ \ \ \ \ \ \ \ \ \ outer\_size\ *=\ this-\/>shape\_[i];}
+\DoxyCodeLine{01972\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01973\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ i\ =\ \_dim\ +\ 1;\ i\ <\ static\_cast<int64\_t>(this-\/>shape\_.size());\ i++)}
+\DoxyCodeLine{01974\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01975\ \ \ \ \ \ \ \ \ \ \ \ \ inner\_size\ *=\ this-\/>shape\_[i];}
+\DoxyCodeLine{01976\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01977\ }
+\DoxyCodeLine{01978\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ i\ =\ 0;\ i\ <\ outer\_size;\ i++)}
+\DoxyCodeLine{01979\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01980\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ j\ =\ 0;\ j\ <\ inner\_size;\ j++)}
+\DoxyCodeLine{01981\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01982\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_Tp\ max\_value\ =\ this-\/>data\_[i\ *\ this-\/>shape\_[\_dim]\ *\ inner\_size\ +\ j];}
+\DoxyCodeLine{01983\ }
+\DoxyCodeLine{01984\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ k\ =\ 1;\ k\ <\ this-\/>shape\_[\_dim];\ k++)}
+\DoxyCodeLine{01985\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01986\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_Tp\ value\ =\ this-\/>data\_[(i\ *\ this-\/>shape\_[\_dim]\ +\ k)\ *\ inner\_size\ +\ j];}
+\DoxyCodeLine{01987\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (value\ >\ max\_value)}
+\DoxyCodeLine{01988\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01989\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_value\ =\ value;}
+\DoxyCodeLine{01990\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01991\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01992\ }
+\DoxyCodeLine{01993\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ret.data\_[i\ *\ inner\_size\ +\ j]\ =\ max\_value;}
+\DoxyCodeLine{01994\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01995\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01996\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01997\ \ \ \ \ \}}
+\DoxyCodeLine{01998\ }
+\DoxyCodeLine{01999\ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ \mbox{\hyperlink{classtensor_adf1ab2fa12dbb55524289f2de928ad35}{unsqueeze}}(int64\_t\ \_dim)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{02000\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_dim\ <\ 0\ ||\ \_dim\ >\ \textcolor{keyword}{static\_cast<}int64\_t\textcolor{keyword}{>}(this-\/>shape\_.size()))}
+\DoxyCodeLine{02001\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{02002\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}Dimension\ out\ of\ range\ in\ unsqueeze"{}});}
+\DoxyCodeLine{02003\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{02004\ }
+\DoxyCodeLine{02005\ \ \ \ \ \ \ \ \ std::vector<int64\_t>\ new\_shape\ =\ this-\/>shape\_;}
+\DoxyCodeLine{02006\ }
+\DoxyCodeLine{02007\ \ \ \ \ \ \ \ \ new\_shape.insert(new\_shape.begin()\ +\ \_dim,\ 1);}
+\DoxyCodeLine{02008\ }
+\DoxyCodeLine{02009\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classtensor}{tensor<\_Tp>}}\ ret;}
+\DoxyCodeLine{02010\ \ \ \ \ \ \ \ \ ret.shape\_\ =\ new\_shape;}
+\DoxyCodeLine{02011\ \ \ \ \ \ \ \ \ ret.data\_\ \ =\ this-\/>data\_;}
+\DoxyCodeLine{02012\ }
+\DoxyCodeLine{02013\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{02014\ \ \ \ \ \}}
+\DoxyCodeLine{02015\ }
+\DoxyCodeLine{02016\ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{02017\ \ \ \ \ \textcolor{keywordtype}{void}\ compute\_strides()\ \{}
+\DoxyCodeLine{02018\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>shape\_.empty())}
+\DoxyCodeLine{02019\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{02020\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Shape\ must\ be\ initialized\ before\ computing\ strides"{}}\ <<\ std::endl;}
+\DoxyCodeLine{02021\ \ \ \ \ \ \ \ \ \ \ \ \ std::exit(EXI\_Tp\_FAILURE);}
+\DoxyCodeLine{02022\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{02023\ }
+\DoxyCodeLine{02024\ \ \ \ \ \ \ \ \ this-\/>strides\_\ =\ std::vector<int64\_t>(this-\/>shape\_.size(),\ 1);}
+\DoxyCodeLine{02025\ \ \ \ \ \ \ \ \ int64\_t\ stride\ =\ 1;}
+\DoxyCodeLine{02026\ }
+\DoxyCodeLine{02027\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ i\ =\ this-\/>shape\_.size()\ -\/\ 1;\ i\ >=\ 0;\ i-\/-\/)}
+\DoxyCodeLine{02028\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{02029\ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>strides\_[i]\ =\ stride;}
+\DoxyCodeLine{02030\ \ \ \ \ \ \ \ \ \ \ \ \ stride\ *=\ this-\/>shape\_[i];}
+\DoxyCodeLine{02031\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{02032\ \ \ \ \ \}}
+\DoxyCodeLine{02033\ }
+\DoxyCodeLine{02034\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ compute\_index(\textcolor{keyword}{const}\ std::vector<int64\_t>\&\ \_idx)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{02035\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_idx.size()\ !=\ this-\/>shape\_.size())}
+\DoxyCodeLine{02036\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{02037\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}input\ indices\ does\ not\ match\ the\ tensor\ shape\_"{}});}
+\DoxyCodeLine{02038\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{02039\ }
+\DoxyCodeLine{02040\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ index\ =\ 0;}
+\DoxyCodeLine{02041\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ this-\/>shape\_.size();\ i++)}
+\DoxyCodeLine{02042\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{02043\ \ \ \ \ \ \ \ \ \ \ \ \ index\ +=\ \_idx[i]\ *\ this-\/>strides\_[i];}
+\DoxyCodeLine{02044\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{02045\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ index;}
+\DoxyCodeLine{02046\ \ \ \ \ \}}
+\DoxyCodeLine{02047\ }
+\DoxyCodeLine{02048\ \ \ \ \ uint64\_t\ computeSize(\textcolor{keyword}{const}\ std::vector<int64\_t>\&\ \_dims)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{02049\ \ \ \ \ \ \ \ \ uint64\_t\ ret\ =\ 0ULL;}
+\DoxyCodeLine{02050\ }
+\DoxyCodeLine{02051\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ int64\_t\&\ d\ :\ \_dims)}
+\DoxyCodeLine{02052\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{02053\ \ \ \ \ \ \ \ \ \ \ \ \ ret\ *=\ d;}
+\DoxyCodeLine{02054\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{02055\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{02056\ \ \ \ \ \}}
+\DoxyCodeLine{02057\ }
+\DoxyCodeLine{02058\ \ \ \ \ \textcolor{keywordtype}{float}\ \_\_frac(\textcolor{keyword}{const}\ \_Tp\&\ scalar)\ \{\ \textcolor{keywordflow}{return}\ std::fmod(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{float}\textcolor{keyword}{>}(scalar),\ 1.0lf);\ \}}
+\DoxyCodeLine{02059\ }
+\DoxyCodeLine{02060\ \ \ \ \ int64\_t\ \_\_lcm(\textcolor{keyword}{const}\ int64\_t\ a,\ \textcolor{keyword}{const}\ int64\_t\ b)\ \{\ \textcolor{keywordflow}{return}\ (a\ *\ b)\ /\ std::gcd(a,\ b);\ \}}
+\DoxyCodeLine{02061\ \};}
+
+\end{DoxyCode}

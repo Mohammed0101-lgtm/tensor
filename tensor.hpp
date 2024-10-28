@@ -414,12 +414,37 @@ class tensor
     const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
     const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
 
-    data_t     storage() const noexcept { return this->__data_; }
+    /**
+     * @brief returns the linear data as stored in memory.
+     * @return vector of elements stored in this->__data_.
+     */
+    data_t storage() const noexcept { return this->__data_; }
+    /**
+     * @brief returns the shape of a tensor
+     * @return vector of 64 bit integers indicating the size of each dimension 
+    */
     shape_type shape() const noexcept { return this->__shape_; }
+    /** 
+     * @brief returns the strides of the dimensions
+     * @return vector of 64 bit integers indicating the 'stride' of each dimension
+    */
     shape_type strides() const noexcept { return this->__strides_; }
-    Device     device() const noexcept { return this->__device_; }
-    size_t     n_dims() const noexcept { return this->__shape_.size(); }
+    /**
+     * @brief returns which device the tensor is stored on
+     * @return an element of the enum class Device (e.i CPU, GPU)
+     */
+    Device device() const noexcept { return this->__device_; }
+    /**
+     * @brief how many dimensions are in a tensor
+     * @return unsigned long (aka 64 bit unsigned integer, or 32 bits depending on the system and compiler)
+     */
+    size_t n_dims() const noexcept { return this->__shape_.size(); }
 
+    /**
+     * @brief whats the size of a given dimension
+     * @param __dim const long long
+     * @return unsigned long (aka 64 bit unsigned integer, or 32 bits depending on the system and compiler)
+     */
     size_t size(const index_type __dim) const {
         if (__dim < 0 || __dim >= static_cast<index_type>(this->__shape_.size()))
         {
@@ -434,10 +459,29 @@ class tensor
         return this->__shape_[__dim];
     }
 
-    size_t          capacity() const noexcept { return this->__data_.capacity(); }
-    reference       at(shape_type __idx);
+    /**
+     * @brief whats the capacity of the tensor (memory reserved)
+     * @return unsigned long (aka 64 bit unsigned integer, or 32 bits depending on the system and compiler)
+     */
+    size_t capacity() const noexcept { return this->__data_.capacity(); }
+    /**
+     * @brief for direct modifiable access
+     * @param __idx vector of integers that specify the multidimensional index 
+     * @return reference to the element at the input index
+     */
+    reference at(shape_type __idx);
+    /**
+     * @brief for direct unmodifiable access
+     * @param __idx vector of integers that specify the multidimensional index 
+     * @return constant reference to the element at the input index
+     */
     const_reference at(const shape_type __idx) const;
 
+    /**
+     * @brief for linear modifiable access
+     * @param __in linear index in the tensor storage
+     * @return reference to the element at the input index
+     */
     reference operator[](const size_t __in) {
         if (__in >= this->__data_.size() || __in < 0)
         {
@@ -447,6 +491,11 @@ class tensor
         return this->__data_[__in];
     }
 
+    /**
+     * @brief for linear unmodifiable access
+     * @param __in linear index in the tensor storage
+     * @return constant reference to the element at the input index
+     */
     const_reference operator[](const size_t __in) const {
         if (__in >= this->__data_.size() || __in < 0)
         {
@@ -456,22 +505,86 @@ class tensor
         return this->__data_[__in];
     }
 
+    /**
+     * @brief adds two tensors of the same shape element wise
+     * @param __other other operand
+     * @return the sum of two tensors element wise
+     */
     tensor operator+(const tensor& __other) const;
+    /**
+     * @brief subtracts the input tensor from self element wise
+     * @param __other other operand
+     * @return the difference of two tensors element wise
+     */
     tensor operator-(const tensor& __other) const;
 
+    /**
+     * @brief in place version this - other
+     * @param __other other operand
+     * @return this - other
+     */
     tensor operator-=(const tensor& __other) const;
+    /**
+     * @brief in place version of this + other
+     * @param __other other operand
+     * @return this + other
+     */
     tensor operator+=(const tensor& __other) const;
+    /**
+     * @brief in place version of this * other
+     * @param __other other operand
+     * @return this * other
+     */
     tensor operator*=(const tensor& __other) const;
+    /**
+     * @brief in place version of this / other
+     * @param __other other operand
+     * @return this / other
+     */
     tensor operator/=(const tensor& __other) const;
-
+    /**
+     * @brief adds a scalar to each element of the tensor
+     * @param __scalar a value of an arithmetic type
+     * @return the sum of self and __scalar element wise
+     */
     tensor operator+(const value_type _scalar) const;
-    tensor operator-(const value_type _scalar) const;
+    /**
+     * @brief subtracts a scalar from each element of the tensor 
+     * @param __scalar a value of an arithmetic type
+     * @return the difference between self and __scalar element wise
+     */
+    tensor operator-(const value_type __scalar) const;
 
+    /**
+     * @brief in place version of this + __scalar
+     * @param __scalar a value of an arithmetic type
+     * @return this + __scalar
+     */
     tensor operator+=(const_reference __scalar) const;
+    /**
+     * @brief in place version of this - __scalar
+     * @param __scalar a value of an arithmetic type
+     * @return this - __scalar
+     */
     tensor operator-=(const_reference __scalar) const;
+    /**
+     * @brief in place version of this / __scalar
+     * @param __scalar a value of an arithmetic type
+     * @return this / __scalar
+     */
     tensor operator/=(const_reference __scalar) const;
+    /**
+     * @brief in place version of this * __scalar
+     * @param __scalar a value of an arithmetic type
+     * @return this * __scalar
+     */
     tensor operator*=(const_reference __scalar) const;
 
+    /**
+     * @brief check whether or not two tensors are equal
+     * @param __other other tensor
+     * @return boolean value indicating if the tensors are equal or not
+     */
     bool operator==(const tensor& __other) const {
         if ((this->__shape_ != __other.shape()) && (this->__strides_ != __other.strides()))
         {
@@ -481,116 +594,552 @@ class tensor
         return this->__data_ == __other.storage();
     }
 
+    /**
+     * @brief check whether or not two tensors are not equal
+     * @param __other other tensor
+     * @return boolean value indicating if the tensors are equal or not
+     */
     bool operator!=(const tensor& __other) const { return !(*this == __other); }
 
+    /**
+     * @brief checks whether or not the tensor contains at least one element
+     * @return boolean value (true if empty, false if not)
+     */
     bool empty() const { return this->__data_.empty(); }
 
+    /**
+     * @brief calculates the mean average of all elements in the tensor
+     * @return the mean average 
+     */
     double mean() const;
 
+    /**
+     * @brief logical not over all elements in the tensor
+     * @return a new tensor where each element is the logical not of the corresponding element in this
+     */
     tensor<bool> logical_not() const;
+    /**
+     * @brief logical or over all elements in the tensor with an input value
+     * @param __val a value that supports the operator '||'
+     * @return a new tensor where each element is the logical or of the corresponding element in this with __val
+     */
     tensor<bool> logical_or(const value_type __val) const;
+    /**
+     * @brief logical or of this and other element wise
+     * @param __other a tensor of the same shape as this
+     * @return a new tensor where each element is the logical or of the corresponding element in this with __other
+     */
     tensor<bool> logical_or(const tensor& __other) const;
 
+    /**
+     * @brief Performs a less-than-or-equal-to comparison element-wise with another tensor.
+     * 
+     * The tensors must have the same shape.
+     * 
+     * @param __other The other tensor to compare with.
+     * @return A new tensor of booleans indicating the result of the comparison.
+     */
     tensor<bool> less_equal(const tensor& __other) const;
+
+    /**
+     * @brief Performs a less-than-or-equal-to comparison with a scalar value.
+     * 
+     * @param __val The scalar value to compare with.
+     * @return A new tensor of booleans indicating the result of the comparison.
+     */
     tensor<bool> less_equal(const value_type __val) const;
 
+    /**
+     * @brief Performs a greater-than-or-equal-to comparison element-wise with another tensor.
+     * 
+     * The tensors must have the same shape.
+     * 
+     * @param __other The other tensor to compare with.
+     * @return A new tensor of booleans indicating the result of the comparison.
+     */
     tensor<bool> greater_equal(const tensor& __other) const;
+
+    /**
+     * @brief Performs a greater-than-or-equal-to comparison with a scalar value.
+     * 
+     * @param __val The scalar value to compare with.
+     * @return A new tensor of booleans indicating the result of the comparison.
+     */
     tensor<bool> greater_equal(const value_type __val) const;
 
+    /**
+     * @brief Performs an element-wise equality comparison with another tensor.
+     * 
+     * The tensors must have the same shape.
+     * 
+     * @param __other The other tensor to compare with.
+     * @return A new tensor of booleans indicating equality element-wise.
+     */
     tensor<bool> equal(const tensor& __other) const;
+
+    /**
+     * @brief Performs an equality comparison with a scalar value.
+     * 
+     * @param __val The scalar value to compare with.
+     * @return A new tensor of booleans indicating equality element-wise.
+     */
     tensor<bool> equal(const value_type __val) const;
 
+    /**
+     * @brief Counts the number of non-zero elements in the tensor.
+     * 
+     * Optionally, can count non-zero elements along a specific dimension.
+     * 
+     * @param __dim (Optional) The dimension to count along. Defaults to -1, meaning all dimensions.
+     * @return The count of non-zero elements.
+     */
     size_t count_nonzero(index_type __dim = -1LL) const;
 
+    /**
+     * @brief Slices the tensor along a specified dimension.
+     * 
+     * Creates a new tensor that is a slice of the original tensor.
+     * 
+     * @param __dim The dimension to slice along.
+     * @param __start (Optional) The starting index for the slice. Defaults to the beginning of the dimension.
+     * @param __end (Optional) The ending index for the slice. Defaults to the end of the dimension.
+     * @param __step The step size for the slice.
+     * @return A new tensor representing the sliced data.
+     */
     tensor slice(index_type                __dim,
                  std::optional<index_type> __start,
                  std::optional<index_type> __end,
                  index_type                __step) const;
 
+    /**
+     * @brief Computes the element-wise maximum between two tensors.
+     * 
+     * The tensors must have the same shape.
+     * 
+     * @param __other The other tensor to compare with.
+     * @return A new tensor where each element is the maximum of the corresponding elements.
+     */
     tensor fmax(const tensor& __other) const;
+
+    /**
+     * @brief Computes the element-wise maximum between the tensor and a scalar value.
+     * 
+     * @param __val The scalar value to compare with.
+     * @return A new tensor where each element is the maximum of the tensor element and the scalar.
+     */
     tensor fmax(const value_type __val) const;
-    void   fmax_(const tensor& __other);
-    void   fmax_(const value_type __val);
+
+    /**
+     * @brief Performs an in-place element-wise maximum between the tensor and another tensor.
+     * 
+     * The tensors must have the same shape.
+     * 
+     * @param __other The other tensor to compare with.
+     */
+    void fmax_(const tensor& __other);
+
+    /**
+     * @brief Performs an in-place element-wise maximum between the tensor and a scalar value.
+     * 
+     * @param __val The scalar value to compare with.
+     */
+    void fmax_(const value_type __val);
+
+    /**
+     * @brief Computes the element-wise remainder (modulus) between two tensors.
+     * 
+     * The tensors must have the same shape.
+     * 
+     * @param __other The other tensor to use for the modulus operation.
+     * @return A new tensor where each element is the result of the modulus operation.
+     */
     tensor fmod(const tensor& __other) const;
+
+    /**
+     * @brief Computes the element-wise remainder (modulus) between the tensor and a scalar value.
+     * 
+     * @param __val The scalar value to use for the modulus operation.
+     * @return A new tensor where each element is the result of the modulus operation.
+     */
     tensor fmod(const value_type __val) const;
 
+    /**
+     * @brief Returns the fractional part of each element in the tensor.
+     * 
+     * The fractional part is the element minus its integer component.
+     * 
+     * @return A new tensor containing the fractional part of each element.
+     */
     tensor frac() const;
 
+    /**
+     * @brief Computes the natural logarithm (base e) of each element in the tensor.
+     * 
+     * @return A new tensor containing the natural logarithm of each element.
+     */
     tensor log() const;
 
+    /**
+     * @brief Computes the base-10 logarithm of each element in the tensor.
+     * 
+     * @return A new tensor containing the base-10 logarithm of each element.
+     */
     tensor log10() const;
 
+    /**
+     * @brief Computes the base-2 logarithm of each element in the tensor.
+     * 
+     * @return A new tensor containing the base-2 logarithm of each element.
+     */
     tensor log2() const;
 
+    /**
+     * @brief Computes the exponential (base e) of each element in the tensor.
+     * 
+     * @return A new tensor where each element is the exponential of the corresponding element in the original tensor.
+     */
     tensor exp() const;
+
+    /**
+     * @brief Computes the square root of each element in the tensor.
+     * 
+     * @return A new tensor containing the square root of each element.
+     */
     tensor sqrt() const;
+
+    /**
+     * @brief Sums the elements of the tensor along the specified axis.
+     * 
+     * @param __axis The axis along which to compute the sum.
+     * @return A tensor containing the sum of the elements along the specified axis.
+     */
     tensor sum(const index_type __axis) const;
 
+    /**
+     * @brief Returns the row at the specified index in the tensor.
+     * 
+     * @param __index The index of the row to retrieve.
+     * @return A new tensor representing the row at the specified index.
+     */
     tensor row(const index_type __index) const;
+
+    /**
+     * @brief Returns the column at the specified index in the tensor.
+     * 
+     * @param __index The index of the column to retrieve.
+     * @return A new tensor representing the column at the specified index.
+     */
     tensor col(const index_type __index) const;
 
+    /**
+     * @brief Computes the ceiling of each element in the tensor.
+     * 
+     * Each element is rounded up to the nearest integer.
+     * 
+     * @return A new tensor where each element is the ceiling of the corresponding element in the original tensor.
+     */
     tensor ceil() const;
+
+    /**
+     * @brief Computes the floor of each element in the tensor.
+     * 
+     * Each element is rounded down to the nearest integer.
+     * 
+     * @return A new tensor where each element is the floor of the corresponding element in the original tensor.
+     */
     tensor floor() const;
 
+    /**
+     * @brief Creates a clone of the tensor.
+     * 
+     * The clone is a deep copy, meaning the data and shape are duplicated.
+     * 
+     * @return A new tensor that is a clone of the original tensor.
+     */
     tensor clone() const {
         data_t     __d = this->__data_;
         shape_type __s = this->__shape_;
         return __self(__d, __s);
     }
 
+    /**
+     * @brief Clamps all elements in the tensor to be within the specified range.
+     * 
+     * Each element is clamped such that it is not less than `__min_val` and not greater than `__max_val`.
+     * 
+     * @param __min_val The minimum value for clamping. If `nullptr`, no minimum clamping is applied.
+     * @param __max_val The maximum value for clamping. If `nullptr`, no maximum clamping is applied.
+     * @return A new tensor where each element is clamped within the specified range.
+     */
     tensor clamp(const_pointer __min_val = nullptr, const_pointer __max_val = nullptr) const;
 
+    /**
+     * @brief Computes the cosine of each element in the tensor.
+     * 
+     * @return A new tensor containing the cosine of each element.
+     */
     tensor cos() const;
+
+    /**
+     * @brief Computes the sine of each element in the tensor.
+     * 
+     * @return A new tensor containing the sine of each element.
+     */
     tensor sin() const;
+
+    /**
+     * @brief Computes the hyperbolic sine (sinh) of each element in the tensor.
+     * 
+     * @return A new tensor containing the hyperbolic sine of each element.
+     */
     tensor sinh() const;
+
+    /**
+     * @brief Computes the inverse hyperbolic sine (asinh) of each element in the tensor.
+     * 
+     * @return A new tensor containing the inverse hyperbolic sine of each element.
+     */
     tensor asinh() const;
+
+    /**
+     * @brief Computes the hyperbolic cosine (cosh) of each element in the tensor.
+     * 
+     * @return A new tensor containing the hyperbolic cosine of each element.
+     */
     tensor cosh() const;
+
+    /**
+     * @brief Computes the inverse hyperbolic cosine (acosh) of each element in the tensor.
+     * 
+     * @return A new tensor containing the inverse hyperbolic cosine of each element.
+     */
     tensor acosh() const;
 
+    /**
+     * @brief Computes the element-wise logical XOR (exclusive or) with another tensor.
+     * 
+     * @param __other A tensor of the same shape as this.
+     * @return A new tensor where each element is the result of logical XOR between corresponding elements in this and __other.
+     */
     tensor logical_xor(const tensor& __other) const;
+
+    /**
+     * @brief Computes the element-wise logical XOR (exclusive or) with a scalar value.
+     * 
+     * @param __val A scalar value that supports the operator '!='.
+     * @return A new tensor where each element is the result of logical XOR between the tensor element and the scalar value __val.
+     */
     tensor logical_xor(const value_type __val) const;
 
+    /**
+     * @brief Computes the element-wise logical AND with another tensor.
+     * 
+     * @param __other A tensor of the same shape as this.
+     * @return A new tensor where each element is the result of logical AND between corresponding elements in this and __other.
+     */
     tensor logical_and(const tensor& __other) const;
+
+    /**
+     * @brief Computes the element-wise logical AND with a scalar value.
+     * 
+     * @param __val A scalar value that supports the operator '&&'.
+     * @return A new tensor where each element is the result of logical AND between the tensor element and the scalar value __val.
+     */
     tensor logical_and(const value_type __val) const;
 
+    /**
+     * @brief Performs a bitwise NOT operation on each element of the tensor.
+     * 
+     * @return A new tensor where each element is the bitwise NOT of the corresponding element in the original tensor.
+     */
     tensor bitwise_not() const;
 
+    /**
+     * @brief Computes the element-wise bitwise AND with a scalar value.
+     * 
+     * @param __val A scalar value.
+     * @return A new tensor where each element is the result of bitwise AND between the tensor element and the scalar value __val.
+     */
     tensor bitwise_and(const value_type __val) const;
+
+    /**
+     * @brief Computes the element-wise bitwise AND with another tensor.
+     * 
+     * @param __other A tensor of the same shape as this.
+     * @return A new tensor where each element is the result of bitwise AND between corresponding elements in this and __other.
+     */
     tensor bitwise_and(const tensor& __other) const;
 
+    /**
+     * @brief Computes the element-wise bitwise OR with a scalar value.
+     * 
+     * @param __val A scalar value.
+     * @return A new tensor where each element is the result of bitwise OR between the tensor element and the scalar value __val.
+     */
     tensor bitwise_or(const value_type __val) const;
+
+    /**
+     * @brief Computes the element-wise bitwise OR with another tensor.
+     * 
+     * @param __other A tensor of the same shape as this.
+     * @return A new tensor where each element is the result of bitwise OR between corresponding elements in this and __other.
+     */
     tensor bitwise_or(const tensor& __other) const;
 
+    /**
+     * @brief Computes the element-wise bitwise XOR (exclusive or) with a scalar value.
+     * 
+     * @param __val A scalar value.
+     * @return A new tensor where each element is the result of bitwise XOR between the tensor element and the scalar value __val.
+     */
     tensor bitwise_xor(const value_type __val) const;
+
+    /**
+     * @brief Computes the element-wise bitwise XOR (exclusive or) with another tensor.
+     * 
+     * @param __other A tensor of the same shape as this.
+     * @return A new tensor where each element is the result of bitwise XOR between corresponding elements in this and __other.
+     */
     tensor bitwise_xor(const tensor& __other) const;
 
+    /**
+     * @brief Performs a bitwise left shift on each element of the tensor by a specified amount.
+     * 
+     * @param __amount The number of positions to shift each element to the left.
+     * @return A new tensor where each element is left-shifted by __amount positions.
+     */
     tensor bitwise_left_shift(const int __amount) const;
+
+    /**
+     * @brief Performs a bitwise right shift on each element of the tensor by a specified amount.
+     * 
+     * @param __amount The number of positions to shift each element to the right.
+     * @return A new tensor where each element is right-shifted by __amount positions.
+     */
     tensor bitwise_right_shift(const int __amount) const;
 
+    /**
+     * @brief Performs matrix multiplication between this tensor and another tensor.
+     * 
+     * @param __other The other tensor to perform matrix multiplication with.
+     * @return A new tensor resulting from matrix multiplication of this and __other.
+     * 
+     * @throws std::invalid_argument If the dimensions are not compatible for matrix multiplication.
+     */
     tensor matmul(const tensor& __other) const;
 
+    /**
+     * @brief Reshapes the tensor to a new shape.
+     * 
+     * @param __shape The new shape for the tensor.
+     * @return A new tensor with the specified shape.
+     * 
+     * @throws std::invalid_argument If the new shape is incompatible with the number of elements in the tensor.
+     */
     tensor reshape(const shape_type __shape) const;
-    tensor reshape_as(const tensor& __other) { return this->reshape(__other.__shape_); }
 
+    /**
+     * @brief Reshapes the tensor to have the same shape as another tensor.
+     * 
+     * @param __other A tensor whose shape will be used for reshaping.
+     * @return A new tensor with the same shape as __other.
+     */
+    tensor reshape_as(const tensor& __other) { return this->reshape(__other.__shape_); }
+    /**
+     * @brief Computes the cross product of this tensor with another tensor.
+     * 
+     * @param __other A tensor of the same dimensionality as this tensor, which must be 3D.
+     * @return A new tensor representing the cross product of the two tensors.
+     * 
+     * @throws std::invalid_argument If the dimensions of the tensors are not compatible for cross product.
+     */
     tensor cross_product(const tensor& __other) const;
 
+    /**
+     * @brief Computes the absolute values of the elements in the given tensor.
+     * 
+     * @param __tensor The tensor for which to compute the absolute values.
+     * @return A new tensor containing the absolute values of the elements in __tensor.
+     */
     tensor absolute(const tensor& __tensor) const;
 
+    /**
+     * @brief Computes the dot product of this tensor with another tensor.
+     * 
+     * @param __other A tensor with compatible dimensions for the dot product.
+     * @return A new tensor representing the result of the dot product.
+     * 
+     * @throws std::invalid_argument If the dimensions of the tensors are not compatible for dot product.
+     */
     tensor dot(const tensor& __other) const;
 
+    /**
+     * @brief Applies the ReLU (Rectified Linear Unit) activation function to each element of the tensor.
+     * 
+     * @return A new tensor where each element is the result of the ReLU function applied to the corresponding element in this tensor.
+     */
     tensor relu() const;
 
+    /**
+     * @brief Computes the transpose of the tensor.
+     * 
+     * @return A new tensor that is the transpose of this tensor.
+     * 
+     * @throws std::invalid_argument If the tensor cannot be transposed due to incompatible dimensions.
+     */
     tensor transpose() const;
 
+    /**
+     * @brief Raises each element of this tensor to the power of the corresponding element in another tensor.
+     * 
+     * @param __other A tensor with the same shape as this tensor.
+     * @return A new tensor containing the result of raising each element in this tensor to the power of the corresponding element in __other.
+     * 
+     * @throws std::invalid_argument If the shapes of the tensors are not the same.
+     */
     tensor pow(const tensor& __other) const;
+
+    /**
+     * @brief Raises each element of this tensor to the power of a specified scalar value.
+     * 
+     * @param __val A scalar value to which each element of the tensor will be raised.
+     * @return A new tensor containing the result of raising each element in this tensor to the power of __val.
+     */
     tensor pow(const value_type __val) const;
 
+    /**
+     * @brief Computes the cumulative product of the elements along a specified dimension.
+     * 
+     * @param __dim The dimension along which to compute the cumulative product. Defaults to -1 (last dimension).
+     * @return A new tensor containing the cumulative product along the specified dimension.
+     */
     tensor cumprod(index_type __dim = -1) const;
 
+    /**
+     * @brief Concatenates a vector of tensors along a specified dimension.
+     * 
+     * @param _others A vector of tensors to concatenate. All tensors must have the same shape except for the specified dimension.
+     * @param _dim The dimension along which to concatenate the tensors.
+     * @return A new tensor formed by concatenating the input tensors along the specified dimension.
+     * 
+     * @throws std::invalid_argument If the tensors in _others have incompatible shapes for concatenation.
+     */
     tensor cat(const std::vector<tensor>& _others, index_type _dim) const;
 
+    /**
+     * @brief Returns the indices of the maximum values along a specified dimension.
+     * 
+     * @param __dim The dimension along which to find the indices of the maximum values.
+     * @return A new tensor containing the indices of the maximum values along the specified dimension.
+     */
     tensor argmax(index_type __dim) const;
 
+    /**
+     * @brief Inserts a new dimension of size one at the specified index.
+     * 
+     * @param __dim The dimension index at which to add the new dimension.
+     * @return A new tensor with the added dimension.
+     */
     tensor unsqueeze(index_type __dim) const;
 
     index_type lcm() const;
