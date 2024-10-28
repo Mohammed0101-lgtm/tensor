@@ -2125,29 +2125,28 @@ void tensor<_Tp>::fmod_(const tensor<_Tp>& __other) {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::fmax(const tensor& __other) const {
-    this->__check_is_scalar_type("Cannot deduce the maximum of non scalar values");
-    if (this->__shape_ != __other.shape() || this->__data_.size() != __other.size(0))
-    {
-        throw std::invalid_argument("Cannot compare two tensors of different shapes : fmax");
-    }
-
-    data_t __ret(this->__data_.size());
-
-    size_t __i = 0;
-    for (; __i < this->__data_.size(); __i++)
-    {
-        __ret[__i] =
-            static_cast<value_type>(std::fmax(double(this->__data_[__i]), double(__other[__i])));
-    }
-
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.begin(), __ret.begin(),
-                   [](const_reference __v, const_reference __w) {
-                       return static_cast<value_type>(
-                           std::fmax(static_cast<double>(__v), static_cast<double>(__w)));
-                   });
-
-    return __self(__ret, this->__shape_);
+	return __self(*this).fmax_(__other);
 }
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::fmax(const value_type __val) const {
+	return __self(*this).fmax_(__val);
+}
+
+
+/*TODO
+template<class _Tp>
+void tensor<_Tp>::fmax_(const value_type __val) {
+	// to be completed
+}
+
+
+template<class _Tp>
+void tensor<_Tp<::fmax_(const tensor<value_type>& __other) {
+	// to be completed
+}
+*/
 
 
 template<class _Tp>
