@@ -508,6 +508,9 @@ class tensor
                  index_type                __step) const;
 
     tensor fmax(const tensor& __other) const;
+    tensor fmax(const value_type __val) const;
+    void fmax_(const tensor& __other); 
+    void fmax_(const value_type __val);
     tensor fmod(const tensor& __other) const;
 
     tensor frac() const;
@@ -2135,18 +2138,29 @@ tensor<_Tp> tensor<_Tp>::fmax(const value_type __val) const {
 }
 
 
-/*TODO
 template<class _Tp>
 void tensor<_Tp>::fmax_(const value_type __val) {
-	// to be completed
+    this->__check_is_scalar_type("Input template class must be a scalar");
+#if defined(__ARM_NEON)
+    // TODO
+#else
+    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+                    [&__val](const_reference __v) { return std::fmax(__v, __val); } );
+#endif
 }
 
 
 template<class _Tp>
-void tensor<_Tp<::fmax_(const tensor<value_type>& __other) {
-	// to be completed
+void tensor<_Tp>::fmax_(const tensor<value_type>& __other) {
+    this->__check_is_scalar_type("Input template class must be a scalar");
+
+#if defined(__ARM_NEON)
+    // TODO
+#else
+    std::transform(this->__data.begin(), this->__data_.end(), __other.begin(), this->__data.begin(),
+                    [](const_reference __v, const_reference __w) { return std::fmax(__v, __w); });    
+#endif
 }
-*/
 
 
 template<class _Tp>
