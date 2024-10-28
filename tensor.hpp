@@ -1142,7 +1142,15 @@ class tensor
      */
     tensor unsqueeze(index_type __dim) const;
 
+    /**
+     * @brief computes the least common multiple for all the elements in the tensor
+     * @return returns the least common multiple as a 64 bit integer
+    */
     index_type lcm() const;
+    
+    /**
+     * @brief in place version of sqrt()
+     */
     void       sqrt_() {
         this->__check_is_scalar_type("Cannot get the exponential of non scalar values");
 
@@ -1153,6 +1161,9 @@ class tensor
         }
     }
 
+    /**
+     * @brief in place version of exp()
+     */
     void exp_() {
         this->__check_is_scalar_type("Cannot get the exponential of non scalar values");
 
@@ -1162,6 +1173,10 @@ class tensor
             this->__data_[__i] = static_cast<value_type>(std::exp(double(this->__data_[__i])));
         }
     }
+
+    /**
+     * @brief in place version of log2()
+     */
     void log2_() {
         this->__check_is_integral_type("Given data type must be an integral");
 
@@ -1172,6 +1187,9 @@ class tensor
         }
     }
 
+    /**
+     * @brief in place version of log10()
+     */
     void log10_() {
         this->__check_is_integral_type("Given data type must be an integral");
 
@@ -1182,6 +1200,10 @@ class tensor
         }
     }
 
+
+    /**
+     * @brief in place version of log()
+     */
     void log_() {
         this->__check_is_integral_type("Given data type must be an integral");
 
@@ -1192,6 +1214,9 @@ class tensor
         }
     }
 
+    /**
+     * @brief in place version of frac()
+     */
     void frac_() {
         this->__check_is_scalar_type("Cannot get the fraction of a non-scalar type");
 
@@ -1202,9 +1227,19 @@ class tensor
         }
     }
 
+    /**
+     * @brief in place version of fmod(tensor)
+     */
     void fmod_(const tensor& __other);
+    
+    /** 
+     * @brief in place version of fmod(value)
+    */
     void fmod_(const value_type __val);
 
+    /**
+     * @brief in place version of cos()
+     */
     void cos_() {
         this->__check_is_scalar_type("Cannot perform a cosine on non-scalar data type");
 
@@ -1216,6 +1251,9 @@ class tensor
         }
     }
 
+    /**
+     * @brief in place version of cosh()
+     */
     void cosh_() {
         this->__check_is_scalar_type("Cannot perform a cosh on non-scalar data type");
 
@@ -1227,6 +1265,9 @@ class tensor
         }
     }
 
+    /**
+     * @brief in place version of acosh()
+     */
     void acosh_() {
         this->__check_is_scalar_type("Cannot perform a acosh on non-scalar data type");
 
@@ -1238,6 +1279,9 @@ class tensor
         }
     }
 
+    /**
+     * @brief in place version of sinh()
+     */
     void sinh_() {
         this->__check_is_scalar_type("Cannot perform a sin on non-scalar data type");
 
@@ -1247,6 +1291,9 @@ class tensor
                        });
     }
 
+    /**
+     * @brief in place version of asinh()
+     */
     void asinh_() {
         this->__check_is_scalar_type("Cannot perform asinh on non-scalar data type");
 
@@ -1256,6 +1303,9 @@ class tensor
                        });
     }
 
+    /**
+     * @brief in place version of ceil()
+     */
     void ceil_() {
         this->__check_is_scalar_type("Cannot get the ceiling of a non scalar value");
 
@@ -1265,6 +1315,9 @@ class tensor
                        });
     }
 
+    /**
+     * @brief in place version of floor()
+     */
     void floor_() {
         this->__check_is_scalar_type("Cannot get the floor of a non scalar value");
 
@@ -1274,6 +1327,9 @@ class tensor
                        });
     }
 
+    /**
+     * @brief in place version of sin()
+     */
     void sin_() const {
         this->__check_is_scalar_type("Cannot perform a sin on non-scalar data type");
 
@@ -1283,16 +1339,39 @@ class tensor
                        });
     }
 
+    /**
+     * @brief in place version of relu()
+     */
     void relu_();
 
+    /**
+     * @brief in place version of clamp()
+     */
     void clamp_(const_pointer __min_val = nullptr, const_pointer __max_val = nullptr);
 
+    /**
+     * @brief in place version of logical_not()
+     */
     void logical_not_() const { this->bitwise_not_(); }
 
+    /**
+     * @brief in place version of logical_or(tensor)
+     */
     void logical_or_(const tensor& __other);
+
+    /**
+     * @brief in place version of logical_or(value)
+     */
     void logical_or_(const value_type __val);
 
+    /**
+     * @brief in place version of logical_xor(tensor) 
+     */
     void logical_xor_(const tensor& __other);
+
+    /**
+     * @brief in place version of 
+     */
     void logical_xor_(const value_type __val);
 
     void logical_and_(const tensor& __other);
