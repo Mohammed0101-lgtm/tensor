@@ -1147,11 +1147,11 @@ class tensor
      * @return returns the least common multiple as a 64 bit integer
     */
     index_type lcm() const;
-    
+
     /**
      * @brief in place version of sqrt()
      */
-    void       sqrt_() {
+    void sqrt_() {
         this->__check_is_scalar_type("Cannot get the exponential of non scalar values");
 
         size_t __i = 0;
@@ -1231,7 +1231,7 @@ class tensor
      * @brief in place version of fmod(tensor)
      */
     void fmod_(const tensor& __other);
-    
+
     /** 
      * @brief in place version of fmod(value)
     */
@@ -1678,27 +1678,29 @@ tensor<_Tp> tensor<_Tp>::log10() const {
     data_t __ret(this->__data_.size());
 
 #if defined(__ARM_NEON)
-    const size_t simd_size = 4;
-    constexpr size_t simd_end = this->__data_.size() - (this->__data_.size() % simd_size);
+    const size_t     simd_size = 4;
+    constexpr size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
 
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i += simd_size)
     {
-        int32x4_t vals = vld1q_s32(&this->__data_[__i]);
-        float32x4_t fvals = vcvtq_f32_s32(vals);
-        float32x4_t log_vals = vlogq_f32(fvals); 
-        float32x4_t log10_vals = vmulq_n_f32(log_vals, 0.4342944819032518f); 
+        int32x4_t   vals       = vld1q_s32(&this->__data_[__i]);
+        float32x4_t fvals      = vcvtq_f32_s32(vals);
+        float32x4_t log_vals   = vlogq_f32(fvals);
+        float32x4_t log10_vals = vmulq_n_f32(log_vals, 0.4342944819032518f);
         vst1q_f32(reinterpret_cast<float*>(&__ret[__i]), log10_vals);
     }
 
-    for (;__i < this->__data_.size(); __i++) {
+    for (; __i < this->__data_.size(); __i++)
+    {
         __ret[__i] = static_cast<value_type>(std::log10(static_cast<double>(this->__data_[__i])));
     }
 
 #else
-    std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(), [](const_reference __v) {
-        return static_cast<value_type>(std::log10(static_cast<double>(__v)));
-    });
+    std::transform(this->__data_.begin(), this->__data_.end(), __ret.begin(),
+                   [](const_reference __v) {
+                       return static_cast<value_type>(std::log10(static_cast<double>(__v)));
+                   });
 
 #endif
     return __self(__ret, this->__shape_);
