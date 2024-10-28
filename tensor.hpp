@@ -509,9 +509,10 @@ class tensor
 
     tensor fmax(const tensor& __other) const;
     tensor fmax(const value_type __val) const;
-    void fmax_(const tensor& __other); 
-    void fmax_(const value_type __val);
+    void   fmax_(const tensor& __other);
+    void   fmax_(const value_type __val);
     tensor fmod(const tensor& __other) const;
+    tensor fmod(const value_type __val) const;
 
     tensor frac() const;
 
@@ -653,6 +654,7 @@ class tensor
     }
 
     void fmod_(const tensor& __other);
+    void fmod_(const value_type __val);
 
     void cos_() {
         this->__check_is_scalar_type("Cannot perform a cosine on non-scalar data type");
@@ -2090,22 +2092,50 @@ tensor<_Tp> tensor<_Tp>::slice(index_type                __dim,
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::fmod(const tensor<_Tp>& __other) const {
-    this->__check_is_scalar_type("Cannot divide non scalar values");
-    if (this->__shape_ != __other.shape() || this->__data_.size() != __other.size(0))
+    return __self(*this).fmod_(__other);
+}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::fmod(const value_type __val) const {
+    return __self(*this).fmod_(__val);
+}
+
+template<class _Tp>
+void tensor<_Tp>::fmod_(const value_type __val) {
+    this->__check_is_scalar_type("Cannot divide a non scalar type");
+#if defined(__ARM_NEON)
+    constexpr size_t simd_size = 4;
+    constexpr size_t simd_end  = this->__data_.size() - (this->__data_.size() - simd_size);
+
+    float32x4_t __b = vdupq_n_f32(static_cast<float32_t>(__val));
+
+    size_t __i = 0;
+    for (; __i < simd_end; __i += simd_size)
     {
-        throw std::invalid_argument("Cannot divide two tensors of different shapes : fmax");
+        float32x4_t __a         = vld1q_f32(&this->__data_[__i]);
+        float32x4_t __div       = vdivq_f32(__a, __b);
+        float32x4_t __floor_div = vrndq_f32(__div);
+        float32x4_t __mult      = vmulq_f32(__floor_div, __b);
+        float32x4_t __mod       = vsubq_f32(__a, __mult);
+
+        vst1q_f32(&this->__data_[__i], __mod);
     }
 
-    data_t __ret(this->__data_.size());
 
+    __i = simd_end;
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = std::fmod(this->__data_[__i], __val);
+    }
+
+#else
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
-        __ret[__i] =
-            static_cast<value_type>(std::fmod(double(this->__data_[__i]), double(__other[__i])));
+        this->__data_[__i] = static_cast<value_type>(
+            std::fmod(static_cast<double>(this->__data_[__i]), static_cast<double>(__val)));
     }
-
-    return __self(__ret, this->__shape_);
+#endif
 }
 
 
@@ -2116,49 +2146,99 @@ void tensor<_Tp>::fmod_(const tensor<_Tp>& __other) {
     {
         throw std::invalid_argument("Cannot divide two tensors of different shapes : fmax");
     }
+#if defined(__ARM_NEON)
+    constexpr size_t simd_size = 4;
+    constexpr size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
 
+    size_t __i = 0;
+    for (; __i < simd_end; __i += simd_size)
+    {
+        float32x4_t __a         = vld1q_f32(&this->__data_[__i]);
+        float32x4_t __b         = vld1q_f32(&__other[__i]);
+        float32x4_t __div       = vdivq_f32(__a, __b);
+        float32x4_t __floor_div = vrndq_f32(__div);
+        float32x4_t __mult      = vmulq_f32(__floor_div, __b);
+        float32x4_t __mod       = vsubq_f32(__a, __mult);
+
+        vst1q_f32(&this->__data_[__i], __mod);
+    }
+    __i = simd_end;
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = std::fmod(this->__data_[__i], __other[__i]);
+    }
+#else
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
-        this->__data_[__i] =
-            static_cast<value_type>(std::fmax(double(this->__data_[__i]), double(__other[__i])));
+        this->__data_[__i] = static_cast<value_type>(
+            std::fmod(static_cast<double>(this->__data_[__i]), static_cast<double>(__other[__i])));
     }
+#endif
 }
 
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::fmax(const tensor& __other) const {
-	return __self(*this).fmax_(__other);
+    return __self(*this).fmax_(__other);
 }
 
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::fmax(const value_type __val) const {
-	return __self(*this).fmax_(__val);
+    return __self(*this).fmax_(__val);
 }
 
 
 template<class _Tp>
 void tensor<_Tp>::fmax_(const value_type __val) {
-    this->__check_is_scalar_type("Input template class must be a scalar");
 #if defined(__ARM_NEON)
-    // TODO
+    const size_t simd_size = 4;
+    const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+
+    float32x4_t scalar_val = vdupq_n_f32(__val);
+
+    for (size_t __i = 0; __i < simd_end; __i += simd_size)
+    {
+        float32x4_t __a       = vld1q_f32(&this->__data_[__i]);
+        float32x4_t __max_val = vmaxq_f32(__a, scalar_val);
+        vst1q_f32(&this->__data_[__i], __max_val);
+    }
+
+    for (size_t __i = simd_end; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = std::fmax(this->__data_[__i], __val);
+    }
 #else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                    [&__val](const_reference __v) { return std::fmax(__v, __val); } );
+                   [&__val](const_reference __v) { return std::fmax(__v, __val); });
 #endif
 }
 
 
 template<class _Tp>
 void tensor<_Tp>::fmax_(const tensor<value_type>& __other) {
-    this->__check_is_scalar_type("Input template class must be a scalar");
-
+    assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
 #if defined(__ARM_NEON)
-    // TODO
+    const size_t simd_size = 4;
+    const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+
+    for (size_t __i = 0; __i < simd_end; __i += simd_size)
+    {
+        float32x4_t __a       = vld1q_f32(&this->__data_[__i]);
+        float32x4_t __b       = vld1q_f32(&(__other[__i]));
+        float32x4_t __max_val = vmaxq_f32(__a, __b);
+        vst1q_f32(&this->__data_[__i], __max_val);
+    }
+
+    for (size_t __i = simd_end; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = std::fmax(this->__data_[__i], __other[__i]);
+    }
+
 #else
     std::transform(this->__data.begin(), this->__data_.end(), __other.begin(), this->__data.begin(),
-                    [](const_reference __v, const_reference __w) { return std::fmax(__v, __w); });    
+                   [](const_reference __v, const_reference __w) { return std::fmax(__v, __w); });
 #endif
 }
 
