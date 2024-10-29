@@ -1,3 +1,9 @@
+/* 
+    tensor class implementation 
+*/
+
+#pragma once
+
 #include <iostream>
 #include <stdexcept>
 #include <random>
@@ -17,292 +23,11 @@
 #include <__iterator/wrap_iter.h>
 
 
-/*
-  tensor synopsis
-
-template<class _Tp>
-class tensor
-{
-   public:
-    typedef tensor                  __self;
-    typedef _Tp                     value_type;
-    typedef int64_t                 index_type;
-    typedef std::vector<index_type> shape_type;
-    typedef value_type&             reference;
-    typedef const value_type&       const_reference;
-    typedef value_type*             pointer;
-    typedef const pointer           const_pointer;
-    typedef std::vector<value_type> data_t;
-    typedef const data_t            const_data_container;
-
-    typedef std::__wrap_iter<typename std::allocator_traits<std::allocator<_Tp>>::pointer>
-        __iterator;
-    typedef std::__wrap_iter<typename std::allocator_traits<std::allocator<_Tp>>::const_pointer>
-                                                    __const_iterator;
-    typedef std::reverse_iterator<__iterator>       reverse_iterator;
-    typedef std::reverse_iterator<__const_iterator> const_reverse_iterator;
-
-
-   private:
-    data_t                  __data_;
-    shape_type              __shape_;
-    std::vector<index_type> __strides_;
-
-   public:
-    tensor() = default;
-
-    explicit tensor(const shape_type __sh, const value_type __v);
-    explicit tensor(const shape_type __sh);
-    explicit tensor(const data_t __d, const shape_type __sh);
-    explicit tensor(const tensor& __t);
-
-    tensor(tensor&& __t) noexcept;
-    tensor(const shape_type __sh, std::initializer_list<value_type> init_list);
-    tensor(const shape_type& __sh, const tensor& __other);
-
-   private:
-    class __destroy_tensor
-    {
-       public:
-        __destroy_tensor(tensor& __tens);
-        void operator()();
-
-       private:
-        tensor& __tens_;
-    };
-
-   public:
-    ~tensor();
-
-    tensor& operator=(const tensor& __other);
-    tensor& operator=(tensor&& __other) noexcept;
-
-    __const_iterator begin() const;
-    __const_iterator end() const;
-
-    const_reverse_iterator rbegin() const;
-    const_reverse_iterator rend() const;
-
-    data_t     storage() const;
-    shape_type shape() const;
-    shape_type strides() const;
-    size_t     n_dims() const;
-
-    size_t size(const index_type __dim) const;
-
-    size_t          capacity() const noexcept;
-    reference       at(shape_type __idx);
-    const_reference at(const shape_type __idx) const;
-
-    reference operator[](const size_t __in);
-
-    const_reference operator[](const size_t __in) const;
-
-    tensor operator+(const tensor& __other) const;
-    tensor operator-(const tensor& __other) const;
-    tensor operator-=(const tensor& __other) const;
-    tensor operator+=(const tensor& __other) const;
-    tensor operator+(const value_type _scalar) const;
-    tensor operator-(const value_type _scalar) const;
-    tensor operator+=(const_reference __scalar) const;
-    tensor operator-=(const_reference __scalar) const;
-
-    bool operator==(const tensor& __other) const;
-    bool operator!=(const tensor& __other) const { return !(*this == __other); }
-
-    bool empty() const { return this->__data_.empty(); }
-
-    double mean() const;
-
-    tensor<bool> logical_not() const;
-    tensor<bool> logical_or(const value_type __val) const;
-    tensor<bool> logical_or(const tensor& __other) const;
-
-    tensor<bool> less_equal(const tensor& __other) const;
-    tensor<bool> less_equal(const value_type __val) const;
-
-    tensor<bool> greater_equal(const tensor& __other) const;
-    tensor<bool> greater_equal(const value_type __val) const;
-
-    tensor<bool> equal(const tensor& __other) const;
-    tensor<bool> equal(const value_type __val) const;
-
-    size_t count_nonzero(index_type __dim = -1LL) const;
-
-    tensor slice(index_type                __dim,
-                 std::optional<index_type> __start,
-                 std::optional<index_type> __end,
-                 index_type                __step) const;
-
-    tensor fmax(const tensor& __other) const;
-    tensor fmod(const tensor& __other) const;
-
-    tensor frac() const;
-    tensor log() const;
-    tensor log10() const;
-    tensor log2() const;
-
-    tensor exp() const;
-
-    tensor sqrt() const;
-
-    tensor sum(const index_type __axis) const;
-
-    tensor row(const index_type __index) const;
-    tensor col(const index_type __index) const;
-
-    tensor ceil() const;
-    tensor floor() const;
-
-    tensor clone() const;
-
-    tensor clamp(const_pointer __min_val = nullptr, const_pointer __max_val = nullptr) const;
-
-    tensor cos() const;
-    tensor sin() const;
-    tensor sinh() const;
-    tensor asinh() const;
-    tensor cosh() const;
-    tensor acosh() const;
-
-    tensor logical_xor(const tensor& __other) const;
-    tensor logical_xor(const value_type __val) const;
-
-    tensor logical_and(const tensor& __other) const;
-    tensor logical_and(const value_type __val) const;
-
-    tensor bitwise_not() const;
-
-    tensor bitwise_and(const value_type __val) const;
-    tensor bitwise_and(const tensor& __other) const;
-
-    tensor bitwise_or(const value_type __val) const;
-    tensor bitwise_or(const tensor& __other) const;
-
-    tensor bitwise_xor(const value_type __val) const;
-    tensor bitwise_xor(const tensor& __other) const;
-
-    tensor bitwise_left_shift(const int __amount) const;
-    tensor bitwise_right_shift(const int __amount) const;
-
-    tensor matmul(const tensor& __other) const;
-
-    tensor reshape(const shape_type __shape) const;
-    tensor reshape_as(const tensor& __other) { return this->reshape(__other.__shape_); }
-
-    tensor cross_product(const tensor& __other) const;
-
-    tensor absolute(const tensor& __tensor) const;
-
-    tensor dot(const tensor& __other) const;
-
-    tensor relu() const;
-
-    tensor transpose() const;
-
-    tensor pow(const tensor& __other) const;
-    tensor pow(const value_type __val) const;
-
-    tensor cumprod(index_type __dim = -1) const;
-
-    tensor cat(const std::vector<tensor>& _others, index_type _dim) const;
-
-    tensor argmax(index_type __dim) const;
-
-    tensor unsqueeze(index_type __dim) const;
-
-    index_type lcm() const;
-
-    void sqrt_();
-
-    void exp_();
-
-    void log2_();
-    void log10_();
-    void log_();
-
-    void frac_();
-
-    void fmod_(const tensor& __other);
-
-    void cos_();
-    void cosh_();
-    void acosh_();
-    void sin_() const;
-    void sinh_();
-    void asinh_();
-
-    void ceil_();
-    void floor_();
-
-    void relu_();
-
-    void clamp_(const_pointer __min_val = nullptr, const_pointer __max_val = nullptr);
-
-    void logical_not_() const;
-
-    void logical_or_(const tensor& __other);
-    void logical_or_(const value_type __val);
-
-    void logical_xor_(const tensor& __other);
-    void logical_xor_(const value_type __val);
-
-    void logical_and_(const tensor& __other);
-    void logical_and_(const value_type __val);
-
-    void pow_(const tensor& __other) const;
-    void pow_(const value_type __val) const;
-
-    void bitwise_left_shift_(const int __amount);
-    void bitwise_right_shift_(const int __amount);
-
-    void bitwise_and_(const value_type __val);
-    void bitwise_and_(const tensor& __other);
-
-    void bitwise_or_(const value_type __val);
-    void bitwise_or_(const tensor& __other);
-
-    void bitwise_xor_(const value_type __val);
-    void bitwise_xor_(const tensor& __other);
-
-    void bitwise_not_();
-
-    void view(std::initializer_list<index_type> __new_sh);
-
-    void print() const noexcept;
-
-    static tensor zeros(const shape_type& __sh);
-
-    static tensor ones(const shape_type& __sh);
-
-    static tensor randomize(const shape_type& __sh, bool __bounded = false);
-
-    tensor<index_type> argmax_(index_type __dim) const;
-    tensor<index_type> argsort(index_type __dim = -1LL, bool __ascending = true) const;
-
-   private:
-    static void __check_is_scalar_type(const std::string __msg);
-
-    static void __check_is_integral_type(const std::string __msg);
-
-    template<typename __t>
-    static void __check_is_same_type(const std::string __msg);
-    static void __check_is_arithmetic_type(const std::string __msg);
-    void        __compute_strides();
-    size_t      __compute_index(const std::vector<index_type>& __idx) const;
-    uint64_t    __computeSize(const shape_type& __dims) const;
-    uint64_t    __compute_outer_size(const index_type __dim) const;
-    float       __frac(const_reference __scalar);
-    index_type  __lcm(const index_type __a, const index_type __b);
-};  // tensor class
-*/
-
 enum class Device {
     CPU,
     CUDA
 };
 
-/*tensor implementation*/
 
 template<class _Tp>
 class tensor
@@ -331,6 +56,7 @@ class tensor
     std::vector<index_type> __strides_;
     Device                  __device_;
 
+
    public:
     tensor() = default;
 
@@ -341,6 +67,7 @@ class tensor
         this->__compute_strides();
     }
 
+
     explicit tensor(const shape_type& __sh, Device __d = Device::CPU) :
         __shape_(__sh),
         __device_(__d) {
@@ -349,6 +76,7 @@ class tensor
         this->__compute_strides();
     }
 
+
     explicit tensor(const data_t& __d, const shape_type& __sh, Device __dev = Device::CPU) :
         __data_(__d),
         __shape_(__sh),
@@ -356,17 +84,20 @@ class tensor
         this->__compute_strides();
     }
 
+
     tensor(const tensor& __t) :
         __data_(__t.storage()),
         __shape_(__t.shape()),
         __strides_(__t.strides()),
         __device_(__t.device()) {}
 
+
     tensor(tensor&& __t) noexcept :
         __data_(std::move(__t.storage())),
         __shape_(std::move(__t.shape())),
         __strides_(std::move(__t.strides())),
         __device_(std::move(__t.device())) {}
+
 
     tensor(const shape_type&                 __sh,
            std::initializer_list<value_type> init_list,
@@ -380,6 +111,7 @@ class tensor
         this->__compute_strides();
     }
 
+
     tensor(const shape_type& __sh, const tensor& __other) :
         __data_(__other.storage()),
         __shape_(__sh),
@@ -387,7 +119,9 @@ class tensor
         this->__compute_strides();
     }
 
+
     bool __is_cuda_device = this->__device_ == Device::CUDA ? true : false;
+
 
    private:
     class __destroy_tensor
@@ -402,16 +136,20 @@ class tensor
         tensor& __tens_;
     };
 
+
    public:
     ~tensor() { __destroy_tensor (*this)(); }
 
     tensor& operator=(const tensor& __other);
+
     tensor& operator=(tensor&& __other) noexcept;
 
     const_iterator begin() const { return this->__data_.begin(); }
+
     const_iterator end() const { return this->__data_.end(); }
 
     const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+
     const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
 
     /**
@@ -419,21 +157,25 @@ class tensor
      * @return vector of elements stored in this->__data_.
      */
     data_t storage() const noexcept { return this->__data_; }
+
     /**
      * @brief returns the shape of a tensor
      * @return vector of 64 bit integers indicating the size of each dimension 
     */
     shape_type shape() const noexcept { return this->__shape_; }
+
     /** 
      * @brief returns the strides of the dimensions
      * @return vector of 64 bit integers indicating the 'stride' of each dimension
     */
     shape_type strides() const noexcept { return this->__strides_; }
+
     /**
      * @brief returns which device the tensor is stored on
      * @return an element of the enum class Device (e.i CPU, GPU)
      */
     Device device() const noexcept { return this->__device_; }
+
     /**
      * @brief how many dimensions are in a tensor
      * @return unsigned long (aka 64 bit unsigned integer, or 32 bits depending on the system and compiler)
@@ -445,31 +187,21 @@ class tensor
      * @param __dim const long long
      * @return unsigned long (aka 64 bit unsigned integer, or 32 bits depending on the system and compiler)
      */
-    size_t size(const index_type __dim) const {
-        if (__dim < 0 || __dim >= static_cast<index_type>(this->__shape_.size()))
-        {
-            throw std::invalid_argument("dimension input is out of range");
-        }
-
-        if (__dim == 0)
-        {
-            return this->__computeSize(this->__shape_);
-        }
-
-        return this->__shape_[__dim];
-    }
+    size_t size(const index_type __dim) const;
 
     /**
      * @brief whats the capacity of the tensor (memory reserved)
      * @return unsigned long (aka 64 bit unsigned integer, or 32 bits depending on the system and compiler)
      */
     size_t capacity() const noexcept { return this->__data_.capacity(); }
+
     /**
      * @brief for direct modifiable access
      * @param __idx vector of integers that specify the multidimensional index 
      * @return reference to the element at the input index
      */
     reference at(shape_type __idx);
+
     /**
      * @brief for direct unmodifiable access
      * @param __idx vector of integers that specify the multidimensional index 
@@ -482,28 +214,14 @@ class tensor
      * @param __in linear index in the tensor storage
      * @return reference to the element at the input index
      */
-    reference operator[](const size_t __in) {
-        if (__in >= this->__data_.size() || __in < 0)
-        {
-            throw std::out_of_range("Access index is out of range");
-        }
-
-        return this->__data_[__in];
-    }
+    reference operator[](const size_t __in);
 
     /**
      * @brief for linear unmodifiable access
      * @param __in linear index in the tensor storage
      * @return constant reference to the element at the input index
      */
-    const_reference operator[](const size_t __in) const {
-        if (__in >= this->__data_.size() || __in < 0)
-        {
-            throw std::out_of_range("Access index is out of range");
-        }
-
-        return this->__data_[__in];
-    }
+    const_reference operator[](const size_t __in) const;
 
     /**
      * @brief adds two tensors of the same shape element wise
@@ -511,6 +229,7 @@ class tensor
      * @return the sum of two tensors element wise
      */
     tensor operator+(const tensor& __other) const;
+
     /**
      * @brief subtracts the input tensor from self element wise
      * @param __other other operand
@@ -524,30 +243,35 @@ class tensor
      * @return this - other
      */
     tensor operator-=(const tensor& __other) const;
+
     /**
      * @brief in place version of this + other
      * @param __other other operand
      * @return this + other
      */
     tensor operator+=(const tensor& __other) const;
+
     /**
      * @brief in place version of this * other
      * @param __other other operand
      * @return this * other
      */
     tensor operator*=(const tensor& __other) const;
-    /**
+
+    /** 
      * @brief in place version of this / other
      * @param __other other operand
      * @return this / other
      */
     tensor operator/=(const tensor& __other) const;
+
     /**
      * @brief adds a scalar to each element of the tensor
      * @param __scalar a value of an arithmetic type
      * @return the sum of self and __scalar element wise
      */
     tensor operator+(const value_type _scalar) const;
+
     /**
      * @brief subtracts a scalar from each element of the tensor 
      * @param __scalar a value of an arithmetic type
@@ -561,18 +285,21 @@ class tensor
      * @return this + __scalar
      */
     tensor operator+=(const_reference __scalar) const;
+
     /**
      * @brief in place version of this - __scalar
      * @param __scalar a value of an arithmetic type
      * @return this - __scalar
      */
     tensor operator-=(const_reference __scalar) const;
+
     /**
      * @brief in place version of this / __scalar
      * @param __scalar a value of an arithmetic type
      * @return this / __scalar
      */
     tensor operator/=(const_reference __scalar) const;
+
     /**
      * @brief in place version of this * __scalar
      * @param __scalar a value of an arithmetic type
@@ -585,14 +312,7 @@ class tensor
      * @param __other other tensor
      * @return boolean value indicating if the tensors are equal or not
      */
-    bool operator==(const tensor& __other) const {
-        if ((this->__shape_ != __other.shape()) && (this->__strides_ != __other.strides()))
-        {
-            return false;
-        }
-
-        return this->__data_ == __other.storage();
-    }
+    bool operator==(const tensor& __other) const;
 
     /**
      * @brief check whether or not two tensors are not equal
@@ -618,12 +338,14 @@ class tensor
      * @return a new tensor where each element is the logical not of the corresponding element in this
      */
     tensor<bool> logical_not() const;
+
     /**
      * @brief logical or over all elements in the tensor with an input value
      * @param __val a value that supports the operator '||'
      * @return a new tensor where each element is the logical or of the corresponding element in this with __val
      */
     tensor<bool> logical_or(const value_type __val) const;
+
     /**
      * @brief logical or of this and other element wise
      * @param __other a tensor of the same shape as this
@@ -856,11 +578,7 @@ class tensor
      * 
      * @return A new tensor that is a clone of the original tensor.
      */
-    tensor clone() const {
-        data_t     __d = this->__data_;
-        shape_type __s = this->__shape_;
-        return __self(__d, __s);
-    }
+    tensor clone() const;
 
     /**
      * @brief Clamps all elements in the tensor to be within the specified range.
@@ -1151,81 +869,33 @@ class tensor
     /**
      * @brief in place version of sqrt()
      */
-    void sqrt_() {
-        this->__check_is_scalar_type("Cannot get the exponential of non scalar values");
-
-        size_t __i = 0;
-        for (; __i < this->__data_.size(); __i++)
-        {
-            this->__data_[__i] = static_cast<value_type>(std::exp(double(this->__data_[__i])));
-        }
-    }
+    void sqrt_();
 
     /**
      * @brief in place version of exp()
      */
-    void exp_() {
-        this->__check_is_scalar_type("Cannot get the exponential of non scalar values");
-
-        size_t __i = 0;
-        for (; __i < this->__data_.size(); __i++)
-        {
-            this->__data_[__i] = static_cast<value_type>(std::exp(double(this->__data_[__i])));
-        }
-    }
+    void exp_();
 
     /**
      * @brief in place version of log2()
      */
-    void log2_() {
-        this->__check_is_integral_type("Given data type must be an integral");
-
-        size_t __i = 0;
-        for (; __i < this->__data_.size(); __i++)
-        {
-            this->__data_[__i] = static_cast<value_type>(std::log2(double(this->__data_[__i])));
-        }
-    }
+    void log2_();
 
     /**
      * @brief in place version of log10()
      */
-    void log10_() {
-        this->__check_is_integral_type("Given data type must be an integral");
-
-        size_t __i = 0;
-        for (; __i < this->__data_.size(); __i++)
-        {
-            this->__data_[__i] = static_cast<value_type>(std::log10(double(this->__data_[__i])));
-        }
-    }
+    void log10_();
 
 
     /**
      * @brief in place version of log()
      */
-    void log_() {
-        this->__check_is_integral_type("Given data type must be an integral");
-
-        size_t __i = 0;
-        for (; __i < this->__data_.size(); __i++)
-        {
-            this->__data_[__i] = static_cast<value_type>(std::log(double(this->__data_[__i])));
-        }
-    }
+    void log_();
 
     /**
      * @brief in place version of frac()
      */
-    void frac_() {
-        this->__check_is_scalar_type("Cannot get the fraction of a non-scalar type");
-
-        size_t __i = 0;
-        for (; __i < this->__data_.size(); __i++)
-        {
-            this->__data_[__i] = static_cast<value_type>(this->__frac(this->__data_[__i]));
-        }
-    }
+    void frac_();
 
     /**
      * @brief in place version of fmod(tensor)
@@ -1240,104 +910,42 @@ class tensor
     /**
      * @brief in place version of cos()
      */
-    void cos_() {
-        this->__check_is_scalar_type("Cannot perform a cosine on non-scalar data type");
-
-        size_t __i = 0;
-        for (; __i < this->__data_.size(); __i++)
-        {
-            this->__data_[__i] =
-                static_cast<value_type>(std::cos(static_cast<double>(this->__data_[__i])));
-        }
-    }
+    void cos_();
 
     /**
      * @brief in place version of cosh()
      */
-    void cosh_() {
-        this->__check_is_scalar_type("Cannot perform a cosh on non-scalar data type");
-
-        size_t __i = 0;
-        for (; __i < this->__data_.size(); __i++)
-        {
-            this->__data_[__i] =
-                static_cast<value_type>(std::cosh(static_cast<double>(this->__data_[__i])));
-        }
-    }
+    void cosh_();
 
     /**
      * @brief in place version of acosh()
      */
-    void acosh_() {
-        this->__check_is_scalar_type("Cannot perform a acosh on non-scalar data type");
-
-        size_t __i = 0;
-        for (; __i < this->__data_.size(); __i++)
-        {
-            this->__data_[__i] =
-                static_cast<value_type>(std::acosh(static_cast<double>(this->__data_[__i])));
-        }
-    }
+    void acosh_();
 
     /**
      * @brief in place version of sinh()
      */
-    void sinh_() {
-        this->__check_is_scalar_type("Cannot perform a sin on non-scalar data type");
-
-        std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                       [](const_reference __v) {
-                           return static_cast<value_type>(std::sinh(static_cast<double>(__v)))
-                       });
-    }
+    void sinh_();
 
     /**
      * @brief in place version of asinh()
      */
-    void asinh_() {
-        this->__check_is_scalar_type("Cannot perform asinh on non-scalar data type");
-
-        std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                       [](const_reference __v) {
-                           return static_cast<value_type>(std::asinh(static_cast<double>(__v)))
-                       });
-    }
+    void asinh_();
 
     /**
      * @brief in place version of ceil()
      */
-    void ceil_() {
-        this->__check_is_scalar_type("Cannot get the ceiling of a non scalar value");
-
-        std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                       [](const_reference __v) {
-                           return static_cast<value_type>(std::ceil(static_cast<double>(__v)))
-                       });
-    }
+    void ceil_();
 
     /**
      * @brief in place version of floor()
      */
-    void floor_() {
-        this->__check_is_scalar_type("Cannot get the floor of a non scalar value");
-
-        std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                       [](const_reference __v) {
-                           return static_cast<value_type>(std::floor(static_cast<double>(__v)))
-                       });
-    }
+    void floor_();
 
     /**
      * @brief in place version of sin()
      */
-    void sin_() const {
-        this->__check_is_scalar_type("Cannot perform a sin on non-scalar data type");
-
-        std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                       [](const_reference __v) {
-                           return static_cast<value_type>(std::sin(static_cast<double>(__v)))
-                       });
-    }
+    void sin_();
 
     /**
      * @brief in place version of relu()
@@ -1374,51 +982,87 @@ class tensor
      */
     void logical_xor_(const value_type __val);
 
+    /**
+     * @brief in place version of logical_and(tensor)
+     */
     void logical_and_(const tensor& __other);
+
+    /**
+     * @brief in place version of logical_and(value)
+     */
     void logical_and_(const value_type __val);
 
-    void pow_(const tensor& __other) const;
+    /**
+     * @brief in place version of pow(tensor)
+     */
+    void pow_(const tensor& __other);
 
-    void pow_(const value_type __val) const {
-        this->__check_is_integral_type("cannot get the power of a non integral value");
+    /**
+     * @brief in place version of pow(value)
+     */
+    void pow_(const value_type __val);
 
-        std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                       [&__val](const_reference __v) {
-                           return static_cast<value_type>(
-                               std::pow(static_cast<double>(__v), static_cast<double>(__val)))
-                       });
-    }
+    /**
+     * @brief in place version of bitwise_left_shift(amount)
+     */
+    void bitwise_left_shift_(const int __amount);
 
-    void bitwise_left_shift_(const int __amount) {
-        this->__check_is_integral_type(
-            "Cannot perform a bitwise left shift on non-integral values");
+    /**
+     * @brief in place version bitwise_right_shift(amount)
+     */
+    void bitwise_right_shift_(const int __amount);
 
-        std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                       [&__amount](const_reference __v) { return __v <<= __amount; });
-    }
-
-    void bitwise_right_shift_(const int __amount) {
-        this->__check_is_integral_type(
-            "Cannot perform a bitwise right shift on non-integral values");
-
-        std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                       [&__amount](const_reference __v) { return __v >>= amount; });
-    }
-
+    /**
+     * @brief in place version of bitwise_and(value)
+     */
     void bitwise_and_(const value_type __val);
+
+    /**
+     * @brief in place version of bitwise_and(tensor)
+     */
     void bitwise_and_(const tensor& __other);
 
+    /**
+     * @brief in place version of bitwise_or(value)
+     */
     void bitwise_or_(const value_type __val);
+
+    /**
+     * @brief in place version of bitwise_or(tensor)
+     */
     void bitwise_or_(const tensor& __other);
 
+    /**
+     * @brief in place version of bitwise_xor(value)
+     */
     void bitwise_xor_(const value_type __val);
+
+    /**
+     * @brief in place version of bitwise_xor(tensor)
+     */
     void bitwise_xor_(const tensor& __other);
 
+    /**
+     * @brief in place version of bitwise_not()
+     */
     void bitwise_not_();
 
+    /**
+     * @brief changes the tensor aspects (shape, strides) to reshape the tensor internally
+     * @param __new_sh a list of dimensions that will be the new shape
+     */
     void view(std::initializer_list<index_type> __new_sh);
+
+    /**
+     * @brief prints a tensor to stdout
+     */
     void print() const noexcept;
 
+    /**
+     * @brief sets all the element of the tensor to zero
+     * @param __sh the shape of the returned tensor
+     * @return a tensor of the input shape where all elements are set to zero
+     */
     static tensor zeros(const shape_type& __sh) {
         __check_is_scalar_type("template type must be a scalar : tensor.zeros()");
         data_t __d(std::accumulate(__sh.begin(), __sh.end(), 1, std::multiplies<index_type>()),
@@ -1426,6 +1070,11 @@ class tensor
         return __self(__d, __sh);
     }
 
+    /**
+     * @brief sets all the element of the tensor to one
+     * @param __sh the shape of the returned tensor 
+     * @return a tensor of the input shape where all the elements are set to one
+     */
     static tensor ones(const shape_type& __sh) {
         __check_is_scalar_type("template type must be a scalar : tensor.ones()");
         data_t __d(std::accumulate(__sh.begin(), __sh.end(), 1, std::multiplies<index_type>()),
@@ -1433,6 +1082,9 @@ class tensor
         return __self(__d, __sh);
     }
 
+    /**
+     * @brief in place version of zeros(shape)
+     */
     void zeros_(const shape_type& __sh = {}) {
         if (__sh.empty())
         {
@@ -1444,6 +1096,9 @@ class tensor
                    value_type(0));
     }
 
+    /**
+     * @brief in place version of ones(shape)
+     */
     void ones_(const shape_type& __sh = {}) {
         if (__sh.empty())
         {
@@ -1455,11 +1110,32 @@ class tensor
                    value_type(0));
     }
 
+    /**
+     * @brief sets all the elements of the tensor to random values
+     * @param __sh the shape of the returned tensor
+     * @param __bounded wether the elements should be between zero or one or not
+     * @return a tensor of the input shape where all the elements are set to random values 
+     */
     tensor randomize(const shape_type& __sh, bool __bounded = false);
-    void   randomize_(const shape_type& __sh, bool __bounded = false);
 
+    /**
+     * @brief in place version of randomize(shape, bounded)
+     */
+    void randomize_(const shape_type& __sh, bool __bounded = false);
+
+    /**
+     * @brief gets the indices of the maximum values along each dimension
+     * @param __dim 64 bit integer indicating the desired dimension to be evaluated
+     * @return a tensor of 64 bit integers
+     */
     tensor<index_type> argmax_(index_type __dim) const;
 
+    /**
+     * @brief sorts the elements along a given dimension
+     * @param __dim the dimension along which to sort the elements
+     * @param __ascending true to sort in ascending order 
+     * @return a tensor of 64 bit integer (indicies of the sorted elements in the sort order)
+     */
     tensor<index_type> argsort(index_type __dim = -1LL, bool __ascending = true) const;
 
    private:
@@ -1548,6 +1224,463 @@ class tensor
         return (__a * __b) / std::gcd(__a, __b);
     }
 };  // tensor class
+
+
+template<class _Tp>
+size_t tensor<_Tp>::size(const index_type __dim) const {
+    if (__dim < 0 || __dim >= static_cast<index_type>(this->__shape_.size()))
+    {
+        throw std::invalid_argument("dimension input is out of range");
+    }
+
+    if (__dim == 0)
+    {
+        return this->__computeSize(this->__shape_);
+    }
+
+    return this->__shape_[__dim];
+}
+
+
+template<class _Tp>
+typename tensor<_Tp>::reference tensor<_Tp>::at(tensor<_Tp>::shape_type __idx) {
+    if (__idx.empty())
+    {
+        throw std::invalid_argument("Passing an empty vector as indices for a tensor");
+    }
+
+    index_type __i = this->__compute_index(__idx);
+    if (__i < 0 || __i >= this->__data_.size())
+    {
+        throw std::invalid_argument("input indices are out of bounds");
+    }
+
+    return this->__data_[__i];
+}
+
+
+template<class _Tp>
+typename tensor<_Tp>::const_reference tensor<_Tp>::at(const tensor<_Tp>::shape_type __idx) const {
+    if (__idx.empty())
+    {
+        throw std::invalid_argument("Passing an empty vector as indices for a tensor");
+    }
+
+    index_type __i = this->__compute_index(__idx);
+    if (__i < 0 || __i >= this->__data_.size())
+    {
+        throw std::invalid_argument("input indices are out of bounds");
+    }
+
+    return this->__data_[__i];
+}
+
+
+template<class _Tp>
+tensor<_Tp>::reference tensor<_Tp>::operator[](const size_t __in) {
+    if (__in >= this->__data_.size() || __in < 0)
+    {
+        throw std::out_of_range("Access index is out of range");
+    }
+
+    return this->__data_[__in];
+}
+
+
+template<class _Tp>
+tensor<_Tp>::const_reference tensor<_Tp>::operator[](const size_t __in) const {
+    if (__in >= this->__data_.size() || __in < 0)
+    {
+        throw std::out_of_range("Access index is out of range");
+    }
+
+    return this->__data_[__in];
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
+    this->__check_is_arithmetic_type("template class must be an arithmetic type");
+    if (__other.shape() != this->__shape_)
+    {
+        throw std::invalid_argument("Cannot add two tensors with different shapes");
+    }
+
+    data_t __d(this->__data_.size());
+
+    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
+                   __d.begin(), [](const_reference __v, const_reference __w) {
+                       return static_cast<value_type>(__v + __w);
+                   });
+
+    return __self(__d, this->__shape_);
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator+(const value_type __scalar) const {
+    this->__check_is_arithmetic_type("template class must be an arithmetic type");
+
+    std::transform(
+        this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+        [&__scalar](const_reference __v) { return static_cast<value_type>(__v + __scalar); });
+
+    return __self(*this);
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator+=(const tensor& __other) const {
+    this->__check_is_arithmetic_type("template class must be an arithmetic type");
+    assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
+
+    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
+                   this->__data_.begin(), [](const_reference __v, const_reference __w) {
+                       return static_cast<value_type>(__v + __w);
+                   });
+
+    return *this;
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator+=(const_reference __scalar) const {
+    this->__check_is_arithmetic_type("template class must be an arithmetic type");
+
+    std::transform(
+        this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+        [&__scalar](const_reference __v) { return static_cast<value_type>(__v + __scalar); });
+    return *this;
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
+    this->__check_is_arithmetic_type("template class must be an arithmetic type");
+    if (__other.shape() != this->__shape_)
+    {
+        throw std::invalid_argument("Cannot add two tensors with different shapes");
+    }
+
+    data_t __d(this->__data_.size());
+
+    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
+                   __d.begin(), [](const_reference __v, const_reference __w) {
+                       return static_cast<value_type>(__v - __w);
+                   });
+
+    return __self(__d, this->__shape_);
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator-(const value_type __scalar) const {
+    this->__check_is_arithmetic_type("template class must be an arithmetic type");
+
+    std::transform(
+        this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+        [&__scalar](const_reference __v) { return static_cast<value_type>(__v - __scalar); });
+
+    return __self(*this);
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator-=(const tensor& __other) const {
+    this->__check_is_arithmetic_type("template class must be an arithmetic type");
+    assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
+
+    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
+                   this->__data_.begin(), [](const_reference __v, const_reference __w) {
+                       return static_cast<value_type>(__v - __w);
+                   });
+    return *this;
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator*=(const tensor& __other) const {
+    this->__check_is_arithmetic_type("template class must be an arithmetic type");
+    assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
+
+    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
+                   this->__data_.begin(), [](const_reference __v, const_reference __w) {
+                       return static_cast<value_type>(__v * __w);
+                   });
+    return *this;
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator*=(const_reference __scalar) const {
+    this->__check_is_arithmetic_type("template class must be an arithmetic type");
+
+    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+                   [](const_reference __v) { return static_cast<value_type>(__v * __scalar); });
+    return *this;
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator/=(const tensor& __other) const {
+    this->__check_is_arithmetic_type("template class must be an arithmetic type");
+    assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
+
+    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
+                   this->__data_.begin(), [](const_reference __v, const_reference __w) {
+                       return static_cast<value_type>(__v / __w);
+                   });
+    return *this;
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator/=(const_reference __scalar) const {
+    this->__check_is_arithmetic_type("template class must be an arithmetic type");
+
+    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+                   [](const_reference __v) { return static_cast<value_type>(__v / __scalar); });
+    return *this;
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator-=(const_reference __scalar) const {
+    this->__check_is_arithmetic_type("template class must be an arithmetic type");
+
+    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+                   [](const_reference __v, const_reference __w) {
+                       return static_cast<value_type>(__v - __w);
+                   });
+    return *this;
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::log2_() {
+    this->__check_is_integral_type("Given data type must be an integral");
+
+    size_t __i = 0;
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::log2(double(this->__data_[__i])));
+    }
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::asinh_() {
+    this->__check_is_scalar_type("Cannot perform asinh on non-scalar data type");
+
+    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+                   [](const_reference __v) {
+                       return static_cast<value_type>(std::asinh(static_cast<double>(__v)))
+                   });
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::floor_() {
+    this->__check_is_scalar_type("Cannot get the floor of a non scalar value");
+
+    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+                   [](const_reference __v) {
+                       return static_cast<value_type>(std::floor(static_cast<double>(__v)))
+                   });
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::ceil_() {
+    this->__check_is_scalar_type("Cannot get the ceiling of a non scalar value");
+
+    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+                   [](const_reference __v) {
+                       return static_cast<value_type>(std::ceil(static_cast<double>(__v)))
+                   });
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::sin_() {
+    this->__check_is_scalar_type("Cannot perform a sin on non-scalar data type");
+
+    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+                   [](const_reference __v) {
+                       return static_cast<value_type>(std::sin(static_cast<double>(__v)))
+                   });
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::log10_() {
+    this->__check_is_integral_type("Given data type must be an integral");
+
+    size_t __i = 0;
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::log10(double(this->__data_[__i])));
+    }
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::exp_() {
+    this->__check_is_scalar_type("Cannot get the exponential of non scalar values");
+
+    size_t __i = 0;
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::exp(double(this->__data_[__i])));
+    }
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::log_() {
+    this->__check_is_integral_type("Given data type must be an integral");
+
+    size_t __i = 0;
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::log(double(this->__data_[__i])));
+    }
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::exp_() {
+    this->__check_is_scalar_type("Cannot get the exponential of non scalar values");
+
+    size_t __i = 0;
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::exp(double(this->__data_[__i])));
+    }
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::sqrt_() {
+    this->__check_is_scalar_type("Cannot get the exponential of non scalar values");
+
+    size_t __i = 0;
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::exp(double(this->__data_[__i])));
+    }
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::sinh_() {
+    this->__check_is_scalar_type("Cannot perform a sin on non-scalar data type");
+
+    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+                   [](const_reference __v) {
+                       return static_cast<value_type>(std::sinh(static_cast<double>(__v)))
+                   });
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::acosh_() {
+    this->__check_is_scalar_type("Cannot perform a acosh on non-scalar data type");
+
+    size_t __i = 0;
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] =
+            static_cast<value_type>(std::acosh(static_cast<double>(this->__data_[__i])));
+    }
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::cosh_() {
+    this->__check_is_scalar_type("Cannot perform a cosh on non-scalar data type");
+
+    size_t __i = 0;
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] =
+            static_cast<value_type>(std::cosh(static_cast<double>(this->__data_[__i])));
+    }
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::cos_() {
+    this->__check_is_scalar_type("Cannot perform a cosine on non-scalar data type");
+
+    size_t __i = 0;
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] =
+            static_cast<value_type>(std::cos(static_cast<double>(this->__data_[__i])));
+    }
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::frac_() {
+    this->__check_is_scalar_type("Cannot get the fraction of a non-scalar type");
+
+    size_t __i = 0;
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(this->__frac(this->__data_[__i]));
+    }
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::pow_(const value_type __val) {
+    this->__check_is_integral_type("cannot get the power of a non integral value");
+
+    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+                   [&__val](const_reference __v) {
+                       return static_cast<value_type>(
+                           std::pow(static_cast<double>(__v), static_cast<double>(__val)))
+                   });
+}
+
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::clone() const {
+    data_t     __d = this->__data_;
+    shape_type __s = this->__shape_;
+    return __self(__d, __s);
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::bitwise_right_shift_(const int __amount) {
+    this->__check_is_integral_type("Cannot perform a bitwise right shift on non-integral values");
+
+    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+                   [&__amount](const_reference __v) { return __v >>= amount; });
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::bitwise_left_shift_(const int __amount) {
+    this->__check_is_integral_type("Cannot perform a bitwise left shift on non-integral values");
+
+    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+                   [&__amount](const_reference __v) { return __v <<= __amount; });
+}
+
+
+template<class _Tp>
+bool tensor<_Tp>::operator==(const tensor& __other) const {
+    if ((this->__shape_ != __other.shape()) && (this->__strides_ != __other.strides()))
+    {
+        return false;
+    }
+
+    return this->__data_ == __other.storage();
+}
 
 
 template<class _Tp>
@@ -1752,15 +1885,7 @@ typename tensor<_Tp>::index_type tensor<_Tp>::lcm() const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::sinh() const {
-    this->__check_is_integral_type("Given template type must be integral");
-    data_t __ret(this->__data_.size());
-
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__ret.begin(),
-                   [](const_reference __v) {
-                       return static_cast<value_type>(std::sinh(static_cast<double>(__v)));
-                   });
-
-    return __self(__ret, this->__shape_);
+    return this->clone().sinh_();
 }
 
 
@@ -1920,197 +2045,8 @@ void tensor<_Tp>::print() const noexcept {
 
 
 template<class _Tp>
-typename tensor<_Tp>::reference tensor<_Tp>::at(tensor<_Tp>::shape_type __idx) {
-    if (__idx.empty())
-    {
-        throw std::invalid_argument("Passing an empty vector as indices for a tensor");
-    }
-
-    index_type __i = this->__compute_index(__idx);
-    if (__i < 0 || __i >= this->__data_.size())
-    {
-        throw std::invalid_argument("input indices are out of bounds");
-    }
-
-    return this->__data_[__i];
-}
-
-
-template<class _Tp>
-typename tensor<_Tp>::const_reference tensor<_Tp>::at(const tensor<_Tp>::shape_type __idx) const {
-    if (__idx.empty())
-    {
-        throw std::invalid_argument("Passing an empty vector as indices for a tensor");
-    }
-
-    index_type __i = this->__compute_index(__idx);
-    if (__i < 0 || __i >= this->__data_.size())
-    {
-        throw std::invalid_argument("input indices are out of bounds");
-    }
-
-    return this->__data_[__i];
-}
-
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
-    this->__check_is_arithmetic_type("template class must be an arithmetic type");
-    if (__other.shape() != this->__shape_)
-    {
-        throw std::invalid_argument("Cannot add two tensors with different shapes");
-    }
-
-    data_t __d(this->__data_.size());
-
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
-                   __d.begin(), [](const_reference __v, const_reference __w) {
-                       return static_cast<value_type>(__v + __w);
-                   });
-
-    return __self(__d, this->__shape_);
-}
-
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
-    this->__check_is_arithmetic_type("template class must be an arithmetic type");
-    if (__other.shape() != this->__shape_)
-    {
-        throw std::invalid_argument("Cannot add two tensors with different shapes");
-    }
-
-    data_t __d(this->__data_.size());
-
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
-                   __d.begin(), [](const_reference __v, const_reference __w) {
-                       return static_cast<value_type>(__v - __w);
-                   });
-
-    return __self(__d, this->__shape_);
-}
-
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator+(const value_type __scalar) const {
-    this->__check_is_arithmetic_type("template class must be an arithmetic type");
-
-    std::transform(
-        this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-        [&__scalar](const_reference __v) { return static_cast<value_type>(__v + __scalar); });
-
-    return __self(*this);
-}
-
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator-(const value_type __scalar) const {
-    this->__check_is_arithmetic_type("template class must be an arithmetic type");
-
-    std::transform(
-        this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-        [&__scalar](const_reference __v) { return static_cast<value_type>(__v - __scalar); });
-
-    return __self(*this);
-}
-
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator+=(const tensor& __other) const {
-    this->__check_is_arithmetic_type("template class must be an arithmetic type");
-    assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
-
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
-                   this->__data_.begin(), [](const_reference __v, const_reference __w) {
-                       return static_cast<value_type>(__v + __w);
-                   });
-
-    return *this;
-}
-
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator+=(const_reference __scalar) const {
-    this->__check_is_arithmetic_type("template class must be an arithmetic type");
-
-    std::transform(
-        this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-        [&__scalar](const_reference __v) { return static_cast<value_type>(__v + __scalar); });
-    return *this;
-}
-
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator-=(const tensor& __other) const {
-    this->__check_is_arithmetic_type("template class must be an arithmetic type");
-    assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
-
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
-                   this->__data_.begin(), [](const_reference __v, const_reference __w) {
-                       return static_cast<value_type>(__v - __w);
-                   });
-    return *this;
-}
-
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator*=(const tensor& __other) const {
-    this->__check_is_arithmetic_type("template class must be an arithmetic type");
-    assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
-
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
-                   this->__data_.begin(), [](const_reference __v, const_reference __w) {
-                       return static_cast<value_type>(__v * __w);
-                   });
-    return *this;
-}
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator*=(const_reference __scalar) const {
-    this->__check_is_arithmetic_type("template class must be an arithmetic type");
-
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [](const_reference __v) { return static_cast<value_type>(__v * __scalar); });
-    return *this;
-}
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator/=(const tensor& __other) const {
-    this->__check_is_arithmetic_type("template class must be an arithmetic type");
-    assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
-
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(),
-                   this->__data_.begin(), [](const_reference __v, const_reference __w) {
-                       return static_cast<value_type>(__v / __w);
-                   });
-    return *this;
-}
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator/=(const_reference __scalar) const {
-    this->__check_is_arithmetic_type("template class must be an arithmetic type");
-
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [](const_reference __v) { return static_cast<value_type>(__v / __scalar); });
-    return *this;
-}
-
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator-=(const_reference __scalar) const {
-    this->__check_is_arithmetic_type("template class must be an arithmetic type");
-
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [](const_reference __v, const_reference __w) {
-                       return static_cast<value_type>(__v - __w);
-                   });
-    return *this;
-}
-
-
-template<class _Tp>
 tensor<_Tp> tensor<_Tp>::randomize(const shape_type& __sh, bool __bounded) {
-    return __self(*this).randomize_(__sh, __bounded);
+    return this->clone().randomize_(__sh, __bounded);
 }
 
 
@@ -2742,12 +2678,12 @@ tensor<_Tp> tensor<_Tp>::slice(index_type                __dim,
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::fmod(const tensor<_Tp>& __other) const {
-    return __self(*this).fmod_(__other);
+    return this->clone().fmod_(__other);
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::fmod(const value_type __val) const {
-    return __self(*this).fmod_(__val);
+    return this->clone().fmod_(__val);
 }
 
 template<class _Tp>
@@ -2830,13 +2766,13 @@ void tensor<_Tp>::fmod_(const tensor<_Tp>& __other) {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::fmax(const tensor& __other) const {
-    return __self(*this).fmax_(__other);
+    return this->clone().fmax_(__other);
 }
 
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::fmax(const value_type __val) const {
-    return __self(*this).fmax_(__val);
+    return this->clone().fmax_(__val);
 }
 
 
@@ -2972,6 +2908,7 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
     shape_type __ret_sh = {this->__shape_[0], __other.shape()[1]};
     data_t     __ret_d(__ret_sh[0] * __ret_sh[1], 0);
 
+#pragma omp parallel
     const int blockSize = 64;
 
     for (int i = 0; i < __ret_sh[0]; i += blockSize)
@@ -3341,7 +3278,7 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::relu() const {
-    return __self(*this).relu_();
+    return this->clone().relu_();
 }
 
 
@@ -3351,6 +3288,7 @@ void tensor<_Tp>::relu_() {
 
     size_t __s = this->__data_.size();
     size_t __i = 0;
+#pragma omp parallel
 
 #ifdef __CUDACC__
     if (this->__is_cuda_tensor)
@@ -3489,6 +3427,7 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
     return __ret;
 }
 
+
 #ifdef __CUDACC__
 template<class _Tp>
 __global__ void transpose_kernel(_Tp* input, _Tp* output, int rows, int cols) {
@@ -3528,19 +3467,19 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argsort(index_type __d,
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::bitwise_left_shift(const int __amount) const {
-    return __self(*this).bitwise_right_shift_(__amount);
+    return this->clone().bitwise_left_shift_(__amount);
 }
 
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::bitwise_xor(const tensor& __other) const {
-    return __self(*this).bitwise_xor_(__other);
+    return this->clone().bitwise_xor_(__other);
 }
 
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::bitwise_right_shift(const int __amount) const {
-    return __self(*this).bitwise_right_shift_(__amount);
+    return this->clone().bitwise_right_shift_(__amount);
 }
 
 
@@ -3657,43 +3596,43 @@ void tensor<_Tp>::bitwise_xor_(const tensor& __other) {
 
 template<class _Tp>
 tensor<bool> tensor<_Tp>::logical_not() const {
-    return __self(*this).logical_not_();
+    return this->clone().logical_not_();
 }
 
 
 template<class _Tp>
 tensor<bool> tensor<_Tp>::logical_or(const value_type __val) const {
-    return __self(*this).logical_or_(__val);
+    return this->clone().logical_or_(__val);
 }
 
 
 template<class _Tp>
 tensor<bool> tensor<_Tp>::logical_or(const tensor<_Tp>& __other) const {
-    return __self(*this).logical_or_(__other);
+    return this->clone().logical_or_(__other);
 }
 
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::logical_xor(const tensor& __other) const {
-    return __self(*this).logical_xor_(__other);
+    return this->clone().logical_xor_(__other);
 }
 
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::logical_xor(const value_type __val) const {
-    return __self(*this).logical_xor_(__val);
+    return this->clone().logical_xor_(__val);
 }
 
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::logical_and(const tensor& __other) const {
-    return __self(*this).logical_and_(__other);
+    return this->clone().logical_and_(__other);
 }
 
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::logical_and(const value_type __val) const {
-    return __self(*this).logical_and_(__val);
+    return this->clone().logical_and_(__val);
 }
 
 
@@ -3831,18 +3770,18 @@ double tensor<_Tp>::mean() const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::pow(const tensor& __other) const {
-    return __self(*this).pow_(__other);
+    return this->clone().pow_(__other);
 }
 
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::pow(const value_type __val) const {
-    return __self(*this).pow_(__val);
+    return this->clone().pow_(__val);
 }
 
 
 template<class _Tp>
-void tensor<_Tp>::pow_(const tensor& __other) const {
+void tensor<_Tp>::pow_(const tensor& __other) {
     this->__check_is_integral_type("cannot get the power of a non integral value");
 
     assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
