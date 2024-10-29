@@ -23,6 +23,9 @@
 #include <__iterator/wrap_iter.h>
 
 
+constexpr size_t _ARM64_REG_WIDTH = 4;
+
+
 enum class Device {
     CPU,
     CUDA
@@ -2544,13 +2547,13 @@ template<class _Tp>
 void tensor<_Tp>::fmod_(const value_type __val) {
     this->__check_is_scalar_type("Cannot divide a non scalar type");
 #if defined(__ARM_NEON)
-    constexpr size_t simd_size = 4;
-    constexpr size_t simd_end  = this->__data_.size() - (this->__data_.size() - simd_size);
+    constexpr size_t _ARM64_REG_WIDTH = 4;
+    constexpr size_t simd_end         = this->__data_.size() - (this->__data_.size() - _ARM64_REG_WIDTH);
 
     float32x4_t __b = vdupq_n_f32(static_cast<float32_t>(__val));
 
     size_t __i = 0;
-    for (; __i < simd_end; __i += simd_size)
+    for (; __i < simd_end; __i += _ARM64_REG_WIDTH)
     {
         float32x4_t __a         = vld1q_f32(&this->__data_[__i]);
         float32x4_t __div       = vdivq_f32(__a, __b);
@@ -2587,11 +2590,11 @@ void tensor<_Tp>::fmod_(const tensor<_Tp>& __other) {
         throw std::invalid_argument("Cannot divide two tensors of different shapes : fmax");
     }
 #if defined(__ARM_NEON)
-    constexpr size_t simd_size = 4;
-    constexpr size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+    constexpr size_t _ARM64_REG_WIDTH = 4;
+    constexpr size_t simd_end         = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
     size_t __i = 0;
-    for (; __i < simd_end; __i += simd_size)
+    for (; __i < simd_end; __i += _ARM64_REG_WIDTH)
     {
         float32x4_t __a         = vld1q_f32(&this->__data_[__i]);
         float32x4_t __b         = vld1q_f32(&__other[__i]);
@@ -2633,12 +2636,12 @@ tensor<_Tp> tensor<_Tp>::fmax(const value_type __val) const {
 template<class _Tp>
 void tensor<_Tp>::fmax_(const value_type __val) {
 #if defined(__ARM_NEON)
-    const size_t simd_size = 4;
-    const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+    const size_t _ARM64_REG_WIDTH = 4;
+    const size_t simd_end         = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
     float32x4_t scalar_val = vdupq_n_f32(__val);
 
-    for (size_t __i = 0; __i < simd_end; __i += simd_size)
+    for (size_t __i = 0; __i < simd_end; __i += _ARM64_REG_WIDTH)
     {
         float32x4_t __a       = vld1q_f32(&this->__data_[__i]);
         float32x4_t __max_val = vmaxq_f32(__a, scalar_val);
@@ -2660,10 +2663,10 @@ template<class _Tp>
 void tensor<_Tp>::fmax_(const tensor<value_type>& __other) {
     assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
 #if defined(__ARM_NEON)
-    const size_t simd_size = 4;
-    const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+    const size_t _ARM64_REG_WIDTH = 4;
+    const size_t simd_end         = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-    for (size_t __i = 0; __i < simd_end; __i += simd_size)
+    for (size_t __i = 0; __i < simd_end; __i += _ARM64_REG_WIDTH)
     {
         float32x4_t __a       = vld1q_f32(&this->__data_[__i]);
         float32x4_t __b       = vld1q_f32(&(__other[__i]));
@@ -2709,7 +2712,7 @@ size_t tensor<_Tp>::count_nonzero(index_type __dim) const {
                 }
             }
 #endif
-#ifdef __ARM_NEON
+#if defined(__ARM_NEON)
             if constexpr (std::is_same_v<value_type, float>)
             {
                 size_t size = this->__data_.size();
@@ -2787,7 +2790,7 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
         }
     }
 
-#ifdef __ARM_NEON
+#if defined(__ARM_NEON)
     const int neonBlockSize = 4;
 
     for (int i = 0; i < __ret_sh[0]; i += neonBlockSize)
@@ -3161,7 +3164,7 @@ void tensor<_Tp>::relu_() {
             _mm256_storeu_ps(&this->__data_[__i], result);
         }
     }
-#elif __ARM_NEON
+#elif defined(__ARM_NEON)
     if constexpr (std::is_same_v<value_type, float>)
     {
         const float32x4_t vZero = vdupq_n_f32(0.0f);
@@ -3216,7 +3219,7 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
     }
 #endif
 
-#ifdef __ARM_NEON
+#if defined(__ARM_NEON)
     if constexpr (std::is_same_v<_Tp, float>)
     {
         for (index_type i = 0; i < rows; i += 4)
@@ -3329,11 +3332,11 @@ void tensor<_Tp>::bitwise_and_(const tensor& __other) {
     }
 
     assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
-#ifdef __ARM_NEON
-    const size_t simd_size = 4;
-    const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+#if defined(__ARM_NEON)
+    const size_t _ARM64_REG_WIDTH = 4;
+    const size_t simd_end         = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-    for (size_t __i = 0; __i < simd_end; __i += simd_size)
+    for (size_t __i = 0; __i < simd_end; __i += _ARM64_REG_WIDTH)
     {
         uint32x4_t data_vec  = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
         uint32x4_t other_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other[__i]));
@@ -3365,11 +3368,11 @@ void tensor<_Tp>::bitwise_or_(const tensor& __other) {
     }
 
     assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
-#ifdef __ARM_NEON
-    const size_t simd_size = 4;
-    const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+#if defined(__ARM_NEON)
+    const size_t _ARM64_REG_WIDTH = 4;
+    const size_t simd_end         = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-    for (size_t __i = 0; __i < simd_end; __i += simd_size)
+    for (size_t __i = 0; __i < simd_end; __i += _ARM64_REG_WIDTH)
     {
         uint32x4_t data_vec  = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
         uint32x4_t other_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other[__i]));
@@ -3401,11 +3404,11 @@ void tensor<_Tp>::bitwise_xor_(const tensor& __other) {
     }
 
     assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
-#ifdef __ARM_NEON
-    const size_t simd_size = 4;
-    const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+#if defined(__ARM_NEON)
+    const size_t _ARM64_REG_WIDTH = 4;
+    const size_t simd_end         = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-    for (size_t __i = 0; __i < simd_end; __i += simd_size)
+    for (size_t __i = 0; __i < simd_end; __i += _ARM64_REG_WIDTH)
     {
         uint32x4_t data_vec  = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
         uint32x4_t other_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other[__i]));
@@ -3479,11 +3482,11 @@ void tensor<_Tp>::logical_or_(const tensor<_Tp>& __other) {
     }
 
     assert(this->__shape_ == __other.shape());
-#ifdef __ARM_NEON
-    const size_t simd_size = 4;
-    const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+#if defined(__ARM_NEON)
+    const size_t _ARM64_REG_WIDTH = 4;
+    const size_t simd_end         = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-    for (size_t __i = 0; __i < simd_end; __i += simd_size)
+    for (size_t __i = 0; __i < simd_end; __i += _ARM64_REG_WIDTH)
     {
         uint32x4_t data_vec  = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
         uint32x4_t other_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__other[__i]));
@@ -3515,11 +3518,11 @@ void tensor<_Tp>::logical_xor_(const tensor<_Tp>& __other) {
     }
 
     assert(this->__shape_ == __other.shape());
-#ifdef __ARM_NEON
-    const size_t simd_size = 4;
-    const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+#if defined(__ARM_NEON)
+    const size_t _ARM64_REG_WIDTH = 4;
+    const size_t simd_end         = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-    for (size_t __i = 0; __i < simd_end; __i += simd_size)
+    for (size_t __i = 0; __i < simd_end; __i += _ARM64_REG_WIDTH)
     {
         uint32x4_t data_vec  = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
         uint32x4_t other_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other[__i]));
@@ -3552,11 +3555,11 @@ void tensor<_Tp>::logical_and_(const tensor<_Tp>& __other) {
 
     assert(this->__shape_ == __other.shape());
 
-#ifdef __ARM_NEON
-    const size_t simd_size = 4;
-    const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+#if defined(__ARM_NEON)
+    const size_t _ARM64_REG_WIDTH = 4;
+    const size_t simd_end         = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-    for (size_t __i = 0; __i < simd_end; __i += simd_size)
+    for (size_t __i = 0; __i < simd_end; __i += _ARM64_REG_WIDTH)
     {
         uint32x4_t data_vec  = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
         uint32x4_t other_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other[__i]));
@@ -3617,11 +3620,11 @@ void tensor<_Tp>::pow_(const tensor& __other) {
     this->__check_is_integral_type("cannot get the power of a non integral value");
 
     assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
-#ifdef __ARM_NEON
-    const size_t simd_size = 4;
-    const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+#if defined(__ARM_NEON)
+    const size_t _ARM64_REG_WIDTH = 4;
+    const size_t simd_end         = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-    for (size_t __i = 0; __i < simd_end; __i += simd_size)
+    for (size_t __i = 0; __i < simd_end; __i += _ARM64_REG_WIDTH)
     {
         float32x4_t base_vec = vld1q_f32(reinterpret_cast<const float*>(&this->__data_[__i]));
         float32x4_t exp_vec  = vld1q_f32(reinterpret_cast<const float*>(&__other[__i]));
@@ -3659,7 +3662,7 @@ tensor<bool> tensor<_Tp>::less_equal(const tensor& __other) const {
     assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
 
     std::vector<bool> __ret(this->__data_.size());
-#ifdef __ARM_NEON
+#if defined(__ARM_NEON)
     if constexpr (std::is_same_v<_Tp, float>)
     {
         const size_t vec_size    = 4;
@@ -3713,7 +3716,7 @@ tensor<bool> tensor<_Tp>::less_equal(const value_type __val) const {
 
     std::vector<bool> __ret(this->__data_.size());
 
-#ifdef __ARM_NEON
+#if defined(__ARM_NEON)
     if constexpr (std::is_same_v<_Tp, float>)
     {
         const size_t vec_size    = 4;
@@ -3768,7 +3771,7 @@ tensor<bool> tensor<_Tp>::greater_equal(const tensor& __other) const {
     assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
 
     std::vector<bool> __ret(this->__data_.size());
-#ifdef __ARM_NEON
+#if defined(__ARM_NEON)
     if constexpr (std::is_same_v<_Tp, float>)
     {
         const size_t vec_size    = 4;
@@ -3822,7 +3825,7 @@ tensor<bool> tensor<_Tp>::greater_equal(const value_type __val) const {
     }
 
     std::vector<bool> __ret(this->__data_.size());
-#ifdef __ARM_NEON
+#if defined(__ARM_NEON)
     if constexpr (std::is_same_v<_Tp, float>)
     {
         const size_t vec_size    = 4;
@@ -3878,7 +3881,7 @@ tensor<bool> tensor<_Tp>::equal(const tensor& __other) const {
     assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
 
     std::vector<bool> __ret(this->__data_.size());
-#ifdef __ARM_NEON
+#if defined(__ARM_NEON)
     if constexpr (std::is_same_v<_Tp, float>)
     {
         const size_t vec_size    = 4;
@@ -3932,7 +3935,7 @@ tensor<bool> tensor<_Tp>::equal(const value_type __val) const {
         throw std::runtime_error("Cannot compare non-integral or scalar value");
     }
     std::vector<bool> __ret(this->__data_.size());
-#ifdef __ARM_NEON
+#if defined(__ARM_NEON)
     if constexpr (std::is_same_v<_Tp, float>)
     {
         const size_t vec_size    = 4;
@@ -4110,11 +4113,11 @@ tensor<_Tp> tensor<_Tp>::ceil() const {
     this->__check_is_scalar_type("Cannot get the ceiling of a non scalar value");
     data_t __ret(this->__data_.size());
 
-#ifdef __ARM_NEON
-    const size_t simd_size = 4;
-    const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+#if defined(__ARM_NEON)
+    const size_t _ARM64_REG_WIDTH = 4;
+    const size_t simd_end         = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-    for (size_t __i = 0; __i < simd_end; __i += simd_size)
+    for (size_t __i = 0; __i < simd_end; __i += _ARM64_REG_WIDTH)
     {
         float32x4_t data   = vld1q_f32(&this->__data_[__i]);
         float32x4_t ceiled = vrndpq_f32(data);
@@ -4143,13 +4146,13 @@ tensor<_Tp> tensor<_Tp>::floor() const {
     this->__check_is_scalar_type("Cannot get the floor of a non scalar value");
     data_t __ret(this->__data_.size());
 
-#ifdef __ARM_NEON
-    const size_t simd_size = 4;
-    const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+#if defined(__ARM_NEON)
+    const size_t _ARM64_REG_WIDTH = 4;
+    const size_t simd_end         = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
     float32x4_t zero = vdupq_n_f32(0.0f);
 
-    for (size_t __i = 0; __i < simd_end; __i += simd_size)
+    for (size_t __i = 0; __i < simd_end; __i += _ARM64_REG_WIDTH)
     {
         float32x4_t data    = vld1q_f32(&this->__data_[__i]);
         float32x4_t floored = vrndmq_f32(data);
@@ -4184,46 +4187,56 @@ tensor<_Tp> tensor<_Tp>::clamp(const_pointer __min_val, const_pointer __max_val)
 template<class _Tp>
 void tensor<_Tp>::clamp_(const_pointer __min_val, const_pointer __max_val) {
 #if defined(__AVX2__)
-    const size_t simd_size = 8;
-    const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+    const size_t REG_WIDTH  = 8;
+    const size_t __simd_end = this->__data_.size() - (this->__data_.size() % REG_WIDTH);
 
-    __m256 min_vec = _mm256_set1_ps(__min_val ? *__min_val : std::numeric_limits<_Tp>::lowest());
-    __m256 max_vec = _mm256_set1_ps(__max_val ? *__max_val : std::numeric_limits<_Tp>::max());
+    __m256 __min_vec = _mm256_set1_ps(__min_val ? *__min_val : std::numeric_limits<_Tp>::lowest());
+    __m256 __max_vec = _mm256_set1_ps(__max_val ? *__max_val : std::numeric_limits<_Tp>::max());
 
-    for (size_t __i = 0; __i < simd_end; __i += simd_size)
+    for (size_t __i = 0; __i < __simd_end; __i += REG_WIDTH)
     {
-        __m256 data_vec = _mm256_loadu_ps(&this->__data_[__i]);
-        __m256 clamped  = _mm256_min_ps(_mm256_max_ps(data_vec, min_vec), max_vec);
-        _mm256_storeu_ps(&this->__data_[__i], clamped);
+        __m256 __data_vec = _mm256_loadu_ps(&this->__data_[__i]);
+        __m256 __clamped  = _mm256_min_ps(_mm256_max_ps(data_vec, __min_vec), __max_vec);
+        _mm256_storeu_ps(&this->__data_[__i], __clamped);
     }
 
-    for (size_t __i = simd_end; __i < this->__data_.size(); __i++)
+    for (size_t __i = __simd_end; __i < this->__data_.size(); __i++)
     {
         if (__min_val)
+        {
             this->__data_[__i] = std::max(*__min_val, this->__data_[__i]);
+        }
+
         if (__max_val)
+        {
             this->__data_[__i] = std::min(*__max_val, this->__data_[__i]);
+        }
     }
 #elif defined(__ARM_NEON)
-    const size_t simd_size = 4;
-    const size_t simd_end  = this->__data_.size() - (this->__data_.size() % simd_size);
+    const size_t _ARM64_REG_WIDTH = 4;
+    const size_t __simd_end       = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-    float32x4_t min_vec = vdupq_n_f32(__min_val ? *__min_val : std::numeric_limits<_Tp>::lowest());
-    float32x4_t max_vec = vdupq_n_f32(__max_val ? *__max_val : std::numeric_limits<_Tp>::max());
+    float32x4_t __min_vec = vdupq_n_f32(__min_val ? *__min_val : std::numeric_limits<_Tp>::lowest());
+    float32x4_t __max_vec = vdupq_n_f32(__max_val ? *__max_val : std::numeric_limits<_Tp>::max());
 
-    for (size_t __i = 0; __i < simd_end; __i += simd_size)
+    for (size_t __i = 0; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
-        float32x4_t data_vec = vld1q_f32(&this->__data_[__i]);
-        float32x4_t clamped  = vminq_f32(vmaxq_f32(data_vec, min_vec), max_vec);
-        vst1q_f32(&this->__data_[__i], clamped);
+        float32x4_t __data_vec = vld1q_f32(&this->__data_[__i]);
+        float32x4_t __clamped  = vminq_f32(vmaxq_f32(__data_vec, __min_vec), __max_vec);
+        vst1q_f32(&this->__data_[__i], __clamped);
     }
 
-    for (size_t __i = simd_end; __i < this->__data_.size(); __i++)
+    for (size_t __i = __simd_end; __i < this->__data_.size(); __i++)
     {
         if (__min_val)
+        {
             this->__data_[__i] = std::max(*__min_val, this->__data_[__i]);
+        }
+
         if (__max_val)
+        {
             this->__data_[__i] = std::min(*__max_val, this->__data_[__i]);
+        }
     }
 #else
     size_t __i = 0;
@@ -4233,7 +4246,6 @@ void tensor<_Tp>::clamp_(const_pointer __min_val, const_pointer __max_val) {
         {
             this->__data_[__i] = std::max(*__min_val, this->__data_[__i]);
         }
-
         if (__max_val)
         {
             this->__data_[__i] = std::min(*__max_val, this->__data_[__i]);
