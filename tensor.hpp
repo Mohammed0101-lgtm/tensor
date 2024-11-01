@@ -17,6 +17,16 @@
 #include <type_traits>
 #include <immintrin.h>
 #include <omp.h>
+#include <initializer_list>
+#include <memory>
+#include <climits>
+#include <omp-tools.h>
+#include <optional>
+#include <bit>
+#include <array>
+#include <valarray>
+#include <arm64/
+
 
 #include <__iterator/iterator_traits.h>
 #include <__iterator/reverse_iterator.h>
