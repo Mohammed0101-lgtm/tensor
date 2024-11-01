@@ -607,6 +607,13 @@ class tensor
     tensor sin() const;
 
     /**
+     * @brief Computes the  arctanjent (atan) of each element in the tensor
+     * 
+     * @return A new tensor containing the inverse tangent of each element 
+     */
+    tensor atan() const;
+
+    /**
      * @brief Computes the hyperbolic sine (sinh) of each element in the tensor.
      * 
      * @return A new tensor containing the hyperbolic sine of each element.
@@ -924,6 +931,11 @@ class tensor
      * @brief in place version of cosh()
      */
     void cosh_();
+
+    /**
+     * @brief in place version of atan()
+     */
+    void atan_();
 
     /**
      * @brief in place version of acosh()
@@ -1449,19 +1461,107 @@ tensor<_Tp> tensor<_Tp>::operator-=(const_reference __scalar) const {
 template<class _Tp>
 void tensor<_Tp>::log2_() {
     this->__check_is_integral_type("Given data type must be an integral");
+#if defined(__ARM_NEON)
+    static_assert(std::is_floating_point<value_type>::value,
+                  "log2 : operation only supported for floating-point types.");
 
+    size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    size_t __i        = 0;
+    for (; __i < __simd_end; __i += 4)
+    {
+        float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+
+        float __vals[4];
+        vst1q_f32(__vals, __data_vec);
+        __vals[0] = std::log2(__vals[0]);
+        __vals[1] = std::log2(__vals[1]);
+        __vals[2] = std::log2(__vals[2]);
+        __vals[3] = std::log2(__vals[3]);
+
+        float32x4_t __atan_vec = vld1q_f32(__vals);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __atan_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::log2(this->__data_[__i]));
+    }
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [](const_reference __v) {
         return static_cast<value_type>(std::log2(static_cast<float>(this->__data_[__i])));
     });
+#endif
 }
 
 
 template<class _Tp>
 void tensor<_Tp>::asinh_() {
     this->__check_is_scalar_type("Cannot perform asinh on non-scalar data type");
+#if defined(__ARM_NEON)
+    static_assert(std::is_floating_point<value_type>::value,
+                  "asinh : operation only supported for floating-point types.");
 
+    size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    size_t __i        = 0;
+    for (; __i < __simd_end; __i += 4)
+    {
+        float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+
+        float __vals[4];
+        vst1q_f32(__vals, __data_vec);
+        __vals[0] = std::asinh(__vals[0]);
+        __vals[1] = std::asinh(__vals[1]);
+        __vals[2] = std::asinh(__vals[2]);
+        __vals[3] = std::asinh(__vals[3]);
+
+        float32x4_t __atan_vec = vld1q_f32(__vals);
+        vst1q_f32(&this->__data_[__i], __atan_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::asinh(this->__data_[__i]));
+    }
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                    [](const_reference __v) { return static_cast<value_type>(std::asinh(static_cast<double>(__v))) });
+#endif
+}
+
+
+template<class _Tp>
+void tensor<_Tp>::atan_() {
+    this->__check_is_integral_type("template class must be integral type");
+#if defined(__ARM_NEON)
+    static_assert(std::is_floating_point<value_type>::value,
+                  "Arctangent operation only supported for floating-point types.");
+
+    size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    size_t __i        = 0;
+    for (; __i < __simd_end; __i += 4)
+    {
+        float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+
+        float __vals[4];
+        vst1q_f32(__vals, __data_vec);
+        __vals[0] = std::atan(__vals[0]);
+        __vals[1] = std::atan(__vals[1]);
+        __vals[2] = std::atan(__vals[2]);
+        __vals[3] = std::atan(__vals[3]);
+
+        float32x4_t __atan_vec = vld1q_f32(__vals);
+        vst1q_f32(&this->__data_[__i], __atan_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::atan(this->__data_[__i]));
+    }
+
+#else
+    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
+                   [](const_reference __v) { return static_cast<value_type>(std::atan(static_cast<double>(__v))); });
+#endif
 }
 
 
@@ -1469,17 +1569,55 @@ template<class _Tp>
 void tensor<_Tp>::floor_() {
     this->__check_is_scalar_type("Cannot get the floor of a non scalar value");
 
+#if defined(__ARM_NEON)
+    static_assert(std::is_floating_point<value_type>::value,
+                  "Floor operation only supported for floating-point types.");
+
+    size_t __i = 0;
+    for (; __i < this->__data_.size(); __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __data_vec  = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+        float32x4_t __floor_vec = vrndmq_f32(__data_vec);
+        vst1q_f32(&this->__data_[__i], __floor_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::floor(static_cast<double>(this->__data_[__i])));
+    }
+
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [](const_reference __v) { return static_cast<value_type>(std::floor(static_cast<double>(__v))) });
+                   [](const_reference __v) { return static_cast<value_type>(std::floor(static_cast<double>(__v))); });
+
+#endif
 }
 
 
 template<class _Tp>
 void tensor<_Tp>::ceil_() {
     this->__check_is_scalar_type("Cannot get the ceiling of a non scalar value");
+#if defined(__ARM_NEON)
+    static_assert(std::is_floating_point<value_type>::value,
+                  "Ceiling operation only supported for floating-point types.");
 
+    size_t __i = 0;
+    for (; __i + _ARM64_REG_WIDTH <= this->__data_.size(); __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+        float32x4_t __ceil_vec = vrndpq_f32(__data_vec);
+        vst1q_f32(&this->__data_[__i], __ceil_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::ceil(static_cast<double>(this->__data_[__i])));
+    }
+
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                    [](const_reference __v) { return static_cast<value_type>(std::ceil(static_cast<double>(__v))) });
+#endif
 }
 
 
@@ -1487,118 +1625,428 @@ template<class _Tp>
 void tensor<_Tp>::sin_() {
     this->__check_is_scalar_type("Cannot perform a sin on non-scalar data type");
 
+#if defined(__ARM_NEON)
+    constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+
+    size_t __i = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float43x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+        float32_t   __vals[4];
+        vst1q_f32(__vals, __data_vec);
+        __vals[0] = std::sin(__vals[0]);
+        __vals[1] = std::sin(__vals[1]);
+        __vals[2] = std::sin(__vals[2]);
+        __vals[3] = std::sin(__vals[3]);
+
+        float32x4_t __sin_vec = vld1q_f32(__vals);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __sin_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::sin(this->__data_[__i]));
+    }
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                    [](const_reference __v) { return static_cast<value_type>(std::sin(static_cast<double>(__v))) });
+#endif
 }
 
 
 template<class _Tp>
 void tensor<_Tp>::asin_() {
     this->__check_is_scalar_type("Cannot perform asin on non-scalar data type");
+#if defined(__ARM_NEON)
+    static_assert(std::is_floating_point<value_type>::value,
+                  "asin : operation only supported for floating-point types.");
 
+    size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    size_t __i        = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+
+        float __vals[4];
+        vst1q_f32(__vals, __data_vec);
+        __vals[0] = std::asin(__vals[0]);
+        __vals[1] = std::asin(__vals[1]);
+        __vals[2] = std::asin(__vals[2]);
+        __vals[3] = std::asin(__vals[3]);
+
+        float32x4_t __atan_vec = vld1q_f32(__vals);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __atan_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::asin(this->__data_[__i]));
+    }
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                    [](const_reference __v) { return static_cast<value_type>(std::asin(static_cast<double>(__v))); });
+#endif
 }
 
 
 template<class _Tp>
 void tensor<_Tp>::log10_() {
     this->__check_is_integral_type("Given data type must be an integral");
+#if defined(__ARM_NEON)
+    static_assert(std::is_floating_point<value_type>::value,
+                  "log10 : operation only supported for floating-point types.");
 
+    size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    size_t __i        = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+
+        float __vals[4];
+        vst1q_f32(__vals, __data_vec);
+        __vals[0] = std::log10(__vals[0]);
+        __vals[1] = std::log10(__vals[1]);
+        __vals[2] = std::log10(__vals[2]);
+        __vals[3] = std::log10(__vals[3]);
+
+        float32x4_t __atan_vec = vld1q_f32(__vals);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __atan_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::log10(this->__data_[__i]));
+    }
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [](const_reference __v) {
         return static_cast<value_type>(std::log10(static_cast<double>(this->__data_[__i])));
     });
+#endif
 }
 
 
 template<class _Tp>
 void tensor<_Tp>::log_() {
     this->__check_is_integral_type("Given data type must be an integral");
+#if defined(__ARM_NEON)
+    static_assert(std::is_floating_point<value_type>::value,
+                  "log : operation only supported for floating-point types.");
 
+    size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    size_t __i        = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+
+        float __vals[4];
+        vst1q_f32(__vals, __data_vec);
+        __vals[0] = std::log(__vals[0]);
+        __vals[1] = std::log(__vals[1]);
+        __vals[2] = std::log(__vals[2]);
+        __vals[3] = std::log(__vals[3]);
+
+        float32x4_t __atan_vec = vld1q_f32(__vals);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __atan_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::log(this->__data_[__i]));
+    }
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [](const_reference __v) {
         return static_cast<value_type>(std::log(static_cast<double>(this->__data_[__i])));
     });
+#endif
 }
 
 
 template<class _Tp>
 void tensor<_Tp>::exp_() {
     this->__check_is_scalar_type("Cannot get the exponential of non scalar values");
+#if defined(__ARM_NEON)
+    static_assert(std::is_floating_point<value_type>::value, "exp operation only supported for floating-point types.");
 
+    size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    size_t __i        = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+
+        float __vals[4];
+        vst1q_f32(__vals, __data_vec);
+        __vals[0] = std::exp(__vals[0]);
+        __vals[1] = std::exp(__vals[1]);
+        __vals[2] = std::exp(__vals[2]);
+        __vals[3] = std::exp(__vals[3]);
+
+        float32x4_t __atan_vec = vld1q_f32(__vals);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __atan_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::exp(this->__data_[__i]));
+    }
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [](const_reference __v) {
         return static_cast<value_type>(std::exp(static_cast<double>(this->__data_[__i])));
     });
+#endif
 }
 
 
 template<class _Tp>
 void tensor<_Tp>::sqrt_() {
     this->__check_is_scalar_type("Cannot get the exponential of non scalar values");
+#if defined(__ARM_NEON)
+    static_assert(std::is_floating_point<value_type>::value,
+                  "sqrt : operation only supported for floating-point types.");
 
+    size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    size_t __i        = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+
+        float __vals[4];
+        vst1q_f32(__vals, __data_vec);
+        __vals[0] = std::sqrt(__vals[0]);
+        __vals[1] = std::sqrt(__vals[1]);
+        __vals[2] = std::sqrt(__vals[2]);
+        __vals[3] = std::sqrt(__vals[3]);
+
+        float32x4_t __atan_vec = vld1q_f32(__vals);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __atan_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::sqrt(this->__data_[__i]));
+    }
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [](const_reference __v) {
         return static_cast<value_type>(std::sqrt(static_cast<double>(this->__data_[__i])));
     });
+#endif
 }
 
 
 template<class _Tp>
 void tensor<_Tp>::sinh_() {
     this->__check_is_scalar_type("Cannot perform a sin on non-scalar data type");
+#if defined(__ARM_NEON)
+    static_assert(std::is_floating_point<value_type>::value,
+                  "sinh : operation only supported for floating-point types.");
 
+    size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    size_t __i        = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+
+        float __vals[4];
+        vst1q_f32(__vals, __data_vec);
+        __vals[0] = std::sinh(__vals[0]);
+        __vals[1] = std::sinh(__vals[1]);
+        __vals[2] = std::sinh(__vals[2]);
+        __vals[3] = std::sinh(__vals[3]);
+
+        float32x4_t __atan_vec = vld1q_f32(__vals);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __atan_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::sinh(this->__data_[__i]));
+    }
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                    [](const_reference __v) { return static_cast<value_type>(std::sinh(static_cast<double>(__v))) });
+#endif
 }
 
 
 template<class _Tp>
 void tensor<_Tp>::acosh_() {
     this->__check_is_scalar_type("Cannot perform a acosh on non-scalar data type");
+#if defined(__ARM_NEON)
+    static_assert(std::is_floating_point<value_type>::value,
+                  "acosh : operation only supported for floating-point types.");
 
+    size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    size_t __i        = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+
+        float __vals[4];
+        vst1q_f32(__vals, __data_vec);
+        __vals[0] = std::acosh(__vals[0]);
+        __vals[1] = std::acosh(__vals[1]);
+        __vals[2] = std::acosh(__vals[2]);
+        __vals[3] = std::acosh(__vals[3]);
+
+        float32x4_t __atan_vec = vld1q_f32(__vals);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __atan_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::acosh(this->__data_[__i]));
+    }
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [](const_reference __v) {
         return static_cast<value_type>(std::acosh(static_cast<double>(this->__data_[__i])));
     });
+#endif
 }
 
 
 template<class _Tp>
 void tensor<_Tp>::cosh_() {
     this->__check_is_scalar_type("Cannot perform a cosh on non-scalar data type");
+#if defined(__ARM_NEON)
+    static_assert(std::is_floating_point<value_type>::value,
+                  "cosh : operation only supported for floating-point types.");
 
+    size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    size_t __i        = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+
+        float __vals[4];
+        vst1q_f32(__vals, __data_vec);
+        __vals[0] = std::cosh(__vals[0]);
+        __vals[1] = std::cosh(__vals[1]);
+        __vals[2] = std::cosh(__vals[2]);
+        __vals[3] = std::cosh(__vals[3]);
+
+        float32x4_t __atan_vec = vld1q_f32(__vals);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __atan_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::cosh(this->__data_[__i]));
+    }
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [](const_reference __v) {
         return static_cast<value_type>(std::cosh(static_cast<double>(this->__data_[__i])));
     });
+#endif
 }
 
 
 template<class _Tp>
 void tensor<_Tp>::cos_() {
     this->__check_is_scalar_type("Cannot perform a cosine on non-scalar data type");
+#if defined(__ARM_NEON)
+    static_assert(std::is_floating_point<value_type>::value,
+                  "cos : operation only supported for floating-point types.");
 
+    size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    size_t __i        = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+
+        float __vals[4];
+        vst1q_f32(__vals, __data_vec);
+        __vals[0] = std::cos(__vals[0]);
+        __vals[1] = std::cos(__vals[1]);
+        __vals[2] = std::cos(__vals[2]);
+        __vals[3] = std::cos(__vals[3]);
+
+        float32x4_t __atan_vec = vld1q_f32(__vals);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __atan_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::cos(this->__data_[__i]));
+    }
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [](const_reference __v) {
         return static_cast<value_type>(std::cos(static_cast<double>(this->__data_[__i])));
     });
+#endif
 }
 
 
 template<class _Tp>
 void tensor<_Tp>::frac_() {
     this->__check_is_scalar_type("Cannot get the fraction of a non-scalar type");
+#if defined(__ARM_NEON)
+    static_assert(std::is_floating_point<value_type>::value,
+                  "frac : operation only supported for floating-point types.");
 
+    size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    size_t __i        = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+
+        float __vals[4];
+        vst1q_f32(__vals, __data_vec);
+        __vals[0] = this->__frac(__vals[0]);
+        __vals[1] = this->__frac(__vals[1]);
+        __vals[2] = this->__frac(__vals[2]);
+        __vals[3] = this->__frac(__vals[3]);
+
+        float32x4_t __atan_vec = vld1q_f32(__vals);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __atan_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(this->__frac(this->__data_[__i]));
+    }
+
+#else
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
     {
         this->__data_[__i] = static_cast<value_type>(this->__frac(this->__data_[__i]));
     }
+#endif
 }
 
 
 template<class _Tp>
 void tensor<_Tp>::pow_(const value_type __val) {
     this->__check_is_integral_type("cannot get the power of a non integral value");
+#if defined(__ARM_NEON)
+    static_assert(std::is_floating_point<value_type>::value,
+                  "pow : operation only supported for floating-point types.");
 
+    size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    size_t __i        = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+
+        float __vals[4];
+        vst1q_f32(__vals, __data_vec);
+        __vals[0] = std::pow(__vals[0]);
+        __vals[1] = std::pow(__vals[1]);
+        __vals[2] = std::pow(__vals[2]);
+        __vals[3] = std::pow(__vals[3]);
+
+        float32x4_t __atan_vec = vld1q_f32(__vals);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __atan_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(std::pow(this->__data_[__i]));
+    }
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [&__val](const_reference __v) {
         return static_cast<value_type>(std::pow(static_cast<double>(__v), static_cast<double>(__val)))
     });
+#endif
 }
 
 
@@ -1684,6 +2132,11 @@ tensor<_Tp> tensor<_Tp>::asinh() const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::cosh() const {
     return this->clone().cosh_();
+}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::atan() const {
+    return this->clone().atan_();
 }
 
 
