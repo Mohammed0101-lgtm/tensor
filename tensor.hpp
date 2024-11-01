@@ -57,6 +57,7 @@
 #include <bit>
 #include <array>
 #include <valarray>
+#include <numeric>
 #include <__iterator/iterator_traits.h>
 #include <__iterator/reverse_iterator.h>
 #include <__iterator/wrap_iter.h>
@@ -2279,7 +2280,6 @@ typename tensor<_Tp>::index_type tensor<_Tp>::lcm() const {
     {
         __ret = this->__lcm(static_cast<index_type>(this->__data_[__i]), __ret);
     }
-
     return __ret;
 }
 
@@ -2289,18 +2289,50 @@ tensor<_Tp> tensor<_Tp>::sinh() const {
     return this->clone().sinh_();
 }
 
-
 template<class _Tp>
 void tensor<_Tp>::logical_or_(const value_type __val) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
     {
-        throw std::runtime_error("Cannot get the element wise not of non-integral and non-boolean value");
+        throw std::runtime_error("Cannot perform logical OR on non-integral and non-boolean values");
     }
 
+#if defined(__ARM_NEON)
+    constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    size_t           __i        = 0;
+
+    if constexpr (std::is_same<value_type, int32_t>::value || std::is_same<value_type, bool>::value)
+    {
+        int32x4_t __val_vec = vdupq_n_s32(static_cast<int32_t>(__val));
+
+        for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+        {
+            int32x4_t __data_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
+            int32x4_t __or       = vorrq_s32(__data_vec, __val_vec);
+            vst1q_s32(&this->__data_[__i], __or);
+        }
+    }
+    else if constexpr (std::is_same<value_type, uint32_t>::value)
+    {
+        uint32x4_t __val_vec = vdupq_n_u32(static_cast<uint32_t>(__val));
+
+        for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+        {
+            uint32x4_t __data_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
+            uint32x4_t __or       = vorrq_u32(__data_vec, __val_vec);
+            vst1q_u32(&this->__data_[__i], __or);
+        }
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(this->__data_[__i] || __val);
+    }
+
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                    [&__val](const_reference __v) { return static_cast<value_type>(__v || __val); });
+#endif
 }
-
 
 template<class _Tp>
 void tensor<_Tp>::logical_xor_(const value_type __val) {
@@ -2308,9 +2340,40 @@ void tensor<_Tp>::logical_xor_(const value_type __val) {
     {
         throw std::runtime_error("Cannot get the element wise xor of non-integral and non-boolean value");
     }
+#if defined(__ARM_NEON)
+    constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    size_t           __i        = 0;
 
+    if constexpr (std::is_same<value_type, int32_t>::value || std::is_same<value_type, bool>::value)
+    {
+        int32x4_t __val_vec = vdupq_n_s32(static_cast<int32_t>(__val));
+        for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+        {
+            int32z4_t __data_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
+            int32x4_t __xor      = veorq_s32(__data_vec, __val_vec);
+            vst1q_s32(&this->__data_[__i], __or);
+        }
+    }
+    else if constexpr (std::is_same<value_type, uint32_t>::value)
+    {
+        uint32x4_t __val_vec = vdupq_n_u32(static_cast<uint32_t>(__val));
+
+        for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+        {
+            uint32x4_t __data_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
+            uint32x4_t __xor      = veorq_u32(__data_vec, __val_vec);
+            vst1q_u32(&this->__data_[__i], __xor);
+        }
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+    {
+        this->__data_[__i] = static_cast<value_type>(this->__data_[__i] ^ __val);
+    }
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                    [&__val](const_reference __v) { return static_cast<value_type>(__v ^ __val); });
+#endif
 }
 
 
@@ -2320,9 +2383,13 @@ void tensor<_Tp>::logical_and_(const value_type __val) {
     {
         throw std::runtime_error("Cannot get the element wise and of non-integral and non-boolean value");
     }
+#if defined(__ARM_NEON)
 
+
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                    [&__val](const_reference __v) { return static_cast<value_type>(__v && __val); });
+#endif
 }
 
 
@@ -3121,18 +3188,18 @@ tensor<_Tp> tensor<_Tp>::slice(index_type                __dim,
 #if defined(__CUDACC__)
     if (this->__data_.size() >= 1024)
     {
-        _Tp* __d_input;
-        _Tp* __d_output;
-        cudaMalloc(&__d_input, this->__data_.size() * sizeof(_Tp));
-        cudaMalloc(&__d_output, __ret.__data_.size() * sizeof(_Tp));
+        pointer __d_input;
+        pointer __d_output;
+        cudaMalloc(&__d_input, this->__data_.size() * sizeof(value_type));
+        cudaMalloc(&__d_output, __ret.__data_.size() * sizeof(value_type));
 
-        cudaMemcpy(__d_input, this->__data_.data(), this->__data_.size() * sizeof(_Tp), cudaMemcpyHostToDevice);
+        cudaMemcpy(__d_input, this->__data_.data(), this->__data_.size() * sizeof(value_type), cudaMemcpyHostToDevice);
 
         dim3 block(256);
         dim3 grid(((__slice_size + block.x - 1) / block.x));
         slice_kernel<<<grid, block>>>(__d_input, __d_output, __start_i, __end_i, __step, __slice_size);
 
-        cudaMemcpy(__ret.__data_.data(), __d_output, __ret.__data_.size() * sizeof(_Tp), cudaMemcpyDeviceToHost);
+        cudaMemcpy(__ret.__data_.data(), __d_output, __ret.__data_.size() * sizeof(value_type), cudaMemcpyDeviceToHost);
 
         cudaFree(__d_input);
         cudaFree(__d_output);
@@ -3307,6 +3374,7 @@ void tensor<_Tp>::fmax_(const value_type __val) {
 template<class _Tp>
 void tensor<_Tp>::fmax_(const tensor<value_type>& __other) {
     assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
+
 #if defined(__ARM_NEON)
     const size_t _ARM64_REG_WIDTH = 4;
     const size_t __simd_end       = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -3325,6 +3393,7 @@ void tensor<_Tp>::fmax_(const tensor<value_type>& __other) {
     }
 
 #else
+
     std::transform(this->__data.begin(), this->__data_.end(), __other.begin(), this->__data.begin(),
                    [](const_reference __v, const_reference __w) { return std::fmax(__v, __w); });
 #endif
@@ -3480,18 +3549,18 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
     const int __threadsPerBlock = 256;
     const int __blocksPerGrid   = (__ret_sh[0] * __ret_sh[1] + __threadsPerBlock - 1) / __threadsPerBlock;
 
-    _Tp *__d_a, *__d_b, *__d_c;
-    cudaMalloc(&__d_a, this->__data_.size() * sizeof(_Tp));
-    cudaMalloc(&__d_b, __other.__data_.size() * sizeof(_Tp));
-    cudaMalloc(&__d_c, __ret_d.size() * sizeof(_Tp));
+    pointer __d_a, __d_b, __d_c;
+    cudaMalloc(&__d_a, this->__data_.size() * sizeof(value_type));
+    cudaMalloc(&__d_b, __other.__data_.size() * sizeof(value_type));
+    cudaMalloc(&__d_c, __ret_d.size() * sizeof(value_type));
 
-    cudaMemcpy(__d_a, this->__data_.data(), this->__data_.size() * sizeof(_Tp), cudaMemcpyHostToDevice);
-    cudaMemcpy(__d_b, __other.__data_.data(), __other.__data_.size() * sizeof(_Tp), cudaMemcpyHostToDevice);
+    cudaMemcpy(__d_a, this->__data_.data(), this->__data_.size() * sizeof(value_type), cudaMemcpyHostToDevice);
+    cudaMemcpy(__d_b, __other.__data_.data(), __other.__data_.size() * sizeof(value_type), cudaMemcpyHostToDevice);
 
     matmul_kernel<<<blocksPerGrid, threadsPerBlock>>>(__d_a, __d_b, __d_c, this->__shape_[0], this->__shape_[1],
                                                       __other.shape()[1]);
 
-    cudaMemcpy(__ret_d.data(), __d_c, __ret_d.size() * sizeof(_Tp), cudaMemcpyDeviceToHost);
+    cudaMemcpy(__ret_d.data(), __d_c, __ret_d.size() * sizeof(value_type), cudaMemcpyDeviceToHost);
 
     cudaFree(__d_a);
     cudaFree(__d_b);
@@ -3945,16 +4014,52 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argsort(index_type __d, bo
     }
 
     index_type              __size = static_cast<index_type>(this->__data_.size());
-    std::vector<index_type> __indices(size);
+    std::vector<index_type> __indices(__size);
     std::iota(__indices.begin(), __indices.end(), 0);
 
+#if defined(__ARM_NEON)
+    constexpr size_t simd_width = 4;
+    size_t           i          = 0;
+
+    if constexpr (std::is_same<value_type, float>::value)
+    {
+        for (; i + simd_width <= __size; i += simd_width)
+        {
+            float32x4_t data_vec = vld1q_f32(&this->__data_[i]);
+
+            float32x2_t min1 = vpmin_f32(vget_low_f32(data_vec), vget_high_f32(data_vec));
+            float32x2_t min2 = vpmin_f32(min1, min1);
+
+            float32x4_t cmp_vec = vdupq_lane_f32(min2, 0);
+            uint32x4_t  cmp_result;
+
+            if (__ascending)
+            {
+                cmp_result = vcltq_f32(data_vec, cmp_vec);
+            }
+            else
+            {
+                cmp_result = vcgtq_f32(data_vec, cmp_vec);
+            }
+
+            for (int j = 0; j < simd_width; ++j)
+            {
+                __indices[i + j] = (cmp_result[j] ? i + j : i + j + 1);
+            }
+        }
+    }
+
+    for (; i < __size; ++i)
+    {
+        __indices[i] = i;
+    }
+#endif
     std::sort(__indices.begin(), __indices.end(), [&](index_type __a, index_type __b) {
         return __ascending ? this->__data_[__a] < this->__data_[__b] : this->__data_[__a] > this->__data_[__b];
     });
 
-    return tensor<index_type>(__indices);
+    return __self(__indices);
 }
-
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::bitwise_left_shift(const int __amount) const {
