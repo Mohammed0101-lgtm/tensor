@@ -1,12 +1,12 @@
 /**
- * @file tensor.h
+ * @file tensor.hpp
  * @brief Tensor Library for Efficient Mathematical and Linear Algebra Operations
  * 
  * This library provides a comprehensive implementation of a tensor class,
  * designed for high-performance numerical computing, matrix operations, and
  * machine learning applications. Built with support for scalar operations,
- * element-wise transformations, and SIMD acceleration on supported architectures
- * (e.g., ARM NEON).
+ * element-wise transformations, and SIMD acceleration on supported architectures 
+ * (e.g., ARM NEON), as well as CUDA GPU acceleration.
  * 
  * Key Features:
  * - Basic arithmetic operations on tensors (addition, subtraction, multiplication, etc.)
@@ -33,6 +33,7 @@
  * Version: 1.0.0
  */
 
+
 #pragma once
 
 #include <iostream>
@@ -56,8 +57,6 @@
 #include <bit>
 #include <array>
 #include <valarray>
-
-
 #include <__iterator/iterator_traits.h>
 #include <__iterator/reverse_iterator.h>
 #include <__iterator/wrap_iter.h>
