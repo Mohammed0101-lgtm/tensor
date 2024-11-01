@@ -4827,9 +4827,7 @@ tensor<_Tp> tensor<_Tp>::floor() const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::clamp(const_pointer __min_val, const_pointer __max_val) const {
-    tensor<value_type> __t = __self(*this);
-    __t.clamp_(__min_val, __max_val);
-    return __t;
+    return this->clone().clamp_(__min_val, _max_val);
 }
 
 
