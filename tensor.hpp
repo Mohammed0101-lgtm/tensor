@@ -52,6 +52,7 @@
 #include <initializer_list>
 #include <memory>
 #include <climits>
+#include <functional>
 #include <omp-tools.h>
 #include <optional>
 #include <bit>
@@ -346,7 +347,7 @@ class tensor
      * @param __other other tensor
      * @return boolean value indicating if the tensors are equal or not
      */
-    bool operator!=(const tensor& __other) const { return !(*this == __other); }
+    bool operatornot_eq(const tensor& __other) const { return !(*this == __other); }
 
     /**
      * @brief checks whether or not the tensor contains at least one element
@@ -368,7 +369,7 @@ class tensor
 
     /**
      * @brief logical or over all elements in the tensor with an input value
-     * @param __val a value that supports the operator '||'
+     * @param __val a value that supports the operator 'or'
      * @return a new tensor where each element is the logical or of the corresponding element in this with __val
      */
     tensor<bool> logical_or(const value_type __val) const;
@@ -701,7 +702,7 @@ class tensor
     /**
      * @brief Computes the element-wise logical AND with a scalar value.
      * 
-     * @param __val A scalar value that supports the operator '&&'.
+     * @param __val A scalar value that supports the operator 'and'.
      * @return A new tensor where each element is the result of logical AND between the tensor element and the scalar value __val.
      */
     tensor logical_and(const value_type __val) const;
@@ -3741,10 +3742,7 @@ void tensor<_Tp>::relu_() {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::transpose() const {
     if (this->__shape_.size() != 2)
-    {
-        std::cerr << "Matrix transposition can only be done on 2D tensors" << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
+        throw std::invalid_argument("Matrix transposition can only be done on 2D tensors");
 
     tensor __ret({this->__shape_[1], this->__shape_[0]});
 
@@ -3804,6 +3802,7 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
                 __ret.at({__j, __i}) = this->at({__i, __j});
         }
     }
+
     return __ret;
 }
 
@@ -3923,6 +3922,7 @@ void tensor<_Tp>::bitwise_or_(const tensor& __other) {
         throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
 
     assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
+
 #if defined(__ARM_NEON)
     const size_t _ARM64_REG_WIDTH = 4;
     const size_t __simd_end       = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -4374,25 +4374,22 @@ tensor<bool> tensor<_Tp>::greater_equal(const value_type __val) const {
 template<class _Tp>
 tensor<bool> tensor<_Tp>::equal(const tensor& __other) const {
     if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
-    {
         throw std::runtime_error("Cannot compare non-integral or scalar value");
-    }
 
-    assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
+    static_assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0),
+                  "equal : tensor shapes && sizes must match");
 
     std::vector<bool> __ret(this->__data_.size());
 #if defined(__ARM_NEON)
     if constexpr (std::is_same_v<_Tp, float>)
     {
-        const size_t __vec_size    = 4;
-        const size_t __num_vectors = this->__data_.size() / __vec_size;
-        const size_t __remaining   = this->__data_.size() % __vec_size;
+        constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
         size_t __i = 0;
-        for (; __i < __num_vectors * __vec_size; __i += __vec_size)
+        for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
         {
-            float32x4_t __data_vec1  = vld1q_f32(&this->__data_[__i]);
-            float32x4_t __data_vec2  = vld1q_f32(&__other.__data_[__i]);
+            float32x4_t __data_vec1  = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+            float32x4_t __data_vec2  = vld1q_f32(reinterpret_cast<const float32_t*>(&__other.__data_[__i]));
             uint32x4_t  __cmp_result = vceqq_f32(__data_vec1, __data_vec2);
             uint32_t    __mask       = vaddvq_u32(__cmp_result);
 
@@ -4415,7 +4412,7 @@ tensor<bool> tensor<_Tp>::equal(const tensor& __other) const {
 #else
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
-        __ret[__i] = (this->__data_[__i] == __other[__i]) ? true : false;
+        __ret[__i] = (this->__data_[__i] == __other[__i]);
 
 #endif
     return tensor<bool>(__ret, this->__shape_);
@@ -4431,16 +4428,14 @@ tensor<bool> tensor<_Tp>::equal(const value_type __val) const {
 #if defined(__ARM_NEON)
     if constexpr (std::is_same_v<_Tp, float>)
     {
-        const size_t __vec_size    = 4;
-        const size_t __num_vectors = this->__data_.size() / __vec_size;
-        const size_t __remaining   = this->__data_.size() % __vec_size;
+        constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
         float32x4_t __val_vec = vdupq_n_f32(__val);
 
         size_t __i = 0;
-        for (; __i < __num_vectors * __vec_size; __i += __vec_size)
+        for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
         {
-            float32x4_t __data_vec   = vld1q_f32(&this->__data_[__i]);
+            float32x4_t __data_vec   = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
             uint32x4_t  __cmp_result = vceqq_f32(__data_vec, __val_vec);
             uint32_t    __mask       = vaddvq_u32(__cmp_result);
 
@@ -4494,22 +4489,18 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
                 float32x4_t __sum_vec = vdupq_n_f32(0.0f);
                 index_type  __i       = __outer * __axis_size * __inner_size + __inner;
                 index_type  __j       = 0;
-
                 for (; __j + 4 <= __axis_size; __j += 4)
                 {
                     float32x4_t __data_vec = vld1q_f32(&this->__data_[__i]);
                     __sum_vec              = vaddq_f32(__sum_vec, __data_vec);
                     __i += __inner_size * 4;
                 }
-
                 float __sum = vaddvq_f32(__sum_vec);
-
                 for (; __j < __axis_size; __j++)
                 {
                     __sum += this->__data_[__i];
                     __i += __inner_size;
                 }
-
                 __ret_data[__outer * __inner_size + __inner] = __sum;
             }
         }
@@ -4637,6 +4628,7 @@ tensor<_Tp> tensor<_Tp>::floor() const {
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
         __ret[__i] = std::floor(this->__data_[__i]);
+
 #endif
     return __self(__ret, this->__shape_);
 }
@@ -4700,6 +4692,7 @@ void tensor<_Tp>::clamp_(const_pointer __min_val, const_pointer __max_val) {
     {
         if (__min_val)
             this->__data_[__i] = std::max(*__min_val, this->__data_[__i]);
+
         if (__max_val)
             this->__data_[__i] = std::min(*__max_val, this->__data_[__i]);
     }
