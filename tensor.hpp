@@ -1,6 +1,37 @@
-/* 
-    tensor class implementation 
-*/
+/**
+ * @file tensor.h
+ * @brief Tensor Library for Efficient Mathematical and Linear Algebra Operations
+ * 
+ * This library provides a comprehensive implementation of a tensor class,
+ * designed for high-performance numerical computing, matrix operations, and
+ * machine learning applications. Built with support for scalar operations,
+ * element-wise transformations, and SIMD acceleration on supported architectures
+ * (e.g., ARM NEON).
+ * 
+ * Key Features:
+ * - Basic arithmetic operations on tensors (addition, subtraction, multiplication, etc.)
+ * - Element-wise operations (floor, ceil, arctangent, etc.)
+ * - SIMD optimization for ARM NEON for faster computation on supported hardware
+ * - Flexible scalar type support (float, double, etc.)
+ * 
+ * Example Usage:
+ * ```
+ * tensor<float> A({3, 3});  // Creates a 3x3 tensor of type float
+ * A.fill(1.0f);              // Fills tensor with value 1.0
+ * A.ceil_();                 // Applies ceil operation element-wise
+ * ```
+ * 
+ * Dependencies:
+ * - Standard C++ libraries (`<vector>`, `<algorithm>`, `<cmath>`)
+ * - ARM NEON for SIMD support (optional, for ARM processors)
+ * 
+ * License:
+ * - MIT License
+ * 
+ * Author: [Your Name]
+ * Date: [Creation Date]
+ * Version: 1.0.0
+ */
 
 #pragma once
 
@@ -25,7 +56,6 @@
 #include <bit>
 #include <array>
 #include <valarray>
-#include <arm64/
 
 
 #include <__iterator/iterator_traits.h>
