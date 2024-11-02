@@ -1336,9 +1336,28 @@ tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
 
     data_t __d(this->__data_.size());
 
+#if defined(__ARM_NEON)
+    constexpr __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+
+    size_t __i = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __vec1 = vld1q_f32(reinterpret_cast<const float*>(&this->__data_[__i]));
+        float32x4_t __vec2 = vld1q_f32(reinterpret_cast<const float*>(&__other[__i]));
+
+        float32x4_t __result = vaddq_f32(__vec1, __vec2);
+
+        vst1q_f32(reinterpret_cast<float*>(&__d[__i]), __result);
+    }
+
+    for (__i; __i < this->__data_.size(); __i++)
+        __d[__i] = this->__data_[__i] + __other[__i];
+
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), __d.begin(),
                    [](const_reference __v, const_reference __w) { return static_cast<value_type>(__v + __w); });
 
+#endif
     return __self(__d, this->__shape_);
 }
 
@@ -1346,11 +1365,31 @@ tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator+(const value_type __scalar) const {
     this->__check_is_arithmetic_type("template class must be an arithmetic type");
+    data_t __d(this->__data_.size());
 
+#if defined(__ARM_NEON)
+    constexpr __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+
+    float32x4_t __val_vec = vdupq_n_f32(reinterpret_cast<const float32_t*>(&__scalar));
+
+    size_t __i = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __vec = vld1q_f32(reinterpret_castr<const float32_t*>(&this->__data[__i]));
+        float32x4_t __res = vaddq_f32(__vec, __val_vec);
+
+        vst1q_f32(reinterpret_cast<float32_t*>(&__d[__i]), __res);
+    }
+
+    for (__i; __i < this->__data_.size(); __i++)
+        __d[__i] = this->__data_[__i] + __scalar;
+
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                    [&__scalar](const_reference __v) { return static_cast<value_type>(__v + __scalar); });
 
-    return __self(*this);
+#endif
+    return __self(__d, this->__shape_);
 }
 
 
@@ -1359,9 +1398,12 @@ tensor<_Tp> tensor<_Tp>::operator+=(const tensor& __other) const {
     this->__check_is_arithmetic_type("template class must be an arithmetic type");
     assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
 
+#if defined(__ARM_NEON)
+
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), this->__data_.begin(),
                    [](const_reference __v, const_reference __w) { return static_cast<value_type>(__v + __w); });
-
+#endif
     return *this;
 }
 
@@ -1369,9 +1411,26 @@ tensor<_Tp> tensor<_Tp>::operator+=(const tensor& __other) const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator+=(const_reference __scalar) const {
     this->__check_is_arithmetic_type("template class must be an arithmetic type");
+#if defined(__ARM_NEON)
+    constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
+    size_t      __i       = 0;
+    float32x4_t __val_vec = vdupq_n_f32(reinterpret_cast<const float32_t*>(&__scalar));
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+        float32x4_t __add_vec  = vaddq_f32(__data_vec, __val_vec);
+
+        vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __add_vec);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+        this->__data_[__i] = this->__data_[__i] + __scalar;
+
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                    [&__scalar](const_reference __v) { return static_cast<value_type>(__v + __scalar); });
+#endif
     return *this;
 }
 
@@ -1383,10 +1442,14 @@ tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
         throw std::invalid_argument("Cannot add two tensors with different shapes");
 
     data_t __d(this->__data_.size());
+#if defined(__ARM_NEON)
 
+
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), __d.begin(),
                    [](const_reference __v, const_reference __w) { return static_cast<value_type>(__v - __w); });
 
+#endif
     return __self(__d, this->__shape_);
 }
 
@@ -3090,9 +3153,7 @@ tensor<_Tp> tensor<_Tp>::slice(index_type                __dim,
             }
 
             for (index_type __i = __vector_end, __j = __vector_end - __start_i; __i < __end_i; __i++, __j++)
-            {
                 __ret.__data_[__j] = this->__data_[__i];
-            }
         }
         else
         {
@@ -3905,9 +3966,8 @@ void tensor<_Tp>::bitwise_and_(const tensor& __other) {
     }
 
     for (size_t __i = __simd_end; __i < this->__data_.size(); __i++)
-    {
         this->__data_[__i] &= (__other[__i]);
-    }
+
 #else
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
@@ -4126,7 +4186,7 @@ double tensor<_Tp>::mean() const {
     double __m = 0.0f;
 
     if (this->empty())
-        return 0.0f;
+        return __m;
 
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
@@ -4643,7 +4703,6 @@ tensor<_Tp> tensor<_Tp>::clamp(const_pointer __min_val, const_pointer __max_val)
 template<class _Tp>
 void tensor<_Tp>::clamp_(const_pointer __min_val, const_pointer __max_val) {
 #if defined(__AVX2__)
-    const size_t _AVX_REG_WIDTH = 8;
     const size_t __simd_end     = this->__data_.size() - (this->__data_.size() % _AVX_REG_WIDTH);
 
     __m256 __min_vec = _mm256_set1_ps(__min_val ? *__min_val : std::numeric_limits<_Tp>::lowest());
