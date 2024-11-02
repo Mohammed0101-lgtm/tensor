@@ -1137,9 +1137,7 @@ class tensor
      */
     void zeros_(const shape_type& __sh = {}) {
         if (__sh.empty())
-        {
             __sh = this->__shape_;
-        }
 
         this->__data_ =
             data_t(std::accumulate(__sh.begin(), __sh.end(), 1, std::multiplies<index_type>()), value_type(0));
@@ -1150,9 +1148,7 @@ class tensor
      */
     void ones_(const shape_type& __sh = {}) {
         if (__sh.empty())
-        {
             __sh = this->__shape_;
-        }
 
         this->__data_ =
             data_t(std::accumulate(__sh.begin(), __sh.end(), 1, std::multiplies<index_type>()), value_type(0));
@@ -1190,34 +1186,26 @@ class tensor
     static void __check_is_scalar_type(const std::string __msg) {
         assert(!__msg.empty());
         if (!std::is_scalar<value_type>::value)
-        {
             throw std::runtime_error(__msg);
-        }
     }
 
     static void __check_is_integral_type(const std::string __msg) {
         assert(!__msg.empty());
         if (!std::is_integral<value_type>::value)
-        {
             throw std::runtime_error(__msg);
-        }
     }
 
     template<typename __t>
     static void __check_is_same_type(const std::string __msg) {
         assert(!__msg.empty());
         if (!std::is_same<value_type, __t>::value)
-        {
             throw std::runtime_error(__msg);
-        }
     }
 
     static void __check_is_arithmetic_type(const std::string __msg) {
         assert(!__msg.empty());
         if (!std::is_arithmetic<value_type>::value)
-        {
             throw std::runtime_error(__msg);
-        }
     }
 
     void __compute_strides() {
@@ -1239,15 +1227,11 @@ class tensor
 
     size_t __compute_index(const std::vector<index_type>& __idx) const {
         if (__idx.size() != this->__shape_.size())
-        {
             throw std::out_of_range("input indices does not match the tensor __shape_");
-        }
 
         size_t __index = 0, __i = 0;
         for (; __i < this->__shape_.size(); __i++)
-        {
             __index += __idx[__i] * this->__strides_[__i];
-        }
 
         return __index;
     }
@@ -1255,9 +1239,7 @@ class tensor
     static uint64_t __computeSize(const shape_type& __dims) {
         uint64_t __ret = 1ULL;
         for (const index_type& __d : __dims)
-        {
             __ret *= __d;
-        }
 
         return __ret;
     }
@@ -1443,7 +1425,19 @@ tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
 
     data_t __d(this->__data_.size());
 #if defined(__ARM_NEON)
+    constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
+    size_t __i = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+        float32x4_t __oth = vld1q_f32(reinterpret_cast<const float32_t*>(&__other[__i]));
+        float32x4_t __sub = vsubq_f32(__vec, __oth);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&__d[__i]), __sub);
+    }
+
+    for (; __i < this->__data_[__i]; __i++)
+        __d[__i] = this->__data_[__i] - __other[__i];
 
 #else
     std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), __d.begin(),
@@ -1458,9 +1452,28 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator-(const value_type __scalar) const {
     this->__check_is_arithmetic_type("template class must be an arithmetic type");
 
+    data_t __d(this->__data_.size());
+
+#if defined(__ARM_NEON)
+    constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+
+    float32x4_t __vals = vdupq_n_f32(reinterpret_cast<const float32_t*>(&__scalar));
+    size_t      __i    = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+        float32x4_t __sub = vsubq_f32(__vec, __vals);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&__d[__i]), __sub);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+        __d[__i] = this->__data_[__i] - __scalar;
+
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                    [&__scalar](const_reference __v) { return static_cast<value_type>(__v - __scalar); });
 
+#endif
     return __self(*this);
 }
 
@@ -1468,10 +1481,28 @@ tensor<_Tp> tensor<_Tp>::operator-(const value_type __scalar) const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator-=(const tensor& __other) const {
     this->__check_is_arithmetic_type("template class must be an arithmetic type");
-    assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
+    static_assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
 
+#if defined(__ARM_NEON)
+    constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+
+    size_t __i = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+        float32x4_t __oth = vld1q_f32(reinterpret_cast<const float32_t*>(&__other[__i]));
+        float32x4_t __sub = vsubq_f32(__vec, __oth);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __sub);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+        this->__data_[__i] -= __other[__i];
+
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), this->__data_.begin(),
                    [](const_reference __v, const_reference __w) { return static_cast<value_type>(__v - __w); });
+
+#endif
     return *this;
 }
 
@@ -1481,8 +1512,13 @@ tensor<_Tp> tensor<_Tp>::operator*=(const tensor& __other) const {
     this->__check_is_arithmetic_type("template class must be an arithmetic type");
     assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
 
+#if defined(__ARM_NEON)
+
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), this->__data_.begin(),
                    [](const_reference __v, const_reference __w) { return static_cast<value_type>(__v * __w); });
+
+#endif
     return *this;
 }
 
@@ -1522,8 +1558,26 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator-=(const_reference __scalar) const {
     this->__check_is_arithmetic_type("template class must be an arithmetic type");
 
+#if defined(__ARM_NEON)
+    constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+
+    float32x4_t __val = vld1q_f32(reinterpret_cast<const float32_t*>(&__val));
+    size_t      __i   = 0;
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+        float32x4_t __vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+        float32x4_t __sub = vsubq_f32(__vec, __val);
+        vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __sub);
+    }
+
+    for (; __i < this->__data_.size(); __i++)
+        this->__data_[__i] -= __scalar;
+
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                    [](const_reference __v, const_reference __w) { return static_cast<value_type>(__v - __w); });
+
+#endif
     return *this;
 }
 
@@ -2055,9 +2109,8 @@ void tensor<_Tp>::frac_() {
 #else
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
-    {
         this->__data_[__i] = static_cast<value_type>(this->__frac(this->__data_[__i]));
-    }
+
 #endif
 }
 
@@ -2367,6 +2420,7 @@ void tensor<_Tp>::logical_xor_(const value_type __val) {
 #else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                    [&__val](const_reference __v) { return static_cast<value_type>(__v ^ __val); });
+
 #endif
 }
 
@@ -2382,6 +2436,7 @@ void tensor<_Tp>::logical_and_(const value_type __val) {
 #else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                    [&__val](const_reference __v) { return static_cast<value_type>(__v && __val); });
+
 #endif
 }
 
@@ -2389,9 +2444,8 @@ void tensor<_Tp>::logical_and_(const value_type __val) {
 template<class _Tp>
 void tensor<_Tp>::bitwise_or_(const value_type __val) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-    {
         throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
-    }
+
 #if defined(__ARM_NEON)
     constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
@@ -2590,14 +2644,11 @@ void tensor<_Tp>::print() const noexcept {
     }
     std::cout << "]\nData: ";
     if (!this->__data_.empty())
-    {
         for (const auto& __v : this->__data_)
             std::cout << __v << " ";
-    }
     else
-    {
         std::cout << "Empty";
-    }
+
     std::cout << std::endl;
 }
 
@@ -3094,7 +3145,7 @@ tensor<_Tp> tensor<_Tp>::slice(index_type                __dim,
                                std::optional<index_type> __start,
                                std::optional<index_type> __end,
                                index_type                __step) const {
-    if (__dim < 0ULL || __dim >= static_cast<index_type>(this->__shape_.size()))
+    if (__dim < 0 || __dim >= static_cast<index_type>(this->__shape_.size()))
         throw std::out_of_range("Dimension out of range.");
 
     tensor __ret;
@@ -3103,10 +3154,10 @@ tensor<_Tp> tensor<_Tp>::slice(index_type                __dim,
     index_type __start_i = __start.value_or(0ULL);
     index_type __end_i   = __end.value_or(__s);
 
-    if (__start_i < 0ULL)
+    if (__start_i < 0)
         __start_i += __s;
 
-    if (__end_i < 0ULL)
+    if (__end_i < 0)
         __end_i += __s;
 
     __start_i = std::max(index_type(0ULL), std::min(__start_i, __s));
@@ -3294,7 +3345,7 @@ void tensor<_Tp>::fmax_(const value_type __val) {
 
 template<class _Tp>
 void tensor<_Tp>::fmax_(const tensor<value_type>& __other) {
-    assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
+    static_assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
 
 #if defined(__ARM_NEON)
     const size_t _ARM64_REG_WIDTH = 4;
@@ -3950,7 +4001,7 @@ void tensor<_Tp>::bitwise_and_(const tensor& __other) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
         throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
 
-    assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
+    static_assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
 #if defined(__ARM_NEON)
     const size_t _ARM64_REG_WIDTH = 4;
     const size_t __simd_end       = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -3981,7 +4032,7 @@ void tensor<_Tp>::bitwise_or_(const tensor& __other) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
         throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
 
-    assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
+    static_assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
 
 #if defined(__ARM_NEON)
     const size_t _ARM64_REG_WIDTH = 4;
@@ -4014,7 +4065,7 @@ void tensor<_Tp>::bitwise_xor_(const tensor& __other) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
         throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
 
-    assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
+    static_assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
 #if defined(__ARM_NEON)
     const size_t _ARM64_REG_WIDTH = 4;
     const size_t __simd_end       = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -4088,7 +4139,7 @@ void tensor<_Tp>::logical_or_(const tensor<_Tp>& __other) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
         throw std::runtime_error("Cannot get the element wise not of non-integral and non-boolean value");
 
-    assert(this->__shape_ == __other.shape());
+    static_assert(this->__shape_ == __other.shape());
 #if defined(__ARM_NEON)
     const size_t _ARM64_REG_WIDTH = 4;
     const size_t __simd_end       = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -4120,7 +4171,7 @@ void tensor<_Tp>::logical_xor_(const tensor<_Tp>& __other) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
         throw std::runtime_error("Cannot get the element wise xor of non-integral and non-boolean value");
 
-    assert(this->__shape_ == __other.shape());
+    static_assert(this->__shape_ == __other.shape());
 #if defined(__ARM_NEON)
     const size_t _ARM64_REG_WIDTH = 4;
     const size_t __simd_end       = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -4152,7 +4203,7 @@ void tensor<_Tp>::logical_and_(const tensor<_Tp>& __other) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
         throw std::runtime_error("Cannot get the element-wise and of non-integral and non-boolean value");
 
-    assert(this->__shape_ == __other.shape());
+    static_assert(this->__shape_ == __other.shape());
 
 #if defined(__ARM_NEON)
     const size_t _ARM64_REG_WIDTH = 4;
@@ -4212,7 +4263,7 @@ template<class _Tp>
 void tensor<_Tp>::pow_(const tensor& __other) {
     this->__check_is_integral_type("cannot get the power of a non integral value");
 
-    assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
+    static_assert(this->__shape_ == __other.shape() && this->__data_.size() == __other.size(0));
 #if defined(__ARM_NEON)
     const size_t _ARM64_REG_WIDTH = 4;
     const size_t __simd_end       = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -4246,7 +4297,7 @@ tensor<bool> tensor<_Tp>::less_equal(const tensor& __other) const {
     if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
         throw std::runtime_error("Cannot compare non-integral or scalar value");
 
-    assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
+    static_assert(this->__shape_ == __other.shape() && this->size(0) == __other.size(0));
 
     std::vector<bool> __ret(this->__data_.size());
 #if defined(__ARM_NEON)
@@ -4282,7 +4333,7 @@ tensor<bool> tensor<_Tp>::less_equal(const tensor& __other) const {
 #else
     size_t __i = 0;
     for (; __i < this->__data_.size(); __i++)
-        __ret[__i] = (this->__data_[__i] <= __other[__i]) ? true : false;
+        __ret[__i] = (this->__data_[__i] <= __other[__i]);
 #endif
     return tensor<bool>(__ret, this->__shape_);
 }
@@ -4703,7 +4754,7 @@ tensor<_Tp> tensor<_Tp>::clamp(const_pointer __min_val, const_pointer __max_val)
 template<class _Tp>
 void tensor<_Tp>::clamp_(const_pointer __min_val, const_pointer __max_val) {
 #if defined(__AVX2__)
-    const size_t __simd_end     = this->__data_.size() - (this->__data_.size() % _AVX_REG_WIDTH);
+    const size_t __simd_end = this->__data_.size() - (this->__data_.size() % _AVX_REG_WIDTH);
 
     __m256 __min_vec = _mm256_set1_ps(__min_val ? *__min_val : std::numeric_limits<_Tp>::lowest());
     __m256 __max_vec = _mm256_set1_ps(__max_val ? *__max_val : std::numeric_limits<_Tp>::max());
