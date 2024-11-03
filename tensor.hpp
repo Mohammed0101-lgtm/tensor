@@ -4401,16 +4401,13 @@ tensor<bool> tensor<_Tp>::greater_equal(const value_type __val) const {
         throw std::runtime_error("Cannot compare non-integral or scalar value");
 
     std::vector<bool> __ret(this->__data_.size());
+    size_t            __i = 0;
 #if defined(__ARM_NEON)
     if constexpr (std::is_same_v<_Tp, float>)
     {
-        const size_t __vec_size    = 4;
-        const size_t __num_vectors = this->__data_.size() / __vec_size;
-        const size_t __remaining   = this->__data_.size() % __vec_size;
-
-        size_t      __i       = 0;
-        float32x4_t __val_vec = vdupq_n_f32(__val);
-        for (; __i < __num_vectors * __vec_size; __i += __vec_size)
+        constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+        float32x4_t      __val_vec  = vdupq_n_f32(__val);
+        for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
         {
             float32x4_t __data_vec   = vld1q_f32(&this->__data_[__i]);
             uint32x4_t  __cmp_result = vcgeq_f32(__data_vec, __val_vec);
@@ -4421,22 +4418,17 @@ tensor<bool> tensor<_Tp>::greater_equal(const value_type __val) const {
             __ret[__i + 2] = (__mask >> 16) & 1;
             __ret[__i + 3] = (__mask >> 24) & 1;
         }
-
-        for (; __i < this->__data_.size(); __i++)
-            __ret[__i] = (this->__data_[__i] >= __val);
     }
     else
     {
-        size_t __i = 0;
         for (; __i < this->__data_.size(); __i++)
             __ret[__i] = (this->__data_[__i] >= __val);
     }
 
-#else
-    size_t __i = 0;
-    for (; __i < this->__data_.size(); __i++)
-        __ret[__i] = (this->__data_[__i] >= __val) ? true : false;
 #endif
+    for (; __i < this->__data_.size(); __i++)
+        __ret[__i] = (this->__data_[__i] >= __val);
+
     return tensor<bool>(__ret, this->__shape_);
 }
 
