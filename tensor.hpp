@@ -1526,9 +1526,12 @@ tensor<_Tp> tensor<_Tp>::operator*=(const tensor& __other) const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator*=(const_reference __scalar) const {
     this->__check_is_arithmetic_type("template class must be an arithmetic type");
+#if defined(__ARM_NEON)
 
+#else
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                    [](const_reference __v) { return static_cast<value_type>(__v * __scalar); });
+#endif
     return *this;
 }
 
@@ -2082,12 +2085,12 @@ void tensor<_Tp>::cos_() {
 template<class _Tp>
 void tensor<_Tp>::frac_() {
     this->__check_is_scalar_type("Cannot get the fraction of a non-scalar type");
+    size_t __i = 0;
 #if defined(__ARM_NEON)
     static_assert(std::is_floating_point<value_type>::value,
                   "frac : operation only supported for floating-point types.");
 
     size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-    size_t __i        = 0;
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
         float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
@@ -2103,15 +2106,9 @@ void tensor<_Tp>::frac_() {
         vst1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]), __atan_vec);
     }
 
-    for (; __i < this->__data_.size(); __i++)
-        this->__data_[__i] = static_cast<value_type>(this->__frac(this->__data_[__i]));
-
-#else
-    size_t __i = 0;
-    for (; __i < this->__data_.size(); __i++)
-        this->__data_[__i] = static_cast<value_type>(this->__frac(this->__data_[__i]));
-
 #endif
+    for (; __i < this->__data_.size(); __i++)
+        this->__data_[__i] = static_cast<value_type>(this->__frac(this->__data_[__i]));
 }
 
 
@@ -2162,10 +2159,10 @@ template<class _Tp>
 void tensor<_Tp>::bitwise_right_shift_(const int __amount) {
     this->__check_is_integral_type("Cannot perform a bitwise right shift on non-integral values");
 
+    size_t __i = 0;
 #if defined(__ARM_NEON)
     constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % 4);
 
-    size_t __i = 0;
     if constexpr (std::is_same<value_type, int32_t>::value)
     {
         for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -2184,14 +2181,9 @@ void tensor<_Tp>::bitwise_right_shift_(const int __amount) {
             vst1q_u32(&this->__data_[__i], __shifted_vec);
         }
     }
-
+#endif
     for (; __i < this->__data_.size(); __i++)
         this->__data_[__i] >>= __amount;
-
-#else
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [&__amount](const_reference __v) { return __v >> __amount; });
-#endif
 }
 
 
@@ -2199,10 +2191,10 @@ template<class _Tp>
 void tensor<_Tp>::bitwise_left_shift_(const int __amount) {
     this->__check_is_integral_type("Cannot perform a bitwise left shift on non-integral values");
 
+    size_t __i = 0;
 #if defined(__ARM_NEON)
     constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-    size_t __i = 0;
     if constexpr (std::is_same<value_type, int32_t>::value)
     {
         for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -2221,14 +2213,9 @@ void tensor<_Tp>::bitwise_left_shift_(const int __amount) {
             vst1q_u32(&this->__data_[__i], __shifted_vec);
         }
     }
-
+#endif
     for (; __i < this->__data_.size(); __i++)
         this->__data_[__i] >>= __amount;
-
-#else
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [&__amount](const_reference __v) { return __v <<= __amount; });
-#endif
 }
 
 
@@ -2446,10 +2433,10 @@ void tensor<_Tp>::bitwise_or_(const value_type __val) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
         throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
 
+    size_t __i = 0;
 #if defined(__ARM_NEON)
     constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-    size_t __i = 0;
     if constexpr (std::is_same<value_type, int32_t>::value)
     {
         int32x4_t __val_vec = vdupq_n_s32(__val);
@@ -2470,16 +2457,9 @@ void tensor<_Tp>::bitwise_or_(const value_type __val) {
             vst1q_u32(reinterpret_cast<uint32_t*>(&this->__data_[__i]), __result_vec);
         }
     }
-
-    for (; __i < this->__data_.size(); __i++)
-        this->__data_[__i] |= __val;
-
-#else
-    size_t __i = 0;
-    for (; __i < this->__data_.size(); __i++)
-        this->__data_[__i] |= __val;
-
 #endif
+    for (; __i < this->__data_.size(); __i++)
+        this->__data_[__i] |= __val;
 }
 
 
@@ -2488,10 +2468,10 @@ void tensor<_Tp>::bitwise_xor_(const value_type __val) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
         throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
 
+    size_t __i = 0;
 #if defined(__ARM_NEON)
     constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-    size_t __i = 0;
     if constexpr (std::is_same<value_type, int32_t>::value)
     {
         int32x4_t __val_vec = vdupq_n_s32(__val);
@@ -2512,16 +2492,9 @@ void tensor<_Tp>::bitwise_xor_(const value_type __val) {
             vst1q_u32(reinterpret_cast<uint32_t*>(&this->__data_[__i]), __result_vec);
         }
     }
-
-    for (; __i < this->__data_.size(); ++__i)
-        this->__data_[__i] ^= __val;
-
-#else
-    size_t __i = 0;
+#endif
     for (; __i < this->__data_.size(); __i++)
         this->__data_[__i] ^= __val;
-
-#endif
 }
 
 
@@ -2530,10 +2503,10 @@ void tensor<_Tp>::bitwise_not_() {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
         throw std::runtime_error("Cannot perform a bitwise not on non integral or boolean value");
 
+    size_t __i = 0;
 #if defined(__ARM_NEON)
     constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-    size_t __i = 0;
     if constexpr (std::is_same<value_type, int32_t>::value)
     {
         for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -2553,15 +2526,9 @@ void tensor<_Tp>::bitwise_not_() {
         }
     }
 
-    for (; __i < this->__data_.size(); __i++)
-        this->__data_[__i] = ~(this->__data_[__i]);
-
-#else
-    size_t __i = 0;
+#endif
     for (; __i < this->__data_.size(); __i++)
         this->__data_[__i] = ~this->__data_[__i];
-
-#endif
 }
 
 
@@ -2570,10 +2537,10 @@ void tensor<_Tp>::bitwise_and_(const value_type __val) {
     if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
         throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
 
+    size_t __i = 0;
 #if defined(__ARM_NEON)
     constexpr size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-    size_t __i = 0;
     if constexpr (std::is_same<value_type, int32_t>::value)
     {
         int32x4_t __val_vec = vdupq_n_s32(reinterpret_cast<int32_t*>(&__val));
@@ -2595,15 +2562,9 @@ void tensor<_Tp>::bitwise_and_(const value_type __val) {
         }
     }
 
-    for (; __i < this->__data_.size(); __i++)
-        this->__data_[__i] &= __val;
-
-#else
-    size_t __i = 0;
-    for (; __i < this->__data_.size(); __i++)
-        this->__data_[__i] &= __val;
-
 #endif
+    for (; __i < this->__data_.size(); __i++)
+        this->__data_[__i] &= __val;
 }
 
 
@@ -2723,9 +2684,7 @@ void tensor<_Tp>::randomize_(const shape_type& __sh, bool __bounded) {
 template<class _Tp>
 tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) const {
     if (__dim < 0 || __dim >= this->__shape_.size())
-    {
         throw std::out_of_range("Dimension out of range in argmax");
-    }
 
     shape_type __ret_sh = this->__shape_;
     __ret_sh.erase(__ret_sh.begin() + __dim);
