@@ -443,7 +443,7 @@ class tensor
      * @param __dim (Optional) The dimension to count along. Defaults to -1, meaning all dimensions.
      * @return The count of non-zero elements.
      */
-    size_t count_nonzero(index_type __dim = -1LL) const;
+    size_t count_nonzero(index_type __dim = -1) const;
 
     /**
      * @brief Slices the tensor along a specified dimension.
@@ -1180,7 +1180,7 @@ class tensor
      * @param __ascending true to sort in ascending order 
      * @return a tensor of 64 bit integer (indicies of the sorted elements in the sort order)
      */
-    tensor<index_type> argsort(index_type __dim = -1LL, bool __ascending = true) const;
+    tensor<index_type> argsort(index_type __dim = -1, bool __ascending = true) const;
 
    private:
     static void __check_is_scalar_type(const std::string __msg) {
@@ -1237,7 +1237,7 @@ class tensor
     }
 
     static uint64_t __computeSize(const shape_type& __dims) {
-        uint64_t __ret = 1ULL;
+        uint64_t __ret = 1;
         for (const index_type& __d : __dims)
             __ret *= __d;
 
@@ -1246,7 +1246,7 @@ class tensor
 
     uint64_t __compute_outer_size(const index_type __dim) const {
         // just a placeholder for now
-        return 0ULL;
+        return 0;
     }
 
     float      __frac(const_reference __scalar) { return std::fmod(static_cast<float>(__scalar), 1.0f); }
@@ -2692,8 +2692,8 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
     __ret.__shape_ = __ret_sh;
     __ret.__data_.resize(this->__computeSize(__ret_sh), 0);
 
-    index_type __outer_size = 1LL;
-    index_type __inner_size = 1LL;
+    index_type __outer_size = 1;
+    index_type __inner_size = 1;
 
     index_type __i = 0;
     for (; __i < __dim; __i++)
@@ -3110,7 +3110,7 @@ tensor<_Tp> tensor<_Tp>::slice(index_type                __dim,
     tensor __ret;
 
     index_type __s       = this->__shape_[__dim];
-    index_type __start_i = __start.value_or(0ULL);
+    index_type __start_i = __start.value_or(0);
     index_type __end_i   = __end.value_or(__s);
 
     if (__start_i < 0)
@@ -3119,8 +3119,8 @@ tensor<_Tp> tensor<_Tp>::slice(index_type                __dim,
     if (__end_i < 0)
         __end_i += __s;
 
-    __start_i = std::max(index_type(0ULL), std::min(__start_i, __s));
-    __end_i   = std::max(index_type(0ULL), std::min(__end_i, __s));
+    __start_i = std::max(index_type(0), std::min(__start_i, __s));
+    __end_i   = std::max(index_type(0), std::min(__end_i, __s));
 
     index_type __slice_size = (__end_i - __start_i + __step - 1) / __step;
     shape_type __ret_dims   = this->__shape_;
@@ -3168,7 +3168,7 @@ tensor<_Tp> tensor<_Tp>::slice(index_type                __dim,
         else
         {
 #endif
-            index_type __i = __start_i, __j = 0ULL;
+            index_type __i = __start_i, __j = 0;
             for (; __i < __end_i; __i += __step, __j++)
                 __ret({__j}) = this->at({__i});
 
@@ -3892,9 +3892,9 @@ __global__ void transpose_kernel(_Tp* __input, _Tp* __output, int __rows, int __
 
 template<class _Tp>
 tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argsort(index_type __d, bool __ascending) const {
-    index_type __adjusted = (__d < 0LL) ? __d + this->__data_.size() : __d;
+    index_type __adjusted = (__d < 0) ? __d + this->__data_.size() : __d;
 
-    if (__adjusted != 0LL)
+    if (__adjusted != 0)
         throw std::out_of_range("Invalid dimension for argsort: only 1D tensors are supported");
 
     index_type              __size = static_cast<index_type>(this->__data_.size());
@@ -4528,11 +4528,11 @@ tensor<bool> tensor<_Tp>::equal(const value_type __val) const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
     this->__check_is_scalar_type("Cannot reduce tensor with non scalar type");
-    if (__axis < 0LL || __axis >= static_cast<index_type>(this->__shape_.size()))
+    if (__axis < 0 || __axis >= static_cast<index_type>(this->__shape_.size()))
         throw std::invalid_argument("Invalid axis for sum");
 
     shape_type __ret_sh = this->__shape_;
-    __ret_sh[__axis]    = 1LL;
+    __ret_sh[__axis]    = 1;
 
     index_type __ret_size = std::accumulate(__ret_sh.begin(), __ret_sh.end(), 1, std::multiplies<index_type>());
     data_t     __ret_data(__ret_size, value_type(0.0f));
@@ -4583,9 +4583,9 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
                 __index /= this->__shape_[__j];
             }
 
-            __orig[__axis]         = 0LL;
-            index_type __ret_index = 0LL;
-            index_type __st        = 1LL;
+            __orig[__axis]         = 0;
+            index_type __ret_index = 0;
+            index_type __st        = 1;
 
             for (__j = static_cast<index_type>(this->__shape_.size()) - 1; __j >= 0; __j--)
             {
@@ -4608,7 +4608,7 @@ tensor<_Tp> tensor<_Tp>::row(const index_type __index) const {
     if (this->__shape_.size() != 2)
         throw std::runtime_error("Cannot get a row from a non two dimensional tensor");
 
-    if (this->__shape_[0] <= __index || __index < 0LL)
+    if (this->__shape_[0] <= __index || __index < 0)
         throw std::invalid_argument("Index input is out of range");
 
     data_t __r(this->__data_.begin() + (this->__shape_[1] * __index),
@@ -4623,7 +4623,7 @@ tensor<_Tp> tensor<_Tp>::col(const index_type __index) const {
     if (this->__shape_.size() != 2)
         throw std::runtime_error("Cannot get a column from a non two dimensional tensor");
 
-    if (this->__shape_[1] <= __index || __index < 0LL)
+    if (this->__shape_[1] <= __index || __index < 0)
         throw std::invalid_argument("Index input out of range");
 
     data_t __c;
