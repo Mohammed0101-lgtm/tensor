@@ -36,32 +36,33 @@
 
 #pragma once
 
-#include <iostream>
-#include <stdexcept>
-#include <random>
-#include <cassert>
-#include <vector>
-#include <algorithm>
-#include <cstdint>
+#include <bit>
 #include <cmath>
 #include <array>
-#include <arm_neon.h>
-#include <type_traits>
-#include <immintrin.h>
 #include <omp.h>
-#include <initializer_list>
-#include <memory>
-#include <climits>
-#include <functional>
-#include <omp-tools.h>
-#include <optional>
-#include <bit>
+#include <tuple>
 #include <array>
-#include <valarray>
+#include <vector>
+#include <random>
+#include <memory>
+#include <cstdint>
+#include <climits>
 #include <numeric>
+#include <cassert>
+#include <optional>
+#include <valarray>
+#include <iostream>
+#include <algorithm>
+#include <stdexcept>
+#include <arm_neon.h>
+#include <functional>
+#include <type_traits>
+#include <omp-tools.h>
+#include <immintrin.h>
+#include <initializer_list>
+#include <__iterator/wrap_iter.h>
 #include <__iterator/iterator_traits.h>
 #include <__iterator/reverse_iterator.h>
-#include <__iterator/wrap_iter.h>
 
 
 constexpr size_t _ARM64_REG_WIDTH = 4;
