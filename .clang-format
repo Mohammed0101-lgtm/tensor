@@ -34,7 +34,7 @@ MaxEmptyLinesToKeep: 2
 NamespaceIndentation: None
 PackConstructorInitializers: Never
 ReflowComments: false
-SortIncludes: false
+SortIncludes: true
 SortUsingDeclarations: false
 SpaceAfterCStyleCast: true
 SpaceAfterTemplateKeyword: false
