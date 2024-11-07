@@ -19,7 +19,8 @@ BreakBeforeBraces: Custom
 BraceWrapping:
   AfterFunction: false
   AfterClass: true
-  AfterControlStatement: true
+  AfterStruct: true
+  AfterControlStatement: false
   BeforeElse: true
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon
