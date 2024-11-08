@@ -20,7 +20,7 @@ BraceWrapping:
   AfterFunction: false
   AfterClass: true
   AfterStruct: true
-  AfterControlStatement: false
+  AfterControlStatement: true
   BeforeElse: true
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon
