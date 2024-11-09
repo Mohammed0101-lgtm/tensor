@@ -25,12 +25,12 @@ BraceWrapping:
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon
 BreakStringLiterals: false
-ColumnLimit: 120
-ContinuationIndentWidth: 4
+ColumnLimit: 140
+ContinuationIndentWidth: 2
 Cpp11BracedListStyle: true
 IndentGotoLabels: false
 IndentPPDirectives: BeforeHash
-IndentWidth: 4
+IndentWidth: 2
 MaxEmptyLinesToKeep: 2
 NamespaceIndentation: None
 PackConstructorInitializers: Never
