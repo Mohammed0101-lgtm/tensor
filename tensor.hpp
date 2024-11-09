@@ -260,9 +260,6 @@ class tensor
   std::vector<index_t>   __strides_;
   Device                 __device_;
 
-  // TODO create a hash scheme to generate hash a tensor
-  struct hash<tensor<value_t>>;
-
  public:
   tensor() = default;
 
@@ -1315,6 +1312,13 @@ class tensor
      */
   tensor<index_t> argsort(index_t __dim = -1, bool __ascending = true) const;
 
+  /**
+   * @brief creates a hash of the tensor
+   * 
+   * @return 64 bit integer 
+  */
+  index_t hash() const;
+
  private:
   static void __check_is_scalar_type(const std::string __msg) {
     assert(!__msg.empty());
@@ -1391,14 +1395,50 @@ class tensor
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::zeros(const shape_t& __sh) {
   __check_is_scalar_type("template type must be a scalar : tensor.zeros()");
-  __container__<value_t> __d(std::accumulate(__sh.begin(), __sh.end(), 1, std::multiplies<index_t>()), value_t(0));
+  index_t                __i = 0;
+  __container__<value_t> __d;
+#if defined(__ARM_NEON)
+  if constexpr (std::is_floating_point<value_t>::value)
+  {
+    constexpr index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    float32x4_t       __zero_vec = vdupq_n_f32(0.0f);
+
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+      vst1q_f32(reinterpret_cast<float*>(&__d[__i]), __zero_vec);
+  }
+  else
+  {
+#endif
+    for (; __i < this->__data_.size(); __i++)
+      __d[__i] = value_t(0.0);
+#if defined(__ARM_NEON)
+  }
+#endif
   return __self(__d, __sh);
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::ones(const shape_t& __sh) {
   __check_is_scalar_type("template type must be a scalar : tensor.ones()");
-  __container__<value_t> __d(std::accumulate(__sh.begin(), __sh.end(), 1, std::multiplies<index_t>()), value_t(1));
+  __container__<value_t> __d;
+  index_t                __i = 0;
+#if defined(__ARM_NEON)
+  if constexpr (std::is_floating_point<value_t>::value)
+  {
+    constexpr index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    float32x4_t       __one_vec  = vdupq_n_f32(1.0f);
+
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+      vst1q_f32(reinterpret_cast<float32_t*>(&__d[__i]), __one_vec);
+  }
+  else
+  {
+#endif
+    for (; __i < this->__data_.size(); __i++)
+      __d[__i] = value_t(1.0);
+#if defined(__ARM_NEON)
+  }
+#endif
   return __self(__d, __sh);
 }
 
@@ -4268,12 +4308,14 @@ tensor<_Tp> tensor<_Tp>::sum(const index_t __axis) const {
         float32x4_t __sum_vec = vdupq_n_f32(0.0f);
         index_t     __i       = __outer * __axis_size * __inner_size + __inner;
         index_t     __j       = 0;
+
         for (; __j + _ARM64_REG_WIDTH <= __axis_size; __j += _ARM64_REG_WIDTH)
         {
           float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
           __sum_vec              = vaddq_f32(__sum_vec, __data_vec);
           __i += __inner_size * _ARM64_REG_WIDTH;
         }
+
         float __sum = vaddvq_f32(__sum_vec);
         for (; __j < __axis_size; __j++)
         {
@@ -4313,7 +4355,6 @@ tensor<_Tp> tensor<_Tp>::sum(const index_t __axis) const {
 #if defined(__ARM_NEON)
   }
 #endif
-
   return __self(__ret_data, __ret_sh);
 }
 
@@ -4325,8 +4366,14 @@ tensor<_Tp> tensor<_Tp>::row(const index_t __index) const {
   if (this->__shape_[0] <= __index || __index < 0)
     throw std::invalid_argument("Index input is out of range");
 
-  __container__<value_t> __r(this->__data_.begin() + (this->__shape_[1] * __index),
-                             this->__data_.begin() + (this->__shape_[1] * __index + this->__shape_[1]));
+  __container__<value_t> __r;
+  index_t                __start = this->__shape_[1] * __index;
+  index_t                __end   = this->__shape_[1] * __index + this->__shape_[1];
+  index_t                __i     = __start;
+
+  for (; __i < __end; __i++)
+    __r.push_back(this->__data_[__i]);
+
   return __self(__r, {this->__shape_[1]});
 }
 
@@ -4350,7 +4397,7 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::ceil() const {
   this->__check_is_scalar_type("Cannot get the ceiling of a non scalar value");
   __container__<value_t> __ret(this->__data_.size());
-  size_t                 __i = 0;
+  index_t                __i = 0;
 #if defined(__ARM_NEON)
   const size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
@@ -4371,7 +4418,7 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::floor() const {
   this->__check_is_scalar_type("Cannot get the floor of a non scalar value");
   __container__<value_t> __ret(this->__data_.size());
-  size_t                 __i = 0;
+  index_t                __i = 0;
 #if defined(__ARM_NEON)
   const size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   float32x4_t  zero       = vdupq_n_f32(0.0f);
@@ -4396,7 +4443,7 @@ tensor<_Tp> tensor<_Tp>::clamp(const_pointer __min_val, const_pointer __max_val)
 
 template<class _Tp>
 void tensor<_Tp>::clamp_(const_pointer __min_val, const_pointer __max_val) {
-  size_t __i = 0;
+  index_t __i = 0;
 #if defined(__AVX2__)
   const size_t __simd_end = this->__data_.size() - (this->__data_.size() % _AVX_REG_WIDTH);
   __m256       __min_vec  = _mm256_set1_ps(__min_val ? *__min_val : std::numeric_limits<_Tp>::lowest());
@@ -4413,7 +4460,7 @@ void tensor<_Tp>::clamp_(const_pointer __min_val, const_pointer __max_val) {
   float32x4_t  __min_vec  = vdupq_n_f32(__min_val ? *__min_val : std::numeric_limits<_Tp>::lowest());
   float32x4_t  __max_vec  = vdupq_n_f32(__max_val ? *__max_val : std::numeric_limits<_Tp>::max());
 
-  for (size_t __i = 0; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+  for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
   {
     float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
     float32x4_t __clamped  = vminq_f32(vmaxq_f32(__data_vec, __min_vec), __max_vec);
@@ -4428,4 +4475,16 @@ void tensor<_Tp>::clamp_(const_pointer __min_val, const_pointer __max_val) {
     if (__max_val)
       this->__data_[__i] = std::min(*__max_val, this->__data_[__i]);
   }
+}
+
+template<class _Tp>
+typename tensor<_Tp>::index_t tensor<_Tp>::hash() const {
+  index_t            __hash_val = 0;
+  std::hash<value_t> __hasher;
+
+  index_t __i = 0;
+  for (; __i < this->__data_.size(); __i++)
+    __hash_val ^= __hasher(this->__data_[__i]) + 0x9e3779b9 + (__hash_val << 6) + (__hash_val >> 2);
+
+  return __hash_val;
 }
