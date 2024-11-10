@@ -1394,52 +1394,12 @@ class tensor
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::zeros(const shape_t& __sh) {
-  __check_is_scalar_type("template type must be a scalar : tensor.zeros()");
-  index_t                __i = 0;
-  __container__<value_t> __d;
-#if defined(__ARM_NEON)
-  if constexpr (std::is_floating_point<value_t>::value)
-  {
-    constexpr index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-    float32x4_t       __zero_vec = vdupq_n_f32(0.0f);
-
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
-      vst1q_f32(reinterpret_cast<float*>(&__d[__i]), __zero_vec);
-  }
-  else
-  {
-#endif
-    for (; __i < this->__data_.size(); __i++)
-      __d[__i] = value_t(0.0);
-#if defined(__ARM_NEON)
-  }
-#endif
-  return __self(__d, __sh);
+  return this->clone().zeros_(__sh);
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::ones(const shape_t& __sh) {
-  __check_is_scalar_type("template type must be a scalar : tensor.ones()");
-  __container__<value_t> __d;
-  index_t                __i = 0;
-#if defined(__ARM_NEON)
-  if constexpr (std::is_floating_point<value_t>::value)
-  {
-    constexpr index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-    float32x4_t       __one_vec  = vdupq_n_f32(1.0f);
-
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
-      vst1q_f32(reinterpret_cast<float32_t*>(&__d[__i]), __one_vec);
-  }
-  else
-  {
-#endif
-    for (; __i < this->__data_.size(); __i++)
-      __d[__i] = value_t(1.0);
-#if defined(__ARM_NEON)
-  }
-#endif
-  return __self(__d, __sh);
+  return this->clone().ones_(__sh);
 }
 
 template<class _Tp>
@@ -1447,7 +1407,23 @@ void tensor<_Tp>::zeros_(shape_t __sh) {
   if (__sh.empty())
     __sh = this->__shape_;
 
-  this->__data_ = __container__<value_t>(std::accumulate(__sh.begin(), __sh.end(), 1, std::multiplies<index_t>()), value_t(0));
+  index_t __i = 0;
+#if defined(__ARM_NEON)
+  if constexpr (std::is_floating_point<value_t>::value)
+  {
+    constexpr index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    float32x4_t       __zero_vec = vdupq_n_f32(0.0f);
+
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+      vst1q_f32(&this->__data_[__i], __one_vec);
+
+    for (; __i < this->__data_.size(); __i++)
+      this->__data_[__i] = value_t(0.0f);
+  }
+#else
+  for (; __i < this->__data_.size(); __i++)
+    this->__data_[__i] = value_t(0.0);
+#endif
 }
 
 template<class _Tp>
@@ -1455,7 +1431,24 @@ void tensor<_Tp>::ones_(shape_t __sh) {
   if (__sh.empty())
     __sh = this->__shape_;
 
-  this->__data_ = __container__<value_t>(std::accumulate(__sh.begin(), __sh.end(), 1, std::multiplies<index_t>()), value_t(0));
+  __check_is_scalar_type("template type must be a scalar : tensor.ones()");
+  index_t __i = 0;
+#if defined(__ARM_NEON)
+  if constexpr (std::is_floating_point<value_t>::value)
+  {
+    constexpr index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    float32x4_t       __one_vec  = vdupq_n_f32(1.0f);
+
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+      vst1q_f32(reinterpret_cast<float32_t*>(&this->__data_[__i]), __one_vec);
+
+    for (; __i < this->__data_.size(); __i++)
+      this->__data_[__i] = value_t(1.0f);
+  }
+#else
+  for (; __i < this->__data_.size(); __i++)
+    this->__data_[__i] = value_t(1.0);
+#endif
 }
 
 template<class _Tp>
@@ -3620,6 +3613,7 @@ tensor<_Tp> tensor<_Tp>::absolute(const tensor& __tensor) const {
   return __self(__a, __tensor.__shape_);
 }
 
+/*
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
   this->__check_is_scalar_type("Cannot perform a dot product on non scalar data types");
@@ -3692,6 +3686,7 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
 
   return __self();
 }
+*/
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::relu() const {
