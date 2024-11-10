@@ -76,6 +76,10 @@
   #include <immintrin.h>
 #endif
 
+#if defined(USE_CUDA)
+  #include <cuda_runtime.h>
+#endif
+
 constexpr int _ARM64_REG_WIDTH = 4;
 constexpr int _AVX_REG_WIDTH   = 8;
 
@@ -86,167 +90,13 @@ enum class Device {
 };
 
 
-// this should be a replacement for std::vector as a container of the tensor storage
-// because you might want to use a crazy tensor with 100 gb of data
-// still needs some work to be done
-template<class _Tp>
-class __container__
-{
- private:
-  using value_t         = _Tp;
-  using size_type       = uint64_t;
-  using container       = std::vector<value_t>;
-  using reference       = value_t&;
-  using const_reference = const value_t&;
-
- protected:
-  // the underlying storage will be a stack of vector
-  // providing as much memory capacity as possible
-  std::vector<container> __data_;
-  size_type              __size_ = 0;
-
-  size_type __max_vector_size() const noexcept { return std::vector<value_t>().max_size(); }
-
-  std::tuple<int, size_t> __compute_index(const size_type __idx) const {
-    assert(__idx <= this->__size_ && "Index out of range");
-    int    __vec   = static_cast<int>(__idx / this->__max_vector_size());
-    size_t __index = static_cast<size_t>(__idx % this->__max_vector_size());
-    return std::make_tuple(__vec, __index);
-  }
-
-  std::tuple<int, size_t> __compute_size(const size_type __idx) const noexcept {
-    int    __v = static_cast<int>(__idx / this->__max_vector_size());
-    size_t __i = static_cast<size_t>(__idx % this->__max_vector_size());
-    return std::make_tuple(__v, __i);
-  }
-
- public:
-  __container__() = default;
-
-  __container__(const size_type __s, value_t __v) {
-    if (__s <= 0)
-      throw std::invalid_argument("Cannot allocate negative or zero memory");
-
-    if (__s <= this->__max_vector_size())
-    {
-      this->__data_.push_back(container(__s, __v));
-      return;
-    }
-
-    auto [__vecs, __rem] = this->__compute_size(__s);
-    for (int __i = 0; __i < __vecs; __i++)
-    {
-      container __c(__s, __v);
-      this->__data_.push_back(__c);
-    }
-
-    container __c(__rem, __v);
-    this->__data_.push_back(__c);
-  }
-
-  __container__(std::initializer_list<value_t> __l) {
-    size_type __size = static_cast<size_type>(__l.size());
-
-    if (__size <= this->__max_vector_size())
-    {
-      this->__data_.push_back(container(__l));
-      return;
-    }
-
-    auto [__vecs, __rem] = this->__compute_size(__size);
-    int __i = 0, __iter = this->__max_vector_size(), __start = 0;
-
-    while (__i++ < __size)
-    {
-      this->__data_.push_back(container(__l.begin() + __start, __l.begin() + __iter));
-      __iter += this->__max_vector_size();
-      __start += this->__max_vector_size();
-    }
-
-    this->__data_.push_back(container(__l.begin() + __start, __l.begin() + __rem));
-  }
-
-  __container__(const size_type __s) noexcept {
-    assert(__s >= 0 && __s <= INTMAX_MAX && "Invalid size initializer");
-    this->__size_ = __s;
-    int    __vecs = static_cast<int>(__s / this->__max_vector_size());
-    size_t __rem  = static_cast<size_t>(__s % this->__max_vector_size());
-    this->__data_.resize(__vecs + (__rem > 0 ? 1 : 0));
-    for (int i = 0; i < __vecs; ++i)
-      this->__data_[i].resize(this->__max_vector_size());
-
-    if (__rem > 0)
-      this->__data_[__vecs].resize(__rem);
-  }
-
-  reference operator[](const size_type __idx) {
-    auto [__vec, __index] = this->__compute_index(__idx);
-    return this->__data_[__vec][__index];
-  }
-
-  const_reference operator[](const size_type __idx) const {
-    auto [__vec, __index] = this->__compute_index(__idx);
-    return this->__data_[__vec][__index];
-  }
-
-  size_type size() const noexcept { return this->__size_; }
-
-  void resize(const size_type __s) {
-    if (__s < 0 || __s > INTMAX_MAX)
-      throw std::invalid_argument("Invalid size type");
-
-    if (__s > this->__size_)
-    {
-      size_type __vecs = __s / this->__max_vector_size();
-      size_type __rem  = __s % this->__max_vector_size();
-      this->__data_.resize(__vecs + (__rem > 0 ? 1 : 0));
-      for (int i = 0; i < __vecs; ++i)
-      {
-        if (this->__data_[i].size() != this->__max_vector_size())
-          this->__data_[i].resize(this->__max_vector_size());
-      }
-
-      if (__rem > 0)
-        this->__data_[__vecs].resize(__rem);
-    }
-    else if (__s < this->__size_)
-    {
-      auto [__vec, __index] = this->__compute_index(__s);
-      this->__data_.resize(__vec + 1);
-      this->__data_.back().resize(__index);
-    }
-    this->__size_ = __s;
-  }
-
-  void push_back(const_reference __value) {
-    if (this->__size_ == this->__max_vector_size() * this->__data_.size())
-      this->__data_.emplace_back();
-
-    auto [__vec, __index] = this->__compute_index(this->__size_);
-    this->__data_[__vec].push_back(__value);
-    this->__size_++;
-  }
-
-  void pop_back() {
-    if (this->__size_ == 0)
-      throw std::underflow_error("Container is empty.");
-
-    auto [__vec, __index] = this->__compute_index(this->__size_ - 1);
-    this->__data_[__vec].pop_back();
-    this->__size_--;
-
-    if (this->__data_.back().empty())
-      this->__data_.pop_back();
-  }
-};  // __container__ class
-
-
 template<class _Tp>
 class tensor
 {
  public:
   using __self          = tensor;
   using value_t         = _Tp;
+  using data_t          = std::vector<value_t>;
   using index_t         = int64_t;
   using shape_t         = std::vector<index_t>;
   using reference       = value_t&;
@@ -255,10 +105,10 @@ class tensor
   using const_pointer   = const value_t*;
 
  private:
-  __container__<value_t> __data_;
-  shape_t                __shape_;
-  std::vector<index_t>   __strides_;
-  Device                 __device_;
+  data_t               __data_;
+  shape_t              __shape_;
+  std::vector<index_t> __strides_;
+  Device               __device_;
 
  public:
   tensor() = default;
@@ -274,11 +124,11 @@ class tensor
       __shape_(__sh),
       __device_(__d) {
     index_t __s   = this->__computeSize(__sh);
-    this->__data_ = __container__<value_t>(__s);
+    this->__data_ = data_t(__s);
     this->__compute_strides();
   }
 
-  explicit tensor(const __container__<value_t>& __d, const shape_t& __sh, Device __dev = Device::CPU) :
+  explicit tensor(const data_t& __d, const shape_t& __sh, Device __dev = Device::CPU) :
       __data_(__d),
       __shape_(__sh),
       __device_(__dev) {
@@ -302,7 +152,7 @@ class tensor
       __device_(__d) {
     index_t __s = this->__computeSize(__sh);
     assert(init_list.size() == static_cast<size_t>(__s) && "Initializer list size must match tensor size");
-    this->__data_ = __container__<value_t>(init_list);
+    this->__data_ = data_t(init_list);
     this->__compute_strides();
   }
 
@@ -337,7 +187,7 @@ class tensor
      * @brief returns the linear data as stored in memory.
      * @return vector of elements stored in this->__data_.
      */
-  __container__<value_t> storage() const noexcept { return this->__data_; }
+  data_t storage() const noexcept { return this->__data_; }
 
   /**
      * @brief returns the shape of a tensor
@@ -1511,8 +1361,8 @@ tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
   if (__other.shape() != this->__shape_)
     throw std::invalid_argument("Cannot add two tensors with different shapes");
 
-  __container__<value_t> __d(this->__data_.size());
-  index_t                __i = 0;
+  data_t  __d(this->__data_.size());
+  index_t __i = 0;
 #if defined(__ARM_NEON)
   constexpr index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -1535,8 +1385,8 @@ tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator+(const value_t __scalar) const {
   this->__check_is_arithmetic_type("template class must be an arithmetic type");
-  __container__<value_t> __d(this->__data_.size());
-  index_t                __i = 0;
+  data_t  __d(this->__data_.size());
+  index_t __i = 0;
 #if defined(__ARM_NEON)
   constexpr index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   float32x4_t       __val_vec  = vdupq_n_f32(reinterpret_cast<float32_t>(&__scalar));
@@ -1601,8 +1451,8 @@ tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
   if (__other.shape() != this->__shape_)
     throw std::invalid_argument("Cannot add two tensors with different shapes");
 
-  __container__<value_t> __d(this->__data_.size());
-  index_t                __i = 0;
+  data_t  __d(this->__data_.size());
+  index_t __i = 0;
 #if defined(__ARM_NEON)
   constexpr index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -1625,8 +1475,8 @@ tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator-(const value_t __scalar) const {
   this->__check_is_arithmetic_type("template class must be an arithmetic type");
-  __container__<value_t> __d(this->__data_.size());
-  index_t                __i = 0;
+  data_t  __d(this->__data_.size());
+  index_t __i = 0;
 #if defined(__ARM_NEON)
   constexpr index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   float32x4_t       __vals     = vdupq_n_f32(reinterpret_cast<float32_t>(&__scalar));
@@ -2230,8 +2080,8 @@ void tensor<_Tp>::pow_(const value_t __val) {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::clone() const {
-  __container__<value_t> __d = this->__data_;
-  shape_t                __s = this->__shape_;
+  data_t  __d = this->__data_;
+  shape_t __s = this->__shape_;
   return __self(__d, __s);
 }
 
@@ -3024,7 +2874,7 @@ tensor<_Tp> tensor<_Tp>::cat(const std::vector<tensor<_Tp>>& __others, index_t _
   for (const tensor& __t : __others)
     __ret_sh[__dim] += __t.__shape_[__dim];
 
-  __container__<value_t> __c;
+  data_t __c;
   __c.reserve(this->__data_.size());
   __c.insert(__c.end(), this->__data_.begin(), this->__data_.end());
 
@@ -3038,8 +2888,8 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::cumprod(index_t __dim) const {
   if (__dim == -1)
   {
-    __container__<value_t> __flat = this->__data_;
-    __container__<value_t> __ret(__flat.size());
+    data_t __flat = this->__data_;
+    data_t __ret(__flat.size());
     __ret[0] = __flat[0];
 #if defined(__AVX2__)
     if constexpr (std::is_same_v<_Tp, float>)
@@ -3073,7 +2923,7 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_t __dim) const {
     if (__dim < 0 || __dim >= static_cast<index_t>(this->__shape_.size()))
       throw std::invalid_argument("Invalid dimension provided.");
 
-    __container__<value_t> __ret(this->__data_);
+    data_t __ret(this->__data_);
     // TODO : compute_outer_size() implementation
     index_t __outer_size = this->__compute_outer_size(__dim);
     index_t __inner_size = this->__shape_[__dim];
@@ -3387,8 +3237,8 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
   if (this->__shape_[1] != __other.shape()[0])
     throw std::invalid_argument("Shape mismatch for matrix multiplication");
 
-  shape_t                __ret_sh = {this->__shape_[0], __other.shape()[1]};
-  __container__<value_t> __ret_d(__ret_sh[0] * __ret_sh[1], 0);
+  shape_t __ret_sh = {this->__shape_[0], __other.shape()[1]};
+  data_t  __ret_d(__ret_sh[0] * __ret_sh[1], 0);
 #pragma omp parallel
   const int __blockSize = 64;
 
@@ -3486,8 +3336,8 @@ __global__ void matmul_kernel(_Tp* __a, _Tp* __b, _Tp* __c, int __m, int __n, in
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::reshape(const shape_t __sh) const {
-  __container__<value_t> __d = this->__data_;
-  index_t                __s = this->__computeSize(__sh);
+  data_t  __d = this->__data_;
+  index_t __s = this->__computeSize(__sh);
 
   if (__s != this->__data_.size())
     throw std::invalid_argument("input shape must have size of elements equal to the current number of elements in the tensor data");
@@ -3581,8 +3431,8 @@ __global__ void cross_product_kernel(_Tp* __a, _Tp* __b, _Tp* __c) {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::absolute(const tensor& __tensor) const {
   this->__check_is_scalar_type("Cannot call absolute on non-scalar value");
-  index_t                __s = __tensor.storage().size();
-  __container__<value_t> __a;
+  index_t __s = __tensor.storage().size();
+  data_t  __a;
   __a.reserve(__s);
   index_t __i = 0;
 #ifdef __AVX__
@@ -3613,10 +3463,10 @@ tensor<_Tp> tensor<_Tp>::absolute(const tensor& __tensor) const {
   return __self(__a, __tensor.__shape_);
 }
 
-/*
+
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
-  this->__check_is_scalar_type("Cannot perform a dot product on non scalar data types");
+  this->__check_is_scalar_type("Cannot perform a dot product on non-scalar data types");
   if (this->empty() || __other.empty())
     throw std::invalid_argument("Cannot dot product an empty vector");
 
@@ -3625,56 +3475,31 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
     if (this->__shape_[0] != __other.shape()[0])
       throw std::invalid_argument("Vectors must have the same size for dot product");
 
-    const auto* __this_data  = this->__data_.data();
-    const auto* __other_data = __other.storage().data();
-    const auto  __size       = this->__data_.size();
-    value_t     __ret        = 0;
-#ifdef __CUDACC__
-    if (this->__is_cuda_tensor && __other.__is_cuda_tensor)
+    const_pointer __this_data  = this->__data_.data();
+    const_pointer __other_data = __other.storage().data();
+    const size_t  __size       = this->__data_.size();
+
+    value_t __ret = 0;
+
+#if defined(__ARM_NEON)
+    size_t      __i     = 0;
+    float32x4_t sum_vec = vdupq_n_f32(0.0f);
+
+    for (; __i + _ARM64_REG_WIDTH <= __size; __i += _ARM64_REG_WIDTH)
     {
-      thrust::device_vector<value_t> __d_result(1);
-      thrust::transform(thrust::device, __this_data, __this_data + __size, __other_data, __d_result.begin(), thrust::multiplies<value_t>());
-      __ret = thrust::reduce(__d_result.begin(), __d_result.end());
-    }
-    else
-#endif
-    {
-#if defined(__AVX__)
-      if constexpr (std::is_same_v<value_t, float> && __size >= _AVX_REG_WIDTH)
-      {
-        __m256 __sum = _mm256_setzero_ps();
-        for (index_t __i = 0; __i < __size - 7; __i += _AVX_REG_WIDTH)
-        {
-          __m256 __a = _mm256_loadu_ps(__this_data + __i);
-          __m256 __b = _mm256_loadu_ps(__other_data + __i);
-          __sum      = _mm256_add_ps(__sum, _mm256_mul_ps(__a, __b));
-        }
-        __ret = _mm256_reduce_add_ps(__sum);
-        for (index_t __i = __size - (__size % _AVX_REG_WIDTH); __i < __size; __i++)
-          __ret += __this_data[__i] * __other_data[__i];
-      }
-      else
-#elif defined(__SSE__)
-      if constexpr (std::is_same_v<value_t, float> && __size >= 4)
-      {
-        __m128 __sum = _mm_setzero_ps();
-        for (index_t __i = 0; __i < __size - 3; __i += 4)
-        {
-          __m128 __a = _mm_loadu_ps(__this_data + __i);
-          __m128 __b = _mm_loadu_ps(__other_data + __i);
-          __sum      = _mm_add_ps(__sum, _mm_mul_ps(__a, __b));
-        }
-        __ret = _mm_reduce_add_ps(__sum);
-        for (index_t __i = __size - (__size % 4); __i < __size; __i++)
-          __ret += __this_data[__i] * __other_data[__i];
-      }
-      else
-#endif
-      {
-        __ret = std::inner_product(__this_data, __this_data + __size, __other_data, value_t(0));
-      }
+      float32x4_t a_vec = vld1q_f32(reinterpret_cast<const float*>(&__this_data[__i]));
+      float32x4_t b_vec = vld1q_f32(reinterpret_cast<const float*>(&__other_data[__i]));
+      sum_vec           = vmlaq_f32(sum_vec, a_vec, b_vec);  // Perform multiply-accumulate
     }
 
+    float32x2_t sum_half = vadd_f32(vget_high_f32(sum_vec), vget_low_f32(sum_vec));
+    __ret                = vget_lane_f32(vpadd_f32(sum_half, sum_half), 0);
+
+    for (; __i < __size; ++__i)
+      __ret += static_cast<value_t>(__this_data[__i]) * static_cast<value_t>(__other_data[__i]);
+#else
+    __ret = std::inner_product(__this_data, __this_data + __size, __other_data, value_t(0));
+#endif
     return __self({__ret}, {1});
   }
 
@@ -3686,7 +3511,6 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
 
   return __self();
 }
-*/
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::relu() const {
@@ -3835,8 +3659,8 @@ tensor<typename tensor<_Tp>::index_t> tensor<_Tp>::argsort(index_t __d, bool __a
   if (__adjusted != 0)
     throw std::out_of_range("Invalid dimension for argsort: only 1D tensors are supported");
 
-  index_t                __size = static_cast<index_t>(this->__data_.size());
-  __container__<index_t> __indices(__size);
+  index_t              __size = static_cast<index_t>(this->__data_.size());
+  std::vector<index_t> __indices(__size);
   std::iota(__indices.begin(), __indices.end(), 0);
 #if defined(__ARM_NEON)
   index_t __i = 0;
@@ -4100,8 +3924,8 @@ tensor<bool> tensor<_Tp>::less_equal(const tensor& __other) const {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
   assert(this->__shape_ == __other.shape());
-  __container__<bool> __ret(this->__data_.size());
-  index_t             __i = 0;
+  std::vector<bool> __ret(this->__data_.size());
+  index_t           __i = 0;
 #if defined(__ARM_NEON)
   if constexpr (std::is_same_v<_Tp, float>)
   {
@@ -4130,8 +3954,8 @@ tensor<bool> tensor<_Tp>::less_equal(const value_t __val) const {
   if (!std::is_integral<value_t>::value && !std::is_scalar<value_t>::value)
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
-  __container__<bool> __ret(this->__data_.size());
-  index_t             __i = 0;
+  std::vector<bool> __ret(this->__data_.size());
+  index_t           __i = 0;
 #if defined(__ARM_NEON)
   if constexpr (std::is_same_v<_Tp, float>)
   {
@@ -4161,8 +3985,8 @@ tensor<bool> tensor<_Tp>::greater_equal(const tensor& __other) const {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
   assert(this->__shape_ == __other.shape());
-  __container__<bool> __ret(this->__data_.size());
-  index_t             __i = 0;
+  std::vector<bool> __ret(this->__data_.size());
+  index_t           __i = 0;
 #if defined(__ARM_NEON)
   if constexpr (std::is_same_v<_Tp, float>)
   {
@@ -4191,8 +4015,8 @@ tensor<bool> tensor<_Tp>::greater_equal(const value_t __val) const {
   if (!std::is_integral<value_t>::value && !std::is_scalar<value_t>::value)
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
-  __container__<bool> __ret(this->__data_.size());
-  index_t             __i = 0;
+  std::vector<bool> __ret(this->__data_.size());
+  index_t           __i = 0;
 #if defined(__ARM_NEON)
   if constexpr (std::is_same_v<_Tp, float>)
   {
@@ -4222,8 +4046,8 @@ tensor<bool> tensor<_Tp>::equal(const tensor& __other) const {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
   assert(this->__shape_ == __other.shape() && "equal : tensor shapes");
-  __container__<bool> __ret(this->__data_.size());
-  index_t             __i = 0;
+  std::vector<bool> __ret(this->__data_.size());
+  index_t           __i = 0;
 #if defined(__ARM_NEON)
   if constexpr (std::is_same_v<_Tp, float>)
   {
@@ -4253,8 +4077,8 @@ tensor<bool> tensor<_Tp>::equal(const value_t __val) const {
   if (!std::is_integral<value_t>::value && !std::is_scalar<value_t>::value)
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
-  __container__<bool> __ret(this->__data_.size());
-  index_t             __i = 0;
+  std::vector<bool> __ret(this->__data_.size());
+  index_t           __i = 0;
 #if defined(__ARM_NEON)
   if constexpr (std::is_same_v<_Tp, float>)
   {
@@ -4284,10 +4108,10 @@ tensor<_Tp> tensor<_Tp>::sum(const index_t __axis) const {
   if (__axis < 0 || __axis >= static_cast<index_t>(this->__shape_.size()))
     throw std::invalid_argument("Invalid axis for sum");
 
-  shape_t __ret_sh                  = this->__shape_;
-  __ret_sh[__axis]                  = 1;
-  index_t                __ret_size = std::accumulate(__ret_sh.begin(), __ret_sh.end(), 1, std::multiplies<index_t>());
-  __container__<value_t> __ret_data(__ret_size, value_t(0.0f));
+  shape_t __ret_sh   = this->__shape_;
+  __ret_sh[__axis]   = 1;
+  index_t __ret_size = std::accumulate(__ret_sh.begin(), __ret_sh.end(), 1, std::multiplies<index_t>());
+  data_t  __ret_data(__ret_size, value_t(0.0f));
 #if defined(__ARM_NEON)
   if constexpr (std::is_same_v<_Tp, float>)
   {
@@ -4360,10 +4184,10 @@ tensor<_Tp> tensor<_Tp>::row(const index_t __index) const {
   if (this->__shape_[0] <= __index || __index < 0)
     throw std::invalid_argument("Index input is out of range");
 
-  __container__<value_t> __r;
-  index_t                __start = this->__shape_[1] * __index;
-  index_t                __end   = this->__shape_[1] * __index + this->__shape_[1];
-  index_t                __i     = __start;
+  data_t  __r;
+  index_t __start = this->__shape_[1] * __index;
+  index_t __end   = this->__shape_[1] * __index + this->__shape_[1];
+  index_t __i     = __start;
 
   for (; __i < __end; __i++)
     __r.push_back(this->__data_[__i]);
@@ -4379,8 +4203,8 @@ tensor<_Tp> tensor<_Tp>::col(const index_t __index) const {
   if (this->__shape_[1] <= __index || __index < 0)
     throw std::invalid_argument("Index input out of range");
 
-  __container__<value_t> __c;
-  index_t                __i = 0;
+  data_t  __c;
+  index_t __i = 0;
   for (; __i < this->__shape_[0]; __i++)
     __c.push_back(this->__data_[this->__compute_index({__i, __index})]);
 
@@ -4390,8 +4214,8 @@ tensor<_Tp> tensor<_Tp>::col(const index_t __index) const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::ceil() const {
   this->__check_is_scalar_type("Cannot get the ceiling of a non scalar value");
-  __container__<value_t> __ret(this->__data_.size());
-  index_t                __i = 0;
+  data_t  __ret(this->__data_.size());
+  index_t __i = 0;
 #if defined(__ARM_NEON)
   const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
@@ -4411,8 +4235,8 @@ tensor<_Tp> tensor<_Tp>::ceil() const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::floor() const {
   this->__check_is_scalar_type("Cannot get the floor of a non scalar value");
-  __container__<value_t> __ret(this->__data_.size());
-  index_t                __i = 0;
+  data_t  __ret(this->__data_.size());
+  index_t __i = 0;
 #if defined(__ARM_NEON)
   const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   float32x4_t   zero       = vdupq_n_f32(0.0f);
