@@ -3723,7 +3723,7 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::relu() const {
   __self __ret = this->clone();
   __ret.relu_();
-  return __ret;
+  return __ret
 }
 
 template<class _Tp>
