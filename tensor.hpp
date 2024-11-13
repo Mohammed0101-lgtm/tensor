@@ -1299,12 +1299,16 @@ void tensor<_Tp>::pop_back() {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::zeros(const shape_t& __sh) {
-  return this->clone().zeros_(__sh);
+  __self __ret = this->clone();
+  __ret.zeros_(__sh);
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::ones(const shape_t& __sh) {
-  return this->clone().ones_(__sh);
+  __self __ret = this->clone();
+  __ret.ones_(__sh);
+  return __ret;
 }
 
 template<class _Tp>
@@ -2290,72 +2294,100 @@ bool tensor<_Tp>::operator==(const tensor& __other) const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::sinh() const {
-  return this->clone().sinh_();
+  __self __ret = this->clone();
+  __ret.sinh_();
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::asin() const {
-  return this->clone().asin_();
+  __self __ret = this->clone();
+  __ret.asin_();
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::sin() const {
-  return this->clone().sin_();
+  __self __ret = this->clone();
+  __ret.sin_();
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::frac() const {
-  return this->clone().frac_();
+  __self __ret = this->clone();
+  __ret.frac_();
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::cos() const {
-  return this->clone().cos_();
+  __self __ret = this->clone();
+  __ret.cos_();
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::log() const {
-  return this->clone().log_();
+  __self __ret = this->clone();
+  __ret.log_();
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::asinh() const {
-  return this->clone().asinh_();
+  __self __ret = this->clone();
+  __ret.asinh_();
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::cosh() const {
-  return this->clone().cosh_();
+  __self __ret = this->clone();
+  __ret.cosh_();
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::atan() const {
-  return this->clone().atan_();
+  __self __ret = this->clone();
+  __ret.atan_();
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::sqrt() const {
-  return this->sqrt_();
+  __self __ret = this->clone();
+  __ret.sqrt_();
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::acosh() const {
-  return this->clone().acosh();
+  __self __ret = this->clone();
+  __ret.acosh_();
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::log10() const {
-  return this->clone().log10_();
+  __self __ret = this->clone();
+  __ret.log10_();
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::log2() const {
-  return this->clone().log2_();
+  __self __ret = this->clone();
+  __ret.log2_();
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::exp() const {
-  return this->clone().exp_();
+  __self __ret = this->clone();
+  __ret.exp_();
+  return __ret;
 }
 
 // used as a helper function
@@ -2675,7 +2707,9 @@ void tensor<_Tp>::print() noexcept {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::randomize(const shape_t& __sh, bool __bounded) {
-  return this->clone().randomize_(__sh, __bounded);
+  __self __ret = this->clone();
+  __ret.randomize_(__sh, __bounded);
+  return __ret;
 }
 
 template<class _Tp>
@@ -3210,12 +3244,16 @@ tensor<_Tp> tensor<_Tp>::slice(index_t __dim, std::optional<index_t> __start, st
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::fmod(const tensor& __other) const {
-  return this->clone().fmod_(__other);
+  __self __ret = this->clone();
+  __ret.fmod_(__other);
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::fmod(const value_t __val) const {
-  return this->clone().fmod_(__val);
+  __self __ret = this->clone();
+  __ret.fmod_(__val);
+  return __ret;
 }
 
 template<class _Tp>
@@ -3271,12 +3309,16 @@ void tensor<_Tp>::fmod_(const tensor& __other) {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::fmax(const tensor& __other) const {
-  return this->clone().fmax_(__other);
+  __self __ret = this->clone();
+  __ret.fmax_(__other);
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::fmax(const value_t __val) const {
-  return this->clone().fmax_(__val);
+  __self __ret = this->clone();
+  __ret.fmax_(__val);
+  return __ret;
 }
 
 template<class _Tp>
@@ -3679,7 +3721,9 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::relu() const {
-  return this->clone().relu_();
+  __self __ret = this->clone();
+  __ret.relu_();
+  return __ret;
 }
 
 template<class _Tp>
@@ -3976,33 +4020,44 @@ tensor<bool> tensor<_Tp>::logical_not() const {
 
 template<class _Tp>
 tensor<bool> tensor<_Tp>::logical_or(const value_t __val) const {
-  tensor<bool> __ret = this->clone();
-  return __ret.logical_or_(__val);
+  tensor<bool> __ret = this->clone().bool_();
+  __ret.logical_or_(__val);
+  return __ret;
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::logical_or(const tensor<_Tp>& __other) const {
-  return this->clone().logical_or_(__other);
+tensor<bool> tensor<_Tp>::logical_or(const tensor& __other) const {
+  tensor<bool> __ret = this->clone().bool_();
+  __ret.logical_or_(__other);
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::logical_xor(const tensor& __other) const {
-  return this->clone().logical_xor_(__other);
+  __self __ret = this->clone();
+  __ret.logical_xor_(__other);
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::logical_xor(const value_t __val) const {
-  return this->clone().logical_xor_(__val);
+  __self __ret = this->clone();
+  __ret.logical_xor(__val);
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::logical_and(const tensor& __other) const {
-  return this->clone().logical_and_(__other);
+  __self __ret = this->clone();
+  __ret.logical_and_(__other);
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::logical_and(const value_t __val) const {
-  return this->clone().logical_and_(__val);
+  __self __ret = this->clone();
+  __ret.logical_and_(__val);
+  return __ret;
 }
 
 template<class _Tp>
@@ -4094,12 +4149,16 @@ double tensor<_Tp>::mean() const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::pow(const tensor& __other) const {
-  return this->clone().pow_(__other);
+  __self __ret = this->clone();
+  __ret.pow_(__other);
+  return __ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::pow(const value_t __val) const {
-  return this->clone().pow_(__val);
+  __self __ret = this->clone();
+  __ret.pow_(__val);
+  return __ret;
 }
 
 template<class _Tp>
@@ -4471,7 +4530,9 @@ tensor<_Tp> tensor<_Tp>::floor() const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::clamp(const_pointer __min_val, const_pointer __max_val) const {
-  return this->clone().clamp_(__min_val, __max_val);
+  __self __ret = this->clone();
+  __ret.clamp_(__min_val, __max_val);
+  return __ret;
 }
 
 template<class _Tp>
