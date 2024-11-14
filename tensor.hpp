@@ -3074,6 +3074,54 @@ tensor<_Tp> tensor<_Tp>::argmax(index_t __dim) const {
       }
     }
   }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    for (__i = 0; __i < __outer_size; __i++)
+    {
+      for (index_t __j = 0; __j < __inner_size; __j++)
+      {
+        int32x4_t __max_vec = vdupq_n_s32(-std::numeric_limits<int32_t>::infinity());
+        index_t   __k       = 0;
+        for (; __k + _ARM64_REG_WIDTH <= this->__shape_[__dim]; __k += _ARM64_REG_WIDTH)
+        {
+          int32x4_t __data_vec =
+            vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j]));
+          __max_vec = vmaxq_s32(__max_vec, __data_vec);
+        }
+        int32_t __max_value = vmaxvq_s32(__max_vec);
+        for (; __k < this->__shape_[__dim]; __k++)
+        {
+          int32_t __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+          __max_value = std::max(__max_value, __v);
+        }
+        __ret.__data_[__i * __inner_size + __j] = __max_value;
+      }
+    }
+  }
+  else if constexpr (std::is_unsigned<value_t>::value)
+  {
+    for (__i = 0; __i < __outer_size; __i++)
+    {
+      for (index_t __j = 0; __j < __inner_size; __j++)
+      {
+        uint32x4_t __max_vec = vdupq_n_u32(-std::numeric_limits<uint32_t>::infinity());
+        index_t    __k       = 0;
+        for (; __k + _ARM64_REG_WIDTH <= this->__shape_[__dim]; __k += _ARM64_REG_WIDTH)
+        {
+          uint32x4_t __data_vec =
+            vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j]));
+          __max_vec = vmaxq_u32(__max_vec, __data_vec);
+        }
+        uint32_t __max_value = vmaxvq_u32(__max_vec);
+        for (; __k < this->__shape_[__dim]; __k++)
+        {
+          uint32_t __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+          __max_value  = std::max(__max_value, __v);
+        }
+        __ret.__data_[__i * __inner_size + __j] = __max_value;
+      }
+    }
+  }
   else
 #endif
   {
