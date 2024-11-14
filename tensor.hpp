@@ -3914,10 +3914,10 @@ tensor<_Tp> tensor<_Tp>::relu() const {
 template<class _Tp>
 void tensor<_Tp>::relu_() {
   this->__check_is_scalar_type("Cannot relu non-scalar type");
-  
-  if (std::is_unsigned<value_t>::value) 
+
+  if (std::is_unsigned<value_t>::value)
     return;
-    
+
   index_t __s = this->__data_.size();
   index_t __i = 0;
 #pragma omp parallel
