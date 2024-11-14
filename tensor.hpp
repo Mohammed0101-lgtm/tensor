@@ -4169,15 +4169,25 @@ void tensor<_Tp>::logical_or_(const tensor& __other) {
   assert(this->__shape_ == __other.shape());
   index_t __i = 0;
 #if defined(__ARM_NEON)
-  if constexpr (std::is_floating_point<value_t>::value)
+  const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+  if constexpr (std::is_unsigned<value_t>::value)
   {
-    const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __data_vec  = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
       uint32x4_t __other_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other[__i]));
       uint32x4_t __or_vec    = vornq_u32(__data_vec, __other_vec);
       vst1q_u32(reinterpret_cast<uint32_t*>(&this->__data_[__i]), __or_vec);
+    }
+  }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      int32x4_t __data_vec  = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
+      int32x4_t __other_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&__other[__i]));
+      int32x4_t __or_vec    = vornq_s32(__data_vec, __other_vec);
+      vst1q_s32(reinterpret_cast<int32_t*>(&this->__data_[__i]), __or_vec);
     }
   }
 #endif
@@ -4303,13 +4313,29 @@ void tensor<_Tp>::pow_(const tensor& __other) {
       vst1q_f32(&this->__data_[__i], __result_vec);
     }
   }
-  else if constexpr (std::is_signed<value_t>::value) 
+  else if constexpr (std::is_signed<value_t>::value)
   {
-    
+    int32x4_t __base_vec   = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
+    int32x4_t __exp_vec    = vld1q_s32(reinterpret_cast<const int32_t*>(&__other[__i]));
+    int32x4_t __result_vec = {static_cast<int32_t>(std::pow(vgetq_lane_s32(__base_vec, 0), vgetq_lane_s32(__exp_vec, 0))),
+                              static_cast<int32_t>(std::pow(vgetq_lane_s32(__base_vec, 1), vgetq_lane_s32(__exp_vec, 1))),
+                              static_cast<int32_t>(std::pow(vgetq_lane_s32(__base_vec, 2), vgetq_lane_s32(__exp_vec, 2))),
+                              static_cast<int32_t>(std::pow(vgetq_lane_s32(__base_vec, 3), vgetq_lane_s32(__exp_vec, 3)))};
+    vst1q_s32(&this->__data_[__i], __result_vec);
+  }
+  else if constexpr (std::is_unsigned<value_t>::value)
+  {
+    uint32x4_t __base_vec   = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
+    uint32x4_t __exp_vec    = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other[__i]));
+    uint32x4_t __result_vec = {static_cast<uint32_t>(std::pow(vgetq_lane_u32(__base_vec, 0), vgetq_lane_u32(__exp_vec, 0))),
+                               static_cast<uint32_t>(std::pow(vgetq_lane_u32(__base_vec, 1), vgetq_lane_u32(__exp_vec, 1))),
+                               static_cast<uint32_t>(std::pow(vgetq_lane_u32(__base_vec, 2), vgetq_lane_u32(__exp_vec, 2))),
+                               static_cast<uint32_t>(std::pow(vgetq_lane_u32(__base_vec, 3), vgetq_lane_u32(__exp_vec, 3)))};
+    vst1q_u32(&this->__data_[__i], __result_vec);
   }
 #endif
   for (; __i < this->__data_.size(); __i++)
-    this->__data_[__i] = static_cast<value_t>(std::pow(double(this->__data_[__i]), double(__other[__i])));
+    this->__data_[__i] = static_cast<value_t>(std::pow(static_cast<double>(this->__data_[__i]), static_cast<double>(__other[__i])));
 }
 
 template<class _Tp>
