@@ -3339,7 +3339,7 @@ tensor<_Tp> tensor<_Tp>::fmod(const value_t __val) const {
 
 template<class _Tp>
 void tensor<_Tp>::fmod_(const value_t __val) {
-  this->__check_is_scalar_type("Cannot divide a non scalar type");
+  assert(std::is_floating_point<value_t>::value && "fmod : template class must be a floating point type");
   index_t __i = 0;
 #if defined(__ARM_NEON)
   if constexpr (std::is_floating_point<value_t>::value)
@@ -3805,6 +3805,42 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
       for (; __i < __size; ++__i)
         __ret += static_cast<value_t>(__this_data[__i]) * static_cast<value_t>(__other_data[__i]);
     }
+    else if constexpr (std::is_unsigned<value_t>::value)
+    {
+      size_t     __i     = 0;
+      uint32x4_t sum_vec = vdupq_n_u32(0.0f);
+
+      for (; __i + _ARM64_REG_WIDTH <= __size; __i += _ARM64_REG_WIDTH)
+      {
+        uint32x4_t a_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&__this_data[__i]));
+        uint32x4_t b_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other_data[__i]));
+        sum_vec          = vmlaq_u32(sum_vec, a_vec, b_vec);  // Perform multiply-accumulate
+      }
+
+      uint32x2_t sum_half = vadd_u32(vget_high_u32(sum_vec), vget_low_u32(sum_vec));
+      __ret               = vget_lane_u32(vpadd_u32(sum_half, sum_half), 0);
+
+      for (; __i < __size; __i++)
+        __ret += static_cast<value_t>(__this_data[__i]) * static_cast<value_t>(__other_data[__i]);
+    }
+    else if constexpr (std::is_signed<value_t>::value)
+    {
+      size_t    __i     = 0;
+      int32x4_t sum_vec = vdupq_n_f32(0.0f);
+
+      for (; __i + _ARM64_REG_WIDTH <= __size; __i += _ARM64_REG_WIDTH)
+      {
+        int32x4_t a_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&__this_data[__i]));
+        int32x4_t b_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&__other_data[__i]));
+        sum_vec         = vmlaq_s32(sum_vec, a_vec, b_vec);  // Perform multiply-accumulate
+      }
+
+      int32x2_t sum_half = vadd_s32(vget_high_s32(sum_vec), vget_low_s32(sum_vec));
+      __ret              = vget_lane_s32(vpadd_s32(sum_half, sum_half), 0);
+
+      for (; __i < __size; __i++)
+        __ret += static_cast<value_t>(__this_data[__i]) * static_cast<value_t>(__other_data[__i]);
+    }
 #else
     __ret = std::inner_product(__this_data, __this_data + __size, __other_data, value_t(0));
 #endif
@@ -3830,6 +3866,10 @@ tensor<_Tp> tensor<_Tp>::relu() const {
 template<class _Tp>
 void tensor<_Tp>::relu_() {
   this->__check_is_scalar_type("Cannot relu non-scalar type");
+  
+  if (std::is_unsigned<value_t>::value) 
+    return;
+    
   index_t __s = this->__data_.size();
   index_t __i = 0;
 #pragma omp parallel
