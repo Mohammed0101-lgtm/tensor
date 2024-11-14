@@ -3936,6 +3936,62 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
       }
     }
   }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    for (index_t __i = 0; __i < __rows; __i += _ARM64_REG_WIDTH)
+    {
+      for (index_t __j = 0; __j < __cols; __j += _ARM64_REG_WIDTH)
+      {
+        if (__i + _ARM64_REG_WIDTH <= __rows && __j + _ARM64_REG_WIDTH <= __cols)
+        {
+          int32x4x4_t __input;
+          for (index_t __k = 0; __k < _ARM64_REG_WIDTH; __k++)
+            __input.val[__k] = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[(__i + __k) * __cols + __j]));
+
+          int32x4x4_t __output = vld4q_s32(reinterpret_cast<const int32_t*>(&__input));
+
+          for (index_t __k = 0; __k < _ARM64_REG_WIDTH; __k++)
+            vst1q_s32(&__ret.__data_[(__j + __k) * __rows + __i], __output.val[__k]);
+        }
+        else
+        {
+          for (index_t __ii = __i; __ii < std::min(static_cast<index_t>(__i + _ARM64_REG_WIDTH), __rows); __ii++)
+          {
+            for (index_t __jj = __j; __jj < std::min(static_cast<index_t>(__j + _ARM64_REG_WIDTH), __cols); __jj++)
+              __ret.at({__jj, __ii}) = this->at({__ii, __jj});
+          }
+        }
+      }
+    }
+  }
+  else if constexpr (std::is_unsigned<value_t>::value)
+  {
+    for (index_t __i = 0; __i < __rows; __i += _ARM64_REG_WIDTH)
+    {
+      for (index_t __j = 0; __j < __cols; __j += _ARM64_REG_WIDTH)
+      {
+        if (__i + _ARM64_REG_WIDTH <= __rows && __j + _ARM64_REG_WIDTH <= __cols)
+        {
+          uint32x4x4_t __input;
+          for (index_t __k = 0; __k < _ARM64_REG_WIDTH; __k++)
+            __input.val[__k] = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[(__i + __k) * __cols + __j]));
+
+          uint32x4x4_t __output = vld4q_u32(reinterpret_cast<const uint32_t*>(&__input));
+
+          for (index_t __k = 0; __k < _ARM64_REG_WIDTH; __k++)
+            vst1q_u32(&__ret.__data_[(__j + __k) * __rows + __i], __output.val[__k]);
+        }
+        else
+        {
+          for (index_t __ii = __i; __ii < std::min(static_cast<index_t>(__i + _ARM64_REG_WIDTH), __rows); __ii++)
+          {
+            for (index_t __jj = __j; __jj < std::min(static_cast<index_t>(__j + _ARM64_REG_WIDTH), __cols); __jj++)
+              __ret.at({__jj, __ii}) = this->at({__ii, __jj});
+          }
+        }
+      }
+    }
+  }
   else
 #endif
   {
