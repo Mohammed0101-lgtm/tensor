@@ -3974,8 +3974,7 @@ tensor<typename tensor<_Tp>::index_t> tensor<_Tp>::argsort(index_t __d, bool __a
   std::iota(__indices.begin(), __indices.end(), 0);
 #if defined(__ARM_NEON)
   index_t __i = 0;
-
-  if constexpr (std::is_same<value_t, float>::value)
+  if constexpr (std::is_floating_point<value_t>::value)
   {
     for (; __i + _ARM64_REG_WIDTH <= __size; __i += _ARM64_REG_WIDTH)
     {
@@ -3989,6 +3988,44 @@ tensor<typename tensor<_Tp>::index_t> tensor<_Tp>::argsort(index_t __d, bool __a
         __cmp_result = vcltq_f32(__data_vec, __cmp_vec);
       else
         __cmp_result = vcgtq_f32(__data_vec, __cmp_vec);
+
+      for (int __j = 0; __j < _ARM64_REG_WIDTH; __j++)
+        __indices[__i + __j] = (__cmp_result[__j] ? __i + __j : __i + __j + 1);
+    }
+  }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    for (; __i + _ARM64_REG_WIDTH <= __size; __i += _ARM64_REG_WIDTH)
+    {
+      int32x4_t  __data_vec = vld1q_s32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+      int32x2_t  __min1     = vpmin_s32(vget_low_s32(__data_vec), vget_high_s32(__data_vec));
+      int32x2_t  __min2     = vpmin_s32(__min1, __min1);
+      int32x4_t  __cmp_vec  = vdupq_lane_s32(__min2, 0);
+      uint32x4_t __cmp_result;
+
+      if (__ascending)
+        __cmp_result = vcltq_s32(__data_vec, __cmp_vec);
+      else
+        __cmp_result = vcgtq_s32(__data_vec, __cmp_vec);
+
+      for (int __j = 0; __j < _ARM64_REG_WIDTH; __j++)
+        __indices[__i + __j] = (__cmp_result[__j] ? __i + __j : __i + __j + 1);
+    }
+  }
+  else if constexpr (std::is_unsigned<value_t>::value)
+  {
+    for (; __i + _ARM64_REG_WIDTH <= __size; __i += _ARM64_REG_WIDTH)
+    {
+      uint32x4_t __data_vec = vld1q_u32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+      uint32x2_t __min1     = vpmin_u32(vget_low_u32(__data_vec), vget_high_u32(__data_vec));
+      uint32x2_t __min2     = vpmin_u32(__min1, __min1);
+      uint32x4_t __cmp_vec  = vdupq_lane_u32(__min2, 0);
+      uint32x4_t __cmp_result;
+
+      if (__ascending)
+        __cmp_result = vcltq_u32(__data_vec, __cmp_vec);
+      else
+        __cmp_result = vcgtq_u32(__data_vec, __cmp_vec);
 
       for (int __j = 0; __j < _ARM64_REG_WIDTH; __j++)
         __indices[__i + __j] = (__cmp_result[__j] ? __i + __j : __i + __j + 1);
@@ -4034,15 +4071,25 @@ void tensor<_Tp>::bitwise_and_(const tensor& __other) {
   assert(this->__shape_ == __other.shape());
   index_t __i = 0;
 #if defined(__ARM_NEON)
-  if constexpr (std::is_floating_point<value_t>::value)
+  const size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+  if constexpr (std::is_unsigned<value_t>::value)
   {
-    const size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __data_vec  = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
       uint32x4_t __other_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other[__i]));
       uint32x4_t __xor_vec   = vandq_u32(__data_vec, __other_vec);
       vst1q_u32(reinterpret_cast<uint32_t*>(&this->__data_[__i]), __xor_vec);
+    }
+  }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      int32x4_t __data_vec  = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
+      int32x4_t __other_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&__other[__i]));
+      int32x4_t __xor_vec   = vandq_s32(__data_vec, __other_vec);
+      vst1q_s32(reinterpret_cast<int32_t*>(&this->__data_[__i]), __xor_vec);
     }
   }
 #endif
@@ -4072,7 +4119,8 @@ void tensor<_Tp>::bitwise_or_(const tensor& __other) {
   assert(this->__shape_ == __other.shape());
   index_t __i = 0;
 #if defined(__ARM_NEON)
-  if constexpr (std::is_floating_point<value_t>::value)
+  const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+  if constexpr (std::is_unsigned<value_t>::value)
   {
     const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -4081,6 +4129,16 @@ void tensor<_Tp>::bitwise_or_(const tensor& __other) {
       uint32x4_t __other_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other[__i]));
       uint32x4_t __xor_vec   = vornq_u32(__data_vec, __other_vec);
       vst1q_u32(reinterpret_cast<uint32_t*>(&this->__data_[__i]), __xor_vec);
+    }
+  }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      int32x4_t __data_vec  = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
+      int32x4_t __other_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&__other[__i]));
+      int32x4_t __xor_vec   = vornq_s32(__data_vec, __other_vec);
+      vst1q_s32(reinterpret_cast<sint32_t*>(&this->__data_[__i]), __xor_vec);
     }
   }
 #endif
@@ -4096,15 +4154,25 @@ void tensor<_Tp>::bitwise_xor_(const tensor& __other) {
   assert(this->__shape_ == __other.shape());
   index_t __i = 0;
 #if defined(__ARM_NEON)
-  if constexpr (std::is_floating_point<value_t>::value)
+  const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+  if constexpr (std::is_unsigned<value_t>::value)
   {
-    const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __data_vec  = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
       uint32x4_t __other_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other[__i]));
       uint32x4_t __xor_vec   = veorq_u32(__data_vec, __other_vec);
       vst1q_u32(reinterpret_cast<uint32_t*>(&this->__data_[__i]), __xor_vec);
+    }
+  }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      int32x4_t __data_vec  = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
+      int32x4_t __other_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&__other[__i]));
+      int32x4_t __xor_vec   = veorq_s32(__data_vec, __other_vec);
+      vst1q_s32(reinterpret_cast<int32_t*>(&this->__data_[__i]), __xor_vec);
     }
   }
 #endif
