@@ -50,6 +50,7 @@
 #include <cstdint>
 #include <functional>
 #include <initializer_list>
+#include <iomanip>
 #include <iostream>
 #include <limits>
 #include <memory>
@@ -1130,7 +1131,10 @@ class tensor
   /**
      * @brief prints a tensor to stdout
      */
-  void print() noexcept;
+  void print() const {
+    this->printRecursive(0, 0, __shape_);
+    std::cout << std::endl;
+  }
 
   /**
      * @brief sets all the element of the tensor to zero
@@ -1215,6 +1219,53 @@ class tensor
     assert(!__msg.empty());
     if (!std::is_arithmetic<value_t>::value)
       throw std::runtime_error(__msg);
+  }
+
+  size_t computeStride(size_t dim, const shape_t& shape) const {
+    size_t stride = 1;
+    for (size_t i = dim; i < shape.size(); ++i)
+      stride *= shape[i];
+    return stride;
+  }
+
+  void printRecursive(size_t index, size_t depth, const shape_t& shape) const {
+    if (depth == shape.size() - 1)
+    {
+      std::cout << "[";
+      for (size_t i = 0; i < shape[depth]; ++i)
+      {
+        if constexpr (std::is_floating_point<_Tp>::value)
+        {
+          std::cout << std::fixed << std::setprecision(4) << __data_[index + i];
+        }
+        else
+        {
+          std::cout << __data_[index + i];
+        }
+        if (i < shape[depth] - 1)
+          std::cout << ", ";
+      }
+      std::cout << "]";
+    }
+    else
+    {
+      std::cout << "[\n";
+      size_t stride = computeStride(depth + 1, shape);
+      for (size_t i = 0; i < shape[depth]; ++i)
+      {
+        if (i > 0)
+          std::cout << "\n";
+        for (size_t j = 0; j < depth + 1; ++j)
+          std::cout << " ";
+        printRecursive(index + i * stride, depth + 1, shape);
+        if (i < shape[depth] - 1)
+          std::cout << ",";
+      }
+      std::cout << "\n";
+      for (size_t j = 0; j < depth; ++j)
+        std::cout << " ";
+      std::cout << "]";
+    }
   }
 
   void __compute_strides() {
@@ -1315,49 +1366,65 @@ template<class _Tp>
 void tensor<_Tp>::zeros_(shape_t __sh) {
   if (__sh.empty())
     __sh = this->__shape_;
+  else
+    this->__shape_ = __sh;
+
+  size_t __s = this->__computeSize(this->__shape_);
+  this->__data_.resize(__s);
+  this->__compute_strides();
 
   index_t __i = 0;
 #if defined(__ARM_NEON)
+  const index_t __simd_end = __s - (__s % _ARM64_REG_WIDTH);
+
   if constexpr (std::is_floating_point<value_t>::value)
   {
-    const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-    float32x4_t   __zero_vec = vdupq_n_f32(0.0f);
-
+    float32x4_t __zero_vec = vdupq_n_f32(0.0f);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
       vst1q_f32(&this->__data_[__i], __zero_vec);
-
-    for (; __i < this->__data_.size(); __i++)
-      this->__data_[__i] = value_t(0.0f);
   }
-#else
-  for (; __i < this->__data_.size(); __i++)
-    this->__data_[__i] = value_t(0.0);
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    int32x4_t __zero_vec = vdupq_n_s32(0);
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+      vst1q_s32(&this->__data_[__i], __zero_vec);
+  }
+  else if constexpr (std::is_unsigned<value_t>::value)
+  {
+    uint32x4_t __zero_vec = vdupq_n_u32(0);
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+      vst1q_u32(&this->__data_[__i], __zero_vec);
+  }
 #endif
+  for (; __i < __s; __i++)
+    this->__data_[__i] = value_t(0.0);
 }
 
 template<class _Tp>
 void tensor<_Tp>::ones_(shape_t __sh) {
   if (__sh.empty())
     __sh = this->__shape_;
+  else
+    this->__shape_ = __sh;
+
+  size_t __s = this->__computeSize(this->__shape_);
+  this->__data_.resize(__s);
+  this->__compute_strides();
 
   __check_is_scalar_type("template type must be a scalar : tensor.ones()");
   index_t __i = 0;
 #if defined(__ARM_NEON)
   if constexpr (std::is_floating_point<value_t>::value)
   {
-    const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    const index_t __simd_end = __s - (__s % _ARM64_REG_WIDTH);
     float32x4_t   __one_vec  = vdupq_n_f32(1.0f);
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
       vst1q_f32(reinterpret_cast<float32_t*>(&this->__data_[__i]), __one_vec);
-
-    for (; __i < this->__data_.size(); __i++)
-      this->__data_[__i] = value_t(1.0f);
   }
-#else
-  for (; __i < this->__data_.size(); __i++)
-    this->__data_[__i] = value_t(1.0);
 #endif
+  for (; __i < __s; __i++)
+    this->__data_[__i] = value_t(1.0);
 }
 
 template<class _Tp>
@@ -1467,7 +1534,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const value_t __scalar) const {
   /*
     std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
                    [&__scalar](const_reference __v) { return static_cast<value_t>(__v + __scalar); });
-    */
+  */
   return __self(__d, this->__shape_);
 }
 
@@ -2687,25 +2754,6 @@ tensor<_Tp>& tensor<_Tp>::operator=(tensor&& __other) noexcept {
 }
 
 template<class _Tp>
-void tensor<_Tp>::print() noexcept {
-  std::cout << "Shape: [";
-  for (index_t i = 0; i < this->__shape_.size(); ++i)
-  {
-    std::cout << this->__shape_[i];
-    if (i < this->__shape_.size() - 1)
-      std::cout << ", ";
-  }
-  std::cout << "]\nData: ";
-  if (!this->__data_.empty())
-    for (const auto& __v : this->__data_)
-      std::cout << __v << " ";
-  else
-    std::cout << "Empty";
-
-  std::cout << std::endl;
-}
-
-template<class _Tp>
 tensor<_Tp> tensor<_Tp>::randomize(const shape_t& __sh, bool __bounded) {
   __self __ret = this->clone();
   __ret.randomize_(__sh, __bounded);
@@ -2714,21 +2762,23 @@ tensor<_Tp> tensor<_Tp>::randomize(const shape_t& __sh, bool __bounded) {
 
 template<class _Tp>
 void tensor<_Tp>::randomize_(const shape_t& __sh, bool __bounded) {
-  this->__check_is_scalar_type("template class must be a scalar type");
-  index_t __s;
+  if (__bounded)
+    assert(std::is_floating_point<value_t>::value && "Cannot bound non floating point data type");
 
-  if (this->__shape_ != __sh)
-    __s = this->__computeSize(__sh);
-  else
-    __s = this->__data_.size();
+  if (__sh.empty() && this->__shape_.empty())
+    throw std::invalid_argument("randomize_ : Shape must be initialized");
 
-  if (__s != this->__data_.size())
-    this->__data_.resize(__s);
+  if (this->__shape_.empty() || this->__shape_ != __sh)
+    this->__shape_ = __sh;
+
+  index_t __s = this->__computeSize(this->__shape_);
+  this->__data_.resize(__s);
+  this->__compute_strides();
 
   std::random_device                    __rd;
   std::mt19937                          __gen(__rd());
-  std::uniform_real_distribution<float> __bounded_dist(0.0f, static_cast<float>(RAND_MAX));
-  std::uniform_real_distribution<float> __unbounded_dist(0.0f, 1.0f);
+  std::uniform_real_distribution<float> __unbounded_dist(1.0f, static_cast<float>(RAND_MAX));
+  std::uniform_real_distribution<float> __bounded_dist(0.0f, 1.0f);
   index_t                               __i = 0;
 #if defined(__AVX__)
   const __m256 __scale = _mm256_set1_ps(__bounded ? static_cast<float>(RAND_MAX) : 1.0f);
@@ -2757,11 +2807,42 @@ void tensor<_Tp>::randomize_(const shape_t& __sh, bool __bounded) {
     const float32x4_t __scale = vdupq_n_f32(__bounded ? static_cast<float>(RAND_MAX) : 1.0f);
     for (; __i + _ARM64_REG_WIDTH <= static_cast<index_t>(__s); __i += _ARM64_REG_WIDTH)
     {
-      float32x4_t __random_values = {__bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen)};
+      float32x4_t __random_values;
+      if (__bounded)
+        __random_values = {__bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen)};
+      else
+        __random_values = {__unbounded_dist(__gen), __unbounded_dist(__gen), __unbounded_dist(__gen), __unbounded_dist(__gen)};
+
       if (!__bounded)
         __random_values = vmulq_f32(__random_values, vrecpeq_f32(__scale));
 
       vst1q_f32(&this->__data_[__i], __random_values);
+    }
+  }
+  else if constexpr (std::is_unsigned<value_t>::value)
+  {
+    const float32x4_t __scale = vdupq_n_f32(static_cast<float>(RAND_MAX));
+    for (; __i + _ARM64_REG_WIDTH <= static_cast<index_t>(__s); __i += _ARM64_REG_WIDTH)
+    {
+      float32x4_t __rand_vals = {static_cast<float>(__unbounded_dist(__gen)), static_cast<float>(__unbounded_dist(__gen)),
+                                 static_cast<float>(__unbounded_dist(__gen)), static_cast<float>(__unbounded_dist(__gen))};
+      __rand_vals             = vmulq_f32(__rand_vals, vrecpeq_f32(__scale));
+
+      uint32x4_t __int_vals = vcvtq_u32_f32(__rand_vals);
+      vst1q_u32(reinterpret_cast<uint32_t*>(&this->__data_[__i]), __int_vals);
+    }
+  }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    const float32x4_t __scale = vdupq_n_f32(static_cast<float>(RAND_MAX));
+    for (; __i + _ARM64_REG_WIDTH <= static_cast<index_t>(__s); __i += _ARM64_REG_WIDTH)
+    {
+      float32x4_t __rand_vals = {static_cast<float>(__unbounded_dist(__gen)), static_cast<float>(__unbounded_dist(__gen)),
+                                 static_cast<float>(__unbounded_dist(__gen)), static_cast<float>(__unbounded_dist(__gen))};
+      __rand_vals             = vmulq_f32(__rand_vals, vrecpeq_f32(__scale));
+
+      int32x4_t __int_vals = vcvtq_s32_f32(__rand_vals);
+      vst1q_s32(reinterpret_cast<int32_t*>(&this->__data_[__i]), __int_vals);
     }
   }
 #endif
@@ -3566,6 +3647,26 @@ tensor<_Tp> tensor<_Tp>::cross_product(const tensor& __other) const {
     __result             = vextq_f32(__result, __result, 3);
     vst1q_f32(reinterpret_cast<float*>(__ret.storage().data()), __result);
   }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    int32x4_t __a      = vld1q_s32(reinterpret_cast<const int32_t*>(this->__data_.data()));
+    int32x4_t __b      = vld1q_s32(reinterpret_cast<const int32_t*>(__other.storage().data()));
+    int32x4_t __a_yzx  = vextq_s32(__a, __a, 1);
+    int32x4_t __b_yzx  = vextq_s32(__b, __b, 1);
+    int32x4_t __result = vsubq_s32(vmulq_s32(__a_yzx, __b), vmulq_s32(__a, __b_yzx));
+    __result           = vextq_s32(__result, __result, 3);
+    vst1q_s32(reinterpret_cast<float*>(__ret.storage().data()), __result);
+  }
+  else if constexpr (std::is_unsigned<value_t>::value)
+  {
+    uint32x4_t __a      = vld1q_u32(reinterpret_cast<const uint32_t*>(this->__data_.data()));
+    uint32x4_t __b      = vld1q_u32(reinterpret_cast<const uint32_t*>(__other.storage().data()));
+    uint32x4_t __a_yzx  = vextq_u32(__a, __a, 1);
+    uint32x4_t __b_yzx  = vextq_u32(__b, __b, 1);
+    uint32x4_t __result = vsubq_u32(vmulq_u32(__a_yzx, __b), vmulq_u32(__a, __b_yzx));
+    __result            = vextq_u32(__result, __result, 3);
+    vst1q_u32(reinterpret_cast<float*>(__ret.storage().data()), __result);
+  }
 #elif defined(__CUDACC__)
   pointer __d_a;
   pointer __d_b;
@@ -4092,15 +4193,25 @@ void tensor<_Tp>::logical_xor_(const tensor<_Tp>& __other) {
   assert(this->__shape_ == __other.shape());
   index_t __i = 0;
 #if defined(__ARM_NEON)
-  if constexpr (std::is_floating_point<value_t>::value)
+  const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+  if constexpr (std::is_unsigned<value_t>::value)
   {
-    const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __data_vec  = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
       uint32x4_t __other_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other[__i]));
       uint32x4_t __xor_vec   = veorq_u32(__data_vec, __other_vec);
       vst1q_u32(reinterpret_cast<uint32_t*>(&this->__data_[__i]), __xor_vec);
+    }
+  }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      int32x4_t __data_vec  = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
+      int32x4_t __other_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&__other[__i]));
+      int32x4_t __xor_vec   = veorq_s32(__data_vec, __other_vec);
+      vst1q_s32(reinterpret_cast<int32_t*>(&this->__data_[__i]), __xor_vec);
     }
   }
 #endif
@@ -4116,15 +4227,25 @@ void tensor<_Tp>::logical_and_(const tensor<_Tp>& __other) {
   assert(this->__shape_ == __other.shape());
   index_t __i = 0;
 #if defined(__ARM_NEON)
-  if constexpr (std::is_floating_point<value_t>::value)
+  const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+  if constexpr (std::is_unsigned<value_t>::value)
   {
-    const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __data_vec  = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
       uint32x4_t __other_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other[__i]));
       uint32x4_t __and_vec   = vandq_u32(__data_vec, __other_vec);
       vst1q_u32(reinterpret_cast<uint32_t*>(&this->__data_[__i]), __and_vec);
+    }
+  }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      int32x4_t __data_vec  = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
+      int32x4_t __other_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&__other[__i]));
+      int32x4_t __and_vec   = vandq_s32(__data_vec, __other_vec);
+      vst1q_s32(reinterpret_cast<int32_t*>(&this->__data_[__i]), __and_vec);
     }
   }
 #endif
@@ -4167,9 +4288,10 @@ void tensor<_Tp>::pow_(const tensor& __other) {
   assert(this->__shape_ == __other.shape());
   index_t __i = 0;
 #if defined(__ARM_NEON)
+
+  const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   if constexpr (std::is_floating_point<value_t>::value)
   {
-    const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       float32x4_t __base_vec   = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
@@ -4180,6 +4302,10 @@ void tensor<_Tp>::pow_(const tensor& __other) {
                                   std::pow(vgetq_lane_f32(__base_vec, 3), vgetq_lane_f32(__exp_vec, 3))};
       vst1q_f32(&this->__data_[__i], __result_vec);
     }
+  }
+  else if constexpr (std::is_signed<value_t>::value) 
+  {
+    
   }
 #endif
   for (; __i < this->__data_.size(); __i++)
@@ -4208,6 +4334,36 @@ tensor<bool> tensor<_Tp>::less_equal(const tensor& __other) const {
       __ret[__i + 1]           = (__mask >> _AVX_REG_WIDTH) & 1;
       __ret[__i + 2]           = (__mask >> 16) & 1;
       __ret[__i + 3]           = (__mask >> 24) & 1;
+    }
+  }
+  if constexpr (std::is_signed<value_t>::value)
+  {
+    const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      int32x4_t  __data_vec1  = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
+      int32x4_t  __data_vec2  = vld1q_s32(reinterpret_cast<const int32_t*>(&__other.__data_[__i]));
+      uint32x4_t __cmp_result = vcleq_s32(__data_vec1, __data_vec2);
+      uint32_t   __mask       = vaddvq_u32(__cmp_result);
+      __ret[__i]              = __mask & 1;
+      __ret[__i + 1]          = (__mask >> _AVX_REG_WIDTH) & 1;
+      __ret[__i + 2]          = (__mask >> 16) & 1;
+      __ret[__i + 3]          = (__mask >> 24) & 1;
+    }
+  }
+  if constexpr (std::is_unsigned<value_t>::value)
+  {
+    const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      uint32x4_t __data_vec1  = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
+      uint32x4_t __data_vec2  = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other.__data_[__i]));
+      uint32x4_t __cmp_result = vcleq_u32(__data_vec1, __data_vec2);
+      uint32_t   __mask       = vaddvq_u32(__cmp_result);
+      __ret[__i]              = __mask & 1;
+      __ret[__i + 1]          = (__mask >> _AVX_REG_WIDTH) & 1;
+      __ret[__i + 2]          = (__mask >> 16) & 1;
+      __ret[__i + 3]          = (__mask >> 24) & 1;
     }
   }
 #endif
@@ -4269,6 +4425,36 @@ tensor<bool> tensor<_Tp>::greater_equal(const tensor& __other) const {
       __ret[__i + 1]           = (__mask >> _AVX_REG_WIDTH) & 1;
       __ret[__i + 2]           = (__mask >> _AVX_REG_WIDTH * 2) & 1;
       __ret[__i + 3]           = (__mask >> _AVX_REG_WIDTH * 4) & 1;
+    }
+  }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      int32x4_t  __data_vec1  = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
+      int32x4_t  __data_vec2  = vld1q_s32(reinterpret_cast<const int32_t*>(&__other.__data_[__i]));
+      uint32x4_t __cmp_result = vcgeq_s32(__data_vec1, __data_vec2);
+      uint32_t   __mask       = vaddvq_u32(__cmp_result);
+      __ret[__i]              = __mask & 1;
+      __ret[__i + 1]          = (__mask >> _AVX_REG_WIDTH) & 1;
+      __ret[__i + 2]          = (__mask >> _AVX_REG_WIDTH * 2) & 1;
+      __ret[__i + 3]          = (__mask >> _AVX_REG_WIDTH * 4) & 1;
+    }
+  }
+  else if constexpr (std::is_unsigned<value_t>::value)
+  {
+    const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      uint32x4_t __data_vec1  = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
+      uint32x4_t __data_vec2  = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other.__data_[__i]));
+      uint32x4_t __cmp_result = vcgeq_u32(__data_vec1, __data_vec2);
+      uint32_t   __mask       = vaddvq_u32(__cmp_result);
+      __ret[__i]              = __mask & 1;
+      __ret[__i + 1]          = (__mask >> _AVX_REG_WIDTH) & 1;
+      __ret[__i + 2]          = (__mask >> _AVX_REG_WIDTH * 2) & 1;
+      __ret[__i + 3]          = (__mask >> _AVX_REG_WIDTH * 4) & 1;
     }
   }
 #endif
