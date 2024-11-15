@@ -3538,6 +3538,28 @@ typename tensor<_Tp>::index_t tensor<_Tp>::count_nonzero(index_t __dim) const {
           __local_count += vaddvq_u32(__nonzero_mask);
         }
       }
+      else if constexpr (std::is_unsigned<value_t>::value)
+      {
+        index_t __size = this->__data_.size();
+
+        for (; __i + _ARM64_REG_WIDTH <= __size; __i += _ARM64_REG_WIDTH)
+        {
+          uint32x4_t __vec          = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
+          uint32x4_t __nonzero_mask = vcgtq_u32(__vec, vdupq_n_u32(0));
+          __local_count += vaddvq_u32(__nonzero_mask);
+        }
+      }
+      else if constexpr (std::is_signed<value_t>::value)
+      {
+        index_t __size = this->__data_.size();
+
+        for (; __i + _ARM64_REG_WIDTH <= __size; __i += _ARM64_REG_WIDTH)
+        {
+          int32x4_t __vec          = vld1q_s32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
+          int32x4_t __nonzero_mask = vcgtq_s32(__vec, vdupq_n_s32(0));
+          __local_count += vaddvq_s32(__nonzero_mask);
+        }
+      }
 #endif
       for (index_t __j = __i; __j < this->__data_.size(); __j++)
       {
@@ -3593,30 +3615,100 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
     }
   }
 #if defined(__ARM_NEON)
-  for (int __i = 0; __i < __ret_sh[0]; __i += _ARM64_REG_WIDTH)
+  if constexpr (std::is_floating_point<value_t>::value)
   {
-    for (int __j = 0; __j < __ret_sh[1]; __j += _ARM64_REG_WIDTH)
+    for (int __i = 0; __i < __ret_sh[0]; __i += _ARM64_REG_WIDTH)
     {
-      for (int __k = 0; __k < this->__shape_[1]; __k += _ARM64_REG_WIDTH)
+      for (int __j = 0; __j < __ret_sh[1]; __j += _ARM64_REG_WIDTH)
       {
-        for (int __ii = __i; __ii < std::min(static_cast<index_t>(__i + _ARM64_REG_WIDTH), __ret_sh[0]); __ii++)
+        for (int __k = 0; __k < this->__shape_[1]; __k += _ARM64_REG_WIDTH)
         {
-          for (int __jj = __j; __jj < std::min(static_cast<index_t>(__j + _ARM64_REG_WIDTH), __ret_sh[1]); __jj++)
+          for (int __ii = __i; __ii < std::min(static_cast<index_t>(__i + _ARM64_REG_WIDTH), __ret_sh[0]); __ii++)
           {
-            float32x4_t __sum_vec = vdupq_n_f32(0);
-
-            for (int __kk = __k; __kk < std::min(static_cast<index_t>(__k + _ARM64_REG_WIDTH), this->__shape_[1]); __kk += _ARM64_REG_WIDTH)
+            for (int __jj = __j; __jj < std::min(static_cast<index_t>(__j + _ARM64_REG_WIDTH), __ret_sh[1]); __jj++)
             {
-              float32x4_t __a_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__ii * this->__shape_[1] + __kk]));
-              float32x4_t __b_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&__other.__data_[__kk * __other.shape()[1] + __jj]));
-              __sum_vec           = vmlaq_f32(__sum_vec, __a_vec, __b_vec);
-            }
+              float32x4_t __sum_vec = vdupq_n_f32(0);
 
-            float32x2_t __sum_low  = vget_low_f32(__sum_vec);
-            float32x2_t __sum_high = vget_high_f32(__sum_vec);
-            __sum_low              = vadd_f32(__sum_low, __sum_high);
-            float32x2_t __sum_dup  = vpadd_f32(__sum_low, __sum_low);
-            __ret_d[__ii * __ret_sh[1] + __jj] += vget_lane_f32(__sum_dup, 0);
+              for (int __kk = __k; __kk < std::min(static_cast<index_t>(__k + _ARM64_REG_WIDTH), this->__shape_[1]);
+                   __kk += _ARM64_REG_WIDTH)
+              {
+                float32x4_t __a_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__ii * this->__shape_[1] + __kk]));
+                float32x4_t __b_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&__other.__data_[__kk * __other.shape()[1] + __jj]));
+                __sum_vec           = vmlaq_f32(__sum_vec, __a_vec, __b_vec);
+              }
+
+              float32x2_t __sum_low  = vget_low_f32(__sum_vec);
+              float32x2_t __sum_high = vget_high_f32(__sum_vec);
+              __sum_low              = vadd_f32(__sum_low, __sum_high);
+              float32x2_t __sum_dup  = vpadd_f32(__sum_low, __sum_low);
+              __ret_d[__ii * __ret_sh[1] + __jj] += vget_lane_f32(__sum_dup, 0);
+            }
+          }
+        }
+      }
+    }
+  }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    for (int __i = 0; __i < __ret_sh[0]; __i += _ARM64_REG_WIDTH)
+    {
+      for (int __j = 0; __j < __ret_sh[1]; __j += _ARM64_REG_WIDTH)
+      {
+        for (int __k = 0; __k < this->__shape_[1]; __k += _ARM64_REG_WIDTH)
+        {
+          for (int __ii = __i; __ii < std::min(static_cast<index_t>(__i + _ARM64_REG_WIDTH), __ret_sh[0]); __ii++)
+          {
+            for (int __jj = __j; __jj < std::min(static_cast<index_t>(__j + _ARM64_REG_WIDTH), __ret_sh[1]); __jj++)
+            {
+              int32x4_t __sum_vec = vdupq_n_s32(0);
+
+              for (int __kk = __k; __kk < std::min(static_cast<index_t>(__k + _ARM64_REG_WIDTH), this->__shape_[1]);
+                   __kk += _ARM64_REG_WIDTH)
+              {
+                int32x4_t __a_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__ii * this->__shape_[1] + __kk]));
+                int32x4_t __b_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&__other.__data_[__kk * __other.shape()[1] + __jj]));
+                __sum_vec         = vmlaq_s32(__sum_vec, __a_vec, __b_vec);
+              }
+
+              int32x2_t __sum_low  = vget_low_s32(__sum_vec);
+              int32x2_t __sum_high = vget_high_s32(__sum_vec);
+              __sum_low            = vadd_s32(__sum_low, __sum_high);
+              int32x2_t __sum_dup  = vpadd_s32(__sum_low, __sum_low);
+              __ret_d[__ii * __ret_sh[1] + __jj] += vget_lane_s32(__sum_dup, 0);
+            }
+          }
+        }
+      }
+    }
+  }
+  else if constexpr (std::is_unsigned<value_t>::value)
+  {
+    for (int __i = 0; __i < __ret_sh[0]; __i += _ARM64_REG_WIDTH)
+    {
+      for (int __j = 0; __j < __ret_sh[1]; __j += _ARM64_REG_WIDTH)
+      {
+        for (int __k = 0; __k < this->__shape_[1]; __k += _ARM64_REG_WIDTH)
+        {
+          for (int __ii = __i; __ii < std::min(static_cast<index_t>(__i + _ARM64_REG_WIDTH), __ret_sh[0]); __ii++)
+          {
+            for (int __jj = __j; __jj < std::min(static_cast<index_t>(__j + _ARM64_REG_WIDTH), __ret_sh[1]); __jj++)
+            {
+              uint32x4_t __sum_vec = vdupq_n_u32(0);
+
+              for (int __kk = __k; __kk < std::min(static_cast<index_t>(__k + _ARM64_REG_WIDTH), this->__shape_[1]);
+                   __kk += _ARM64_REG_WIDTH)
+              {
+                uint32x4_t __a_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__ii * this->__shape_[1] + __kk]));
+                uint32x4_t __b_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other.__data_[__kk * __other.shape()[1] + __jj]));
+                __sum_vec          = vmlaq_u32(__sum_vec, __a_vec, __b_vec);
+              }
+
+              uint32x2_t __sum_low  = vget_low_u32(__sum_vec);
+              uint32x2_t __sum_high = vget_high_u32(__sum_vec);
+              __sum_low             = vadd_u32(__sum_low, __sum_high);
+              uint32x2_t __sum_dup  = vpadd_u32(__sum_low, __sum_low);
+              __ret_d[__ii * __ret_sh[1] + __jj] += vget_lane_u32(__sum_dup, 0);
+            }
           }
         }
       }
