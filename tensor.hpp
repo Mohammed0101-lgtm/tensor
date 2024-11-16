@@ -1523,6 +1523,7 @@ tensor<float32_t> tensor<_Tp>::float32_() const {
       float64x2_t __data_vec2  = vld1q_f64(reinterpret_cast<const double*>(&this->__data_[__i + 2]));
       float32x4_t __float_vec1 = vcvtq_f32_f64(__data_vec1);
       float32x4_t __float_vec2 = vcvtq_f32_f64(__data_vec2);
+      
       vst1q_f32(reinterpret_cast<float32_t*>(&__d[__i]), __float_vec1);
       vst1q_f32(reinterpret_cast<float32_t*>(&__d[__i + 2]), __float_vec2);
     }
@@ -1534,6 +1535,7 @@ tensor<float32_t> tensor<_Tp>::float32_() const {
     {
       int32x4_t   __data_vec  = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
       float32x4_t __float_vec = vcvtq_f32_s32(__data_vec);
+      
       vst1q_f32(reinterpret_cast<float32_t*>(&__d[__i]), __float_vec);
     }
   }
