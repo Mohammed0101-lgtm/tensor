@@ -1360,7 +1360,7 @@ tensor<int32_t> tensor<_Tp>::int32_() const {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __data_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
-      int32x4_t  __int_vec  = vcvtq_s32_u32(__data_vec);
+      int32x4_t  __int_vec  = vreinterpretq_s32_u32(__data_vec);
       vst1q_s32(reinterpret_cast<int32_t*>(&__d[__i]), __int_vec);
     }
   }
@@ -1393,7 +1393,7 @@ tensor<uint32_t> tensor<_Tp>::uint32_() const {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       int32x4_t  __data_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
-      uint32x4_t __uint_vec = vcvtq_u32_s32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
+      uint32x4_t __uint_vec = vreinterpretq_u32_s32(__data_vec);
       vst1q_u32(reinterpret_cast<uint32_t*>(&__d[__i]), __uint_vec);
     }
   }
@@ -1754,7 +1754,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
       int32x4_t __vec1   = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
       int32x4_t __vec2   = vld1q_s32(reinterpret_cast<const int32_t*>(&__other[__i]));
       int32x4_t __result = vaddq_s32(__vec1, __vec2);
-      vst1q_s32(reinterpret_cast<uint32_t*>(&__d[__i]), __result);
+      vst1q_s32(reinterpret_cast<int32_t*>(&__d[__i]), __result);
     }
   }
   else if constexpr (std::is_unsigned<value_t>::value)
@@ -2198,12 +2198,12 @@ void tensor<_Tp>::log2_() {
       int32x4_t __data_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
       int32_t   __vals[_ARM64_REG_WIDTH];
       vst1q_s32(__vals, __data_vec);
-                        __vals[0] = static_cast<int23_t>(std::log2(__vals[0]);
-			__vals[1] = static_cast<int32_t>(std::log2(__vals[1]);
-			__vals[2] = static_cast<int32_t>(std::log2(__vals[2]);
-			__vals[3] = static_cast<int32_t>(std::log2(__vals[3]);
-			int32x4_t __log_vec = vld1q_s32(__vals);
-			vst1q_s32(&this->__data_[__i], __log_vec);
+      __vals[0]           = static_cast<int32_t>(std::log2(__vals[0]));
+      __vals[1]           = static_cast<int32_t>(std::log2(__vals[1]));
+      __vals[2]           = static_cast<int32_t>(std::log2(__vals[2]));
+      __vals[3]           = static_cast<int32_t>(std::log2(__vals[3]));
+      int32x4_t __log_vec = vld1q_s32(__vals);
+      vst1q_s32(&this->__data_[__i], __log_vec);
     }
   }
   else if constexpr (std::is_unsigned<value_t>::value)
@@ -2257,12 +2257,12 @@ void tensor<_Tp>::asinh_() {
     {
       int32x4_t __data_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
       int32_t   __vals[_ARM64_REG_WIDTH];
-                        __vals[0] = static_cast<int32_t>(std::asinh(__vals[0]);
-			__vals[1] = static_cast<int32_t>(std::asinh(__vals[1]));
-			__vals[2] = static_cast<int32_t>(std::asinh(__vals[2]));
-			__vals[3] = static_cast<int32_t>(std::asinh(__vals[3]));
-			int32x4_t __asinh_vec = vld1q_s32(__vals);
-			vst1q_s32(&this->__data_[__i], __asinh_vec);
+      __vals[0]             = static_cast<int32_t>(std::asinh(__vals[0]));
+      __vals[1]             = static_cast<int32_t>(std::asinh(__vals[1]));
+      __vals[2]             = static_cast<int32_t>(std::asinh(__vals[2]));
+      __vals[3]             = static_cast<int32_t>(std::asinh(__vals[3]));
+      int32x4_t __asinh_vec = vld1q_s32(__vals);
+      vst1q_s32(&this->__data_[__i], __asinh_vec);
     }
   }
   else if constexpr (std::is_unsigned<value_t>::value)
@@ -2271,12 +2271,12 @@ void tensor<_Tp>::asinh_() {
     {
       uint32x4_t __data_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
       uint32_t   __vals[_ARM64_REG_WIDTH];
-                        __vals[0] = static_cast<uint32_t>(std::asinh(__vals[0]);
-			__vals[1] = static_cast<uint32_t>(std::asinh(__vals[1]));
-			__vals[2] = static_cast<uint32_t>(std::asinh(__vals[2]));
-			__vals[3] = static_cast<uint32_t>(std::asinh(__vals[3]));
-			uint32x4_t __asinh_vec = vld1q_u32(__vals);
-			vst1q_u32(&this->__data_[__i], __asinh_vec);
+      __vals[0]              = static_cast<uint32_t>(std::asinh(__vals[0]));
+      __vals[1]              = static_cast<uint32_t>(std::asinh(__vals[1]));
+      __vals[2]              = static_cast<uint32_t>(std::asinh(__vals[2]));
+      __vals[3]              = static_cast<uint32_t>(std::asinh(__vals[3]));
+      uint32x4_t __asinh_vec = vld1q_u32(__vals);
+      vst1q_u32(&this->__data_[__i], __asinh_vec);
     }
   }
 #endif
