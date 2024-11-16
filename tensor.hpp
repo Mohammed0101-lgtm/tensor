@@ -198,15 +198,19 @@ class tensor
   data_t storage() const noexcept { return this->__data_; }
 
   iterator       begin();
+  
   const_iterator begin() const;
 
   iterator       end();
+  
   const_iterator end() const;
 
   reverse_iterator       rbegin();
+  
   const_reverse_iterator rbegin() const;
 
   reverse_iterator       rend();
+
   const_reverse_iterator rend() const;
 
   void push_back(value_t __v);
@@ -1330,6 +1334,46 @@ class tensor
 
 };  // tensor class
 
+
+template<class _Tp>
+typename tensor<_Tp>::iterator       tensor<_Tp>::begin() {
+  return this->__data_.begin();
+}
+
+template<class _Tp>
+typename tensor<_Tp>::const_iterator tensor<_Tp>::begin() const {
+  return this->__data_.begin();
+}
+
+template<class _Tp>
+typename tensor<_Tp>::iterator       tensor<_Tp>::end() {
+  return this->__data_.end();
+}
+
+template<class _Tp>
+typename tensor<_Tp>::const_iterator tensor<_Tp>::end() const {
+  return this->__data_.end();
+}
+
+template<class _Tp>
+typename tensor<_Tp>::reverse_iterator       tensor<_Tp>::rbegin() {
+  return this->__data_.rbegin();
+}
+
+template<class _Tp>
+typename tensor<_Tp>::const_reverse_iterator tensor<_Tp>::rbegin() const {
+  return this->__data_.rbegin();
+}
+
+template<class _Tp>
+typename tensor<_Tp>::reverse_iterator       tensor<_Tp>::rend() {
+  return this->__data_.rend();
+}
+
+template<class _Tp>
+typename tensor<_Tp>::const_reverse_iterator tensor<_Tp>::rend() const {
+  return this->__data_.rend();
+}
 
 template<class _Tp>
 tensor<bool> tensor<_Tp>::bool_() const {
