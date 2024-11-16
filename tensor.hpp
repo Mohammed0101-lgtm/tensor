@@ -1514,7 +1514,7 @@ tensor<float32_t> tensor<_Tp>::float32_() const {
   index_t __i = 0;
 
 #if defined(__ARM_NEON)
-  if constexpr (std::is_same<value_t, double>::value)
+  if constexpr (std::is_same_v<value_t, double>)
   {
     const index_t __simd_end = this->__data_.size() - (this->__data_.size() % (_ARM64_REG_WIDTH / 2));
     for (; __i < __simd_end; __i += (_ARM64_REG_WIDTH / 2))
