@@ -1527,7 +1527,7 @@ tensor<float32_t> tensor<_Tp>::float32_() const {
       vst1q_f32(reinterpret_cast<float32_t*>(&__d[__i + 2]), __float_vec2);
     }
   }
-  else if constexpr (std::is_same<value_t, int32_t>::value)
+  else if constexpr (std::is_same_v<value_t, int32_t>)
   {
     const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
