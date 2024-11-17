@@ -197,44 +197,95 @@ class tensor
      */
   data_t storage() const noexcept { return this->__data_; }
 
-  iterator       begin();
-  
-  const_iterator begin() const;
+  /**
+   * @brief a wrapper to __data_.begin()
+   */
+  iterator begin() noexcept;
 
-  iterator       end();
-  
-  const_iterator end() const;
+  /**
+   * @brief const version of tensor.begin()
+   */
+  const_iterator begin() const noexcept;
 
-  reverse_iterator       rbegin();
-  
-  const_reverse_iterator rbegin() const;
+  /**
+   * @brief a wrapper to __data_.end()
+   */
+  iterator end() noexcept;
 
-  reverse_iterator       rend();
+  /**
+   * @brief const version of tensor.end()
+   */
+  const_iterator end() const noexcept;
 
-  const_reverse_iterator rend() const;
+  /**
+   * @brief a wrapper to __data_.rbegin()
+   */
+  reverse_iterator rbegin() noexcept;
 
+  /**
+   * @brief const version of tensor.rbegin()
+   */
+  const_reverse_iterator rbegin() const noexcept;
+
+  /**
+   * @brief a wrapper to __data_.rend()
+   */
+  reverse_iterator rend() noexcept;
+
+  /**
+   * @brief const version of tensor.rend()
+   */
+  const_reverse_iterator rend() const noexcept;
+
+  /**
+   * @brief a wrapper for __data_.push_back()
+   */
   void push_back(value_t __v);
 
+  /**
+   * @brief a wrapper for __data_.pop_back()
+   */
   void pop_back();
 
+  /**
+   * @brief converts this to a boolean tensor
+   */
   tensor<bool> bool_() const;
 
+  /**
+   * @brief converts this to a 32 bit int tensor
+   */
   tensor<int32_t> int32_() const;
 
+  /**
+   * @brief converts this to 32 bit unsigned int tensor
+   */
   tensor<uint32_t> uint32_() const;
 
+  /**
+   * @brief converts this to 64 bit int tensor
+   */
   tensor<int64_t> long_() const;
 
+  /**
+   * @brief converts this to 64 bit unsigned int tensor
+   */
   tensor<uint64_t> unsigned_long_() const;
 
+  /**
+   * @brief converts this to 32 bit float tensor
+   */
   tensor<float32_t> float32_() const;
 
+  /**
+   * @brief converts this to 64 bit float (double) tensor
+   */
   tensor<float64_t> double_() const;
 
   /**
      * @brief returns the shape of a tensor
      * @return vector of 64 bit integers indicating the size of each dimension
-    */
+     */
   shape_t shape() const noexcept { return this->__shape_; }
 
   /**
@@ -1336,42 +1387,42 @@ class tensor
 
 
 template<class _Tp>
-typename tensor<_Tp>::iterator       tensor<_Tp>::begin() {
+typename tensor<_Tp>::iterator tensor<_Tp>::begin() noexcept {
   return this->__data_.begin();
 }
 
 template<class _Tp>
-typename tensor<_Tp>::const_iterator tensor<_Tp>::begin() const {
+typename tensor<_Tp>::const_iterator tensor<_Tp>::begin() const noexcept {
   return this->__data_.begin();
 }
 
 template<class _Tp>
-typename tensor<_Tp>::iterator       tensor<_Tp>::end() {
+typename tensor<_Tp>::iterator tensor<_Tp>::end() noexcept {
   return this->__data_.end();
 }
 
 template<class _Tp>
-typename tensor<_Tp>::const_iterator tensor<_Tp>::end() const {
+typename tensor<_Tp>::const_iterator tensor<_Tp>::end() const noexcept {
   return this->__data_.end();
 }
 
 template<class _Tp>
-typename tensor<_Tp>::reverse_iterator       tensor<_Tp>::rbegin() {
+typename tensor<_Tp>::reverse_iterator tensor<_Tp>::rbegin() noexcept {
   return this->__data_.rbegin();
 }
 
 template<class _Tp>
-typename tensor<_Tp>::const_reverse_iterator tensor<_Tp>::rbegin() const {
+typename tensor<_Tp>::const_reverse_iterator tensor<_Tp>::rbegin() const noexcept {
   return this->__data_.rbegin();
 }
 
 template<class _Tp>
-typename tensor<_Tp>::reverse_iterator       tensor<_Tp>::rend() {
+typename tensor<_Tp>::reverse_iterator tensor<_Tp>::rend() noexcept {
   return this->__data_.rend();
 }
 
 template<class _Tp>
-typename tensor<_Tp>::const_reverse_iterator tensor<_Tp>::rend() const {
+typename tensor<_Tp>::const_reverse_iterator tensor<_Tp>::rend() const noexcept {
   return this->__data_.rend();
 }
 
