@@ -1619,11 +1619,11 @@ tensor<float32_t> tensor<_Tp>::float32_() const {
     {
       float64x2_t __data_vec1  = vld1q_f64(reinterpret_cast<const double*>(&this->__data_[__i]));
       float64x2_t __data_vec2  = vld1q_f64(reinterpret_cast<const double*>(&this->__data_[__i + 2]));
-      float32x4_t __float_vec1 = vcvtq_f32_f64(__data_vec1);
-      float32x4_t __float_vec2 = vcvtq_f32_f64(__data_vec2);
+      float32x2_t __float_vec1 = vcvt_f32_f64(__data_vec1);
+      float32x2_t __float_vec2 = vcvt_f32_f64(__data_vec2);
 
-      vst1q_f32(reinterpret_cast<float32_t*>(&__d[__i]), __float_vec1);
-      vst1q_f32(reinterpret_cast<float32_t*>(&__d[__i + 2]), __float_vec2);
+      float32x4_t __float_vec_combined = vcombine_f32(__float_vec1, __float_vec2);
+      vst1q_f32(reinterpret_cast<float32_t*>(&__d[__i]), __float_vec_combined);
     }
   }
   else if constexpr (std::is_same_v<value_t, int32_t>)
@@ -2765,10 +2765,9 @@ void tensor<_Tp>::sinh_() {
   this->__check_is_scalar_type("Cannot perform a sin on non-scalar data type");
   index_t __i = 0;
 #if defined(__ARM_NEON)
+  index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   if constexpr (std::is_floating_point<value_t>::value)
   {
-    this->__check_is_same_type<float32_t>("sinh : operation only supported for floating-point types.");
-    index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
@@ -2778,8 +2777,38 @@ void tensor<_Tp>::sinh_() {
       __vals[1]              = std::sinh(__vals[1]);
       __vals[2]              = std::sinh(__vals[2]);
       __vals[3]              = std::sinh(__vals[3]);
-      float32x4_t __atan_vec = vld1q_f32(__vals);
-      vst1q_f32(&this->__data_[__i], __atan_vec);
+      float32x4_t __sinh_vec = vld1q_f32(__vals);
+      vst1q_f32(&this->__data_[__i], __sinh_vec);
+    }
+  }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      int32x4_t __data_vec = vld1q_s32(reinterpret_cast<int32_t*>(&this->__data_[__i]));
+      int32_t   __vals[_ARM64_REG_WIDTH];
+      vst1q_s32(__vals, __data_vec);
+      __vals[0]            = static_cast<int32_t>(std::sinh(static_cast<double>(__vals[0])));
+      __vals[1]            = static_cast<int32_t>(std::sinh(static_cast<double>(__vals[1])));
+      __vals[2]            = static_cast<int32_t>(std::sinh(static_cast<double>(__vals[2])));
+      __vals[3]            = static_cast<int32_t>(std::sinh(static_cast<double>(__vals[3])));
+      int32x4_t __sinh_vec = vld1q_s32(__vals);
+      vst1q_s32(&this->__data_[__i], __sinh_vec);
+    }
+  }
+  else if constexpr (std::is_unsigned<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      uint32x4_t __data_vec = vld1q_u32(reinterpret_cast<uint32_t*>(&this->__data_[__i]));
+      uint32_t   __vals[_ARM64_REG_WIDTH];
+      vst1q_u32(__vals, __data_vec);
+      __vals[0]             = static_cast<uint32_t>(std::sinh(static_cast<double>(__vals[0])));
+      __vals[1]             = static_cast<uint32_t>(std::sinh(static_cast<double>(__vals[1])));
+      __vals[2]             = static_cast<uint32_t>(std::sinh(static_cast<double>(__vals[2])));
+      __vals[3]             = static_cast<uint32_t>(std::sinh(static_cast<double>(__vals[3])));
+      uint32x4_t __sinh_vec = vld1q_u32(__vals);
+      vst1q_u32(&this->__data_[__i], __sinh_vec);
     }
   }
 #endif
@@ -2796,22 +2825,45 @@ void tensor<_Tp>::acosh_() {
   this->__check_is_scalar_type("Cannot perform a acosh on non-scalar data type");
   index_t __i = 0;
 #if defined(__ARM_NEON)
-  if constexpr (std::is_floating_point<value_t>::value)
+  index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+  if constexpr (std::is_same<value_t, float32_t>::value)
   {
-    this->__check_is_same_type<float32_t>("acosh : operation only supported for floating-point types.");
-    index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
       float       __vals[_ARM64_REG_WIDTH];
       vst1q_f32(__vals, __data_vec);
-      __vals[0]              = std::acosh(__vals[0]);
-      __vals[1]              = std::acosh(__vals[1]);
-      __vals[2]              = std::acosh(__vals[2]);
-      __vals[3]              = std::acosh(__vals[3]);
-      float32x4_t __atan_vec = vld1q_f32(__vals);
-      vst1q_f32(&this->__data_[__i], __atan_vec);
+      __vals[0]               = std::acosh(__vals[0]);
+      __vals[1]               = std::acosh(__vals[1]);
+      __vals[2]               = std::acosh(__vals[2]);
+      __vals[3]               = std::acosh(__vals[3]);
+      float32x4_t __acosh_vec = vld1q_f32(__vals);
+      vst1q_f32(&this->__data_[__i], __acosh_vec);
     }
+  }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    int32x4_t __data_vec = vld1q_s32(reinterpret_cast<int32_t*>(&this->__data_[__i]));
+    int32_t   __vals[_ARM64_REG_WIDTH];
+    vst1q_s32(__vals, __data_vec);
+    __vals[0]             = static_cast<int32_t>(std::acosh(__vals[0]));
+    __vals[1]             = static_cast<int32_t>(std::acosh(__vals[1]));
+    __vals[2]             = static_cast<int32_t>(std::acosh(__vals[2]));
+    __vals[3]             = static_cast<int32_t>(std::acosh(__vals[3]));
+    int32x4_t __acosh_vec = vld1q_s32(__vals);
+    vst1q_s32(&this->__data_[__i], __acosh_vec);
+  }
+  else if constexpr (std::is_unsigned<value_t>::value)
+  {
+    uint32x4_t __data_vec = vld1q_u32(reinterpret_cast<uint32_t*>(&this->__data_[__i]));
+    uint32_t   __vals[_ARM64_REG_WIDTH];
+    vst1q_u32(__vals, __data_vec);
+    __vals[0]              = static_cast<uint32_t>(std::acosh(__vals[0]));
+    __vals[1]              = static_cast<uint32_t>(std::acosh(__vals[1]));
+    __vals[2]              = static_cast<uint32_t>(std::acosh(__vals[2]));
+    __vals[3]              = static_cast<uint32_t>(std::acosh(__vals[3]));
+    uint32x4_t __acosh_vec = vld1q_u32(__vals);
+    vst1q_u32(&this->__data_[__i], __acosh_vec);
   }
 #endif
   for (; __i < this->__data_.size(); __i++)
@@ -2935,14 +2987,13 @@ void tensor<_Tp>::frac_() {
   this->__check_is_scalar_type("Cannot get the fraction of a non-scalar type");
   index_t __i = 0;
 #if defined(__ARM_NEON)
-  if constexpr (std::is_floating_point<value_t>::value)
+  if constexpr (std::is_same_v<value_t, float32_t>)
   {
-    this->__check_is_same_type<float32_t>("frac : operation only supported for floating-point types.");
     index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
-      float       __vals[_ARM64_REG_WIDTH];
+      float32_t   __vals[_ARM64_REG_WIDTH];
       vst1q_f32(__vals, __data_vec);
       __vals[0]              = this->__frac(__vals[0]);
       __vals[1]              = this->__frac(__vals[1]);
@@ -2950,6 +3001,22 @@ void tensor<_Tp>::frac_() {
       __vals[3]              = this->__frac(__vals[3]);
       float32x4_t __atan_vec = vld1q_f32(__vals);
       vst1q_f32(&this->__data_[__i], __atan_vec);
+    }
+  }
+  if constexpr (std::is_same_v<value_t, float64_t>)
+  {
+    index_t __simd_end = this->__data_.size() - (this->__data_.size() % (_ARM64_REG_WIDTH / 2));
+    for (; __i < __simd_end; __i += (_ARM64_REG_WIDTH / 2))
+    {
+      float64x2_t __data_vec = vld1q_f64(reinterpret_cast<const float64_t*>(&this->__data_[__i]));
+      float64_t   __vals[_ARM64_REG_WIDTH];
+      vst1q_f64(__vals, __data_vec);
+      __vals[0]              = static_cast<float64_t>(this->__frac(__vals[0]));
+      __vals[1]              = static_cast<float64_t>(this->__frac(__vals[1]));
+      __vals[2]              = static_cast<float64_t>(this->__frac(__vals[2]));
+      __vals[3]              = static_cast<float64_t>(this->__frac(__vals[3]));
+      float64x2_t __atan_vec = vld1q_f64(__vals);
+      vst1q_f64(&this->__data_[__i], __atan_vec);
     }
   }
 #endif
@@ -4439,7 +4506,17 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
     throw std::invalid_argument("matmul is only supported for 2D tensors");
 
   if (this->__shape_[1] != __other.shape()[0])
-    throw std::invalid_argument("Shape mismatch for matrix multiplication");
+  {
+    if (this->__shape_[0] == __other.shape()[1])
+      return __other.matmul(*this);
+
+    throw std::invalid_argument("Shape mismatch for matrix multiplication: "
+                                "this shape: ["
+                                + std::to_string(this->__shape_[0]) + ", " + std::to_string(this->__shape_[1])
+                                + "] "
+                                  "other shape: ["
+                                + std::to_string(__other.shape()[0]) + ", " + std::to_string(__other.shape()[1]) + "]");
+  }
 
   shape_t __ret_sh = {this->__shape_[0], __other.shape()[1]};
   data_t  __ret_d(__ret_sh[0] * __ret_sh[1], 0);
