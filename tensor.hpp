@@ -1673,14 +1673,18 @@ class tensor
     assert(!__msg.empty());
 
     if (!std::is_scalar<value_t>::value)
+    {
       throw std::runtime_error(__msg);
+    }
   }
 
   static void __check_is_integral_type(const std::string __msg) {
     assert(!__msg.empty());
 
     if (!std::is_integral<value_t>::value)
+    {
       throw std::runtime_error(__msg);
+    }
   }
 
   template<typename __t>
@@ -1688,21 +1692,27 @@ class tensor
     assert(!__msg.empty());
 
     if (!std::is_same<value_t, __t>::value)
+    {
       throw std::runtime_error(__msg);
+    }
   }
 
   static void __check_is_arithmetic_type(const std::string __msg) {
     assert(!__msg.empty());
 
     if (!std::is_arithmetic<value_t>::value)
+    {
       throw std::runtime_error(__msg);
+    }
   }
 
   size_t computeStride(size_t dim, const shape_t& shape) const {
     size_t stride = 1;
 
-    for (size_t i = dim; i < shape.size(); ++i)
+    for (size_t i = dim; i < shape.size(); i++)
+    {
       stride *= shape[i];
+    }
 
     return stride;
   }
@@ -1711,15 +1721,22 @@ class tensor
     if (depth == shape.size() - 1)
     {
       std::cout << "[";
+
       for (size_t i = 0; i < shape[depth]; ++i)
       {
         if constexpr (std::is_floating_point<_Tp>::value)
+        {
           std::cout << std::fixed << std::setprecision(4) << __data_[index + i];
+        }
         else
+        {
           std::cout << __data_[index + i];
+        }
 
         if (i < shape[depth] - 1)
+        {
           std::cout << ", ";
+        }
       }
       std::cout << "]";
     }
@@ -1727,23 +1744,32 @@ class tensor
     {
       std::cout << "[\n";
       size_t stride = computeStride(depth + 1, shape);
+
       for (size_t i = 0; i < shape[depth]; ++i)
       {
         if (i > 0)
+        {
           std::cout << "\n";
+        }
 
-        for (size_t j = 0; j < depth + 1; ++j)
+        for (size_t j = 0; j < depth + 1; j++)
+        {
           std::cout << " ";
+        }
 
         printRecursive(index + i * stride, depth + 1, shape);
 
         if (i < shape[depth] - 1)
+        {
           std::cout << ",";
+        }
       }
       std::cout << "\n";
 
-      for (size_t j = 0; j < depth; ++j)
+      for (size_t j = 0; j < depth; j++)
+      {
         std::cout << " ";
+      }
 
       std::cout << "]";
     }
@@ -1768,19 +1794,28 @@ class tensor
 
   index_t __compute_index(const std::vector<index_t>& __idx) const {
     if (__idx.size() != this->__shape_.size())
+    {
       throw std::out_of_range("input indices does not match the tensor __shape_");
+    }
 
-    index_t __index = 0, __i = 0;
+    index_t __index = 0;
+    index_t __i     = 0;
+
     for (; __i < this->__shape_.size(); __i++)
+    {
       __index += __idx[__i] * this->__strides_[__i];
+    }
 
     return __index;
   }
 
   static uint64_t __computeSize(const shape_t& __dims) {
     uint64_t __ret = 1;
+
     for (const index_t& __d : __dims)
+    {
       __ret *= __d;
+    }
 
     return __ret;
   }
@@ -1899,7 +1934,9 @@ tensor<bool> tensor<_Tp>::bool_() const {
   std::vector<bool> __d;
 
   for (index_t __i = 0; __i < this->__data_.size(); __i++)
+  {
     __d.push_back(bool(this->__data_[__i]));
+  }
 
   return tensor<bool>(__d, this->__shape_);
 }
@@ -1973,7 +2010,9 @@ tensor<_Tp>& tensor<_Tp>::abs_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::abs(this->__data_[__i]));
+  }
 
   return *this;
 }
@@ -2040,7 +2079,9 @@ tensor<_Tp>& tensor<_Tp>::tan_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::tan(this->__data_[__i]));
+  }
 
   return *this;
 }
@@ -2107,7 +2148,9 @@ tensor<_Tp>& tensor<_Tp>::tanh_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::tanh(this->__data_[__i]));
+  }
 
   return *this;
 }
@@ -2223,12 +2266,16 @@ tensor<_Tp> tensor<_Tp>::det() const {
   this->__check_is_arithmetic_type("det: template type must be an arithmetic type");
 
   if (this->__shape_.size() != 2 || this->__shape_[0] != this->__shape_[1])
+  {
     throw std::invalid_argument("det: tensor must be a square matrix (n x n)");
+  }
 
   index_t n = this->__shape_[0];
 
   if (n == 2)
+  {
     return tensor<_Tp>(this->__data_[0] * this->__data_[3] - this->__data_[1] * this->__data_[2]);
+  }
 
   value_t determinant = 0;
   tensor  minor;
@@ -2368,7 +2415,9 @@ tensor<_Tp>& tensor<_Tp>::negative_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = -this->__data_[__i];
+  }
 
   return *this;
 }
@@ -2378,18 +2427,24 @@ tensor<_Tp>& tensor<_Tp>::transpose_() const {
   this->__check_is_scalar_type("Cannot transpose a non-scalar tensor");
 
   if (this->__shape_.size() != 2)
+  {
     throw std::runtime_error("Transpose operation is only valid for 2D tensors");
+  }
 
   const auto rows = this->__shape_[0];
   const auto cols = this->__shape_[1];
 
   if (rows != cols)
+  {
     throw std::runtime_error("In-place transpose is only supported for square tensors");
+  }
 
   for (index_t i = 0; i < rows; i++)
   {
     for (index_t j = i + 1; j < cols; j++)
+    {
       std::swap(this->__data_[i * cols + j], this->__data_[j * cols + i]);
+    }
   }
 
   return *this;
@@ -2423,8 +2478,10 @@ tensor<_Tp>& tensor<_Tp>::dist_(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] =
       static_cast<value_t>(std::abs(static_cast<float64_t>(this->__data_[__i] - __other.__data_[__i])));
+  }
 
   return *this;
 }
@@ -2453,7 +2510,9 @@ tensor<_Tp>& tensor<_Tp>::dist_(const value_t __val) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::abs(static_cast<float64_t>(this->__data_[__i] - __val)));
+  }
 
   return *this;
 }
@@ -2480,7 +2539,9 @@ tensor<_Tp>& tensor<_Tp>::maximum_(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = std::max(this->__data_[__i], __other.__data_[__i]);
+  }
 
   return *this;
 }
@@ -2506,7 +2567,9 @@ tensor<_Tp>& tensor<_Tp>::maximum_(const value_t __val) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = std::max(this->__data_[__i], __val);
+  }
 
   return *this;
 }
@@ -2517,7 +2580,9 @@ tensor<_Tp>& tensor<_Tp>::remainder_(const value_t __val) const {
   assert(__val != 0 && "Remainder by zero is undefined");
 
   for (index_t __i = 0; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] %= __val;
+  }
 
   return *this;
 }
@@ -2597,7 +2662,9 @@ tensor<_Tp>& tensor<_Tp>::sigmoid_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(1.0 / (1.0 + std::exp(-static_cast<double>(this->__data_[__i]))));
+  }
 
   return *this;
 }
@@ -2607,7 +2674,9 @@ tensor<_Tp>& tensor<_Tp>::clipped_relu_(const value_t __clip_limit) const {
   this->__check_is_scalar_type("Cannot apply clipped ReLU to a non-scalar type");
 
   if constexpr (std::is_unsigned<value_t>::value)
+  {
     return *this;
+  }
 
   index_t __s = this->__data_.size();
   index_t __i = 0;
@@ -2683,7 +2752,9 @@ tensor<_Tp>& tensor<_Tp>::clipped_relu_(const value_t __clip_limit) const {
 #endif
 
   for (; __i < __s; __i++)
+  {
     this->__data_[__i] = std::min(std::max(this->__data_[__i], value_t(0)), __clip_limit);
+  }
 
   return *this;
 }
@@ -2726,7 +2797,9 @@ tensor<int32_t> tensor<_Tp>::int32_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     __d.push_back(static_cast<int32_t>(this->__data_[__i]));
+  }
 
   return __self(__d, this->__shape_);
 }
@@ -2764,7 +2837,9 @@ tensor<uint32_t> tensor<_Tp>::uint32_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i += _ARM64_REG_WIDTH)
+  {
     __d.push_back(static_cast<uint32_t>(this->__data_[__i]));
+  }
 
   return __self(__d, this->__shape_);
 }
@@ -2774,7 +2849,9 @@ tensor<int64_t> tensor<_Tp>::long_() const {
   static_assert(std::is_convertible<value_t, int64_t>::value, "Tensor value type must be convertible to int64_t.");
 
   if (this->empty())
+  {
     return __self({}, this->__shape_);
+  }
 
   data_t  __d(this->__data_.size());
   index_t __i = 0;
@@ -2822,7 +2899,9 @@ tensor<int64_t> tensor<_Tp>::long_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     __d[__i] = static_cast<int64_t>(this->__data_[__i]);
+  }
 
   return __self(__d, this->__shape_);
 }
@@ -2832,7 +2911,9 @@ tensor<uint64_t> tensor<_Tp>::unsigned_long_() const {
   static_assert(std::is_convertible<value_t, uint64_t>::value, "Tensor value type must be convertible to uint64_t.");
 
   if (this->empty())
+  {
     return __self({}, this->__shape_);
+  }
 
   data_t  __d(this->__data_.size());
   index_t __i = 0;
@@ -2865,7 +2946,9 @@ tensor<uint64_t> tensor<_Tp>::unsigned_long_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     __d[__i] = static_cast<uint64_t>(this->__data_[__i]);
+  }
 
   return __self(__d, this->__shape_);
 }
@@ -2875,7 +2958,9 @@ tensor<float32_t> tensor<_Tp>::float32_() const {
   static_assert(std::is_convertible<value_t, float32_t>::value, "Tensor value type must be convertible to float32_t.");
 
   if (this->empty())
+  {
     return __self({}, this->__shape_);
+  }
 
   data_t  __d(this->__data_.size());
   index_t __i = 0;
@@ -2884,6 +2969,7 @@ tensor<float32_t> tensor<_Tp>::float32_() const {
   if constexpr (std::is_same_v<value_t, float64_t>)
   {
     const index_t __simd_end = this->__data_.size() - (this->__data_.size() % (_ARM64_REG_WIDTH / 2));
+
     for (; __i < __simd_end; __i += (_ARM64_REG_WIDTH / 2))
     {
       float64x2_t __data_vec1          = vld1q_f64(reinterpret_cast<const float64_t*>(&this->__data_[__i]));
@@ -2898,6 +2984,7 @@ tensor<float32_t> tensor<_Tp>::float32_() const {
   else if constexpr (std::is_same_v<value_t, int32_t>)
   {
     const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       int32x4_t   __data_vec  = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
@@ -2909,7 +2996,9 @@ tensor<float32_t> tensor<_Tp>::float32_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     __d[__i] = static_cast<float32_t>(this->__data_[__i]);
+  }
 
   return __self(__d, this->__shape_);
 }
@@ -2919,7 +3008,9 @@ tensor<float64_t> tensor<_Tp>::double_() const {
   static_assert(std::is_convertible<value_t, float64_t>::value, "Tensor value type must be convertible to float64_t.");
 
   if (this->empty())
+  {
     return __self({}, this->__shape_);
+  }
 
   data_t  __d(this->__data_.size());
   index_t __i = 0;
@@ -2935,7 +3026,9 @@ tensor<float64_t> tensor<_Tp>::double_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     __d[__i] = static_cast<float64_t>(this->__data_[__i]);
+  }
 
   return __self(__d, this->__shape_);
 }
@@ -2950,10 +3043,11 @@ tensor<_Tp>& tensor<_Tp>::push_back(value_t __v) {
   }
 
   if (this->__shape_.size() != 1)
+  {
     throw std::invalid_argument("push_back only works for one dimensional tensors");
+  }
 
   this->__data_.push_back(__v);
-
   this->__shape_[0]++;
 }
 
@@ -2979,9 +3073,13 @@ tensor<_Tp> tensor<_Tp>::ones(const shape_t& __sh) {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::zeros_(shape_t __sh) {
   if (__sh.empty())
+  {
     __sh = this->__shape_;
+  }
   else
+  {
     this->__shape_ = __sh;
+  }
 
   size_t __s = this->__computeSize(this->__shape_);
 
@@ -2996,33 +3094,48 @@ tensor<_Tp>& tensor<_Tp>::zeros_(shape_t __sh) {
   if constexpr (std::is_floating_point<value_t>::value)
   {
     float32x4_t __zero_vec = vdupq_n_f32(0.0f);
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
       vst1q_f32(&this->__data_[__i], __zero_vec);
+    }
   }
   else if constexpr (std::is_signed<value_t>::value)
   {
     int32x4_t __zero_vec = vdupq_n_s32(0);
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
       vst1q_s32(&this->__data_[__i], __zero_vec);
+    }
   }
   else if constexpr (std::is_unsigned<value_t>::value)
   {
     uint32x4_t __zero_vec = vdupq_n_u32(0);
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
       vst1q_u32(&this->__data_[__i], __zero_vec);
+    }
   }
 #endif
 
   for (; __i < __s; __i++)
+  {
     this->__data_[__i] = value_t(0.0);
+  }
 }
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::ones_(shape_t __sh) {
   if (__sh.empty())
+  {
     __sh = this->__shape_;
+  }
   else
+  {
     this->__shape_ = __sh;
+  }
 
   size_t __s = this->__computeSize(this->__shape_);
 
@@ -3038,49 +3151,69 @@ tensor<_Tp>& tensor<_Tp>::ones_(shape_t __sh) {
   if constexpr (std::is_floating_point<value_t>::value)
   {
     float32x4_t __one_vec = vdupq_n_f32(1.0f);
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
       vst1q_f32(reinterpret_cast<float32_t*>(&this->__data_[__i]), __one_vec);
+    }
   }
   else if constexpr (std::is_signed<value_t>::value)
   {
     int32x4_t __one_vec = vdupq_n_s32(1);
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
       vst1q_s32(reinterpret_cast<int32_t*>(&this->__data_[__i]), __one_vec);
+    }
   }
   else if constexpr (std::is_unsigned<value_t>::value)
   {
     uint32x4_t __one_vec = vdupq_n_u32(1);
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
       vst1q_u32(reinterpret_cast<uint32_t*>(&this->__data_[__i]), __one_vec);
+    }
   }
 #endif
 
   for (; __i < __s; __i++)
+  {
     this->__data_[__i] = value_t(1.0);
+  }
 }
 
 template<class _Tp>
 typename tensor<_Tp>::index_t tensor<_Tp>::size(const index_t __dim) const {
   if (__dim < 0 || __dim >= static_cast<index_t>(this->__shape_.size()))
+  {
     throw std::invalid_argument("dimension input is out of range");
+  }
 
   if (this->__data_.empty())
+  {
     return 0;
+  }
 
   if (__dim == 0)
+  {
     return this->__data_.size();
-
+  }
   return this->__shape_[__dim];
 }
 
 template<class _Tp>
 typename tensor<_Tp>::reference tensor<_Tp>::at(tensor<_Tp>::shape_t __idx) {
   if (__idx.empty())
+  {
     throw std::invalid_argument("Passing an empty vector as indices for a tensor");
+  }
 
   index_t __i = this->__compute_index(__idx);
   if (__i < 0 || __i >= this->__data_.size())
+  {
     throw std::invalid_argument("input indices are out of bounds");
+  }
 
   return this->__data_[__i];
 }
@@ -3088,11 +3221,16 @@ typename tensor<_Tp>::reference tensor<_Tp>::at(tensor<_Tp>::shape_t __idx) {
 template<class _Tp>
 typename tensor<_Tp>::const_reference tensor<_Tp>::at(const tensor<_Tp>::shape_t __idx) const {
   if (__idx.empty())
+  {
     throw std::invalid_argument("Passing an empty vector as indices for a tensor");
+  }
 
   index_t __i = this->__compute_index(__idx);
+
   if (__i < 0 || __i >= this->__data_.size())
+  {
     throw std::invalid_argument("input indices are out of bounds");
+  }
 
   return this->__data_[__i];
 }
@@ -3100,7 +3238,9 @@ typename tensor<_Tp>::const_reference tensor<_Tp>::at(const tensor<_Tp>::shape_t
 template<class _Tp>
 typename tensor<_Tp>::reference tensor<_Tp>::operator[](const index_t __in) {
   if (__in >= this->__data_.size() || __in < 0)
+  {
     throw std::out_of_range("Access index is out of range");
+  }
 
   return this->__data_[__in];
 }
@@ -3108,7 +3248,9 @@ typename tensor<_Tp>::reference tensor<_Tp>::operator[](const index_t __in) {
 template<class _Tp>
 tensor<_Tp>::const_reference tensor<_Tp>::operator[](const index_t __in) const {
   if (__in >= this->__data_.size() || __in < 0)
+  {
     throw std::out_of_range("Access index is out of range");
+  }
 
   return this->__data_[__in];
 }
@@ -3117,7 +3259,9 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
   this->__check_is_arithmetic_type("template class must be an arithmetic type");
   if (__other.shape() != this->__shape_)
+  {
     throw std::invalid_argument("Cannot add two tensors with different shapes");
+  }
 
   data_t  __d(this->__data_.size());
   index_t __i = 0;
@@ -3161,7 +3305,9 @@ tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     __d[__i] = this->__data_[__i] + __other[__i];
+  }
 
   return __self(__d, this->__shape_);
 }
@@ -3178,6 +3324,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const value_t __scalar) const {
   if constexpr (std::is_floating_point<value_t>::value)
   {
     float32x4_t __val_vec = vdupq_n_f32(reinterpret_cast<float32_t>(&__scalar));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       float32x4_t __vec = vld1q_f32(reinterpret_castr<const float32_t*>(&this->__data_[__i]));
@@ -3189,6 +3336,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const value_t __scalar) const {
   else if constexpr (std::is_signed<value_t>::value)
   {
     int32x4_t __val_vec = vdupq_n_s32(reinterpret_cast<int32_t>(&__scalar));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       int32x4_t __vec = vld1q_s32(reinterpret_castr<const int32_t*>(&this->__data_[__i]));
@@ -3200,6 +3348,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const value_t __scalar) const {
   else if constexpr (std::is_unsigned<value_t>::value)
   {
     uint32x4_t __val_vec = vdupq_n_u32(reinterpret_cast<uint32_t>(&__scalar));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __vec = vld1q_u32(reinterpret_castr<const uint32_t*>(&this->__data_[__i]));
@@ -3211,7 +3360,9 @@ tensor<_Tp> tensor<_Tp>::operator+(const value_t __scalar) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     __d[__i] = this->__data_[__i] + __scalar;
+  }
 
   return __self(__d, this->__shape_);
 }
@@ -3228,7 +3379,9 @@ tensor<_Tp> tensor<_Tp>::operator+=(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] += __other[__i];
+  }
 
   return *this;
 }
@@ -3244,6 +3397,7 @@ tensor<_Tp> tensor<_Tp>::operator+=(const_reference __scalar) const {
   if constexpr (std::is_floating_point<value_t>::value)
   {
     float32x4_t __val_vec = vdupq_n_f32(reinterpret_cast<float32_t>(&__scalar));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
@@ -3255,6 +3409,7 @@ tensor<_Tp> tensor<_Tp>::operator+=(const_reference __scalar) const {
   else if constexpr (std::is_signed<value_t>::value)
   {
     int32x4_t __val_vec = vdupq_n_s32(reinterpret_cast<int32_t>(&__scalar));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       int32x4_t __data_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
@@ -3266,6 +3421,7 @@ tensor<_Tp> tensor<_Tp>::operator+=(const_reference __scalar) const {
   else if constexpr (std::is_unsigned<value_t>::value)
   {
     uint32x4_t __val_vec = vdupq_n_u32(reinterpret_cast<uint32_t>(&__scalar));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __data_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
@@ -3277,7 +3433,9 @@ tensor<_Tp> tensor<_Tp>::operator+=(const_reference __scalar) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = this->__data_[__i] + __scalar;
+  }
 
   return *this;
 }
@@ -3285,8 +3443,11 @@ tensor<_Tp> tensor<_Tp>::operator+=(const_reference __scalar) const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
   this->__check_is_arithmetic_type("template class must be an arithmetic type");
+
   if (__other.shape() != this->__shape_)
+  {
     throw std::invalid_argument("Cannot add two tensors with different shapes");
+  }
 
   data_t  __d(this->__data_.size());
   index_t __i = 0;
@@ -3318,7 +3479,6 @@ tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
   }
   else if constexpr (std::is_unsigned<value_t>::value)
   {
-
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
@@ -3331,7 +3491,9 @@ tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_[__i]; __i++)
+  {
     __d[__i] = this->__data_[__i] - __other[__i];
+  }
 
   return __self(__d, this->__shape_);
 }
@@ -3348,6 +3510,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const value_t __scalar) const {
   if constexpr (std::is_floating_point<value_t>::value)
   {
     float32x4_t __vals = vdupq_n_f32(reinterpret_cast<float32_t>(&__scalar));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       float32x4_t __vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
@@ -3359,6 +3522,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const value_t __scalar) const {
   else if constexpr (std::is_signed<value_t>::value)
   {
     int32x4_t __vals = vdupq_n_s32(reinterpret_cast<int32_t>(&__scalar));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       int32x4_t __vec = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
@@ -3370,6 +3534,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const value_t __scalar) const {
   else if constexpr (std::is_unsigned<value_t>::value)
   {
     uint32x4_t __vals = vdupq_n_u32(reinterpret_cast<uint32_t>(&__scalar));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
@@ -3381,7 +3546,9 @@ tensor<_Tp> tensor<_Tp>::operator-(const value_t __scalar) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     __d[__i] = this->__data_[__i] - __scalar;
+  }
 
   return __self(*this);
 }
@@ -3431,7 +3598,9 @@ tensor<_Tp> tensor<_Tp>::operator-=(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] -= __other[__i];
+  }
 
   return *this;
 }
@@ -3481,7 +3650,9 @@ tensor<_Tp> tensor<_Tp>::operator*=(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] *= __other[__i];
+  }
 
   return *this;
 }
@@ -3496,7 +3667,9 @@ tensor<_Tp> tensor<_Tp>::operator*=(const_reference __scalar) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] *= __scalar;
+  }
 
   return *this;
 }
@@ -3508,7 +3681,9 @@ tensor<_Tp> tensor<_Tp>::operator/=(const tensor& __other) const {
   index_t __i = 0;
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] /= __other[__i];
+  }
 
   return *this;
 }
@@ -3519,7 +3694,9 @@ tensor<_Tp> tensor<_Tp>::operator/=(const_reference __scalar) const {
   index_t __i = 0;
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] /= __scalar;
+  }
 
   return *this;
 }
@@ -3535,6 +3712,7 @@ tensor<_Tp> tensor<_Tp>::operator-=(const_reference __scalar) const {
   if constexpr (std::is_floating_point<value_t>::value)
   {
     float32x4_t __val = vld1q_f32(reinterpret_cast<const float32_t*>(&__val));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       float32x4_t __vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
@@ -3546,6 +3724,7 @@ tensor<_Tp> tensor<_Tp>::operator-=(const_reference __scalar) const {
   else if constexpr (std::is_unsigned<value_t>::value)
   {
     uint32x4_t __val = vld1q_u32(reinterpret_cast<const uint32_t*>(&__val));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
@@ -3557,6 +3736,7 @@ tensor<_Tp> tensor<_Tp>::operator-=(const_reference __scalar) const {
   else if constexpr (std::is_signed<value_t>::value)
   {
     int32x4_t __val = vld1q_s32(reinterpret_cast<const int32_t*>(&__val));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       int32x4_t __vec = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
@@ -3568,7 +3748,9 @@ tensor<_Tp> tensor<_Tp>::operator-=(const_reference __scalar) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] -= __scalar;
+  }
 
   return *this;
 }
@@ -3634,7 +3816,9 @@ tensor<_Tp>& tensor<_Tp>::log2_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::log2(this->__data_[__i]));
+  }
 
   return *this;
 }
@@ -3699,7 +3883,9 @@ tensor<_Tp>& tensor<_Tp>::asinh_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::asinh(this->__data_[__i]));
+  }
 
   return *this;
 }
@@ -3766,7 +3952,9 @@ tensor<_Tp>& tensor<_Tp>::atan_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::atan(this->__data_[__i]));
+  }
 
   return *this;
 }
@@ -3791,7 +3979,9 @@ tensor<_Tp>& tensor<_Tp>::floor_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::floor(static_cast<float32_t>(this->__data_[__i])));
+  }
 
   return *this;
 }
@@ -3816,7 +4006,9 @@ tensor<_Tp>& tensor<_Tp>::ceil_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::ceil(static_cast<float32_t>(this->__data_[__i])));
+  }
 
   return *this;
 }
@@ -3883,7 +4075,9 @@ tensor<_Tp>& tensor<_Tp>::sin_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::sin(this->__data_[__i]));
+  }
 
   return *this;
 }
@@ -3951,7 +4145,9 @@ tensor<_Tp>& tensor<_Tp>::asin_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::asin(this->__data_[__i]));
+  }
 
   return *this;
 }
@@ -4018,7 +4214,9 @@ tensor<_Tp>& tensor<_Tp>::log10_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::log10(this->__data_[__i]));
+  }
 
   return *this;
 }
@@ -4085,7 +4283,9 @@ tensor<_Tp>& tensor<_Tp>::log_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::log(this->__data_[__i]));
+  }
 
   return *this;
 }
@@ -4152,7 +4352,9 @@ tensor<_Tp>& tensor<_Tp>::exp_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::exp(this->__data_[__i]));
+  }
 
   return *this;
 }
@@ -4164,6 +4366,7 @@ tensor<_Tp>& tensor<_Tp>::sqrt_() {
 
 #if defined(__ARM_NEON)
   index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+
   if constexpr (std::is_same_v<value_t, float32_t>)
   {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -4219,7 +4422,9 @@ tensor<_Tp>& tensor<_Tp>::sqrt_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::sqrt(this->__data_[__i]));
+  }
 
   return *this;
 }
@@ -4231,6 +4436,7 @@ tensor<_Tp>& tensor<_Tp>::sinh_() {
 
 #if defined(__ARM_NEON)
   index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+
   if constexpr (std::is_floating_point<value_t>::value)
   {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -4285,7 +4491,9 @@ tensor<_Tp>& tensor<_Tp>::sinh_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::sinh(this->__data_[__i]));
+  }
 
   return *this;
 }
@@ -4297,6 +4505,7 @@ tensor<_Tp>& tensor<_Tp>::acosh_() {
 
 #if defined(__ARM_NEON)
   index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+
   if constexpr (std::is_same<value_t, float32_t>::value)
   {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -4345,7 +4554,9 @@ tensor<_Tp>& tensor<_Tp>::acosh_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::acosh(this->__data_[__i]));
+  }
 }
 
 template<class _Tp>
@@ -4355,6 +4566,7 @@ tensor<_Tp>& tensor<_Tp>::cosh_() {
 
 #if defined(__ARM_NEON)
   index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+
   if constexpr (std::is_floating_point<value_t>::value)
   {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -4409,7 +4621,9 @@ tensor<_Tp>& tensor<_Tp>::cosh_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::cosh(this->__data_[__i]));
+  }
 }
 
 template<class _Tp>
@@ -4419,6 +4633,7 @@ tensor<_Tp>& tensor<_Tp>::cos_() {
 
 #if defined(__ARM_NEON)
   index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+
   if constexpr (std::is_floating_point<value_t>::value)
   {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -4473,7 +4688,9 @@ tensor<_Tp>& tensor<_Tp>::cos_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::cos(this->__data_[__i]));
+  }
 }
 
 template<class _Tp>
@@ -4503,6 +4720,7 @@ tensor<_Tp>& tensor<_Tp>::frac_() {
   if constexpr (std::is_same_v<value_t, float64_t>)
   {
     index_t __simd_end = this->__data_.size() - (this->__data_.size() % (_ARM64_REG_WIDTH / 2));
+
     for (; __i < __simd_end; __i += (_ARM64_REG_WIDTH / 2))
     {
       float64x2_t __data_vec = vld1q_f64(reinterpret_cast<const float64_t*>(&this->__data_[__i]));
@@ -4521,7 +4739,9 @@ tensor<_Tp>& tensor<_Tp>::frac_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(this->__frac(this->__data_[__i]));
+  }
 }
 
 template<class _Tp>
@@ -4586,7 +4806,9 @@ tensor<_Tp>& tensor<_Tp>::pow_(const value_t __val) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(std::pow(this->__data_[__i], __val));
+  }
 
   return *this;
 }
@@ -4610,6 +4832,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_right_shift_(const int __amount) {
   if constexpr (std::is_same<value_t, int32_t>::value)
   {
     const int32x4_t __shift_amount_vec = vdupq_n_s32(-__amount);
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       int32x4_t __data_vec    = vld1q_s32(reinterpret_cast<int32_t*>(&this->__data_[__i]));
@@ -4621,6 +4844,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_right_shift_(const int __amount) {
   else if constexpr (std::is_same<value_t, uint32_t>::value)
   {
     const int32x4_t __shift_amount_vec = vdupq_n_s32(-__amount);
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __data_vec    = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
@@ -4632,7 +4856,9 @@ tensor<_Tp>& tensor<_Tp>::bitwise_right_shift_(const int __amount) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] >>= __amount;
+  }
 }
 
 template<class _Tp>
@@ -4647,6 +4873,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_left_shift_(const int __amount) {
   if constexpr (std::is_same<value_t, int32_t>::value)
   {
     const int32x4_t __shift_amount_vec = vdupq_n_s32(__amount);
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       int32x4_t __data_vec    = vld1q_s32(reinterpret_cast<int32_t*>(&this->__data_[__i]));
@@ -4658,6 +4885,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_left_shift_(const int __amount) {
   else if constexpr (std::is_same<value_t, uint32_t>::value)
   {
     const int32x4_t __shift_amount_vec = vdupq_n_s32(__amount);
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __data_vec    = vld1q_u32(reinterpret_cast<uint32_t*>(&this->__data_[__i]));
@@ -4669,13 +4897,17 @@ tensor<_Tp>& tensor<_Tp>::bitwise_left_shift_(const int __amount) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] <<= __amount;
+  }
 }
 
 template<class _Tp>
 bool tensor<_Tp>::operator==(const tensor& __other) const {
   if ((this->__shape_ != __other.shape()) && (this->__strides_ != __other.strides()))
+  {
     return false;
+  }
 
   return this->__data_ == __other.storage();
 }
@@ -4789,7 +5021,9 @@ typename tensor<_Tp>::index_t tensor<_Tp>::lcm() const {
   index_t __i   = 1;
 
   for (; __i < this->__data_.size(); __i++)
+  {
     __ret = __lcm(static_cast<index_t>(this->__data_[__i]), __ret);
+  }
 
   return __ret;
 }
@@ -4797,7 +5031,9 @@ typename tensor<_Tp>::index_t tensor<_Tp>::lcm() const {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::logical_or_(const value_t __val) {
   if (!std::is_integral<value_t>::value && !std::is_same<value_t, bool>::value)
+  {
     throw std::runtime_error("Cannot perform logical OR on non-integral and non-boolean values");
+  }
 
   index_t __i = 0;
 
@@ -4807,6 +5043,7 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const value_t __val) {
   if constexpr (std::is_same<value_t, int32_t>::value || std::is_same<value_t, bool>::value)
   {
     int32x4_t __val_vec = vdupq_n_s32(static_cast<int32_t>(__val));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       int32x4_t __data_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
@@ -4818,6 +5055,7 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const value_t __val) {
   else if constexpr (std::is_same<value_t, uint32_t>::value)
   {
     uint32x4_t __val_vec = vdupq_n_u32(static_cast<uint32_t>(__val));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __data_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
@@ -4829,7 +5067,9 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const value_t __val) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(this->__data_[__i] || __val);
+  }
 
   return *this;
 }
@@ -4837,7 +5077,10 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const value_t __val) {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_t __val) {
   if (!std::is_integral<value_t>::value && !std::is_same<value_t, bool>::value)
+  {
     throw std::runtime_error("Cannot get the element wise xor of non-integral and non-boolean value");
+  }
+
   index_t __i = 0;
 
 #if defined(__ARM_NEON)
@@ -4846,6 +5089,7 @@ tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_t __val) {
   if constexpr (std::is_same<value_t, int32_t>::value || std::is_same<value_t, bool>::value)
   {
     int32x4_t __val_vec = vdupq_n_s32(static_cast<int32_t>(__val));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       int32x4_t __data_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
@@ -4857,6 +5101,7 @@ tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_t __val) {
   else if constexpr (std::is_same<value_t, uint32_t>::value)
   {
     uint32x4_t __val_vec = vdupq_n_u32(static_cast<uint32_t>(__val));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __data_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
@@ -4868,7 +5113,9 @@ tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_t __val) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(this->__data_[__i] ^ __val);
+  }
 
   return *this;
 }
@@ -4876,7 +5123,10 @@ tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_t __val) {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::logical_and_(const value_t __val) {
   if (!std::is_integral<value_t>::value && !std::is_same<value_t, bool>::value)
+  {
     throw std::runtime_error("Cannot get the element wise and of non-integral and non-boolean value");
+  }
+
   index_t __i = 0;
 
 #if defined(__ARM_NEON)
@@ -4885,6 +5135,7 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const value_t __val) {
   if constexpr (std::is_same<value_t, int32_t>::value)
   {
     int32x4_t __vals = vdupq_n_s32(reinterpret_cast<int32_t>(&__val));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       int32x4_t __vec = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
@@ -4896,6 +5147,7 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const value_t __val) {
   else if constexpr (std::is_same<value_t, uint32_t>::value)
   {
     uint32x4_t __vals = vdupq_n_u32(reinterpret_cast<uint32_t>(&__val));
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
@@ -4907,7 +5159,9 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const value_t __val) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = static_cast<value_t>(this->__data_[__i] && __val);
+  }
 
   return *this;
 }
@@ -4915,7 +5169,9 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const value_t __val) {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::bitwise_or_(const value_t __val) {
   if (!std::is_integral<value_t>::value && !std::is_same<value_t, bool>::value)
+  {
     throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
+  }
 
   index_t __i = 0;
 
@@ -4947,13 +5203,17 @@ tensor<_Tp>& tensor<_Tp>::bitwise_or_(const value_t __val) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] |= __val;
+  }
 }
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const value_t __val) {
   if (!std::is_integral<value_t>::value && !std::is_same<value_t, bool>::value)
+  {
     throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
+  }
 
   index_t __i = 0;
 
@@ -4985,13 +5245,17 @@ tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const value_t __val) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] ^= __val;
+  }
 }
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::bitwise_not_() {
   if (!std::is_integral<value_t>::value && !std::is_same<value_t, bool>::value)
+  {
     throw std::runtime_error("Cannot perform a bitwise not on non integral or boolean value");
+  }
 
   index_t __i = 0;
 
@@ -5021,13 +5285,17 @@ tensor<_Tp>& tensor<_Tp>::bitwise_not_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = ~this->__data_[__i];
+  }
 }
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::bitwise_and_(const value_t __val) {
   if (!std::is_integral<value_t>::value && !std::is_same<value_t, bool>::value)
+  {
     throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
+  }
 
   index_t __i = 0;
 
@@ -5059,7 +5327,9 @@ tensor<_Tp>& tensor<_Tp>::bitwise_and_(const value_t __val) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] &= __val;
+  }
 }
 
 template<class _Tp>
@@ -5108,13 +5378,19 @@ tensor<_Tp> tensor<_Tp>::randomize(const shape_t& __sh, bool __bounded) {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::randomize_(const shape_t& __sh, bool __bounded) {
   if (__bounded)
+  {
     assert(std::is_floating_point<value_t>::value && "Cannot bound non floating point data type");
+  }
 
   if (__sh.empty() && this->__shape_.empty())
+  {
     throw std::invalid_argument("randomize_ : Shape must be initialized");
+  }
 
   if (this->__shape_.empty() || this->__shape_ != __sh)
+  {
     this->__shape_ = __sh;
+  }
 
   index_t __s = this->__computeSize(this->__shape_);
   this->__data_.resize(__s);
@@ -5133,8 +5409,11 @@ tensor<_Tp>& tensor<_Tp>::randomize_(const shape_t& __sh, bool __bounded) {
     __m256 __random_values =
       _mm256_setr_ps(__bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen),
                      __bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen));
+
     if (!__bounded)
+    {
       __random_values = _mm256_div_ps(__random_values, __scale);
+    }
 
     _mm256_storeu_ps(&this->__data_[__i], __random_values);
   }
@@ -5145,8 +5424,11 @@ tensor<_Tp>& tensor<_Tp>::randomize_(const shape_t& __sh, bool __bounded) {
   {
     __m128 __random_values =
       _mm_setr_ps(__bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen));
+
     if (!__bounded)
+    {
       __random_values = _mm_div_ps(__random_values, __scale);
+    }
 
     _mm_storeu_ps(&this->__data_[__i], __random_values);
   }
@@ -5158,14 +5440,21 @@ tensor<_Tp>& tensor<_Tp>::randomize_(const shape_t& __sh, bool __bounded) {
     for (; __i + _ARM64_REG_WIDTH <= static_cast<index_t>(__s); __i += _ARM64_REG_WIDTH)
     {
       float32x4_t __random_values;
+
       if (__bounded)
+      {
         __random_values = {__bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen)};
+      }
       else
+      {
         __random_values = {__unbounded_dist(__gen), __unbounded_dist(__gen), __unbounded_dist(__gen),
                            __unbounded_dist(__gen)};
+      }
 
       if (!__bounded)
+      {
         __random_values = vmulq_f32(__random_values, vrecpeq_f32(__scale));
+      }
 
       vst1q_f32(&this->__data_[__i], __random_values);
     }
@@ -5201,13 +5490,17 @@ tensor<_Tp>& tensor<_Tp>::randomize_(const shape_t& __sh, bool __bounded) {
 #endif
 
   for (; __i < static_cast<index_t>(__s); __i++)
+  {
     this->__data_[__i] = value_t(__bounded ? __bounded_dist(__gen) : __unbounded_dist(__gen));
+  }
 }
 
 template<class _Tp>
 tensor<typename tensor<_Tp>::index_t> tensor<_Tp>::argmax_(index_t __dim) const {
   if (__dim < 0 || __dim >= this->__shape_.size())
+  {
     throw std::out_of_range("Dimension out of range in argmax");
+  }
 
   tensor<index_t> __ret;
   shape_t         __ret_sh = this->__shape_;
@@ -5220,10 +5513,14 @@ tensor<typename tensor<_Tp>::index_t> tensor<_Tp>::argmax_(index_t __dim) const 
   index_t __i          = 0;
 
   for (; __i < __dim; __i++)
+  {
     __outer_size *= this->__shape_[__i];
+  }
 
   for (__i = __dim + 1; __i < this->__shape_.size(); __i++)
+  {
     __inner_size *= this->__shape_[__i];
+  }
 
 #if defined(__AVX2__)
   if constexpr (std::is_same_v<_Tp, float32_t>)
@@ -5380,6 +5677,7 @@ tensor<typename tensor<_Tp>::index_t> tensor<_Tp>::argmax_(index_t __dim) const 
         for (; __k < this->__shape_[__dim]; __k++)
         {
           int32_t __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+
           if (__v > __max_value)
           {
             __max_value = __v;
@@ -5435,6 +5733,7 @@ tensor<typename tensor<_Tp>::index_t> tensor<_Tp>::argmax_(index_t __dim) const 
         for (; __k < this->__shape_[__dim]; __k++)
         {
           uint32_t __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+
           if (__v > __max_value)
           {
             __max_value = __v;
@@ -5460,6 +5759,7 @@ tensor<typename tensor<_Tp>::index_t> tensor<_Tp>::argmax_(index_t __dim) const 
         for (; __k < this->__shape_[__dim]; __k++)
         {
           value_t __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+
           if (__v > __max_value)
           {
             __max_value = __v;
@@ -5477,7 +5777,9 @@ tensor<typename tensor<_Tp>::index_t> tensor<_Tp>::argmax_(index_t __dim) const 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::argmax(index_t __dim) const {
   if (__dim < 0 || __dim >= this->__shape_.size())
+  {
     throw std::out_of_range("Dimension out of range in argmax");
+  }
 
   tensor  __ret;
   shape_t __ret_sh = this->__shape_;
@@ -5491,11 +5793,14 @@ tensor<_Tp> tensor<_Tp>::argmax(index_t __dim) const {
   index_t __i          = 0;
 
   for (; __i < __dim; __i++)
+  {
     __outer_size *= this->__shape_[__i];
+  }
 
   for (__i = __dim + 1; __i < static_cast<index_t>(this->__shape_.size()); __i++)
+  {
     __inner_size *= this->__shape_[__i];
-
+  }
 #if defined(__AVX2__)
   if constexpr (std::is_same_v<_Tp, float32_t>)
   {
@@ -5621,8 +5926,11 @@ tensor<_Tp> tensor<_Tp>::argmax(index_t __dim) const {
         for (; __k < this->__shape_[__dim]; __k++)
         {
           value_t __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
+
           if (__v > __max_value)
+          {
             __max_value = __v;
+          }
         }
         __ret.__data_[__i * __inner_size + __j] = __max_value;
       }
@@ -5650,8 +5958,11 @@ tensor<_Tp> tensor<_Tp>::unsqueeze(index_t __dim) const {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::view(std::initializer_list<index_t> __sh) {
   index_t __s = this->__computeSize(__sh);
+
   if (__s != this->__data_.size())
+  {
     throw std::invalid_argument("Total elements do not match for new shape");
+  }
 
   this->__shape_ = __sh;
   this->__compute_strides();
@@ -5665,22 +5976,28 @@ tensor<_Tp> tensor<_Tp>::cat(const std::vector<tensor<_Tp>>& __others, index_t _
     for (; __i < this->__shape_.size(); __i++)
     {
       if (__i != __dim && this->__shape_[__i] != __t.__shape_[__i])
+      {
         throw std::invalid_argument(
           "Cannot concatenate tensors with different shapes along non-concatenation dimensions");
+      }
     }
   }
 
   shape_t __ret_sh = this->__shape_;
 
   for (const tensor& __t : __others)
+  {
     __ret_sh[__dim] += __t.__shape_[__dim];
+  }
 
   data_t __c;
   __c.reserve(this->__data_.size());
   __c.insert(__c.end(), this->__data_.begin(), this->__data_.end());
 
   for (const tensor& __t : __others)
+  {
     __c.insert(__c.end(), __t.__data_.begin(), __t.__data_.end());
+  }
 
   return __self(__c, __ret_sh);
 }
@@ -5706,18 +6023,24 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_t __dim) const {
       }
 
       for (; __i < __flat.size(); __i++)
+      {
         __ret[__i] = __ret[__i - 1] * __flat[__i];
+      }
     }
     else
     {
       index_t __i = 1;
       for (; __i < __flat.size(); __i++)
+      {
         __ret[__i] = __ret[__i - 1] * __flat[__i];
+      }
     }
 #else
     index_t __i = 1;
     for (; __i < __flat.size(); __i++)
+    {
       __ret[__i] = __ret[__i - 1] * __flat[__i];
+    }
 #endif
 
     return __self(__ret, {__flat.size()});
@@ -5725,7 +6048,9 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_t __dim) const {
   else
   {
     if (__dim < 0 || __dim >= static_cast<index_t>(this->__shape_.size()))
+    {
       throw std::invalid_argument("Invalid dimension provided.");
+    }
 
     data_t __ret(this->__data_);
     // TODO : compute_outer_size() implementation
@@ -5775,6 +6100,7 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_t __dim) const {
 
 #else
     index_t __i = 0;
+
     for (; __i < __outer_size; __i++)
     {
       index_t __base = __i * __st;
@@ -5797,7 +6123,9 @@ template<class _Tp>
 tensor<_Tp>
 tensor<_Tp>::slice(index_t __dim, std::optional<index_t> __start, std::optional<index_t> __end, index_t __step) const {
   if (__dim < 0 || __dim >= static_cast<index_t>(this->__shape_.size()))
+  {
     throw std::out_of_range("Dimension out of range.");
+  }
 
   tensor  __ret;
   index_t __s       = this->__shape_[__dim];
@@ -5805,10 +6133,14 @@ tensor<_Tp>::slice(index_t __dim, std::optional<index_t> __start, std::optional<
   index_t __end_i   = __end.value_or(__s);
 
   if (__start_i < 0)
+  {
     __start_i += __s;
+  }
 
   if (__end_i < 0)
+  {
     __end_i += __s;
+  }
 
   __start_i            = std::max(index_t(0), std::min(__start_i, __s));
   __end_i              = std::max(index_t(0), std::min(__end_i, __s));
@@ -5851,7 +6183,9 @@ tensor<_Tp>::slice(index_t __dim, std::optional<index_t> __start, std::optional<
       }
 
       for (index_t __i = __vector_end, __j = __vector_end - __start_i; __i < __end_i; __i++, __j++)
+      {
         __ret.__data_[__j] = this->__data_[__i];
+      }
     }
     else if constexpr (std::is_signed<value_t>::value && __step == 1)
     {
@@ -5871,13 +6205,17 @@ tensor<_Tp>::slice(index_t __dim, std::optional<index_t> __start, std::optional<
     }
 
     for (index_t __i = __vector_end, __j = __vector_end - __start_i; __i < __end_i; __i++, __j++)
+    {
       __ret.__data_[__j] = this->__data_[__i];
+    }
 
 #endif
     index_t __i = __start_i, __j = 0;
-    for (; __i < __end_i; __i += __step, __j++)
-      __ret({__j}) = this->at({__i});
 
+    for (; __i < __end_i; __i += __step, __j++)
+    {
+      __ret({__j}) = this->at({__i});
+    }
 #if defined(__CUDACC__)
   }
 #endif
@@ -5923,15 +6261,20 @@ tensor<_Tp>& tensor<_Tp>::fmod_(const value_t __val) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] =
       static_cast<value_t>(std::fmod(static_cast<float32_t>(this->__data_[__i]), static_cast<float32_t>(__val)));
+  }
 }
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::fmod_(const tensor& __other) {
   this->__check_is_scalar_type("Cannot divide non scalar values");
+
   if (this->__shape_ != __other.shape() || this->__data_.size() != __other.size(0))
+  {
     throw std::invalid_argument("Cannot divide two tensors of different shapes : fmax");
+  }
 
   index_t __i = 0;
 
@@ -5954,8 +6297,10 @@ tensor<_Tp>& tensor<_Tp>::fmod_(const tensor& __other) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] =
       static_cast<value_t>(std::fmod(static_cast<float32_t>(this->__data_[__i]), static_cast<float32_t>(__other[__i])));
+  }
 }
 
 template<class _Tp>
@@ -5990,7 +6335,9 @@ tensor<_Tp>& tensor<_Tp>::fmax_(const value_t __val) {
     }
 
     for (index_t __i = __simd_end; __i < this->__data_.size(); __i++)
+    {
       this->__data_[__i] = std::fmax(this->__data_[__i], __val);
+    }
   }
 
 #else
@@ -6021,7 +6368,9 @@ tensor<_Tp>& tensor<_Tp>::fmax_(const tensor<value_t>& __other) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = std::fmax(this->__data_[__i], __other[__i]);
+  }
 
   return *this;
 }
@@ -6094,7 +6443,9 @@ typename tensor<_Tp>::index_t tensor<_Tp>::count_nonzero(index_t __dim) const {
       for (index_t __j = __i; __j < this->__data_.size(); __j++)
       {
         if (this->__data_[__j] != 0)
+        {
           __local_count++;
+        }
       }
 
 #pragma omp atomic
@@ -6104,7 +6455,9 @@ typename tensor<_Tp>::index_t tensor<_Tp>::count_nonzero(index_t __dim) const {
   else
   {
     if (__dim < 0 || __dim >= static_cast<index_t>(__shape_.size()))
+    {
       throw std::invalid_argument("Invalid dimension provided.");
+    }
 
     throw std::runtime_error("Dimension-specific non-zero counting is not implemented yet.");
   }
@@ -6114,12 +6467,16 @@ typename tensor<_Tp>::index_t tensor<_Tp>::count_nonzero(index_t __dim) const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
   if (this->__shape_.size() != 2 || __other.shape().size() != 2)
+  {
     throw std::invalid_argument("matmul is only supported for 2D tensors");
+  }
 
   if (this->__shape_[1] != __other.shape()[0])
   {
     if (this->__shape_[0] == __other.shape()[1])
+    {
       return __other.matmul(*this);
+    }
 
     throw std::invalid_argument("Shape mismatch for matrix multiplication: "
                                 "this shape: ["
@@ -6300,7 +6657,9 @@ __global__ void matmul_kernel(_Tp* __a, _Tp* __b, _Tp* __c, int __m, int __n, in
   {
     _Tp __sum = 0;
     for (int __i = 0; __i < __n; __i++)
+    {
       __sum += __a[__row * __n + __i] * __b[__i * __k + __col];
+    }
 
     __c[__row * __k + __col] = __sum;
   }
@@ -6313,8 +6672,10 @@ tensor<_Tp> tensor<_Tp>::reshape(const shape_t __sh) const {
   index_t __s = this->__computeSize(__sh);
 
   if (__s != this->__data_.size())
+  {
     throw std::invalid_argument(
       "input shape must have size of elements equal to the current number of elements in the tensor data");
+  }
 
   return __self(__d, __sh);
 }
@@ -6323,10 +6684,14 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::cross_product(const tensor& __other) const {
   this->__check_is_arithmetic_type("Cannot perform a cross product on non-scalar data types");
   if (this->empty() || __other.empty())
+  {
     throw std::invalid_argument("Cannot cross product an empty vector");
+  }
 
   if (this->shape() != std::vector<int>{3} || __other.shape() != std::vector<int>{3})
+  {
     throw std::invalid_argument("Cross product can only be performed on 3-element vectors");
+  }
 
   tensor __ret({3});
 
@@ -6468,7 +6833,9 @@ tensor<_Tp> tensor<_Tp>::absolute(const tensor& __tensor) const {
 #endif
 
   for (; __i < __s; __i++)
+  {
     __a.push_back(static_cast<value_t>(std::fabs(float32_t(__tensor.storage()[__i]))));
+  }
 
   return __self(__a, __tensor.__shape_);
 }
@@ -6476,13 +6843,18 @@ tensor<_Tp> tensor<_Tp>::absolute(const tensor& __tensor) const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
   this->__check_is_scalar_type("Cannot perform a dot product on non-scalar data types");
+
   if (this->empty() || __other.empty())
+  {
     throw std::invalid_argument("Cannot dot product an empty vector");
+  }
 
   if (this->__shape_.size() == 1 && __other.shape().size() == 1)
   {
     if (this->__shape_[0] != __other.shape()[0])
+    {
       throw std::invalid_argument("Vectors must have the same size for dot product");
+    }
 
     const_pointer __this_data  = this->__data_.data();
     const_pointer __other_data = __other.storage().data();
@@ -6506,7 +6878,9 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
       __ret                = vget_lane_f32(vpadd_f32(sum_half, sum_half), 0);
 
       for (; __i < __size; ++__i)
+      {
         __ret += static_cast<value_t>(__this_data[__i]) * static_cast<value_t>(__other_data[__i]);
+      }
     }
     else if constexpr (std::is_unsigned<value_t>::value)
     {
@@ -6524,7 +6898,9 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
       __ret               = vget_lane_u32(vpadd_u32(sum_half, sum_half), 0);
 
       for (; __i < __size; __i++)
+      {
         __ret += static_cast<value_t>(__this_data[__i]) * static_cast<value_t>(__other_data[__i]);
+      }
     }
     else if constexpr (std::is_signed<value_t>::value)
     {
@@ -6542,7 +6918,9 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
       __ret              = vget_lane_s32(vpadd_s32(sum_half, sum_half), 0);
 
       for (; __i < __size; __i++)
+      {
         __ret += static_cast<value_t>(__this_data[__i]) * static_cast<value_t>(__other_data[__i]);
+      }
     }
 #else
     __ret = std::inner_product(__this_data, __this_data + __size, __other_data, value_t(0));
@@ -6551,11 +6929,14 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
   }
 
   if (this->__shape_.size() == 2 && __other.shape().size() == 2)
+  {
     return this->matmul(__other);
+  }
 
   if (this->__shape_.size() == 3 && __other.shape().size() == 3)
+  {
     return this->cross_product(__other);
-
+  }
   return __self();
 }
 
@@ -6571,7 +6952,9 @@ tensor<_Tp>& tensor<_Tp>::relu_() {
   this->__check_is_scalar_type("Cannot relu non-scalar type");
 
   if constexpr (std::is_unsigned<value_t>::value)
+  {
     return *this;
+  }
 
   index_t __s = this->__data_.size();
   index_t __i = 0;
@@ -6591,6 +6974,7 @@ tensor<_Tp>& tensor<_Tp>::relu_() {
   if constexpr (std::is_same_v<value_t, float32_t>)
   {
     __m128 __zero = _mm_setzero_ps();
+
     for (; __i + 4 <= __s; __i += 4)
     {
       __m128 __x      = _mm_loadu_ps(&this->__data_[__i]);
@@ -6603,6 +6987,7 @@ tensor<_Tp>& tensor<_Tp>::relu_() {
   if constexpr (std::is_same_v<value_t, float32_t>)
   {
     __m256 __zero = _mm256_setzero_ps();
+
     for (; __i + _AVX_REG_WIDTH <= __s; __i += _AVX_REG_WIDTH)
     {
       __m256 __x      = _mm256_loadu_ps(&this->__data_[__i]);
@@ -6615,6 +7000,7 @@ tensor<_Tp>& tensor<_Tp>::relu_() {
   if constexpr (std::is_same_v<value_t, float32_t>)
   {
     const float32x4_t __vZero = vdupq_n_f32(0.0f);
+
     for (; __i + _ARM64_REG_WIDTH <= __s; __i += _ARM64_REG_WIDTH)
     {
       float32x4_t __v = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
@@ -6626,6 +7012,7 @@ tensor<_Tp>& tensor<_Tp>::relu_() {
   else if constexpr (std::is_same_v<value_t, int32_t>)
   {
     const int32x4_t __vZero = vdupq_n_s32(0);
+
     for (; __i + _ARM64_REG_WIDTH <= __s; __i += _ARM64_REG_WIDTH)
     {
       int32x4_t __v = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
@@ -6637,13 +7024,17 @@ tensor<_Tp>& tensor<_Tp>::relu_() {
 #endif
 
   for (__i = 0; __i < __s; __i++)
+  {
     this->__data_[__i] = std::max(this->__data_[__i], value_t(0));
+  }
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::transpose() const {
   if (this->__shape_.size() != 2)
+  {
     throw std::invalid_argument("Matrix transposition can only be done on 2D tensors");
+  }
 
   tensor        __ret({this->__shape_[1], this->__shape_[0]});
   const index_t __rows = this->__shape_[0];
@@ -6671,21 +7062,28 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
         if (__i + _ARM64_REG_WIDTH <= __rows && __j + _ARM64_REG_WIDTH <= __cols)
         {
           float32x4x4_t __input;
+
           for (index_t __k = 0; __k < _ARM64_REG_WIDTH; __k++)
+          {
             __input.val[__k] =
               vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[(__i + __k) * __cols + __j]));
+          }
 
           float32x4x4_t __output = vld4q_f32(reinterpret_cast<const float32_t*>(&__input));
 
           for (index_t __k = 0; __k < _ARM64_REG_WIDTH; __k++)
+          {
             vst1q_f32(&__ret.__data_[(__j + __k) * __rows + __i], __output.val[__k]);
+          }
         }
         else
         {
           for (index_t __ii = __i; __ii < std::min(static_cast<index_t>(__i + _ARM64_REG_WIDTH), __rows); __ii++)
           {
             for (index_t __jj = __j; __jj < std::min(static_cast<index_t>(__j + _ARM64_REG_WIDTH), __cols); __jj++)
+            {
               __ret.at({__jj, __ii}) = this->at({__ii, __jj});
+            }
           }
         }
       }
@@ -6700,20 +7098,27 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
         if (__i + _ARM64_REG_WIDTH <= __rows && __j + _ARM64_REG_WIDTH <= __cols)
         {
           int32x4x4_t __input;
+
           for (index_t __k = 0; __k < _ARM64_REG_WIDTH; __k++)
+          {
             __input.val[__k] = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[(__i + __k) * __cols + __j]));
+          }
 
           int32x4x4_t __output = vld4q_s32(reinterpret_cast<const int32_t*>(&__input));
 
           for (index_t __k = 0; __k < _ARM64_REG_WIDTH; __k++)
+          {
             vst1q_s32(&__ret.__data_[(__j + __k) * __rows + __i], __output.val[__k]);
+          }
         }
         else
         {
           for (index_t __ii = __i; __ii < std::min(static_cast<index_t>(__i + _ARM64_REG_WIDTH), __rows); __ii++)
           {
             for (index_t __jj = __j; __jj < std::min(static_cast<index_t>(__j + _ARM64_REG_WIDTH), __cols); __jj++)
+            {
               __ret.at({__jj, __ii}) = this->at({__ii, __jj});
+            }
           }
         }
       }
@@ -6728,20 +7133,27 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
         if (__i + _ARM64_REG_WIDTH <= __rows && __j + _ARM64_REG_WIDTH <= __cols)
         {
           uint32x4x4_t __input;
+
           for (index_t __k = 0; __k < _ARM64_REG_WIDTH; __k++)
+          {
             __input.val[__k] = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[(__i + __k) * __cols + __j]));
+          }
 
           uint32x4x4_t __output = vld4q_u32(reinterpret_cast<const uint32_t*>(&__input));
 
           for (index_t __k = 0; __k < _ARM64_REG_WIDTH; __k++)
+          {
             vst1q_u32(&__ret.__data_[(__j + __k) * __rows + __i], __output.val[__k]);
+          }
         }
         else
         {
           for (index_t __ii = __i; __ii < std::min(static_cast<index_t>(__i + _ARM64_REG_WIDTH), __rows); __ii++)
           {
             for (index_t __jj = __j; __jj < std::min(static_cast<index_t>(__j + _ARM64_REG_WIDTH), __cols); __jj++)
+            {
               __ret.at({__jj, __ii}) = this->at({__ii, __jj});
+            }
           }
         }
       }
@@ -6752,11 +7164,15 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
 
   {
     index_t __i = 0;
+
     for (; __i < __rows; __i++)
     {
       index_t __j = 0;
+
       for (; __j < __cols; __j++)
+      {
         __ret.at({__j, __i}) = this->at({__i, __j});
+      }
     }
   }
 
@@ -6770,7 +7186,9 @@ __global__ void transpose_kernel(_Tp* __input, _Tp* __output, int __rows, int __
   int __j = blockIdx.x * blockDim.x + threadIdx.x;
 
   if (__i < __rows && __j < __cols)
+  {
     output[__j * __rows + __i] = input[__i * __cols + __j];
+  }
 }
 #endif
 
@@ -6779,14 +7197,16 @@ tensor<typename tensor<_Tp>::index_t> tensor<_Tp>::argsort(index_t __d, bool __a
   index_t __adjusted = (__d < 0) ? __d + this->__data_.size() : __d;
 
   if (__adjusted != 0)
+  {
     throw std::out_of_range("Invalid dimension for argsort: only 1D tensors are supported");
-
+  }
   index_t __size = static_cast<index_t>(this->__data_.size());
   shape_t __indices(__size);
   std::iota(__indices.begin(), __indices.end(), 0);
 
 #if defined(__ARM_NEON)
   index_t __i = 0;
+
   if constexpr (std::is_floating_point<value_t>::value)
   {
     for (; __i + _ARM64_REG_WIDTH <= __size; __i += _ARM64_REG_WIDTH)
@@ -6798,7 +7218,9 @@ tensor<typename tensor<_Tp>::index_t> tensor<_Tp>::argsort(index_t __d, bool __a
       uint32x4_t  __cmp_result = __ascending ? vcltq_f32(__data_vec, __cmp_vec) : vcgtq_f32(__data_vec, __cmp_vec);
 
       for (int __j = 0; __j < _ARM64_REG_WIDTH; __j++)
+      {
         __indices[__i + __j] = (__cmp_result[__j] ? __i + __j : __i + __j + 1);
+      }
     }
   }
   else if constexpr (std::is_signed<value_t>::value)
@@ -6811,8 +7233,8 @@ tensor<typename tensor<_Tp>::index_t> tensor<_Tp>::argsort(index_t __d, bool __a
       int32x4_t  __cmp_vec    = vdupq_lane_s32(__min2, 0);
       uint32x4_t __cmp_result = __ascending ? vcltq_s32(__data_vec, __cmp_vec) : vcgtq_s32(__data_vec, __cmp_vec;
 
-      for (int __j = 0; __j < _ARM64_REG_WIDTH; __j++)
-        __indices[__i + __j] = (__cmp_result[__j] ? __i + __j : __i + __j + 1);
+      for (int __j = 0; __j < _ARM64_REG_WIDTH; __j++) {
+        __indices[__i + __j] = (__cmp_result[__j] ? __i + __j : __i + __j + 1);}
     }
   }
   else if constexpr (std::is_unsigned<value_t>::value)
@@ -6826,12 +7248,16 @@ tensor<typename tensor<_Tp>::index_t> tensor<_Tp>::argsort(index_t __d, bool __a
       uint32x4_t __cmp_result = __ascending ? vcltq_u32(__data_vec, __cmp_vec) : vcgtq_u32(__data_vec, __cmp_vec);
 
       for (int __j = 0; __j < _ARM64_REG_WIDTH; __j++)
+      {
         __indices[__i + __j] = (__cmp_result[__j] ? __i + __j : __i + __j + 1);
+      }
     }
   }
 
   for (; __i < __size; __i++)
+  {
     __indices[__i] = __i;
+  }
 #endif
 
   std::sort(__indices.begin(), __indices.end(), [&](index_t __a, index_t __b) {
@@ -6865,7 +7291,9 @@ tensor<_Tp> tensor<_Tp>::bitwise_right_shift(const int __amount) const {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::bitwise_and_(const tensor& __other) {
   if (!std::is_integral<value_t>::value && !std::is_same<value_t, bool>::value)
+  {
     throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
+  }
 
   assert(this->__shape_ == __other.shape());
   index_t __i = 0;
@@ -6898,7 +7326,9 @@ tensor<_Tp>& tensor<_Tp>::bitwise_and_(const tensor& __other) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] &= __other[__i];
+  }
 }
 
 template<class _Tp>
@@ -6918,7 +7348,9 @@ tensor<_Tp> tensor<_Tp>::bitwise_or(const value_t __val) const {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::bitwise_or_(const tensor& __other) {
   if (!std::is_integral<value_t>::value && !std::is_same<value_t, bool>::value)
+  {
     throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
+  }
 
   assert(this->__shape_ == __other.shape());
   index_t __i = 0;
@@ -6951,13 +7383,17 @@ tensor<_Tp>& tensor<_Tp>::bitwise_or_(const tensor& __other) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] |= __other[__i];
+  }
 }
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const tensor& __other) {
   if (!std::is_integral<value_t>::value && !std::is_same<value_t, bool>::value)
+  {
     throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
+  }
 
   assert(this->__shape_ == __other.shape());
   index_t __i = 0;
@@ -6990,7 +7426,9 @@ tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const tensor& __other) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] ^= __other[__i];
+  }
 }
 
 template<class _Tp>
@@ -7045,7 +7483,9 @@ tensor<_Tp> tensor<_Tp>::logical_and(const value_t __val) const {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& __other) {
   if (!std::is_integral<value_t>::value && !std::is_same<value_t, bool>::value)
+  {
     throw std::runtime_error("Cannot get the element wise not of non-integral and non-boolean value");
+  }
 
   assert(this->__shape_ == __other.shape());
   index_t __i = 0;
@@ -7078,13 +7518,17 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& __other) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = (this->__data_[__i] || __other[__i]);
+  }
 }
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::logical_xor_(const tensor<_Tp>& __other) {
   if (!std::is_integral<value_t>::value && !std::is_same<value_t, bool>::value)
+  {
     throw std::runtime_error("Cannot get the element wise xor of non-integral and non-boolean value");
+  }
 
   assert(this->__shape_ == __other.shape());
   index_t __i = 0;
@@ -7117,13 +7561,17 @@ tensor<_Tp>& tensor<_Tp>::logical_xor_(const tensor<_Tp>& __other) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = (this->__data_[__i] ^ __other[__i]);
+  }
 }
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::logical_and_(const tensor<_Tp>& __other) {
   if (!std::is_integral<value_t>::value && !std::is_same<value_t, bool>::value)
+  {
     throw std::runtime_error("Cannot get the element-wise and of non-integral and non-boolean value");
+  }
 
   assert(this->__shape_ == __other.shape());
   index_t __i = 0;
@@ -7156,7 +7604,9 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const tensor<_Tp>& __other) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] = (this->__data_[__i] && __other[__i]);
+  }
 }
 
 template<class _Tp>
@@ -7166,7 +7616,9 @@ double tensor<_Tp>::mean() const {
   double __m = 0.0;
 
   if (this->empty())
+  {
     return __m;
+  }
 
   index_t __i = 0;
 
@@ -7186,7 +7638,9 @@ double tensor<_Tp>::mean() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     __m += this->__data_[__i];
+  }
 
   return static_cast<double>(__m) / static_cast<double>(this->__data_.size());
 }
@@ -7261,14 +7715,18 @@ tensor<_Tp>& tensor<_Tp>::pow_(const tensor& __other) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     this->__data_[__i] =
       static_cast<value_t>(std::pow(static_cast<float32_t>(this->__data_[__i]), static_cast<float32_t>(__other[__i])));
+  }
 }
 
 template<class _Tp>
 tensor<bool> tensor<_Tp>::less_equal(const tensor& __other) const {
   if (!std::is_integral<value_t>::value && !std::is_scalar<value_t>::value)
+  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
+  }
 
   assert(this->__shape_ == __other.shape());
   std::vector<bool> __ret(this->__data_.size());
@@ -7288,14 +7746,18 @@ tensor<bool> tensor<_Tp>::less_equal(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     __ret[__i] = (this->__data_[__i] <= __other[__i]);
+  }
 
   return tensor<bool>(__ret, this->__shape_);
 }
 template<class _Tp>
 tensor<bool> tensor<_Tp>::less_equal(const value_t __val) const {
   if (!std::is_integral<value_t>::value && !std::is_scalar<value_t>::value)
+  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
+  }
 
   std::vector<bool> __ret(this->__data_.size());
   index_t           __i = 0;
@@ -7315,7 +7777,9 @@ tensor<bool> tensor<_Tp>::less_equal(const value_t __val) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     __ret[__i] = (this->__data_[__i] <= __val);
+  }
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -7323,7 +7787,9 @@ tensor<bool> tensor<_Tp>::less_equal(const value_t __val) const {
 template<class _Tp>
 tensor<bool> tensor<_Tp>::greater_equal(const tensor& __other) const {
   if (!std::is_integral<value_t>::value && !std::is_scalar<value_t>::value)
+  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
+  }
 
   assert(this->__shape_ == __other.shape());
   std::vector<bool> __ret(this->__data_.size());
@@ -7333,6 +7799,7 @@ tensor<bool> tensor<_Tp>::greater_equal(const tensor& __other) const {
   if constexpr (std::is_floating_point<value_t>::value)
   {
     const index_t __simd_end = this->__data_.size() - (this->__data_.size() % (_ARM64_REG_WIDTH / 2));
+
     for (; __i < __simd_end; __i += (_ARM64_REG_WIDTH / 2))
     {
       float32x4_t __data_vec1  = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
@@ -7349,6 +7816,7 @@ tensor<bool> tensor<_Tp>::greater_equal(const tensor& __other) const {
   else if constexpr (std::is_signed<value_t>::value)
   {
     const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       int32x4_t  __data_vec1  = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
@@ -7365,6 +7833,7 @@ tensor<bool> tensor<_Tp>::greater_equal(const tensor& __other) const {
   else if constexpr (std::is_unsigned<value_t>::value)
   {
     const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __data_vec1  = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
@@ -7381,7 +7850,9 @@ tensor<bool> tensor<_Tp>::greater_equal(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     __ret[__i] = (this->__data_[__i] >= __other[__i]);
+  }
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -7389,7 +7860,9 @@ tensor<bool> tensor<_Tp>::greater_equal(const tensor& __other) const {
 template<class _Tp>
 tensor<bool> tensor<_Tp>::greater_equal(const value_t __val) const {
   if (!std::is_integral<value_t>::value && !std::is_scalar<value_t>::value)
+  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
+  }
 
   std::vector<bool> __ret(this->__data_.size());
   index_t           __i = 0;
@@ -7400,6 +7873,7 @@ tensor<bool> tensor<_Tp>::greater_equal(const value_t __val) const {
   if constexpr (std::is_floating_point<value_t>::value)
   {
     float32x4_t __val_vec = vdupq_n_f32(__val);
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       float32x4_t __data_vec   = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
@@ -7415,6 +7889,7 @@ tensor<bool> tensor<_Tp>::greater_equal(const value_t __val) const {
   else if constexpr (std::is_signed<value_t>::value)
   {
     int32x4_t __val_vec = vdupq_n_s32(__val);
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       int32x4_t  __data_vec   = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
@@ -7430,6 +7905,7 @@ tensor<bool> tensor<_Tp>::greater_equal(const value_t __val) const {
   else if constexpr (std::is_unsigned<value_t>::value)
   {
     uint32x4_t __val_vec = vdupq_n_u32(__val);
+
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       uint32x4_t __data_vec   = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
@@ -7445,7 +7921,9 @@ tensor<bool> tensor<_Tp>::greater_equal(const value_t __val) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     __ret[__i] = (this->__data_[__i] >= __val);
+  }
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -7453,7 +7931,9 @@ tensor<bool> tensor<_Tp>::greater_equal(const value_t __val) const {
 template<class _Tp>
 tensor<bool> tensor<_Tp>::equal(const tensor& __other) const {
   if (!std::is_integral<value_t>::value && !std::is_scalar<value_t>::value)
+  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
+  }
 
   assert(this->__shape_ == __other.shape() && "equal : tensor shapes");
   std::vector<bool> __ret(this->__data_.size());
@@ -7510,7 +7990,9 @@ tensor<bool> tensor<_Tp>::equal(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     __ret[__i] = (this->__data_[__i] == __other[__i]);
+  }
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -7518,7 +8000,9 @@ tensor<bool> tensor<_Tp>::equal(const tensor& __other) const {
 template<class _Tp>
 tensor<bool> tensor<_Tp>::equal(const value_t __val) const {
   if (!std::is_integral<value_t>::value && !std::is_scalar<value_t>::value)
+  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
+  }
 
   std::vector<bool> __ret(this->__data_.size());
   index_t           __i = 0;
@@ -7578,7 +8062,9 @@ tensor<bool> tensor<_Tp>::equal(const value_t __val) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
+  {
     __ret[__i] = (this->__data_[__i] == __val);
+  }
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -7586,8 +8072,11 @@ tensor<bool> tensor<_Tp>::equal(const value_t __val) const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::sum(const index_t __axis) const {
   this->__check_is_scalar_type("Cannot reduce tensor with non scalar type");
+
   if (__axis < 0 || __axis >= static_cast<index_t>(this->__shape_.size()))
+  {
     throw std::invalid_argument("Invalid axis for sum");
+  }
 
   shape_t __ret_sh   = this->__shape_;
   __ret_sh[__axis]   = 1;
@@ -7617,6 +8106,7 @@ tensor<_Tp> tensor<_Tp>::sum(const index_t __axis) const {
         }
 
         float32_t __sum = vaddvq_f32(__sum_vec);
+
         for (; __j < __axis_size; __j++)
         {
           __sum += this->__data_[__i];
@@ -7645,6 +8135,7 @@ tensor<_Tp> tensor<_Tp>::sum(const index_t __axis) const {
         }
 
         int32_t __sum = vaddvq_s32(__sum_vec);
+
         for (; __j < __axis_size; __j++)
         {
           __sum += this->__data_[__i];
@@ -7673,6 +8164,7 @@ tensor<_Tp> tensor<_Tp>::sum(const index_t __axis) const {
         }
 
         uint32_t __sum = vaddvq_u32(__sum_vec);
+
         for (; __j < __axis_size; __j++)
         {
           __sum += this->__data_[__i];
@@ -7692,6 +8184,7 @@ tensor<_Tp> tensor<_Tp>::sum(const index_t __axis) const {
       std::vector<index_t> __orig(this->__shape_.size());
       index_t              __index = __i;
       index_t              __j     = static_cast<index_t>(this->__shape_.size()) - 1;
+
       for (; __j >= 0; __j--)
       {
         __orig[__j] = __index % this->__shape_[__j];
@@ -7709,6 +8202,7 @@ tensor<_Tp> tensor<_Tp>::sum(const index_t __axis) const {
       }
       __ret_data[__ret_index] += this->__data_[__i];
     }
+
 #if defined(__ARM_NEON)
   }
 #endif
@@ -7719,10 +8213,14 @@ tensor<_Tp> tensor<_Tp>::sum(const index_t __axis) const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::row(const index_t __index) const {
   if (this->__shape_.size() != 2)
+  {
     throw std::runtime_error("Cannot get a row from a non two dimensional tensor");
+  }
 
   if (this->__shape_[0] <= __index || __index < 0)
+  {
     throw std::invalid_argument("Index input is out of range");
+  }
 
   data_t  __r;
   index_t __start = this->__shape_[1] * __index;
@@ -7730,7 +8228,9 @@ tensor<_Tp> tensor<_Tp>::row(const index_t __index) const {
   index_t __i     = __start;
 
   for (; __i < __end; __i++)
+  {
     __r.push_back(this->__data_[__i]);
+  }
 
   return __self(__r, {this->__shape_[1]});
 }
@@ -7738,15 +8238,22 @@ tensor<_Tp> tensor<_Tp>::row(const index_t __index) const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::col(const index_t __index) const {
   if (this->__shape_.size() != 2)
+  {
     throw std::runtime_error("Cannot get a column from a non two dimensional tensor");
+  }
 
   if (this->__shape_[1] <= __index || __index < 0)
+  {
     throw std::invalid_argument("Index input out of range");
+  }
 
   data_t  __c;
   index_t __i = 0;
+
   for (; __i < this->__shape_[0]; __i++)
+  {
     __c.push_back(this->__data_[this->__compute_index({__i, __index})]);
+  }
 
   return __self(__c, {this->__shape_[0]});
 }
@@ -7791,6 +8298,7 @@ tensor<_Tp>& tensor<_Tp>::clamp_(const_pointer __min_val, const_pointer __max_va
 
 #elif defined(__ARM_NEON)
   const index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+
   if constexpr (std::is_floating_point<value_t>::value)
   {
     float32x4_t __min_vec = vdupq_n_f32(__min_val ? *__min_val : std::numeric_limits<value_t>::lowest());
@@ -7835,10 +8343,14 @@ tensor<_Tp>& tensor<_Tp>::clamp_(const_pointer __min_val, const_pointer __max_va
   for (; __i < this->__data_.size(); __i++)
   {
     if (__min_val)
+    {
       this->__data_[__i] = std::max(*__min_val, this->__data_[__i]);
+    }
 
     if (__max_val)
+    {
       this->__data_[__i] = std::min(*__max_val, this->__data_[__i]);
+    }
   }
 }
 
@@ -7848,8 +8360,11 @@ typename tensor<_Tp>::index_t tensor<_Tp>::hash() const {
   std::hash<value_t> __hasher;
 
   index_t __i = 0;
+
   for (; __i < this->__data_.size(); __i++)
+  {
     __hash_val ^= __hasher(this->__data_[__i]) + 0x9e3779b9 + (__hash_val << 6) + (__hash_val >> 2);
+  }
 
   return __hash_val;
 }
