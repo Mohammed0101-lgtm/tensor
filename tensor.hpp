@@ -762,6 +762,13 @@ class tensor
   tensor cosh() const;
 
   /**
+   * @brief absolute value for each point in the tensor
+   * 
+   * @return tensor of this shape and absolute value for each point in this tensor
+   */
+  tensor abs() const;
+
+  /**
      * @brief Computes the inverse hyperbolic cosine (acosh) of each element in the tensor.
      *
      * @return A new tensor containing the inverse hyperbolic cosine of each element.
@@ -941,6 +948,155 @@ class tensor
      * @throws std::invalid_argument If the tensor cannot be transposed due to incompatible dimensions.
      */
   tensor transpose() const;
+
+  /**
+ * @brief Creates a new tensor filled with a scalar value.
+ * @param __val The scalar value to fill the tensor with.
+ * @return A new tensor filled with the specified value.
+ */
+  tensor fill(const value_t __val) const;
+
+  /**
+ * @brief Creates a new tensor filled with the values from another tensor.
+ * @param __other The tensor to copy values from.
+ * @return A new tensor filled with the specified tensor's values.
+ */
+  tensor fill(const tensor& __other) const;
+
+  /**
+ * @brief Resizes the tensor to match the specified shape.
+ * @param __sh The target shape for resizing.
+ * @return A new tensor with the resized shape.
+ */
+  tensor resize_as(const shape_t __sh) const;
+
+  /**
+ * @brief Checks if all elements in the tensor evaluate to true.
+ * @return A tensor representing the result of the check.
+ */
+  tensor all() const;
+
+  /**
+ * @brief Checks if any element in the tensor evaluates to true.
+ * @return A tensor representing the result of the check.
+ */
+  tensor any() const;
+
+  /**
+ * @brief Computes the determinant of the tensor.
+ * @return A tensor containing the determinant value.
+ */
+  tensor det() const;
+
+  /**
+ * @brief Sorts the tensor along the specified dimension.
+ * @param __dim The dimension along which to sort.
+ * @param __descending Whether to sort in descending order (default is false).
+ * @return A new tensor with sorted values.
+ */
+  tensor sort(index_t __dim, bool __descending = false) const;
+
+  /**
+ * @brief Computes the element-wise remainder of the tensor divided by a scalar value.
+ * @param __val The scalar value to divide by.
+ * @return A new tensor containing the remainders.
+ */
+  tensor remainder(const value_t __val) const;
+
+  /**
+ * @brief Computes the element-wise remainder of the tensor divided by another tensor.
+ * @param __other The tensor to divide by.
+ * @return A new tensor containing the remainders.
+ */
+  tensor remainder(const tensor& __other) const;
+
+  /**
+ * @brief Computes the element-wise maximum between the tensor and another tensor.
+ * @param __other The tensor to compare with.
+ * @return A new tensor containing the maximum values.
+ */
+  tensor maximum(const tensor& __other) const;
+
+  /**
+ * @brief Computes the element-wise maximum between the tensor and a scalar value.
+ * @param __val The scalar value to compare with.
+ * @return A new tensor containing the maximum values.
+ */
+  tensor maximum(const value_t& __val) const;
+
+  /**
+ * @brief Computes the element-wise absolute value of the tensor.
+ * @return A new tensor containing the absolute values.
+ */
+  tensor abs() const;
+
+  /**
+ * @brief Computes the distance between the tensor and another tensor.
+ * @param __other The tensor to compute the distance to.
+ * @return A new tensor containing the distances.
+ */
+  tensor dist(const tensor& __other) const;
+
+  /**
+ * @brief Computes the distance between the tensor and a scalar value.
+ * @param __val The scalar value to compute the distance to.
+ * @return A new tensor containing the distances.
+ */
+  tensor dist(const value_t __val) const;
+
+  /**
+ * @brief Transposes the tensor.
+ * @return A new transposed tensor.
+ */
+  tensor transpose() const;
+
+  /**
+ * @brief Removes a singleton dimension from the tensor at the specified position.
+ * @param __dim The dimension to squeeze.
+ * @return A new tensor with the specified dimension removed.
+ */
+  tensor squeeze(index_t __dim) const;
+
+  /**
+ * @brief Negates all elements of the tensor.
+ * @return A new tensor with negated values.
+ */
+  tensor negative() const;
+
+  /**
+ * @brief Repeats the tensor along specified dimensions.
+ * @param __d The data specifying the repetition configuration.
+ * @return A new tensor with repeated values.
+ */
+  tensor repeat(const data_t& __d) const;
+
+  /**
+ * @brief Permutes the dimensions of the tensor.
+ * @param __dim The dimension to permute.
+ * @return A new tensor with permuted dimensions.
+ */
+  tensor permute(const index_t __dim) const;
+
+  /**
+ * @brief Applies the log-softmax function along the specified dimension.
+ * @param __dim The dimension along which to apply the log-softmax.
+ * @return A new tensor with log-softmax applied.
+ */
+  tensor log_softmax(const index_t __dim) const;
+
+  /**
+ * @brief Computes the element-wise greatest common divisor (GCD) between the tensor and another tensor.
+ * @param __other The tensor to compute the GCD with.
+ * @return A new tensor containing the GCD values.
+ */
+  tensor gcd(const tensor& __other) const;
+
+  /**
+ * @brief Computes the element-wise greatest common divisor (GCD) between the tensor and a scalar value, in-place.
+ * @param __val The scalar value to compute the GCD with.
+ * @return Reference to the updated tensor.
+ */
+  tensor gcd(const value_t __val) const;
 
   /**
      * @brief Raises each element of this tensor to the power of the corresponding element in another tensor.
@@ -1136,6 +1292,190 @@ class tensor
      * @brief in place version of logical_and(value)
      */
   void logical_and_(const value_t __val);
+
+  /**
+   * @brief in place version of abs()
+   */
+  tensor& abs_() const;
+
+  /**
+   * @brief in place version of tan()
+   */
+  tensor& tan_() const;
+
+  /**
+   * @brief in place version of tanh()
+   */
+  tensor& tanh_() const;
+
+  /**
+ * @brief Computes the median along the specified dimension.
+ * @param __dim The dimension along which to compute the median.
+ * @return The median value as a double.
+ */
+  double median(const index_t __dim) const;
+
+  /**
+ * @brief Computes the mode along the specified dimension.
+ * @param __dim The dimension along which to compute the mode.
+ * @return The mode value as a double.
+ */
+  double mode(const index_t __dim) const;
+
+  /**
+ * @brief Applies the log-softmax function along the specified dimension, in-place.
+ * @param __dim The dimension along which to apply the log-softmax.
+ * @return Reference to the updated tensor.
+ */
+  tensor& log_softmax_(const index_t __dim) const;
+
+  /**
+ * @brief Permutes the dimensions of the tensor in-place.
+ * @param __dim The dimension to permute.
+ * @return Reference to the updated tensor.
+ */
+  tensor& permute_(const index_t __dim) const;
+
+  /**
+ * @brief Repeats the tensor along specified dimensions, in-place.
+ * @param __d The data specifying the repetition configuration.
+ * @return Reference to the updated tensor.
+ */
+  tensor& repeat_(const data_t& __d) const;
+
+  /**
+ * @brief Negates all elements of the tensor in-place.
+ * @return Reference to the updated tensor.
+ */
+  tensor& negative_() const;
+
+  /**
+ * @brief Transposes the tensor in-place.
+ * @return Reference to the updated tensor.
+ */
+  tensor& transpose_() const;
+
+  /**
+ * @brief Adds a singleton dimension to the tensor at the specified position, in-place.
+ * @param __dim The dimension to unsqueeze.
+ * @return Reference to the updated tensor.
+ */
+  tensor& unsqueeze_(index_t __dim) const;
+
+  /**
+ * @brief Removes a singleton dimension from the tensor at the specified position, in-place.
+ * @param __dim The dimension to squeeze.
+ * @return Reference to the updated tensor.
+ */
+  tensor& squeeze_(index_t __dim) const;
+
+  /**
+ * @brief Computes the element-wise absolute value of the tensor, in-place.
+ * @return Reference to the updated tensor.
+ */
+  tensor& abs_() const;
+
+  /**
+ * @brief Computes the distance between the tensor and another tensor, in-place.
+ * @param __other The tensor to compute the distance to.
+ * @return Reference to the updated tensor.
+ */
+  tensor& dist_(const tensor& __other) const;
+
+  /**
+ * @brief Computes the distance between the tensor and a scalar value, in-place.
+ * @param __val The scalar value to compute the distance to.
+ * @return Reference to the updated tensor.
+ */
+  tensor& dist_(const value_t __val) const;
+
+  /**
+ * @brief Computes the element-wise maximum between the tensor and another tensor, in-place.
+ * @param __other The tensor to compare with.
+ * @return Reference to the updated tensor.
+ */
+  tensor& maximum_(const tensor& __other) const;
+
+  /**
+ * @brief Computes the element-wise maximum between the tensor and a scalar value, in-place.
+ * @param __val The scalar value to compare with.
+ * @return Reference to the updated tensor.
+ */
+  tensor& maximum_(const value_t __val) const;
+
+  /**
+ * @brief Computes the element-wise remainder of the tensor divided by a scalar value, in-place.
+ * @param __val The scalar value to divide by.
+ * @return Reference to the updated tensor.
+ */
+  tensor& remainder_(const value_t __val) const;
+
+  /**
+ * @brief Computes the element-wise remainder of the tensor divided by another tensor, in-place.
+ * @param __other The tensor to divide by.
+ * @return Reference to the updated tensor.
+ */
+  tensor& remainder_(const tensor& __other) const;
+
+  /**
+ * @brief Fills the tensor with a scalar value, in-place.
+ * @param __val The scalar value to fill with.
+ * @return Reference to the updated tensor.
+ */
+  tensor& fill_(const value_t __val) const;
+
+  /**
+ * @brief Fills the tensor with values from another tensor, in-place.
+ * @param __other The tensor to copy values from.
+ * @return Reference to the updated tensor.
+ */
+  tensor& fill_(const tensor& __other) const;
+
+  /**
+ * @brief Performs an element-wise less-than comparison with another tensor, in-place.
+ * @param __other The tensor to compare with.
+ * @return Reference to the updated tensor.
+ */
+  tensor& less_(const tensor& __other) const;
+
+  /**
+ * @brief Performs an element-wise less-than comparison with a scalar value, in-place.
+ * @param __val The scalar value to compare with.
+ * @return Reference to the updated tensor.
+ */
+  tensor& less_(const value_t __val) const;
+
+  /**
+ * @brief Performs an element-wise greater-than comparison with another tensor, in-place.
+ * @param __other The tensor to compare with.
+ * @return Reference to the updated tensor.
+ */
+  tensor& greater_(const tensor& __other) const;
+
+  /**
+ * @brief Performs an element-wise greater-than comparison with a scalar value, in-place.
+ * @param __val The scalar value to compare with.
+ * @return Reference to the updated tensor.
+ */
+  tensor& greater_(const value_t __val) const;
+
+  /**
+ * @brief Applies the sigmoid function to all elements in the tensor, in-place.
+ * @return Reference to the updated tensor.
+ */
+  tensor& sigmoid_() const;
+
+  /**
+ * @brief Applies a clipped ReLU function to all elements in the tensor, in-place.
+ * @return Reference to the updated tensor.
+ */
+  tensor& clipped_relu_() const;
+
+  /**
+ * @brief Squares all elements in the tensor, in-place.
+ * @return Reference to the updated tensor.
+ */
+  tensor& square_() const;
 
   /**
      * @brief in place version of pow(tensor)
@@ -1432,6 +1772,334 @@ tensor<bool> tensor<_Tp>::bool_() const {
 
   return tensor<bool>(__d, this->__shape_);
 }
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::abs() const {
+  __self __ret = this->clone();
+  __ret.abs_();
+  return __ret;
+}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::abs_() const {
+  this->__check_is_integral_type("template class must be integral type");
+  index_t __i = 0;
+#if defined(__ARM_NEON)
+  index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+  if constexpr (std::is_floating_point<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+      float32_t   __vals[_ARM64_REG_WIDTH];
+      vst1q_f32(__vals, __data_vec);
+
+      __vals[0] = std::abs(__vals[0]);
+      __vals[1] = std::abs(__vals[1]);
+      __vals[2] = std::abs(__vals[2]);
+      __vals[3] = std::abs(__vals[3]);
+
+      float32x4_t __abs_vec = vld1q_f32(__vals);
+      vst1q_f32(&this->__data_[__i], __abs_vec);
+    }
+  }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      int32x4_t __data_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
+      int32_t   __vals[_ARM64_REG_WIDTH];
+      vst1q_s32(__vals, __data_vec);
+
+      __vals[0] = static_cast<int32_t>(std::abs(static_cast<float32_t>(__vals[0])));
+      __vals[1] = static_cast<int32_t>(std::abs(static_cast<float32_t>(__vals[1])));
+      __vals[2] = static_cast<int32_t>(std::abs(static_cast<float32_t>(__vals[2])));
+      __vals[3] = static_cast<int32_t>(std::abs(static_cast<float32_t>(__vals[3])));
+
+      int32x4_t __abs_vec = vld1q_s32(__vals);
+      vst1q_s32(&this->__data_[__i], __abs_vec);
+    }
+  }
+  else if constexpr (std::is_unsigned<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      uint32x4_t __data_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
+      uint32_t   __vals[_ARM64_REG_WIDTH];
+      vst1q_u32(__vals, __data_vec);
+
+      __vals[0] = static_cast<uint32_t>(std::abs(static_cast<float32_t>(__vals[0])));
+      __vals[1] = static_cast<uint32_t>(std::abs(static_cast<float32_t>(__vals[1])));
+      __vals[2] = static_cast<uint32_t>(std::abs(static_cast<float32_t>(__vals[2])));
+      __vals[3] = static_cast<uint32_t>(std::abs(static_cast<float32_t>(__vals[3])));
+
+      uint32x4_t __abs_vec = vld1q_u32(__vals);
+      vst1q_u32(&this->__data_[__i], __abs_vec);
+    }
+  }
+#endif
+  for (; __i < this->__data_.size(); __i++)
+    this->__data_[__i] = static_cast<value_t>(std::abs(this->__data_[__i]));
+
+  return *this;
+}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::tan_() const {
+  this->__check_is_integral_type("template class must be integral type");
+  index_t __i = 0;
+#if defined(__ARM_NEON)
+  index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+  if constexpr (std::is_floating_point<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+      float32_t   __vals[_ARM64_REG_WIDTH];
+      vst1q_f32(__vals, __data_vec);
+
+      __vals[0] = std::tan(__vals[0]);
+      __vals[1] = std::tan(__vals[1]);
+      __vals[2] = std::tan(__vals[2]);
+      __vals[3] = std::tan(__vals[3]);
+
+      float32x4_t __tan_vec = vld1q_f32(__vals);
+      vst1q_f32(&this->__data_[__i], __tan_vec);
+    }
+  }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      int32x4_t __data_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
+      int32_t   __vals[_ARM64_REG_WIDTH];
+      vst1q_s32(__vals, __data_vec);
+
+      __vals[0] = static_cast<int32_t>(std::tan(static_cast<float32_t>(__vals[0])));
+      __vals[1] = static_cast<int32_t>(std::tan(static_cast<float32_t>(__vals[1])));
+      __vals[2] = static_cast<int32_t>(std::tan(static_cast<float32_t>(__vals[2])));
+      __vals[3] = static_cast<int32_t>(std::tan(static_cast<float32_t>(__vals[3])));
+
+      int32x4_t __tan_vec = vld1q_s32(__vals);
+      vst1q_s32(&this->__data_[__i], __tan_vec);
+    }
+  }
+  else if constexpr (std::is_unsigned<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      uint32x4_t __data_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
+      uint32_t   __vals[_ARM64_REG_WIDTH];
+      vst1q_u32(__vals, __data_vec);
+
+      __vals[0] = static_cast<uint32_t>(std::tan(static_cast<float32_t>(__vals[0])));
+      __vals[1] = static_cast<uint32_t>(std::tan(static_cast<float32_t>(__vals[1])));
+      __vals[2] = static_cast<uint32_t>(std::tan(static_cast<float32_t>(__vals[2])));
+      __vals[3] = static_cast<uint32_t>(std::tan(static_cast<float32_t>(__vals[3])));
+
+      uint32x4_t __tan_vec = vld1q_u32(__vals);
+      vst1q_u32(&this->__data_[__i], __tan_vec);
+    }
+  }
+#endif
+  for (; __i < this->__data_.size(); __i++)
+    this->__data_[__i] = static_cast<value_t>(std::tan(this->__data_[__i]));
+
+  return *this;
+}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::tanh_() const {
+  this->__check_is_integral_type("template class must be integral type");
+  index_t __i = 0;
+#if defined(__ARM_NEON)
+  index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+  if constexpr (std::is_floating_point<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
+      float32_t   __vals[_ARM64_REG_WIDTH];
+      vst1q_f32(__vals, __data_vec);
+
+      __vals[0] = std::tanh(__vals[0]);
+      __vals[1] = std::tanh(__vals[1]);
+      __vals[2] = std::tanh(__vals[2]);
+      __vals[3] = std::tanh(__vals[3]);
+
+      float32x4_t __tanh_vec = vld1q_f32(__vals);
+      vst1q_f32(&this->__data_[__i], __tanh_vec);
+    }
+  }
+  else if constexpr (std::is_signed<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      int32x4_t __data_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
+      int32_t   __vals[_ARM64_REG_WIDTH];
+      vst1q_s32(__vals, __data_vec);
+
+      __vals[0] = static_cast<int32_t>(std::tanh(static_cast<float32_t>(__vals[0])));
+      __vals[1] = static_cast<int32_t>(std::tanh(static_cast<float32_t>(__vals[1])));
+      __vals[2] = static_cast<int32_t>(std::tanh(static_cast<float32_t>(__vals[2])));
+      __vals[3] = static_cast<int32_t>(std::tanh(static_cast<float32_t>(__vals[3])));
+
+      int32x4_t __tanh_vec = vld1q_s32(__vals);
+      vst1q_s32(&this->__data_[__i], __tanh_vec);
+    }
+  }
+  else if constexpr (std::is_unsigned<value_t>::value)
+  {
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    {
+      uint32x4_t __data_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
+      uint32_t   __vals[_ARM64_REG_WIDTH];
+      vst1q_u32(__vals, __data_vec);
+
+      __vals[0] = static_cast<uint32_t>(std::tanh(static_cast<float32_t>(__vals[0])));
+      __vals[1] = static_cast<uint32_t>(std::tanh(static_cast<float32_t>(__vals[1])));
+      __vals[2] = static_cast<uint32_t>(std::tanh(static_cast<float32_t>(__vals[2])));
+      __vals[3] = static_cast<uint32_t>(std::tanh(static_cast<float32_t>(__vals[3])));
+
+      uint32x4_t __tanh_vec = vld1q_u32(__vals);
+      vst1q_u32(&this->__data_[__i], __tanh_vec);
+    }
+  }
+#endif
+  for (; __i < this->__data_.size(); __i++)
+    this->__data_[__i] = static_cast<value_t>(std::tanh(this->__data_[__i]));
+
+  return *this;
+}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::square() const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::tan() const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::tanh() const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::sinc() const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::sigmoid() const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::clipped_relu() const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::fill(const value_t __val) const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::fill(const tensor& __other) const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::resize_as(const shape_t __sh) const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::all() const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::any() const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::det() const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::sort(index_t __dim, bool __descending = false) const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::remainder(const value_t __val) const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::remainder(const tensor& __other) const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::maximum(const tensor& __other) const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::maximum(const value_t& __val) const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::dist(const tensor& __other) const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::dist(const value_t __val) const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::squeeze(index_t __dim) const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::negative() const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::repeat(const data_t& __d) const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::permute(const index_t __dim) const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::log_softmax(const index_t __dim) const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::gcd(const tensor& __other) const {}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::gcd_(const value_t __val) const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::log_softmax_(const index_t __dim) const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::permute_(const index_t __dim) const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::repeat_(const data_t& __d) const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::negative_() const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::transpose_() const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::unsqueeze_(index_t __dim) const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::squeeze_(index_t __dim) const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::dist_(const tensor& __other) const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::dist_(const value_t __val) const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::maximum_(const tensor& __other) const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::maximum_(const value_t __val) const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::remainder_(const value_t __val) const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::remainder_(const tensor& __other) const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::sinc_() const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::sigmoid_() const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::clipped_relu_() const {}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::square_() const {}
 
 template<class _Tp>
 tensor<int32_t> tensor<_Tp>::int32_() const {
