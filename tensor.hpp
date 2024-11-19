@@ -396,45 +396,45 @@ class tensor
 
   /**
      * @brief adds a scalar to each element of the tensor
-     * @param __scalar a value of an arithmetic type
-     * @return the sum of self and __scalar element wise
+     * @param __val a value of an arithmetic type
+     * @return the sum of self and __val element wise
      */
-  tensor operator+(const value_t _scalar) const;
+  tensor operator+(const value_t __val) const;
 
   /**
      * @brief subtracts a scalar from each element of the tensor
-     * @param __scalar a value of an arithmetic type
-     * @return the difference between self and __scalar element wise
+     * @param __val a value of an arithmetic type
+     * @return the difference between self and __val element wise
      */
-  tensor operator-(const value_t __scalar) const;
+  tensor operator-(const value_t __val) const;
 
   /**
-     * @brief in place version of this + __scalar
-     * @param __scalar a value of an arithmetic type
-     * @return this + __scalar
+     * @brief in place version of this + __val
+     * @param __val a value of an arithmetic type
+     * @return this + __val
      */
-  tensor operator+=(const_reference __scalar) const;
+  tensor operator+=(const_reference __val) const;
 
   /**
-     * @brief in place version of this - __scalar
-     * @param __scalar a value of an arithmetic type
-     * @return this - __scalar
+     * @brief in place version of this - __val
+     * @param __val a value of an arithmetic type
+     * @return this - __val
      */
-  tensor operator-=(const_reference __scalar) const;
+  tensor operator-=(const_reference __val) const;
 
   /**
-     * @brief in place version of this / __scalar
-     * @param __scalar a value of an arithmetic type
-     * @return this / __scalar
+     * @brief in place version of this / __val
+     * @param __val a value of an arithmetic type
+     * @return this / __val
      */
-  tensor operator/=(const_reference __scalar) const;
+  tensor operator/=(const_reference __val) const;
 
   /**
-     * @brief in place version of this * __scalar
-     * @param __scalar a value of an arithmetic type
-     * @return this * __scalar
+     * @brief in place version of this * __val
+     * @param __val a value of an arithmetic type
+     * @return this * __val
      */
-  tensor operator*=(const_reference __scalar) const;
+  tensor operator*=(const_reference __val) const;
 
   /**
      * @brief check whether or not two tensors are equal
@@ -1825,7 +1825,7 @@ class tensor
     return 0;
   }
 
-  static float32_t __frac(const_reference __scalar) { return std::fmod(static_cast<float32_t>(__scalar), 1.0f); }
+  static float32_t __frac(const_reference __val) { return std::fmod(static_cast<float32_t>(__val), 1.0f); }
 
   // where the tensor is stored
   bool __is_cuda_device() const { return (this->__device_ == Device::CUDA); }
@@ -3313,7 +3313,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator+(const value_t __scalar) const {
+tensor<_Tp> tensor<_Tp>::operator+(const value_t __val) const {
   this->__check_is_arithmetic_type("template class must be an arithmetic type");
   data_t  __d(this->__data_.size());
   index_t __i = 0;
@@ -3323,7 +3323,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const value_t __scalar) const {
 
   if constexpr (std::is_floating_point<value_t>::value)
   {
-    float32x4_t __val_vec = vdupq_n_f32(reinterpret_cast<float32_t>(&__scalar));
+    float32x4_t __val_vec = vdupq_n_f32(reinterpret_cast<float32_t>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
@@ -3335,7 +3335,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const value_t __scalar) const {
   }
   else if constexpr (std::is_signed<value_t>::value)
   {
-    int32x4_t __val_vec = vdupq_n_s32(reinterpret_cast<int32_t>(&__scalar));
+    int32x4_t __val_vec = vdupq_n_s32(reinterpret_cast<int32_t>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
@@ -3347,7 +3347,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const value_t __scalar) const {
   }
   else if constexpr (std::is_unsigned<value_t>::value)
   {
-    uint32x4_t __val_vec = vdupq_n_u32(reinterpret_cast<uint32_t>(&__scalar));
+    uint32x4_t __val_vec = vdupq_n_u32(reinterpret_cast<uint32_t>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
@@ -3361,7 +3361,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const value_t __scalar) const {
 
   for (; __i < this->__data_.size(); __i++)
   {
-    __d[__i] = this->__data_[__i] + __scalar;
+    __d[__i] = this->__data_[__i] + __val;
   }
 
   return __self(__d, this->__shape_);
@@ -3387,7 +3387,7 @@ tensor<_Tp> tensor<_Tp>::operator+=(const tensor& __other) const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator+=(const_reference __scalar) const {
+tensor<_Tp> tensor<_Tp>::operator+=(const_reference __val) const {
   this->__check_is_arithmetic_type("template class must be an arithmetic type");
   index_t __i = 0;
 
@@ -3396,7 +3396,7 @@ tensor<_Tp> tensor<_Tp>::operator+=(const_reference __scalar) const {
 
   if constexpr (std::is_floating_point<value_t>::value)
   {
-    float32x4_t __val_vec = vdupq_n_f32(reinterpret_cast<float32_t>(&__scalar));
+    float32x4_t __val_vec = vdupq_n_f32(reinterpret_cast<float32_t>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
@@ -3408,7 +3408,7 @@ tensor<_Tp> tensor<_Tp>::operator+=(const_reference __scalar) const {
   }
   else if constexpr (std::is_signed<value_t>::value)
   {
-    int32x4_t __val_vec = vdupq_n_s32(reinterpret_cast<int32_t>(&__scalar));
+    int32x4_t __val_vec = vdupq_n_s32(reinterpret_cast<int32_t>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
@@ -3420,7 +3420,7 @@ tensor<_Tp> tensor<_Tp>::operator+=(const_reference __scalar) const {
   }
   else if constexpr (std::is_unsigned<value_t>::value)
   {
-    uint32x4_t __val_vec = vdupq_n_u32(reinterpret_cast<uint32_t>(&__scalar));
+    uint32x4_t __val_vec = vdupq_n_u32(reinterpret_cast<uint32_t>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
@@ -3434,7 +3434,7 @@ tensor<_Tp> tensor<_Tp>::operator+=(const_reference __scalar) const {
 
   for (; __i < this->__data_.size(); __i++)
   {
-    this->__data_[__i] = this->__data_[__i] + __scalar;
+    this->__data_[__i] = this->__data_[__i] + __val;
   }
 
   return *this;
@@ -3499,7 +3499,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator-(const value_t __scalar) const {
+tensor<_Tp> tensor<_Tp>::operator-(const value_t __val) const {
   this->__check_is_arithmetic_type("template class must be an arithmetic type");
   data_t  __d(this->__data_.size());
   index_t __i = 0;
@@ -3509,7 +3509,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const value_t __scalar) const {
 
   if constexpr (std::is_floating_point<value_t>::value)
   {
-    float32x4_t __vals = vdupq_n_f32(reinterpret_cast<float32_t>(&__scalar));
+    float32x4_t __vals = vdupq_n_f32(reinterpret_cast<float32_t>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
@@ -3521,7 +3521,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const value_t __scalar) const {
   }
   else if constexpr (std::is_signed<value_t>::value)
   {
-    int32x4_t __vals = vdupq_n_s32(reinterpret_cast<int32_t>(&__scalar));
+    int32x4_t __vals = vdupq_n_s32(reinterpret_cast<int32_t>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
@@ -3533,7 +3533,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const value_t __scalar) const {
   }
   else if constexpr (std::is_unsigned<value_t>::value)
   {
-    uint32x4_t __vals = vdupq_n_u32(reinterpret_cast<uint32_t>(&__scalar));
+    uint32x4_t __vals = vdupq_n_u32(reinterpret_cast<uint32_t>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
@@ -3547,7 +3547,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const value_t __scalar) const {
 
   for (; __i < this->__data_.size(); __i++)
   {
-    __d[__i] = this->__data_[__i] - __scalar;
+    __d[__i] = this->__data_[__i] - __val;
   }
 
   return __self(*this);
@@ -3658,7 +3658,7 @@ tensor<_Tp> tensor<_Tp>::operator*=(const tensor& __other) const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator*=(const_reference __scalar) const {
+tensor<_Tp> tensor<_Tp>::operator*=(const_reference __val) const {
   this->__check_is_arithmetic_type("template class must be an arithmetic type");
   index_t __i = 0;
 
@@ -3668,7 +3668,7 @@ tensor<_Tp> tensor<_Tp>::operator*=(const_reference __scalar) const {
 
   for (; __i < this->__data_.size(); __i++)
   {
-    this->__data_[__i] *= __scalar;
+    this->__data_[__i] *= __val;
   }
 
   return *this;
@@ -3689,20 +3689,20 @@ tensor<_Tp> tensor<_Tp>::operator/=(const tensor& __other) const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator/=(const_reference __scalar) const {
+tensor<_Tp> tensor<_Tp>::operator/=(const_reference __val) const {
   this->__check_is_arithmetic_type("template class must be an arithmetic type");
   index_t __i = 0;
 
   for (; __i < this->__data_.size(); __i++)
   {
-    this->__data_[__i] /= __scalar;
+    this->__data_[__i] /= __val;
   }
 
   return *this;
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::operator-=(const_reference __scalar) const {
+tensor<_Tp> tensor<_Tp>::operator-=(const_reference __val) const {
   this->__check_is_arithmetic_type("template class must be an arithmetic type");
   index_t __i = 0;
 
@@ -3749,7 +3749,7 @@ tensor<_Tp> tensor<_Tp>::operator-=(const_reference __scalar) const {
 
   for (; __i < this->__data_.size(); __i++)
   {
-    this->__data_[__i] -= __scalar;
+    this->__data_[__i] -= __val;
   }
 
   return *this;
