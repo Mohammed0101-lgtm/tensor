@@ -2902,10 +2902,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
 #endif
   for (; __i < this->__data_.size(); __i++)
     __d[__i] = this->__data_[__i] + __other[__i];
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), __d.begin(),
-                   [](const_reference __v, const_reference __w) { return static_cast<value_t>(__v + __w); });
-    */
+
   return __self(__d, this->__shape_);
 }
 
@@ -2952,10 +2949,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const value_t __scalar) const {
 #endif
   for (; __i < this->__data_.size(); __i++)
     __d[__i] = this->__data_[__i] + __scalar;
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [&__scalar](const_reference __v) { return static_cast<value_t>(__v + __scalar); });
-  */
+
   return __self(__d, this->__shape_);
 }
 
@@ -2968,10 +2962,7 @@ tensor<_Tp> tensor<_Tp>::operator+=(const tensor& __other) const {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] += __other[__i];
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), this->__data_.begin(),
-                   [](const_reference __v, const_reference __w) { return static_cast<value_t>(__v + __w); });
-    */
+
   return *this;
 }
 
@@ -3018,10 +3009,7 @@ tensor<_Tp> tensor<_Tp>::operator+=(const_reference __scalar) const {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = this->__data_[__i] + __scalar;
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [&__scalar](const_reference __v) { return static_cast<value_t>(__v + __scalar); });
-    */
+
   return *this;
 }
 
@@ -3074,10 +3062,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
 #endif
   for (; __i < this->__data_[__i]; __i++)
     __d[__i] = this->__data_[__i] - __other[__i];
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), __d.begin(),
-                   [](const_reference __v, const_reference __w) { return static_cast<value_t>(__v - __w); });
-    */
+
   return __self(__d, this->__shape_);
 }
 
@@ -3125,10 +3110,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const value_t __scalar) const {
 #endif
   for (; __i < this->__data_.size(); __i++)
     __d[__i] = this->__data_[__i] - __scalar;
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [&__scalar](const_reference __v) { return static_cast<value_t>(__v - __scalar); });
-    */
+
   return __self(*this);
 }
 
@@ -3175,10 +3157,7 @@ tensor<_Tp> tensor<_Tp>::operator-=(const tensor& __other) const {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] -= __other[__i];
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), this->__data_.begin(),
-                   [](const_reference __v, const_reference __w) { return static_cast<value_t>(__v - __w); });
-    */
+
   return *this;
 }
 
@@ -3226,10 +3205,7 @@ tensor<_Tp> tensor<_Tp>::operator*=(const tensor& __other) const {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] *= __other[__i];
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), this->__data_.begin(),
-                   [](const_reference __v, const_reference __w) { return static_cast<value_t>(__v * __w); });
-    */
+
   return *this;
 }
 
@@ -3241,10 +3217,7 @@ tensor<_Tp> tensor<_Tp>::operator*=(const_reference __scalar) const {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] *= __scalar;
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [](const_reference __v) { return static_cast<value_t>(__v * __scalar); });
-    */
+
   return *this;
 }
 
@@ -3255,10 +3228,7 @@ tensor<_Tp> tensor<_Tp>::operator/=(const tensor& __other) const {
   index_t __i = 0;
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] /= __other[__i];
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), __other.storage().begin(), this->__data_.begin(),
-                   [](const_reference __v, const_reference __w) { return static_cast<value_t>(__v / __w); });
-    */
+
   return *this;
 }
 
@@ -3268,10 +3238,7 @@ tensor<_Tp> tensor<_Tp>::operator/=(const_reference __scalar) const {
   index_t __i = 0;
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] /= __scalar;
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [&__scalar](const_reference __v) { return static_cast<value_t>(__v / __scalar); });
-    */
+
   return *this;
 }
 
@@ -3317,10 +3284,7 @@ tensor<_Tp> tensor<_Tp>::operator-=(const_reference __scalar) const {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] -= __scalar;
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [](const_reference __v, const_reference __w) { return static_cast<value_t>(__v - __w); });
-    */
+
   return *this;
 }
 
@@ -3383,11 +3347,8 @@ tensor<_Tp>& tensor<_Tp>::log2_() {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = static_cast<value_t>(std::log2(this->__data_[__i]));
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [](const_reference __v) {
-        return static_cast<value_t>(std::log2(static_cast<float32_t>(this->__data_[__i])));
-    });
-    */
+
+  return *this;
 }
 
 template<class _Tp>
@@ -3448,10 +3409,8 @@ tensor<_Tp>& tensor<_Tp>::asinh_() {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = static_cast<value_t>(std::asinh(this->__data_[__i]));
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [](const_reference __v) { return static_cast<value_t>(std::asinh(static_cast<double>(__v))) });
-    */
+
+  return *this;
 }
 
 template<class _Tp>
@@ -3514,10 +3473,8 @@ tensor<_Tp>& tensor<_Tp>::atan_() {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = static_cast<value_t>(std::atan(this->__data_[__i]));
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [](const_reference __v) { return static_cast<value_t>(std::atan(static_cast<double>(__v))); });
-    */
+
+  return *this;
 }
 
 template<class _Tp>
@@ -3539,10 +3496,8 @@ tensor<_Tp>& tensor<_Tp>::floor_() {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = static_cast<value_t>(std::floor(static_cast<float32_t>(this->__data_[__i])));
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [](const_reference __v) { return static_cast<value_t>(std::floor(static_cast<double>(__v))); });
-    */
+
+  return *this;
 }
 
 template<class _Tp>
@@ -3564,10 +3519,8 @@ tensor<_Tp>& tensor<_Tp>::ceil_() {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = static_cast<value_t>(std::ceil(static_cast<float32_t>(this->__data_[__i])));
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [](const_reference __v) { return static_cast<value_t>(std::ceil(static_cast<float32_t>(__v))) });
-    */
+
+  return *this;
 }
 
 template<class _Tp>
@@ -3630,10 +3583,8 @@ tensor<_Tp>& tensor<_Tp>::sin_() {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = static_cast<value_t>(std::sin(this->__data_[__i]));
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [](const_reference __v) { return static_cast<value_t>(std::sin(static_cast<float32_t>(__v))) });
-    */
+
+  return *this;
 }
 
 template<class _Tp>
@@ -3698,10 +3649,8 @@ tensor<_Tp>& tensor<_Tp>::asin_() {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = static_cast<value_t>(std::asin(this->__data_[__i]));
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [](const_reference __v) { return static_cast<value_t>(std::asin(static_cast<float32_t>(__v))); });
-    */
+
+  return *this;
 }
 
 template<class _Tp>
@@ -3764,11 +3713,8 @@ tensor<_Tp>& tensor<_Tp>::log10_() {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = static_cast<value_t>(std::log10(this->__data_[__i]));
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [](const_reference __v) {
-        return static_cast<value_t>(std::log10(static_cast<float32_t>(this->__data_[__i])));
-    });
-    */
+
+  return *this;
 }
 
 template<class _Tp>
@@ -3831,11 +3777,8 @@ tensor<_Tp>& tensor<_Tp>::log_() {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = static_cast<value_t>(std::log(this->__data_[__i]));
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [](const_reference __v) {
-        return static_cast<value_t>(std::log(static_cast<float32_t>(this->__data_[__i])));
-    });
-    */
+
+  return *this;
 }
 
 template<class _Tp>
@@ -3899,11 +3842,8 @@ tensor<_Tp>& tensor<_Tp>::exp_() {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = static_cast<value_t>(std::exp(this->__data_[__i]));
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [](const_reference __v) {
-        return static_cast<value_t>(std::exp(static_cast<float32_t>(this->__data_[__i])));
-    });
-    */
+
+  return *this;
 }
 
 template<class _Tp>
@@ -3967,11 +3907,8 @@ tensor<_Tp>& tensor<_Tp>::sqrt_() {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = static_cast<value_t>(std::sqrt(this->__data_[__i]));
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(), [](const_reference __v) {
-        return static_cast<value_t>(std::sqrt(static_cast<float32_t>(this->__data_[__i])));
-    });
-    */
+
+  return *this;
 }
 
 template<class _Tp>
@@ -4034,10 +3971,8 @@ tensor<_Tp>& tensor<_Tp>::sinh_() {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = static_cast<value_t>(std::sinh(this->__data_[__i]));
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [](const_reference __v) { return static_cast<value_t>(std::sinh(static_cast<float32_t>(__v))) });
-    */
+
+  return *this;
 }
 
 template<class _Tp>
@@ -4574,10 +4509,8 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const value_t __val) {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = static_cast<value_t>(this->__data_[__i] || __val);
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [&__val](const_reference __v) { return static_cast<value_t>(__v || __val); });
-    */
+
+  return *this;
 }
 
 template<class _Tp>
@@ -4613,10 +4546,8 @@ tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_t __val) {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = static_cast<value_t>(this->__data_[__i] ^ __val);
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [&__val](const_reference __v) { return static_cast<value_t>(__v ^ __val); });
-    */
+
+  return *this;
 }
 
 template<class _Tp>
@@ -4652,10 +4583,8 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const value_t __val) {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = static_cast<value_t>(this->__data_[__i] && __val);
-  /*
-    std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                   [&__val](const_reference __v) { return static_cast<value_t>(__v && __val); });
-    */
+
+  return *this;
 }
 
 template<class _Tp>
@@ -5761,10 +5690,8 @@ tensor<_Tp>& tensor<_Tp>::fmax_(const tensor<value_t>& __other) {
 #endif
   for (; __i < this->__data_.size(); __i++)
     this->__data_[__i] = std::fmax(this->__data_[__i], __other[__i]);
-  /*
-    std::transform(this->__data.begin(), this->__data_.end(), __other.begin(), this->__data.begin(),
-                   [](const_reference __v, const_reference __w) { return std::fmax(__v, __w); });
-    */
+
+  return *this;
 }
 
 template<class _Tp>
