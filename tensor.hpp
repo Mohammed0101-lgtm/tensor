@@ -117,6 +117,7 @@ class tensor
   shape_t              __shape_;
   std::vector<index_t> __strides_;
   Device               __device_;
+  bool                 __is_cuda_tensor_ = false;
 
  public:
   tensor() = default;
@@ -1080,13 +1081,6 @@ class tensor
   tensor maximum(const value_t& __val) const;
 
   /**
- * @brief Computes the element-wise absolute value of the tensor.
- * 
- * @return A new tensor containing the absolute values.
- */
-  tensor abs() const;
-
-  /**
  * @brief Computes the distance between the tensor and another tensor.
  * @param __other The tensor to compute the distance to.
  * @return A new tensor containing the distances.
@@ -1099,13 +1093,6 @@ class tensor
  * @return A new tensor containing the distances.
  */
   tensor dist(const value_t __val) const;
-
-  /**
- * @brief Transposes the tensor.
- * 
- * @return A new transposed tensor.
- */
-  tensor transpose() const;
 
   /**
  * @brief Removes a singleton dimension from the tensor at the specified position.
@@ -1423,12 +1410,6 @@ class tensor
  * @return Reference to the updated tensor.
  */
   tensor& squeeze_(index_t __dim) const;
-
-  /**
- * @brief Computes the element-wise absolute value of the tensor, in-place.
- * @return Reference to the updated tensor.
- */
-  tensor& abs_() const;
 
   /**
  * @brief Computes the distance between the tensor and another tensor, in-place.
@@ -1834,11 +1815,6 @@ class tensor
 
 
 template<class _Tp>
-bool tensor<_Tp>::operator!=(const tensor& __other) const {
-  return !(*this == __other);
-}
-
-template<class _Tp>
 size_t tensor<_Tp>::n_dims() const noexcept {
   return this->__shape_.size();
 }
@@ -1874,20 +1850,9 @@ bool tensor<_Tp>::operator!=(const tensor& __other) const {
 }
 
 template<class _Tp>
-typename tensor<_Tp>::index_t tensor<_Tp>::capacity() const noexcept {
-  return this->__data_.capacity();
-}
-
-template<class _Tp>
 bool tensor<_Tp>::empty() const {
   return this->__data_.empty();
 }
-
-template<class _Tp>
-typename tensor<_Tp>::shape_t tensor<_Tp>::strides() const noexcept {
-  return this->__strides_;
-}
-
 
 template<class _Tp>
 typename tensor<_Tp>::iterator tensor<_Tp>::begin() noexcept {
@@ -1953,60 +1918,31 @@ tensor<_Tp>& tensor<_Tp>::abs_() const {
   this->__check_is_integral_type("template class must be integral type");
   index_t __i = 0;
 
+  if (std::is_unsigned<value_t>::value)
+  {
+    return *this;
+  }
+
 #if defined(__ARM_NEON)
   index_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-  if constexpr (std::is_floating_point<value_t>::value)
+  using neon_type = typename std::conditional<std::is_same<value_t, float32_t>::value, float32x4_t, int32x4_t>::type;
+
+  for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
   {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
-    {
-      float32x4_t __data_vec = vld1q_f32(reinterpret_cast<const float32_t*>(&this->__data_[__i]));
-      float32_t   __vals[_ARM64_REG_WIDTH];
-      vst1q_f32(__vals, __data_vec);
+    neon_type __data_vec = vld1q(reinterpret_cast<neon_type*>(&this->__data_[__i]));
+    value_t   __vals[_ARM64_REG_WIDTH];
+    vst1q(__vals, __data_vec);
 
-      __vals[0] = std::abs(__vals[0]);
-      __vals[1] = std::abs(__vals[1]);
-      __vals[2] = std::abs(__vals[2]);
-      __vals[3] = std::abs(__vals[3]);
+    __vals[0] = static_cast<value_t>(std::abs(static_cast<float32_t>(__vals[0])));
+    __vals[1] = static_cast<value_t>(std::abs(static_cast<float32_t>(__vals[1])));
+    __vals[2] = static_cast<value_t>(std::abs(static_cast<float32_t>(__vals[2])));
+    __vals[3] = static_cast<value_t>(std::abs(static_cast<float32_t>(__vals[3])));
 
-      float32x4_t __abs_vec = vld1q_f32(__vals);
-      vst1q_f32(&this->__data_[__i], __abs_vec);
-    }
+    neon_type __abs_vec = vld1q(__vals);
+    vst1q(&this->__data_[__i], __abs_vec);
   }
-  else if constexpr (std::is_signed<value_t>::value)
-  {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
-    {
-      int32x4_t __data_vec = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
-      int32_t   __vals[_ARM64_REG_WIDTH];
-      vst1q_s32(__vals, __data_vec);
 
-      __vals[0] = static_cast<int32_t>(std::abs(static_cast<float32_t>(__vals[0])));
-      __vals[1] = static_cast<int32_t>(std::abs(static_cast<float32_t>(__vals[1])));
-      __vals[2] = static_cast<int32_t>(std::abs(static_cast<float32_t>(__vals[2])));
-      __vals[3] = static_cast<int32_t>(std::abs(static_cast<float32_t>(__vals[3])));
-
-      int32x4_t __abs_vec = vld1q_s32(__vals);
-      vst1q_s32(&this->__data_[__i], __abs_vec);
-    }
-  }
-  else if constexpr (std::is_unsigned<value_t>::value)
-  {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
-    {
-      uint32x4_t __data_vec = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
-      uint32_t   __vals[_ARM64_REG_WIDTH];
-      vst1q_u32(__vals, __data_vec);
-
-      __vals[0] = static_cast<uint32_t>(std::abs(static_cast<float32_t>(__vals[0])));
-      __vals[1] = static_cast<uint32_t>(std::abs(static_cast<float32_t>(__vals[1])));
-      __vals[2] = static_cast<uint32_t>(std::abs(static_cast<float32_t>(__vals[2])));
-      __vals[3] = static_cast<uint32_t>(std::abs(static_cast<float32_t>(__vals[3])));
-
-      uint32x4_t __abs_vec = vld1q_u32(__vals);
-      vst1q_u32(&this->__data_[__i], __abs_vec);
-    }
-  }
 #endif
 
   for (; __i < this->__data_.size(); __i++)
@@ -2291,7 +2227,7 @@ tensor<_Tp> tensor<_Tp>::det() const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::sort(index_t __dim, bool __descending = false) const {}
+tensor<_Tp> tensor<_Tp>::sort(index_t __dim, bool __descending) const {}
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::remainder(const value_t __val) const {
@@ -2489,8 +2425,6 @@ tensor<_Tp>& tensor<_Tp>::dist_(const tensor& __other) const {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::dist_(const value_t __val) const {
   this->__check_is_arithmetic_type("dist: template type must be an arithmetic type");
-
-  assert(this->__shape_ == __other.shape());
 
   index_t __i = 0;
 
@@ -7228,10 +7162,12 @@ tensor<typename tensor<_Tp>::index_t> tensor<_Tp>::argsort(index_t __d, bool __a
       int32x2_t  __min1       = vpmin_s32(vget_low_s32(__data_vec), vget_high_s32(__data_vec));
       int32x2_t  __min2       = vpmin_s32(__min1, __min1);
       int32x4_t  __cmp_vec    = vdupq_lane_s32(__min2, 0);
-      uint32x4_t __cmp_result = __ascending ? vcltq_s32(__data_vec, __cmp_vec) : vcgtq_s32(__data_vec, __cmp_vec;
+      uint32x4_t __cmp_result = __ascending ? vcltq_s32(__data_vec, __cmp_vec) : vcgtq_s32(__data_vec, __cmp_vec);
 
-      for (int __j = 0; __j < _ARM64_REG_WIDTH; __j++) {
-        __indices[__i + __j] = (__cmp_result[__j] ? __i + __j : __i + __j + 1);}
+      for (int __j = 0; __j < _ARM64_REG_WIDTH; __j++)
+      {
+        __indices[__i + __j] = (__cmp_result[__j] ? __i + __j : __i + __j + 1);
+      }
     }
   }
   else if constexpr (std::is_unsigned<value_t>::value)
@@ -7738,7 +7674,7 @@ tensor<bool> tensor<_Tp>::less_equal(const tensor& __other) const {
     neon_type  vec_a    = vld1q(this->__data_.data() + __i);
     neon_type  vec_b    = vld1q(__other.__data_.data() + __i);
     uint32x4_t leq_mask = std::is_same_v<value_t, float32_t> ? vcleq_f32(vec_a, vec_b) : vcleq_s32(vec_a, vec_b);
-    vst1q_u32(reinterpret_cast<uint32_t*>(__ret.data() + __i), leq_mask);
+    vst1q_u32(reinterpret_cast<uint32_t*>(&__ret[__i]), leq_mask);
   }
 #endif
 
