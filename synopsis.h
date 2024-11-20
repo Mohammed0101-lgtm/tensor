@@ -62,6 +62,7 @@ class tensor
   const_reverse_iterator rbegin() const noexcept;
   const_reverse_iterator rend() const noexcept;
   data_t                 storage() const noexcept;
+  size_t                 n_dims() const noexcept;
   shape_t                shape() const noexcept;
   shape_t                strides() const noexcept;
   index_t                size(const index_t __dim) const;
@@ -69,24 +70,23 @@ class tensor
   index_t                count_nonzero(index_t __dim = -1) const;
   index_t                lcm() const;
   index_t                hash() const;
-  size_t                 n_dims() const noexcept;
   Device                 device() const noexcept;
   reference              at(shape_t __idx);
   reference              operator[](const index_t __in);
   const_reference        at(const shape_t __idx) const;
   const_reference        operator[](const index_t __in) const;
+  tensor                 operator+(const value_t _scalar) const;
   tensor                 operator+(const tensor& __other) const;
   tensor                 operator-(const tensor& __other) const;
+  tensor                 operator-(const value_t __val) const;
   tensor                 operator-=(const tensor& __other) const;
   tensor                 operator+=(const tensor& __other) const;
   tensor                 operator*=(const tensor& __other) const;
   tensor                 operator/=(const tensor& __other) const;
-  tensor                 operator+(const value_t _scalar) const;
-  tensor                 operator-(const value_t __scalar) const;
-  tensor                 operator+=(const_reference __scalar) const;
-  tensor                 operator-=(const_reference __scalar) const;
-  tensor                 operator/=(const_reference __scalar) const;
-  tensor                 operator*=(const_reference __scalar) const;
+  tensor                 operator+=(const_reference __val) const;
+  tensor                 operator-=(const_reference __val) const;
+  tensor                 operator/=(const_reference __val) const;
+  tensor                 operator*=(const_reference __val) const;
   tensor slice(index_t __dim, std::optional<index_t> __start, std::optional<index_t> __end, index_t __step) const;
   tensor fmax(const tensor& __other) const;
   tensor fmax(const value_t __val) const;
@@ -288,7 +288,7 @@ class tensor
 
  private:
   static uint64_t  __computeSize(const shape_t& __dims);
-  static float32_t __frac(const_reference __scalar);
+  static float32_t __frac(const_reference __val);
   static void      __check_is_same_type(const std::string __msg);
   static void      __check_is_arithmetic_type(const std::string __msg);
   static void      __check_is_scalar_type(const std::string __msg);
