@@ -5576,7 +5576,6 @@ tensor<typename tensor<_Tp>::index_t> tensor<_Tp>::argmax_(index_t __dim) const 
       }
     }
   }
-  else
 
 #elif defined(__ARM_NEON)
   if constexpr (std::is_floating_point<value_t>::value)
@@ -5744,7 +5743,6 @@ tensor<typename tensor<_Tp>::index_t> tensor<_Tp>::argmax_(index_t __dim) const 
       }
     }
   }
-  else
 
 #endif
   {
@@ -5828,7 +5826,6 @@ tensor<_Tp> tensor<_Tp>::argmax(index_t __dim) const {
       }
     }
   }
-  else
 
 #elif defined(__ARM_NEON)
   if constexpr (std::is_floating_point<value_t>::value)
@@ -6037,6 +6034,7 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_t __dim) const {
     }
 #else
     index_t __i = 1;
+
     for (; __i < __flat.size(); __i++)
     {
       __ret[__i] = __ret[__i - 1] * __flat[__i];
@@ -7161,7 +7159,6 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
   }
   else
 #endif
-
   {
     index_t __i = 0;
 
