@@ -285,3 +285,4 @@ tensor<bool> tensor<_Tp>::bool_() const {
 
   return tensor<bool>(__d, this->__shape_);
 }
+
