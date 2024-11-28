@@ -757,7 +757,6 @@ tensor<_Tp>& tensor<_Tp>::atan_() const {
 
 #if defined(__ARM_NEON)
   using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
-
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -791,7 +790,6 @@ tensor<_Tp>& tensor<_Tp>::atanh_() const {
 
 #if defined(__ARM_NEON)
   using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
-
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -839,7 +837,6 @@ tensor<_Tp>& tensor<_Tp>::sinh_() const {
 
 #if defined(__ARM_NEON)
   using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
-
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -881,7 +878,6 @@ tensor<_Tp>& tensor<_Tp>::asinh_() const {
 
 #if defined(__ARM_NEON)
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-
   using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -922,7 +918,6 @@ tensor<_Tp>& tensor<_Tp>::asin_() const {
 
 #if defined(__ARM_NEON)
   using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
-
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -956,7 +951,6 @@ tensor<_Tp>& tensor<_Tp>::cosh_() const {
 
 #if defined(__ARM_NEON)
   using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
-
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -990,7 +984,6 @@ tensor<_Tp>& tensor<_Tp>::acosh_() const {
 
 #if defined(__ARM_NEON)
   using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
-
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -1031,7 +1024,6 @@ tensor<_Tp>& tensor<_Tp>::pow_(const value_type __val) {
 
 #if defined(__ARM_NEON)
   using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
-
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -1155,7 +1147,6 @@ tensor<_Tp>& tensor<_Tp>::abs_() const {
 
 #if defined(__ARM_NEON)
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-
   using neon_type = typename std::conditional<std::is_same<value_type, _f32>::value, neon_f32, neon_s32>::type;
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -1242,7 +1233,6 @@ tensor<_Tp>& tensor<_Tp>::dist_(const value_type __val) const {
 
 #if defined(__ARM_NEON)
   using neon_type = typename std::conditional<std::is_same<value_type, _f32>::value, neon_f32, neon_s32>::type;
-
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -1252,7 +1242,6 @@ tensor<_Tp>& tensor<_Tp>::dist_(const value_type __val) const {
     neon_type __diff = vabdq(__a, __b);
     vst1q(reinterpret_cast<neon_type*>(&this->__data_[__i]), __diff);
   }
-
 #endif
 
   for (; __i < this->__data_.size(); __i++)
@@ -1356,7 +1345,6 @@ tensor<_Tp>& tensor<_Tp>::maximum_(const value_type __val) const {
 
 #if defined(__ARM_NEON)
   using neon_type = typename std::conditional<std::is_same<value_type, _f32>::value, neon_f32, neon_s32>::type;
-
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   neon_type        __val_vec  = vdupq_n(__val);
 
