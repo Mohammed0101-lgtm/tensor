@@ -561,58 +561,23 @@ tensor<_Tp>& tensor<_Tp>::tan_() const {
   index_type __i = 0;
 
 #if defined(__ARM_NEON)
+  using neon_type = typename std::conditional<std::is_same_v<_f32>, neon_f32, neon_s32>::type;
+
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-  if constexpr (std::is_floating_point<value_type>::value)
+  for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
   {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
-    {
-      neon_f32 __data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
-      _f32     __vals[_ARM64_REG_WIDTH];
-      vst1q_f32(__vals, __data_vec);
+    neon_type  __data_vec = vld1q(reinterpret_cast<const value_type*>(&this->__data_[__i]));
+    value_type __vals[_ARM64_REG_WIDTH];
+    vst1q(__vals, __data_vec);
 
-      __vals[0] = std::tan(__vals[0]);
-      __vals[1] = std::tan(__vals[1]);
-      __vals[2] = std::tan(__vals[2]);
-      __vals[3] = std::tan(__vals[3]);
+    __vals[0] = static_cast<value_type>(std::tan(static_cast<_f32>(__vals[0])));
+    __vals[1] = static_cast<value_type>(std::tan(static_cast<_f32>(__vals[1])));
+    __vals[2] = static_cast<value_type>(std::tan(static_cast<_f32>(__vals[2])));
+    __vals[3] = static_cast<value_type>(std::tan(static_cast<_f32>(__vals[3])));
 
-      neon_f32 __tan_vec = vld1q_f32(__vals);
-      vst1q_f32(&this->__data_[__i], __tan_vec);
-    }
-  }
-  else if constexpr (std::is_signed<value_type>::value)
-  {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
-    {
-      neon_s32 __data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-      _s32     __vals[_ARM64_REG_WIDTH];
-      vst1q_s32(__vals, __data_vec);
-
-      __vals[0] = static_cast<_s32>(std::tan(static_cast<_f32>(__vals[0])));
-      __vals[1] = static_cast<_s32>(std::tan(static_cast<_f32>(__vals[1])));
-      __vals[2] = static_cast<_s32>(std::tan(static_cast<_f32>(__vals[2])));
-      __vals[3] = static_cast<_s32>(std::tan(static_cast<_f32>(__vals[3])));
-
-      neon_s32 __tan_vec = vld1q_s32(__vals);
-      vst1q_s32(&this->__data_[__i], __tan_vec);
-    }
-  }
-  else if constexpr (std::is_unsigned<value_type>::value)
-  {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
-    {
-      neon_u32 __data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
-      _u32     __vals[_ARM64_REG_WIDTH];
-      vst1q_u32(__vals, __data_vec);
-
-      __vals[0] = static_cast<_u32>(std::tan(static_cast<_f32>(__vals[0])));
-      __vals[1] = static_cast<_u32>(std::tan(static_cast<_f32>(__vals[1])));
-      __vals[2] = static_cast<_u32>(std::tan(static_cast<_f32>(__vals[2])));
-      __vals[3] = static_cast<_u32>(std::tan(static_cast<_f32>(__vals[3])));
-
-      neon_u32 __tan_vec = vld1q_u32(__vals);
-      vst1q_u32(&this->__data_[__i], __tan_vec);
-    }
+    neon_type __tan_vec = vld1q(__vals);
+    vst1q(&this->__data_[__i], __tan_vec);
   }
 #endif
 
@@ -630,69 +595,33 @@ tensor<_Tp>& tensor<_Tp>::tanh_() const {
   index_type __i = 0;
 
 #if defined(__ARM_NEON)
+  using neon_type = typename std::conditional<std::is_same_v<_f32>, neon_f32, neon_s32>::type;
+
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-  if constexpr (std::is_floating_point<value_type>::value)
+  for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
   {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
-    {
-      neon_f32 __data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
-      _f32     __vals[_ARM64_REG_WIDTH];
-      vst1q_f32(__vals, __data_vec);
+    neon_type  __data_vec = vld1q(reinterpret_cast<const value_type*>(&this->__data_[__i]));
+    value_type __vals[_ARM64_REG_WIDTH];
+    vst1q(__vals, __data_vec);
 
-      __vals[0] = std::tanh(__vals[0]);
-      __vals[1] = std::tanh(__vals[1]);
-      __vals[2] = std::tanh(__vals[2]);
-      __vals[3] = std::tanh(__vals[3]);
+    __vals[0] = static_cast<value_type>(std::tanh(static_cast<_f32>(__vals[0])));
+    __vals[1] = static_cast<value_type>(std::tanh(static_cast<_f32>(__vals[1])));
+    __vals[2] = static_cast<value_type>(std::tanh(static_cast<_f32>(__vals[2])));
+    __vals[3] = static_cast<value_type>(std::tanh(static_cast<_f32>(__vals[3])));
 
-      neon_f32 __tanh_vec = vld1q_f32(__vals);
-      vst1q_f32(&this->__data_[__i], __tanh_vec);
-    }
-  }
-  else if constexpr (std::is_signed<value_type>::value)
-  {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
-    {
-      neon_s32 __data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-      _s32     __vals[_ARM64_REG_WIDTH];
-      vst1q_s32(__vals, __data_vec);
-
-      __vals[0] = static_cast<_s32>(std::tanh(static_cast<_f32>(__vals[0])));
-      __vals[1] = static_cast<_s32>(std::tanh(static_cast<_f32>(__vals[1])));
-      __vals[2] = static_cast<_s32>(std::tanh(static_cast<_f32>(__vals[2])));
-      __vals[3] = static_cast<_s32>(std::tanh(static_cast<_f32>(__vals[3])));
-
-      neon_s32 __tanh_vec = vld1q_s32(__vals);
-      vst1q_s32(&this->__data_[__i], __tanh_vec);
-    }
-  }
-  else if constexpr (std::is_unsigned<value_type>::value)
-  {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
-    {
-      neon_u32 __data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
-      _u32     __vals[_ARM64_REG_WIDTH];
-      vst1q_u32(__vals, __data_vec);
-
-      __vals[0] = static_cast<_u32>(std::tanh(static_cast<_f32>(__vals[0])));
-      __vals[1] = static_cast<_u32>(std::tanh(static_cast<_f32>(__vals[1])));
-      __vals[2] = static_cast<_u32>(std::tanh(static_cast<_f32>(__vals[2])));
-      __vals[3] = static_cast<_u32>(std::tanh(static_cast<_f32>(__vals[3])));
-
-      neon_u32 __tanh_vec = vld1q_u32(__vals);
-      vst1q_u32(&this->__data_[__i], __tanh_vec);
-    }
+    neon_type __tanh_vec = vld1q(__vals);
+    vst1q(&this->__data_[__i], __tanh_vec);
   }
 #endif
 
   for (; __i < this->__data_.size(); __i++)
   {
-    this->__data_[__i] = static_cast<value_type>(std::tanh(this->__data_[__i]));
+    this->__data_[__i] = static_cast<value_type>(std::tanh(static_cast<_f32>(this->__data_[__i])));
   }
 
   return *this;
 }
-
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::asin() const {
@@ -756,7 +685,7 @@ tensor<_Tp>& tensor<_Tp>::atan_() const {
   index_type __i = 0;
 
 #if defined(__ARM_NEON)
-  using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
+  using neon_type       = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -789,7 +718,7 @@ tensor<_Tp>& tensor<_Tp>::atanh_() const {
   index_type __i = 0;
 
 #if defined(__ARM_NEON)
-  using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
+  using neon_type       = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -836,7 +765,7 @@ tensor<_Tp>& tensor<_Tp>::sinh_() const {
   index_type __i = 0;
 
 #if defined(__ARM_NEON)
-  using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
+  using neon_type             = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -878,7 +807,7 @@ tensor<_Tp>& tensor<_Tp>::asinh_() const {
 
 #if defined(__ARM_NEON)
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-  using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
+  using neon_type       = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
   {
@@ -917,7 +846,7 @@ tensor<_Tp>& tensor<_Tp>::asin_() const {
   index_type __i = 0;
 
 #if defined(__ARM_NEON)
-  using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
+  using neon_type             = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -950,7 +879,7 @@ tensor<_Tp>& tensor<_Tp>::cosh_() const {
   index_type __i = 0;
 
 #if defined(__ARM_NEON)
-  using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
+  using neon_type             = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -983,7 +912,7 @@ tensor<_Tp>& tensor<_Tp>::acosh_() const {
   index_type __i = 0;
 
 #if defined(__ARM_NEON)
-  using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
+  using neon_type             = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -1023,7 +952,7 @@ tensor<_Tp>& tensor<_Tp>::pow_(const value_type __val) {
   index_type __i = 0;
 
 #if defined(__ARM_NEON)
-  using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
+  using neon_type             = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>::type;
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -1071,52 +1000,22 @@ tensor<_Tp>& tensor<_Tp>::pow_(const tensor& __other) {
   index_type __i = 0;
 
 #if defined(__ARM_NEON)
+  using neon_type = typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, neon_s32>;
+
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-  if constexpr (std::is_floating_point<value_type>::value)
-  {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
-    {
-      neon_f32 __base_vec   = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
-      neon_f32 __exp_vec    = vld1q_f32(reinterpret_cast<const _f32*>(&__other[__i]));
-      neon_f32 __result_vec = {std::pow(vgetq_lane_f32(__base_vec, 0), vgetq_lane_f32(__exp_vec, 0)),
-                               std::pow(vgetq_lane_f32(__base_vec, 1), vgetq_lane_f32(__exp_vec, 1)),
-                               std::pow(vgetq_lane_f32(__base_vec, 2), vgetq_lane_f32(__exp_vec, 2)),
-                               std::pow(vgetq_lane_f32(__base_vec, 3), vgetq_lane_f32(__exp_vec, 3))};
+  neon_type __base_vec   = vld1q(reinterpret_cast<const value_type*>(&this->__data_[__i]));
+  neon_type __exp_vec    = vld1q(reinterpret_cast<const value_type*>(&__other[__i]));
+  neon_type __result_vec = {static_cast<value_type>(std::pow(static_cast<_f32>(vget_lane(__base_vec, 0)),
+                                                             static_cast<_f32>(vget_lane(__exp_vec, 0)))),
+                            static_cast<value_type>(std::pow(static_cast<_f32>(vget_lane(__base_vec, 1)),
+                                                             static_cast<_f32>(vget_lane(__exp_vec, 1)))),
+                            static_cast<value_type>(std::pow(static_cast<_f32>(vget_lane(__base_vec, 2)),
+                                                             static_cast<_f32>(vget_lane(__exp_vec, 2)))),
+                            static_cast<value_type>(std::pow(static_cast<_f32>(vget_lane(__base_vec, 3)),
+                                                             static_cast<_f32>(vget_lane(__exp_vec, 3))))};
 
-      vst1q_f32(&this->__data_[__i], __result_vec);
-    }
-  }
-  else if constexpr (std::is_signed<value_type>::value)
-  {
-    neon_s32 __base_vec   = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-    neon_s32 __exp_vec    = vld1q_s32(reinterpret_cast<const _s32*>(&__other[__i]));
-    neon_s32 __result_vec = {static_cast<_s32>(std::pow(static_cast<_f32>(vgetq_lane_s32(__base_vec, 0)),
-                                                        static_cast<_f32>(vgetq_lane_s32(__exp_vec, 0)))),
-                             static_cast<_s32>(std::pow(static_cast<_f32>(vgetq_lane_s32(__base_vec, 1)),
-                                                        static_cast<_f32>(vgetq_lane_s32(__exp_vec, 1)))),
-                             static_cast<_s32>(std::pow(static_cast<_f32>(vgetq_lane_s32(__base_vec, 2)),
-                                                        static_cast<_f32>(vgetq_lane_s32(__exp_vec, 2)))),
-                             static_cast<_s32>(std::pow(static_cast<_f32>(vgetq_lane_s32(__base_vec, 3)),
-                                                        static_cast<_f32>(vgetq_lane_s32(__exp_vec, 3))))};
-
-    vst1q_s32(&this->__data_[__i], __result_vec);
-  }
-  else if constexpr (std::is_unsigned<value_type>::value)
-  {
-    neon_u32 __base_vec   = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
-    neon_u32 __exp_vec    = vld1q_u32(reinterpret_cast<const _u32*>(&__other[__i]));
-    neon_u32 __result_vec = {static_cast<_u32>(std::pow(static_cast<_f32>(vgetq_lane_u32(__base_vec, 0)),
-                                                        static_cast<_f32>(vgetq_lane_u32(__exp_vec, 0)))),
-                             static_cast<_u32>(std::pow(static_cast<_f32>(vgetq_lane_u32(__base_vec, 1)),
-                                                        static_cast<_f32>(vgetq_lane_u32(__exp_vec, 1)))),
-                             static_cast<_u32>(std::pow(static_cast<_f32>(vgetq_lane_u32(__base_vec, 2)),
-                                                        static_cast<_f32>(vgetq_lane_u32(__exp_vec, 2)))),
-                             static_cast<_u32>(std::pow(static_cast<_f32>(vgetq_lane_u32(__base_vec, 3)),
-                                                        static_cast<_f32>(vgetq_lane_u32(__exp_vec, 3))))};
-
-    vst1q_u32(&this->__data_[__i], __result_vec);
-  }
+  vst1q(&this->__data_[__i], __result_vec);
 #endif
 
   for (; __i < this->__data_.size(); __i++)
@@ -1147,7 +1046,7 @@ tensor<_Tp>& tensor<_Tp>::abs_() const {
 
 #if defined(__ARM_NEON)
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-  using neon_type = typename std::conditional<std::is_same<value_type, _f32>::value, neon_f32, neon_s32>::type;
+  using neon_type       = typename std::conditional<std::is_same<value_type, _f32>::value, neon_f32, neon_s32>::type;
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
   {
