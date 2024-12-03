@@ -7,8 +7,13 @@ template<class _Tp>
 tensor<_s32> tensor<_Tp>::int32_() const {
   static_assert(std::is_convertible<value_type, _s32>::value);
 
-  data_t     __d;
-  index_type __i = 0;
+  if (this->empty())
+  {
+    return tensor<_s32>({}, this->__shape_);
+  }
+
+  tensor<_s32> __d;
+  index_type   __i = 0;
 
 #if defined(__ARM_NEON)
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -40,15 +45,20 @@ tensor<_s32> tensor<_Tp>::int32_() const {
     __d.push_back(static_cast<_s32>(this->__data_[__i]));
   }
 
-  return __self(__d, this->__shape_);
+  return tensor<_s32>(__d, this->__shape_);
 }
 
 template<class _Tp>
 tensor<_u32> tensor<_Tp>::uint32_() const {
   static_assert(std::is_convertible<value_type, _u32>::value);
 
-  data_t     __d;
-  index_type __i = 0;
+  if (this->empty())
+  {
+    return tensor<_u32>({}, this->__shape_);
+  }
+
+  tensor<_u32> __d;
+  index_type   __i = 0;
 
 #if defined(__ARM_NEON)
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() - _ARM64_REG_WIDTH);
@@ -80,7 +90,7 @@ tensor<_u32> tensor<_Tp>::uint32_() const {
     __d.push_back(static_cast<_u32>(this->__data_[__i]));
   }
 
-  return __self(__d, this->__shape_);
+  return tensor<_u32>(__d, this->__shape_);
 }
 
 template<class _Tp>
@@ -89,11 +99,11 @@ tensor<_f32> tensor<_Tp>::float32_() const {
 
   if (this->empty())
   {
-    return __self({}, this->__shape_);
+    return tensor<_f32>({}, this->__shape_);
   }
 
-  data_t     __d(this->__data_.size());
-  index_type __i = 0;
+  tensor<_f32> __d(this->__data_.size());
+  index_type   __i = 0;
 
 #if defined(__ARM_NEON)
   if constexpr (std::is_same_v<value_type, _f64>)
@@ -130,7 +140,7 @@ tensor<_f32> tensor<_Tp>::float32_() const {
     __d[__i] = static_cast<_f32>(this->__data_[__i]);
   }
 
-  return __self(__d, this->__shape_);
+  return tensor<_f32>(__d, this->__shape_);
 }
 
 template<class _Tp>
@@ -139,11 +149,11 @@ tensor<_f64> tensor<_Tp>::double_() const {
 
   if (this->empty())
   {
-    return __self({}, this->__shape_);
+    return tensor<_f64>({}, this->__shape_);
   }
 
-  data_t     __d(this->__data_.size());
-  index_type __i = 0;
+  std::vector<_f64> __d(this->__data_.size());
+  index_type        __i = 0;
 
 #if defined(__ARM_NEON)
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -160,7 +170,7 @@ tensor<_f64> tensor<_Tp>::double_() const {
     __d[__i] = static_cast<_f64>(this->__data_[__i]);
   }
 
-  return __self(__d, this->__shape_);
+  return tensor<_f64>(__d, this->__shape_);
 }
 
 template<class _Tp>
@@ -169,11 +179,11 @@ tensor<uint64_t> tensor<_Tp>::unsigned_long_() const {
 
   if (this->empty())
   {
-    return __self({}, this->__shape_);
+    return tensor<uint64_t>({}, this->__shape_);
   }
 
-  data_t     __d(this->__data_.size());
-  index_type __i = 0;
+  std::vector<uint64_t> __d(this->__data_.size());
+  index_type            __i = 0;
 
 #if defined(__ARM_NEON)
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -207,7 +217,7 @@ tensor<uint64_t> tensor<_Tp>::unsigned_long_() const {
     __d[__i] = static_cast<uint64_t>(this->__data_[__i]);
   }
 
-  return __self(__d, this->__shape_);
+  return tensor<int64_t>(__d, this->__shape_);
 }
 
 template<class _Tp>
@@ -216,11 +226,11 @@ tensor<int64_t> tensor<_Tp>::long_() const {
 
   if (this->empty())
   {
-    return __self({}, this->__shape_);
+    return tensor<int64_t>({}, this->__shape_);
   }
 
-  data_t     __d(this->__data_.size());
-  index_type __i = 0;
+  std::vector<int64_t> __d(this->__data_.size());
+  index_type           __i = 0;
 
 #if defined(__ARM_NEON)
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -269,7 +279,7 @@ tensor<int64_t> tensor<_Tp>::long_() const {
     __d[__i] = static_cast<int64_t>(this->__data_[__i]);
   }
 
-  return __self(__d, this->__shape_);
+  return tensor<int64_t>(__d, this->__shape_);
 }
 
 template<class _Tp>
@@ -285,4 +295,3 @@ tensor<bool> tensor<_Tp>::bool_() const {
 
   return tensor<bool>(__d, this->__shape_);
 }
-
