@@ -4,22 +4,115 @@
 
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::not_equal(const tensor& __other) const {}
+tensor<bool> tensor<_Tp>::not_equal(const tensor& __other) const {
+  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
+  {
+    throw std::runtime_error("Cannot compare non-integral or scalar value");
+  }
+
+  assert(this->__shape_ == __other.shape() && "equal : tensor shapes");
+  std::vector<bool> __ret(this->__data_.size());
+  index_type        __i = 0;
+
+  for (; __i < this->__data_.size(); __i++)
+  {
+    __ret[__i] = (this->__data_[__i] != __other[__i]);
+  }
+
+  return tensor<bool>(__ret, this->__shape);
+}
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::not_equal(const value_type __val) const {}
+tensor<bool> tensor<_Tp>::not_equal(const value_type __val) const {
+  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
+  {
+    throw std::runtime_error("Cannot compare non-integral or scalar value");
+  }
+
+  std::vector<bool> __ret(this->__data_.size());
+  index_type        __i = 0;
+
+  for (; __i < this->__data_.size(); __i++)
+  {
+    __ret[__i] = (this->__data_[__i] != __val);
+  }
+
+  return tensor<bool>(__ret, this->__shape_);
+}
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::less(const tensor& __other) const {}
+tensor<bool> tensor<_Tp>::less(const tensor& __other) const {
+  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
+  {
+    throw std::runtime_error("Cannot compare non-integral or scalar value");
+  }
+
+  assert(this->__shape_ == __other.shape());
+  std::vector<bool> __ret(this->__data_.size());
+  index_type        __i = 0;
+
+  for (; __i < this->__data_.size(); __i++)
+  {
+    __ret[__i] = (this->__data_[__i] < __other[__i]);
+  }
+
+  return tensor<bool>(__ret, this->__shape_);
+}
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::less(const value_type __val) const {}
+tensor<bool> tensor<_Tp>::less(const value_type __val) const {
+  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
+  {
+    throw std::runtime_error("Cannot compare non-integral or scalar value");
+  }
+
+  std::vector<bool> __ret(this->__data_.size());
+  index_type        __i = 0;
+
+  for (; __i < this->__data_.size(); __i++)
+  {
+    __ret[__i] = (this->__data_[__i] < __val);
+  }
+
+  return tensor<bool>(__ret, this->__shape_);
+}
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::greater(const tensor& __other) const {}
+tensor<bool> tensor<_Tp>::greater(const tensor& __other) const {
+  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
+  {
+    throw std::runtime_error("Cannot compare non-integral or scalar value");
+  }
+
+  assert(this->__shape_ == __other.shape());
+  std::vector<bool> __ret(this->__data_.size());
+  index_type        __i = 0;
+
+  for (; __i < this->__data_.size(); __i++)
+  {
+    __ret[__i] = (this->__data_[__i] > __other[__i]);
+  }
+
+  return tensor<bool>(__ret, this->__shape_);
+}
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::greater(const value_type __val) const {}
+tensor<bool> tensor<_Tp>::greater(const value_type __val) const {
+  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
+  {
+    throw std::runtime_error("Cannot compare non-integral or scalar value");
+  }
+
+  std::vector<bool> __ret(this->__data_.size());
+  index_type        __i = 0;
+
+  for (; __i < this->__data_.size(); __i++)
+  {
+    __ret[__i] = (this->__data_[__i] > __val);
+  }
+
+  return tensor<bool>(__ret, this->__shape_);
+}
 
 template<class _Tp>
 tensor<bool> tensor<_Tp>::equal(const tensor& __other) const {
