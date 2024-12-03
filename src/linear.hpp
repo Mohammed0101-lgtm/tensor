@@ -748,6 +748,7 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argsort(index_type __d, bo
   {
     throw std::out_of_range("Invalid dimension for argsort: only 1D tensors are supported");
   }
+
   index_type __size = static_cast<index_type>(this->__data_.size());
   shape_type __indices(__size);
   std::iota(__indices.begin(), __indices.end(), 0);
@@ -814,7 +815,7 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argsort(index_type __d, bo
     return __ascending ? this->__data_[__a] < this->__data_[__b] : this->__data_[__a] > this->__data_[__b];
   });
 
-  return __self(__indices);
+  return tensor<index_type>(__indices);
 }
 
 template<class _Tp>
@@ -1065,7 +1066,6 @@ tensor<_Tp>& tensor<_Tp>::floor_() const {
 #if defined(__ARM_NEON)
   if constexpr (std::is_floating_point<value_type>::value)
   {
-    this->__check_is_same_type<_f32>("Floor operation only supported for floating-point types.");
     for (; __i < this->__data_.size(); __i += _ARM64_REG_WIDTH)
     {
       neon_f32 __data_vec  = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
@@ -1092,7 +1092,6 @@ tensor<_Tp>& tensor<_Tp>::ceil_() const {
 #if defined(__ARM_NEON)
   if constexpr (std::is_floating_point<value_type>::value)
   {
-    this->__check_is_same_type<_f32>("Ceiling operation only supported for floating-point types.");
     for (; __i + _ARM64_REG_WIDTH <= this->__data_.size(); __i += _ARM64_REG_WIDTH)
     {
       neon_f32 __data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
@@ -1764,6 +1763,7 @@ tensor<_Tp> tensor<_Tp>::slice(index_type                __dim,
 
 #if defined(__ARM_NEON)
     index_type __vector_end = __start_i + ((__end_i - __start_i) / _ARM64_REG_WIDTH) * _ARM64_REG_WIDTH;
+
     if constexpr (std::is_floating_point<value_type>::value && __step == 1)
     {
       for (index_type __i = __start_i, __j = 0; __i < __vector_end; __i += _ARM64_REG_WIDTH, __j += _ARM64_REG_WIDTH)
@@ -1785,7 +1785,7 @@ tensor<_Tp> tensor<_Tp>::slice(index_type                __dim,
         vst1q_s32(&(__ret.__data_[__j]), __vec);
       }
     }
-    if constexpr (std::is_unsigned<value_type>::value && __step == 1)
+    else if constexpr (std::is_unsigned<value_type>::value && __step == 1)
     {
       for (index_type __i = __start_i, __j = 0; __i < __vector_end; __i += _ARM64_REG_WIDTH, __j += _ARM64_REG_WIDTH)
       {
