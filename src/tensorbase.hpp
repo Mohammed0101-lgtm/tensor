@@ -242,6 +242,7 @@ class tensor
   tensor& operator*=(const_reference __val) const;
   tensor& operator=(const tensor& __other) const;
   tensor& operator=(tensor&& __other) const noexcept;
+  tensor<bool>& operator!() const; 
 
   tensor
   slice(index_type __dim, std::optional<index_type> __start, std::optional<index_type> __end, index_type __step) const;
