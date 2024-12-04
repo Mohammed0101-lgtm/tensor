@@ -559,3 +559,18 @@ tensor<_Tp>& tensor<_Tp>::operator=(tensor&& __other) const noexcept {
   }
   return *this;
 }
+
+template<class _Tp>
+tensor<bool>& tensor<_Tp>::operator!() const {
+  static_assert(std::is_same<value_type, bool>::value);
+
+#if defined(__ARM_NEON)
+#endif
+  size_t __i = 0;
+  for (; __i < this->__data_.size(); __i++)
+  {
+    this->__data_[__i] = !(this->__data_[__i]);
+  }
+
+  return *this;
+}          
