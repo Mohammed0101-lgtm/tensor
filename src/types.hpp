@@ -12,7 +12,7 @@ tensor<_s32> tensor<_Tp>::int32_() const {
     return tensor<_s32>({}, this->__shape_);
   }
 
-  tensor<_s32> __d;
+  std::vector<_s32> __d;
   index_type   __i = 0;
 
 #if defined(__ARM_NEON)
@@ -57,7 +57,7 @@ tensor<_u32> tensor<_Tp>::uint32_() const {
     return tensor<_u32>({}, this->__shape_);
   }
 
-  tensor<_u32> __d;
+  std::vector<_u32> __d;
   index_type   __i = 0;
 
 #if defined(__ARM_NEON)
@@ -102,7 +102,7 @@ tensor<_f32> tensor<_Tp>::float32_() const {
     return tensor<_f32>({}, this->__shape_);
   }
 
-  tensor<_f32> __d(this->__data_.size());
+  std::vector<_f32> __d(this->__data_.size());
   index_type   __i = 0;
 
 #if defined(__ARM_NEON)
@@ -217,7 +217,7 @@ tensor<uint64_t> tensor<_Tp>::unsigned_long_() const {
     __d[__i] = static_cast<uint64_t>(this->__data_[__i]);
   }
 
-  return tensor<int64_t>(__d, this->__shape_);
+  return tensor<uint64_t>(__d, this->__shape_);
 }
 
 template<class _Tp>
