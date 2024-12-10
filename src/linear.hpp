@@ -220,11 +220,6 @@ tensor<_Tp> tensor<_Tp>::reshape(const shape_type __sh) const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::reshape_as(const tensor& __other) const {
-  return this->reshape(__other.__shape_);
-}
-
-template<class _Tp>
 tensor<_Tp> tensor<_Tp>::cross_product(const tensor& __other) const {
   this->__check_is_arithmetic_type("Cannot perform a cross product on non-scalar data types");
   if (this->empty() || __other.empty())
@@ -2052,11 +2047,6 @@ tensor<_Tp> tensor<_Tp>::squeeze(index_type __dim) const {
   __self __ret = this->clone();
   __ret.squeeze_(__dim);
   return __ret;
-}
-
-template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::unsqueeze_(index_type __dim) const {
-  return *this;
 }
 
 template<class _Tp>
