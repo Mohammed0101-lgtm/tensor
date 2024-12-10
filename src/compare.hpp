@@ -19,7 +19,7 @@ tensor<bool> tensor<_Tp>::not_equal(const tensor& __other) const {
     __ret[__i] = (this->__data_[__i] != __other[__i]);
   }
 
-  return tensor<bool>(__ret, this->__shape);
+  return tensor<bool>(__ret, this->__shape_);
 }
 
 template<class _Tp>
@@ -307,7 +307,7 @@ tensor<bool> tensor<_Tp>::less_equal(const value_type __val) const {
     neon_type vec_b    = std::is_same_v<value_type, _f32> ? vdupq_n_f32(__val) : vdupq_n_s32(__val);
     neon_u32  leq_mask = std::is_same_v<value_type, _f32> ? vcleq_f32(vec_a, vec_b) : vcleq_s32(vec_a, vec_b);
 
-    vst1q_u32(reinterpret_cast<_u32*>(__ret.data() + __i), leq_mask);
+    vst1q_u32(reinterpret_cast<_u32*>(&__ret[__i]), leq_mask);
   }
 #endif
 
