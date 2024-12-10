@@ -561,7 +561,7 @@ tensor<_Tp>& tensor<_Tp>::tan_() const {
   index_type __i = 0;
 
 #if defined(__ARM_NEON)
-  using neon_type = typename std::conditional<std::is_same_v<_f32>, neon_f32, neon_s32>::type;
+  using neon_type = typename std::conditional<std::is_same_v<_f32, value_type>, neon_f32, neon_s32>::type;
 
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
@@ -595,7 +595,7 @@ tensor<_Tp>& tensor<_Tp>::tanh_() const {
   index_type __i = 0;
 
 #if defined(__ARM_NEON)
-  using neon_type = typename std::conditional<std::is_same_v<_f32>, neon_f32, neon_s32>::type;
+  using neon_type = typename std::conditional<std::is_same_v<_f32, value_type>, neon_f32, neon_s32>::type;
 
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
@@ -1083,7 +1083,7 @@ tensor<_Tp> tensor<_Tp>::log_softmax(const index_type __dim) const {
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::dist(const tensor& __other) const {
   __self __ret = this->clone();
-  __ret.dist_(__val);
+  __ret.dist_(__other);
   return __ret;
 }
 
