@@ -573,4 +573,4 @@ tensor<bool>& tensor<_Tp>::operator!() const {
   }
 
   return *this;
-}          
+}
