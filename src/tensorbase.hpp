@@ -242,7 +242,7 @@ class tensor
   tensor& operator*=(const_reference __val) const;
   tensor& operator=(const tensor& __other) const;
   tensor& operator=(tensor&& __other) const noexcept;
-    
+
 
   tensor
   slice(index_type __dim, std::optional<index_type> __start, std::optional<index_type> __end, index_type __step) const;
@@ -559,7 +559,7 @@ class tensor
     return __index;
   }
 
-  [[nodiscard]] static uint64_t __computeSize(const shape_type& __dims) const noexcept {
+  [[nodiscard]] static uint64_t __computeSize(const shape_type& __dims) noexcept {
     uint64_t __ret = 1;
 
     for (const index_type& __d : __dims)
@@ -575,7 +575,7 @@ class tensor
     return 0;
   }
 
-  [[nodiscard]] static float32_t __frac(const_reference __val) const noexcept {
+  [[nodiscard]] static float32_t __frac(const_reference __val) noexcept {
     return std::fmod(static_cast<float32_t>(__val), 1.0f);
   }
 
