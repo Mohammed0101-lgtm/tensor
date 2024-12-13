@@ -2,6 +2,9 @@
 
 #include "tensorbase.hpp"
 
+#define __builtin_neon_vgetq_lane_f32
+#define __builtin_neon_vsetq_lane_f32
+
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::fmax(const tensor& __other) const {
@@ -644,6 +647,15 @@ tensor<_Tp> tensor<_Tp>::atan() const {
   return __ret;
 }
 
+float32x4_t vsinq_f32(float32x4_t __x) {
+  float32x4_t __r;
+  __r = vsetq_lane_f32(sinf(vgetq_lane_f32(__x, 0)), __r, 0);
+  __r = vsetq_lane_f32(sinf(vgetq_lane_f32(__x, 1)), __r, 1);
+  __r = vsetq_lane_f32(sinf(vgetq_lane_f32(__x, 2)), __r, 2);
+  __r = vsetq_lane_f32(sinf(vgetq_lane_f32(__x, 3)), __r, 3);
+  return __r;
+}
+
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::sinc_() const {
   this->__check_is_arithmetic_type("sinc_: template type must be an arithmetic type");
@@ -1268,7 +1280,6 @@ tensor<_Tp>& tensor<_Tp>::square_() const {
   return this->pow_(static_cast<value_type>(2.0f));
 }
 
-
 template<class _Tp>
 double tensor<_Tp>::mean() const {
   this->__check_is_integral_type("Input must be of integral type to calculate the mean.");
@@ -1305,10 +1316,8 @@ double tensor<_Tp>::mean() const {
   return static_cast<double>(__m) / static_cast<double>(this->__data_.size());
 }
 
-
 // used as a helper function
 int64_t __lcm(const int64_t __a, const int64_t __b) { return (__a * __b) / std::gcd(__a, __b); }
-
 
 template<class _Tp>
 typename tensor<_Tp>::index_type tensor<_Tp>::lcm() const {
