@@ -13,7 +13,7 @@ tensor<_s32> tensor<_Tp>::int32_() const {
   }
 
   std::vector<_s32> __d;
-  index_type   __i = 0;
+  index_type        __i = 0;
 
 #if defined(__ARM_NEON)
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -58,7 +58,7 @@ tensor<_u32> tensor<_Tp>::uint32_() const {
   }
 
   std::vector<_u32> __d;
-  index_type   __i = 0;
+  index_type        __i = 0;
 
 #if defined(__ARM_NEON)
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() - _ARM64_REG_WIDTH);
@@ -103,7 +103,7 @@ tensor<_f32> tensor<_Tp>::float32_() const {
   }
 
   std::vector<_f32> __d(this->__data_.size());
-  index_type   __i = 0;
+  index_type        __i = 0;
 
 #if defined(__ARM_NEON)
   if constexpr (std::is_same_v<value_type, _f64>)
@@ -286,7 +286,7 @@ template<class _Tp>
 tensor<bool> tensor<_Tp>::bool_() const {
   std::vector<bool> __d;
 
-  static_assert(std::is_convertible<value_t, bool>::value);
+  static_assert(std::is_convertible<value_type, bool>::value);
 
   for (index_type __i = 0; __i < this->__data_.size(); __i++)
   {
