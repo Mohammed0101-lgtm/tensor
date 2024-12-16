@@ -39,7 +39,6 @@
 
 #if defined(__ARM_NEON)
   #include <arm_neon.h>
-  #include <arm_vector_types.h>
 #endif
 
 #if defined(__AVX__) || defined(__SSE__)
