@@ -1321,7 +1321,7 @@ int64_t __lcm(const int64_t __a, const int64_t __b) { return (__a * __b) / std::
 
 template<class _Tp>
 typename tensor<_Tp>::index_type tensor<_Tp>::lcm() const {
-  this->__check_is_scalar_type("Given template type must be an int");
+  this->__check_is_scalar_type("Given template type must be a scalar");
 
   index_type __ret = static_cast<index_type>(this->__data_[0]);
   index_type __i   = 1;
@@ -1330,6 +1330,22 @@ typename tensor<_Tp>::index_type tensor<_Tp>::lcm() const {
   {
     __ret = __lcm(static_cast<index_type>(this->__data_[__i]), __ret);
   }
+
+  return __ret;
+}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::lcm(const tensor& __other) const {
+  this->__check_is_scalar_type("Given template type must be a scalar");
+
+  assert(this->__shape_ == __other.shape());
+
+  tensor     __ret = this->clone();
+  index_type __i   = 0;
+
+  for (; __i < this->__data_.size(); __i++)
+    __ret[__i] = static_cast<value_type>(
+      __lcm(static_cast<index_type>(this->__data_[__i]), static_cast<index_type>(__other[__i])));
 
   return __ret;
 }
