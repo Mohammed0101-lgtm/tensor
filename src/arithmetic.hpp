@@ -38,9 +38,7 @@ tensor<_Tp>& tensor<_Tp>::fmax_(const value_type __val) {
     }
 
     for (index_type __i = __simd_end; __i < this->__data_.size(); __i++)
-    {
       this->__data_[__i] = std::fmax(this->__data_[__i], __val);
-    }
   }
 #else
   std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
@@ -72,9 +70,7 @@ tensor<_Tp>& tensor<_Tp>::fmax_(const tensor<value_type>& __other) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = std::fmax(this->__data_[__i], __other[__i]);
-  }
 
   return *this;
 }
@@ -117,10 +113,8 @@ tensor<_Tp>& tensor<_Tp>::fmod_(const value_type __val) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] =
       static_cast<value_type>(std::fmod(static_cast<_f32>(this->__data_[__i]), static_cast<_f32>(__val)));
-  }
 
   return *this;
 }
@@ -130,9 +124,7 @@ tensor<_Tp>& tensor<_Tp>::fmod_(const tensor& __other) const {
   this->__check_is_scalar_type("Cannot divide non scalar values");
 
   if (this->__shape_ != __other.shape() || this->__data_.size() != __other.size(0))
-  {
     throw std::invalid_argument("Cannot divide two tensors of different shapes : fmax");
-  }
 
   index_type __i = 0;
 
@@ -155,10 +147,8 @@ tensor<_Tp>& tensor<_Tp>::fmod_(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] =
       static_cast<value_type>(std::fmod(static_cast<_f32>(this->__data_[__i]), static_cast<_f32>(__other[__i])));
-  }
 
   return *this;
 }
@@ -209,9 +199,7 @@ tensor<_Tp>& tensor<_Tp>::frac_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(this->__frac(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -250,9 +238,7 @@ tensor<_Tp>& tensor<_Tp>::log_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::log(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -291,9 +277,7 @@ tensor<_Tp>& tensor<_Tp>::log10_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::log10(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -332,9 +316,7 @@ tensor<_Tp>& tensor<_Tp>::log2_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::log2(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -373,9 +355,7 @@ tensor<_Tp>& tensor<_Tp>::exp_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::exp(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -414,9 +394,7 @@ tensor<_Tp>& tensor<_Tp>::sqrt_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::sqrt(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -462,9 +440,7 @@ tensor<_Tp>& tensor<_Tp>::cos_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::cos(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -496,9 +472,7 @@ tensor<_Tp>& tensor<_Tp>::acos_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::acos(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -544,9 +518,7 @@ tensor<_Tp>& tensor<_Tp>::sin_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::sin(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -585,9 +557,7 @@ tensor<_Tp>& tensor<_Tp>::tan_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::tan(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -619,9 +589,7 @@ tensor<_Tp>& tensor<_Tp>::tanh_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::tanh(static_cast<_f32>(this->__data_[__i])));
-  }
 
   return *this;
 }
@@ -648,11 +616,8 @@ tensor<_Tp> tensor<_Tp>::atan() const {
 }
 
 float32x4_t vsinq_f32(float32x4_t __x) {
-  float32x4_t __r;
-  __r = vsetq_lane_f32(sinf(vgetq_lane_f32(__x, 0)), __r, 0);
-  __r = vsetq_lane_f32(sinf(vgetq_lane_f32(__x, 1)), __r, 1);
-  __r = vsetq_lane_f32(sinf(vgetq_lane_f32(__x, 2)), __r, 2);
-  __r = vsetq_lane_f32(sinf(vgetq_lane_f32(__x, 3)), __r, 3);
+  float32x4_t __r = {sinf(vgetq_lane_f32(__x, 0)), sinf(vgetq_lane_f32(__x, 1)), sinf(vgetq_lane_f32(__x, 2)),
+                     sinf(vgetq_lane_f32(__x, 3))};
   return __r;
 }
 
@@ -682,11 +647,9 @@ tensor<_Tp>& tensor<_Tp>::sinc_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
-    value_type x = this->__data_[__i];
-    this->__data_[__i] =
-      (std::abs(x) < 1e-6) ? static_cast<value_type>(1.0) : static_cast<value_type>(std::sin(M_PI * x) / (M_PI * x));
-  }
+    this->__data_[__i] = (std::abs(this->__data_[__i]) < 1e-6)
+                         ? static_cast<value_type>(1.0)
+                         : static_cast<value_type>(std::sin(M_PI * this->__data_[__i]) / (M_PI * this->__data_[__i]));
 
   return *this;
 }
@@ -717,9 +680,7 @@ tensor<_Tp>& tensor<_Tp>::atan_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::atan(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -750,9 +711,7 @@ tensor<_Tp>& tensor<_Tp>::atanh_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::atan(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -797,9 +756,7 @@ tensor<_Tp>& tensor<_Tp>::sinh_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::sinh(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -838,9 +795,7 @@ tensor<_Tp>& tensor<_Tp>::asinh_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::asinh(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -878,9 +833,7 @@ tensor<_Tp>& tensor<_Tp>::asin_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::asin(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -911,9 +864,7 @@ tensor<_Tp>& tensor<_Tp>::cosh_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::cosh(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -944,9 +895,7 @@ tensor<_Tp>& tensor<_Tp>::acosh_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::acosh(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -984,9 +933,7 @@ tensor<_Tp>& tensor<_Tp>::pow_(const value_type __val) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::pow(this->__data_[__i], __val));
-  }
 
   return *this;
 }
@@ -1031,10 +978,8 @@ tensor<_Tp>& tensor<_Tp>::pow_(const tensor& __other) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] =
       static_cast<value_type>(std::pow(static_cast<_f32>(this->__data_[__i]), static_cast<_f32>(__other[__i])));
-  }
 
   return *this;
 }
@@ -1052,9 +997,7 @@ tensor<_Tp>& tensor<_Tp>::abs_() const {
   index_type __i = 0;
 
   if (std::is_unsigned<value_type>::value)
-  {
     return *this;
-  }
 
 #if defined(__ARM_NEON)
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -1078,9 +1021,7 @@ tensor<_Tp>& tensor<_Tp>::abs_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(std::abs(this->__data_[__i]));
-  }
 
   return *this;
 }
@@ -1128,10 +1069,8 @@ tensor<_Tp>& tensor<_Tp>::dist_(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] =
       static_cast<value_type>(std::abs(static_cast<_f64>(this->__data_[__i] - __other.__data_[__i])));
-  }
 
   return *this;
 }
@@ -1287,9 +1226,7 @@ double tensor<_Tp>::mean() const {
   double __m = 0.0;
 
   if (this->empty())
-  {
     return __m;
-  }
 
   index_type __i = 0;
 
