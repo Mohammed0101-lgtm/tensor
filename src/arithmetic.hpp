@@ -23,27 +23,24 @@ tensor<_Tp> tensor<_Tp>::fmax(const value_type __val) const {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::fmax_(const value_type __val) {
 
+  size_t __i = 0;
 #if defined(__ARM_NEON)
   if constexpr (std::is_floating_point<value_type>::value)
   {
     const index_type __simd_end   = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
     neon_f32         __scalar_val = vdupq_n_f32(__val);
 
-    for (index_type __i = 0; __i < __simd_end; __i += _ARM64_REG_WIDTH)
+    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       neon_f32 __a       = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
       neon_f32 __max_val = vmaxq_f32(__a, __scalar_val);
 
       vst1q_f32(&this->__data_[__i], __max_val);
     }
-
-    for (index_type __i = __simd_end; __i < this->__data_.size(); __i++)
-      this->__data_[__i] = std::fmax(this->__data_[__i], __val);
   }
-#else
-  std::transform(this->__data_.begin(), this->__data_.end(), this->__data_.begin(),
-                 [&__val](const_reference __v) { return std::fmax(__v, __val); });
 #endif
+  for (; __i < this->__data_.size(); __i++) 
+    this->__data_[__i] = std::fmax(this->__data_[__i], __val);
 
   return *this;
 }
