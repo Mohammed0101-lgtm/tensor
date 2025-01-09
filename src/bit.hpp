@@ -39,9 +39,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_right_shift_(const int __amount) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] >>= __amount;
-  }
 
   return *this;
 }
@@ -83,9 +81,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_left_shift_(const int __amount) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] <<= __amount;
-  }
 
   return *this;
 }
@@ -128,9 +124,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_or_(const value_type __val) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] |= __val;
-  }
 
   return *this;
 }
@@ -138,9 +132,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_or_(const value_type __val) {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const value_type __val) {
   if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-  {
     throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
-  }
 
   index_type __i = 0;
 
@@ -172,9 +164,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const value_type __val) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] ^= __val;
-  }
 
   return *this;
 }
@@ -196,9 +186,7 @@ tensor<_Tp> tensor<_Tp>::bitwise_not() const {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::bitwise_not_() {
   if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-  {
     throw std::runtime_error("Cannot perform a bitwise not on non integral or boolean value");
-  }
 
   index_type __i = 0;
 
@@ -228,9 +216,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_not_() {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = ~this->__data_[__i];
-  }
 
   return *this;
 }
@@ -238,9 +224,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_not_() {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::bitwise_and_(const value_type __val) {
   if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-  {
     throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
-  }
 
   index_type __i = 0;
 
@@ -272,9 +256,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_and_(const value_type __val) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] &= __val;
-  }
 
   return *this;
 }
@@ -317,9 +299,7 @@ tensor<_Tp> tensor<_Tp>::bitwise_right_shift(const int __amount) const {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::bitwise_and_(const tensor& __other) {
   if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-  {
     throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
-  }
 
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
@@ -352,9 +332,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_and_(const tensor& __other) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] &= __other[__i];
-  }
 
   return *this;
 }
@@ -376,9 +354,7 @@ tensor<_Tp> tensor<_Tp>::bitwise_or(const value_type __val) const {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::bitwise_or_(const tensor& __other) {
   if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-  {
     throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
-  }
 
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
@@ -411,9 +387,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_or_(const tensor& __other) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] |= __other[__i];
-  }
 
   return *this;
 }
@@ -421,9 +395,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_or_(const tensor& __other) {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const tensor& __other) {
   if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-  {
     throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
-  }
 
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
@@ -456,9 +428,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const tensor& __other) {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] ^= __other[__i];
-  }
 
   return *this;
 }
