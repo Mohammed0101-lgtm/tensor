@@ -812,7 +812,7 @@ tensor<_Tp>& tensor<_Tp>::log_() const {
   index_type __i = 0;
 
 #if defined(__ARM_NEON)
-  
+
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   if constexpr (std::is_same_v<value_type, _f32>)
