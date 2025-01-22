@@ -6,18 +6,14 @@
 template<class _Tp>
 tensor<bool> tensor<_Tp>::not_equal(const tensor& __other) const {
   if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
-  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
-  }
 
   assert(this->__shape_ == __other.shape() && "equal : tensor shapes");
   std::vector<bool> __ret(this->__data_.size());
   index_type        __i = 0;
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __ret[__i] = (this->__data_[__i] != __other[__i]);
-  }
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -25,17 +21,13 @@ tensor<bool> tensor<_Tp>::not_equal(const tensor& __other) const {
 template<class _Tp>
 tensor<bool> tensor<_Tp>::not_equal(const value_type __val) const {
   if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
-  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
-  }
 
   std::vector<bool> __ret(this->__data_.size());
   index_type        __i = 0;
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __ret[__i] = (this->__data_[__i] != __val);
-  }
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -43,18 +35,14 @@ tensor<bool> tensor<_Tp>::not_equal(const value_type __val) const {
 template<class _Tp>
 tensor<bool> tensor<_Tp>::less(const tensor& __other) const {
   if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
-  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
-  }
 
   assert(this->__shape_ == __other.shape());
   std::vector<bool> __ret(this->__data_.size());
   index_type        __i = 0;
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __ret[__i] = (this->__data_[__i] < __other[__i]);
-  }
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -62,17 +50,13 @@ tensor<bool> tensor<_Tp>::less(const tensor& __other) const {
 template<class _Tp>
 tensor<bool> tensor<_Tp>::less(const value_type __val) const {
   if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
-  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
-  }
 
   std::vector<bool> __ret(this->__data_.size());
   index_type        __i = 0;
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __ret[__i] = (this->__data_[__i] < __val);
-  }
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -80,18 +64,14 @@ tensor<bool> tensor<_Tp>::less(const value_type __val) const {
 template<class _Tp>
 tensor<bool> tensor<_Tp>::greater(const tensor& __other) const {
   if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
-  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
-  }
 
   assert(this->__shape_ == __other.shape());
   std::vector<bool> __ret(this->__data_.size());
   index_type        __i = 0;
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __ret[__i] = (this->__data_[__i] > __other[__i]);
-  }
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -99,17 +79,13 @@ tensor<bool> tensor<_Tp>::greater(const tensor& __other) const {
 template<class _Tp>
 tensor<bool> tensor<_Tp>::greater(const value_type __val) const {
   if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
-  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
-  }
 
   std::vector<bool> __ret(this->__data_.size());
   index_type        __i = 0;
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __ret[__i] = (this->__data_[__i] > __val);
-  }
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -117,9 +93,7 @@ tensor<bool> tensor<_Tp>::greater(const value_type __val) const {
 template<class _Tp>
 tensor<bool> tensor<_Tp>::equal(const tensor& __other) const {
   if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
-  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
-  }
 
   assert(this->__shape_ == __other.shape() && "equal : tensor shapes");
   std::vector<bool> __ret(this->__data_.size());
@@ -176,9 +150,7 @@ tensor<bool> tensor<_Tp>::equal(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __ret[__i] = (this->__data_[__i] == __other[__i]);
-  }
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -186,9 +158,7 @@ tensor<bool> tensor<_Tp>::equal(const tensor& __other) const {
 template<class _Tp>
 tensor<bool> tensor<_Tp>::equal(const value_type __val) const {
   if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
-  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
-  }
 
   std::vector<bool> __ret(this->__data_.size());
   index_type        __i = 0;
@@ -248,9 +218,7 @@ tensor<bool> tensor<_Tp>::equal(const value_type __val) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __ret[__i] = (this->__data_[__i] == __val);
-  }
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -258,79 +226,127 @@ tensor<bool> tensor<_Tp>::equal(const value_type __val) const {
 template<class _Tp>
 tensor<bool> tensor<_Tp>::less_equal(const tensor& __other) const {
   if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
-  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
-  }
 
   assert(this->__shape_ == __other.shape());
-  std::vector<bool> __ret(this->__data_.size());
+  std::vector<_u32> __ret(this->__data_.size());
   index_type        __i = 0;
 
 #if defined(__ARM_NEON)
-  using neon_type    = typename std::conditional<std::is_same<value_type, _f32>::value, neon_f32, neon_s32>::type;
+
   size_t vector_size = this->__data_.size() / _ARM64_REG_WIDTH * _ARM64_REG_WIDTH;
 
-  for (; __i < vector_size; __i += _ARM64_REG_WIDTH)
+  if constexpr (std::is_same_v<value_type, _f32>)
   {
-    neon_type vec_a    = vld1q(this->__data_.data() + __i);
-    neon_type vec_b    = vld1q(__other.__data_.data() + __i);
-    neon_u32  leq_mask = std::is_same_v<value_type, _f32> ? vcleq_f32(vec_a, vec_b) : vcleq_s32(vec_a, vec_b);
-    vst1q_u32(reinterpret_cast<_u32*>(&__ret[__i]), leq_mask);
+    for (; __i < vector_size; __i += _ARM64_REG_WIDTH)
+    {
+      neon_f32 vec_a    = vld1q_f32(this->__data_.data() + __i);
+      neon_f32 vec_b    = vld1q_f32(__other.__data_.data() + __i);
+      neon_u32 leq_mask = vcleq_f32(vec_a, vec_b);
+      vst1q_u32(&__ret[__i], leq_mask);
+    }
+  }
+  else if constexpr (std::is_same_v<value_type, _s32>)
+  {
+    for (; __i < vector_size; __i += _ARM64_REG_WIDTH)
+    {
+      neon_s32 vec_a    = vld1q_s32(this->__data_.data() + __i);
+      neon_s32 vec_b    = vld1q_s32(__other.__data_.data() + __i);
+      neon_u32 leq_mask = vcleq_s32(vec_a, vec_b);
+      vst1q_u32(&__ret[__i], leq_mask);
+    }
+  }
+  else if constexpr (std::is_same_v<value_type, _u32>)
+  {
+    for (; __i < vector_size; __i += _ARM64_REG_WIDTH)
+    {
+      neon_u32 vec_a    = vld1q_u32(this->__data_.data() + __i);
+      neon_u32 vec_b    = vld1q_u32(__other.__data_.data() + __i);
+      neon_u32 leq_mask = vcleq_u32(vec_a, vec_b);
+      vst1q_u32(&__ret[__i], leq_mask);
+    }
   }
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
-    __ret[__i] = (this->__data_[__i] <= __other[__i]);
-  }
+    __ret[__i] = (this->__data_[__i] <= __other[__i]) ? 1 : 0;
 
-  return tensor<bool>(__ret, this->__shape_);
+  std::vector<bool> __to_bool(__ret.size());
+  for (int i = __i; i >= 0; i--)
+    __to_bool[i] = __ret[i] == 1 ? true : false;
+
+  return tensor<bool>(__to_bool, this->__shape_);
 }
 
 template<class _Tp>
 tensor<bool> tensor<_Tp>::less_equal(const value_type __val) const {
   if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
-  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
-  }
 
-  std::vector<bool> __ret(this->__data_.size());
+  std::vector<_u32> __ret(this->__data_.size());
   index_type        __i = 0;
 
 #if defined(__ARM_NEON)
-  using neon_type    = typename std::conditional<std::is_same<value_type, _f32>::value, neon_f32, neon_s32>::type;
+
   size_t vector_size = this->__data_.size() / _ARM64_REG_WIDTH * _ARM64_REG_WIDTH;
 
-  for (; __i < vector_size; __i += _ARM64_REG_WIDTH)
+  if constexpr (std::is_same_v<value_type, _f32>)
   {
-    neon_type vec_a    = vld1q(this->__data_.data() + __i);
-    neon_type vec_b    = std::is_same_v<value_type, _f32> ? vdupq_n_f32(__val) : vdupq_n_s32(__val);
-    neon_u32  leq_mask = std::is_same_v<value_type, _f32> ? vcleq_f32(vec_a, vec_b) : vcleq_s32(vec_a, vec_b);
+    for (; __i < vector_size; __i += _ARM64_REG_WIDTH)
+    {
+      neon_f32 vec_a    = vld1q_f32(this->__data_.data() + __i);
+      neon_f32 vec_b    = vdupq_n_f32(__val);
+      neon_u32 leq_mask = vcleq_f32(vec_a, vec_b);
 
-    vst1q_u32(reinterpret_cast<_u32*>(&__ret[__i]), leq_mask);
+      vst1q_u32(&__ret[__i], leq_mask);
+    }
   }
+  else if constexpr (std::is_same_v<value_type, _s32>)
+  {
+    for (; __i < vector_size; __i += _ARM64_REG_WIDTH)
+    {
+      neon_s32 vec_a    = vld1q_s32(this->__data_.data() + __i);
+      neon_s32 vec_b    = vdupq_n_s32(__val);
+      neon_u32 leq_mask = vcleq_s32(vec_a, vec_b);
+
+      vst1q_u32(&__ret[__i], leq_mask);
+    }
+  }
+  else if constexpr (std::is_same_v<value_type, _u32>)
+  {
+    for (; __i < vector_size; __i += _ARM64_REG_WIDTH)
+    {
+      neon_u32 vec_a    = vld1q_u32(this->__data_.data() + __i);
+      neon_u32 vec_b    = vdupq_n_u32(__val);
+      neon_u32 leq_mask = vcleq_u32(vec_a, vec_b);
+
+      vst1q_u32(&__ret[__i], leq_mask);
+    }
+  }
+
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
-    __ret[__i] = (this->__data_[__i] <= __val);
-  }
+    __ret[__i] = (this->__data_[__i] <= __val) ? 1 : 0;
 
-  return tensor<bool>(__ret, this->__shape_);
+  std::vector<bool> __to_bool(__ret.size());
+  for (int i = __i; i >= 0; i--)
+    __to_bool[i] = __ret[i] == 1 ? true : false;
+
+  return tensor<bool>(__to_bool, this->__shape_);
 }
 
 template<class _Tp>
 tensor<bool> tensor<_Tp>::greater_equal(const tensor& __other) const {
   if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
-  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
-  }
 
   assert(this->__shape_ == __other.shape());
   std::vector<bool> __ret(this->__data_.size());
   index_type        __i = 0;
 
 #if defined(__ARM_NEON)
+
   if constexpr (std::is_floating_point<value_type>::value)
   {
     const index_type __simd_end = this->__data_.size() - (this->__data_.size() % (_ARM64_REG_WIDTH / 2));
@@ -382,12 +398,11 @@ tensor<bool> tensor<_Tp>::greater_equal(const tensor& __other) const {
       __ret[__i + 3] = (__mask >> 3) & 1;
     }
   }
+
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __ret[__i] = (this->__data_[__i] >= __other[__i]);
-  }
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -395,14 +410,13 @@ tensor<bool> tensor<_Tp>::greater_equal(const tensor& __other) const {
 template<class _Tp>
 tensor<bool> tensor<_Tp>::greater_equal(const value_type __val) const {
   if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
-  {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
-  }
 
   std::vector<bool> __ret(this->__data_.size());
   index_type        __i = 0;
 
 #if defined(__ARM_NEON)
+
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   if constexpr (std::is_floating_point<value_type>::value)
@@ -453,12 +467,11 @@ tensor<bool> tensor<_Tp>::greater_equal(const value_type __val) const {
       __ret[__i + 3] = (__mask >> 24) & 1;
     }
   }
+
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __ret[__i] = (this->__data_[__i] >= __val);
-  }
 
   return tensor<bool>(__ret, this->__shape_);
 }
