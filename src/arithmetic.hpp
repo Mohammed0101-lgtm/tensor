@@ -1566,14 +1566,14 @@ tensor<_Tp>& tensor<_Tp>::pow_(const tensor& __other) {
   {
     neon_f32 __base_vec   = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
     neon_f32 __exp_vec    = vld1q_f32(reinterpret_cast<const _f32*>(&__other[__i]));
-    neon_f32 __result_vec = {static_cast<_f32>(std::pow(static_cast<_f32>(vget_lane(__base_vec, 0)),
-                                                        static_cast<_f32>(vget_lane(__exp_vec, 0)))),
-                             static_cast<_f32>(std::pow(static_cast<_f32>(vget_lane(__base_vec, 1)),
-                                                        static_cast<_f32>(vget_lane(__exp_vec, 1)))),
-                             static_cast<_f32>(std::pow(static_cast<_f32>(vget_lane(__base_vec, 2)),
-                                                        static_cast<_f32>(vget_lane(__exp_vec, 2)))),
-                             static_cast<_f32>(std::pow(static_cast<_f32>(vget_lane(__base_vec, 3)),
-                                                        static_cast<_f32>(vget_lane(__exp_vec, 3))))};
+    neon_f32 __result_vec = {static_cast<_f32>(std::pow(static_cast<_f32>(vget_lane_f32(__base_vec, 0)),
+                                                        static_cast<_f32>(vget_lane_f32(__exp_vec, 0)))),
+                             static_cast<_f32>(std::pow(static_cast<_f32>(vget_lane_f32(__base_vec, 1)),
+                                                        static_cast<_f32>(vget_lane_f32(__exp_vec, 1)))),
+                             static_cast<_f32>(std::pow(static_cast<_f32>(vget_lane_f32(__base_vec, 2)),
+                                                        static_cast<_f32>(vget_lane_f32(__exp_vec, 2)))),
+                             static_cast<_f32>(std::pow(static_cast<_f32>(vget_lane_f32(__base_vec, 3)),
+                                                        static_cast<_f32>(vget_lane_f32(__exp_vec, 3))))};
 
     vst1q_f32(&this->__data_[__i], __result_vec);
   }
@@ -1581,14 +1581,14 @@ tensor<_Tp>& tensor<_Tp>::pow_(const tensor& __other) {
   {
     neon_s32 __base_vec   = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
     neon_s32 __exp_vec    = vld1q_s32(reinterpret_cast<const _s32*>(&__other[__i]));
-    neon_s32 __result_vec = {static_cast<_s32>(std::pow(static_cast<_s32>(vget_lane(__base_vec, 0)),
-                                                        static_cast<_s32>(vget_lane(__exp_vec, 0)))),
-                             static_cast<_s32>(std::pow(static_cast<_s32>(vget_lane(__base_vec, 1)),
-                                                        static_cast<_s32>(vget_lane(__exp_vec, 1)))),
-                             static_cast<_s32>(std::pow(static_cast<_s32>(vget_lane(__base_vec, 2)),
-                                                        static_cast<_s32>(vget_lane(__exp_vec, 2)))),
-                             static_cast<_s32>(std::pow(static_cast<_s32>(vget_lane(__base_vec, 3)),
-                                                        static_cast<_s32>(vget_lane(__exp_vec, 3))))};
+    neon_s32 __result_vec = {static_cast<_s32>(std::pow(static_cast<_s32>(vget_lane_s32(__base_vec, 0)),
+                                                        static_cast<_s32>(vget_lane_s32(__exp_vec, 0)))),
+                             static_cast<_s32>(std::pow(static_cast<_s32>(vget_lane_s32(__base_vec, 1)),
+                                                        static_cast<_s32>(vget_lane_s32(__exp_vec, 1)))),
+                             static_cast<_s32>(std::pow(static_cast<_s32>(vget_lane_s32(__base_vec, 2)),
+                                                        static_cast<_s32>(vget_lane_s32(__exp_vec, 2)))),
+                             static_cast<_s32>(std::pow(static_cast<_s32>(vget_lane_s32(__base_vec, 3)),
+                                                        static_cast<_s32>(vget_lane_s32(__exp_vec, 3))))};
 
     vst1q_s32(&this->__data_[__i], __result_vec);
   }
@@ -1596,14 +1596,14 @@ tensor<_Tp>& tensor<_Tp>::pow_(const tensor& __other) {
   {
     neon_u32 __base_vec   = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
     neon_u32 __exp_vec    = vld1q_u32(reinterpret_cast<const _u32*>(&__other[__i]));
-    neon_u32 __result_vec = {static_cast<_u32>(std::pow(static_cast<_u32>(vget_lane(__base_vec, 0)),
-                                                        static_cast<_u32>(vget_lane(__exp_vec, 0)))),
-                             static_cast<_u32>(std::pow(static_cast<_u32>(vget_lane(__base_vec, 1)),
-                                                        static_cast<_u32>(vget_lane(__exp_vec, 1)))),
-                             static_cast<_u32>(std::pow(static_cast<_u32>(vget_lane(__base_vec, 2)),
-                                                        static_cast<_u32>(vget_lane(__exp_vec, 2)))),
-                             static_cast<_u32>(std::pow(static_cast<_u32>(vget_lane(__base_vec, 3)),
-                                                        static_cast<_u32>(vget_lane(__exp_vec, 3))))};
+    neon_u32 __result_vec = {static_cast<_u32>(std::pow(static_cast<_u32>(vget_lane_u32(__base_vec, 0)),
+                                                        static_cast<_u32>(vget_lane_u32(__exp_vec, 0)))),
+                             static_cast<_u32>(std::pow(static_cast<_u32>(vget_lane_u32(__base_vec, 1)),
+                                                        static_cast<_u32>(vget_lane_u32(__exp_vec, 1)))),
+                             static_cast<_u32>(std::pow(static_cast<_u32>(vget_lane_u32(__base_vec, 2)),
+                                                        static_cast<_u32>(vget_lane_u32(__exp_vec, 2)))),
+                             static_cast<_u32>(std::pow(static_cast<_u32>(vget_lane_u32(__base_vec, 3)),
+                                                        static_cast<_u32>(vget_lane_u32(__exp_vec, 3))))};
 
     vst1q_u32(&this->__data_[__i], __result_vec);
   }
