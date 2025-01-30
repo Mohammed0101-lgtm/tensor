@@ -6,9 +6,7 @@
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type __val) const {
   if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-  {
     throw std::runtime_error("Cannot perform logical OR on non-integral and non-boolean values");
-  }
 
   index_type __i = 0;
 
@@ -42,9 +40,7 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type __val) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(this->__data_[__i] || __val);
-  }
 
   return *this;
 }
@@ -52,9 +48,7 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type __val) const {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_type __val) const {
   if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-  {
     throw std::runtime_error("Cannot get the element wise xor of non-integral and non-boolean value");
-  }
 
   index_type __i = 0;
 
@@ -88,9 +82,7 @@ tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_type __val) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(this->__data_[__i] ^ __val);
-  }
 
   return *this;
 }
@@ -98,9 +90,7 @@ tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_type __val) const {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type __val) const {
   if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-  {
     throw std::runtime_error("Cannot get the element wise and of non-integral and non-boolean value");
-  }
 
   index_type __i = 0;
 
@@ -134,9 +124,7 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type __val) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = static_cast<value_type>(this->__data_[__i] && __val);
-  }
 
   return *this;
 }
@@ -194,9 +182,7 @@ tensor<_Tp> tensor<_Tp>::logical_and(const value_type __val) const {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& __other) const {
   if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-  {
     throw std::runtime_error("Cannot get the element wise not of non-integral and non-boolean value");
-  }
 
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
@@ -229,9 +215,7 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = (this->__data_[__i] || __other[__i]);
-  }
 
   return *this;
 }
@@ -239,9 +223,7 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& __other) const {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::logical_xor_(const tensor<_Tp>& __other) const {
   if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-  {
     throw std::runtime_error("Cannot get the element wise xor of non-integral and non-boolean value");
-  }
 
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
@@ -274,9 +256,7 @@ tensor<_Tp>& tensor<_Tp>::logical_xor_(const tensor<_Tp>& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = (this->__data_[__i] ^ __other[__i]);
-  }
 
   return *this;
 }
@@ -284,9 +264,7 @@ tensor<_Tp>& tensor<_Tp>::logical_xor_(const tensor<_Tp>& __other) const {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::logical_and_(const tensor<_Tp>& __other) const {
   if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
-  {
     throw std::runtime_error("Cannot get the element-wise and of non-integral and non-boolean value");
-  }
 
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
@@ -319,9 +297,7 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const tensor<_Tp>& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = (this->__data_[__i] && __other[__i]);
-  }
 
   return *this;
 }

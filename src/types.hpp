@@ -8,9 +8,7 @@ tensor<_s32> tensor<_Tp>::int32_() const {
   static_assert(std::is_convertible<value_type, _s32>::value);
 
   if (this->empty())
-  {
     return tensor<_s32>({}, this->__shape_);
-  }
 
   std::vector<_s32> __d;
   index_type        __i = 0;
@@ -41,9 +39,7 @@ tensor<_s32> tensor<_Tp>::int32_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __d.push_back(static_cast<_s32>(this->__data_[__i]));
-  }
 
   return tensor<_s32>(__d, this->__shape_);
 }
@@ -53,9 +49,7 @@ tensor<_u32> tensor<_Tp>::uint32_() const {
   static_assert(std::is_convertible<value_type, _u32>::value);
 
   if (this->empty())
-  {
     return tensor<_u32>({}, this->__shape_);
-  }
 
   std::vector<_u32> __d;
   index_type        __i = 0;
@@ -86,9 +80,7 @@ tensor<_u32> tensor<_Tp>::uint32_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i += _ARM64_REG_WIDTH)
-  {
     __d.push_back(static_cast<_u32>(this->__data_[__i]));
-  }
 
   return tensor<_u32>(__d, this->__shape_);
 }
@@ -98,9 +90,7 @@ tensor<_f32> tensor<_Tp>::float32_() const {
   static_assert(std::is_convertible<value_type, _f32>::value, "Tensor value type must be convertible to _f32.");
 
   if (this->empty())
-  {
     return tensor<_f32>({}, this->__shape_);
-  }
 
   std::vector<_f32> __d(this->__data_.size());
   index_type        __i = 0;
@@ -136,9 +126,7 @@ tensor<_f32> tensor<_Tp>::float32_() const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __d[__i] = static_cast<_f32>(this->__data_[__i]);
-  }
 
   return tensor<_f32>(__d, this->__shape_);
 }
@@ -148,14 +136,13 @@ tensor<_f64> tensor<_Tp>::double_() const {
   static_assert(std::is_convertible<value_type, _f64>::value, "Tensor value type must be convertible to _f64.");
 
   if (this->empty())
-  {
     return tensor<_f64>({}, this->__shape_);
-  }
 
   std::vector<_f64> __d(this->__data_.size());
   index_type        __i = 0;
 
 #if defined(__ARM_NEON)
+
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -163,12 +150,11 @@ tensor<_f64> tensor<_Tp>::double_() const {
     auto __data_vec = vld1q_f64(reinterpret_cast<const double*>(&this->__data_[__i]));
     vst1q_f64(reinterpret_cast<_f64*>(&__d[__i]), __data_vec);
   }
+
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __d[__i] = static_cast<_f64>(this->__data_[__i]);
-  }
 
   return tensor<_f64>(__d, this->__shape_);
 }
@@ -178,14 +164,13 @@ tensor<uint64_t> tensor<_Tp>::unsigned_long_() const {
   static_assert(std::is_convertible<value_type, uint64_t>::value, "Tensor value type must be convertible to uint64_t.");
 
   if (this->empty())
-  {
     return tensor<uint64_t>({}, this->__shape_);
-  }
 
   std::vector<uint64_t> __d(this->__data_.size());
   index_type            __i = 0;
 
 #if defined(__ARM_NEON)
+
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   if constexpr (std::is_unsigned<value_type>::value)
@@ -210,12 +195,11 @@ tensor<uint64_t> tensor<_Tp>::unsigned_long_() const {
       vst1q_u64(reinterpret_cast<uint64_t*>(&__d[__i]), __uint_vec);
     }
   }
+
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __d[__i] = static_cast<uint64_t>(this->__data_[__i]);
-  }
 
   return tensor<uint64_t>(__d, this->__shape_);
 }
@@ -225,14 +209,13 @@ tensor<int64_t> tensor<_Tp>::long_() const {
   static_assert(std::is_convertible<value_type, int64_t>::value, "Tensor value type must be convertible to int64_t.");
 
   if (this->empty())
-  {
     return tensor<int64_t>({}, this->__shape_);
-  }
 
   std::vector<int64_t> __d(this->__data_.size());
   index_type           __i = 0;
 
 #if defined(__ARM_NEON)
+
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   if constexpr (std::is_floating_point<value_type>::value)
@@ -272,12 +255,11 @@ tensor<int64_t> tensor<_Tp>::long_() const {
       vst1q_s64(reinterpret_cast<int64_t*>(&__d[__i + 2]), __int_vec2);
     }
   }
+
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __d[__i] = static_cast<int64_t>(this->__data_[__i]);
-  }
 
   return tensor<int64_t>(__d, this->__shape_);
 }
@@ -289,9 +271,7 @@ tensor<bool> tensor<_Tp>::bool_() const {
   static_assert(std::is_convertible<value_type, bool>::value);
 
   for (index_type __i = 0; __i < this->__data_.size(); __i++)
-  {
     __d.push_back(bool(this->__data_[__i]));
-  }
 
   return tensor<bool>(__d, this->__shape_);
 }

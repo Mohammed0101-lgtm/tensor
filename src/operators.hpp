@@ -11,9 +11,7 @@ bool tensor<_Tp>::operator!=(const tensor& __other) const {
 template<class _Tp>
 typename tensor<_Tp>::reference tensor<_Tp>::operator[](const index_type __in) {
   if (__in >= this->__data_.size() || __in < 0)
-  {
     throw std::out_of_range("Access index is out of range");
-  }
 
   return this->__data_[__in];
 }
@@ -21,9 +19,7 @@ typename tensor<_Tp>::reference tensor<_Tp>::operator[](const index_type __in) {
 template<class _Tp>
 tensor<_Tp>::const_reference tensor<_Tp>::operator[](const index_type __in) const {
   if (__in >= this->__data_.size() || __in < 0)
-  {
     throw std::out_of_range("Access index is out of range");
-  }
 
   return this->__data_[__in];
 }
@@ -32,9 +28,7 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
   this->__check_is_arithmetic_type("template class must be an arithmetic type");
   if (__other.shape() != this->__shape_)
-  {
     throw std::invalid_argument("Cannot add two tensors with different shapes");
-  }
 
   data_t     __d(this->__data_.size());
   index_type __i = 0;
@@ -78,9 +72,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __d[__i] = this->__data_[__i] + __other[__i];
-  }
 
   return __self(__d, this->__shape_);
 }
@@ -133,9 +125,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const value_type __val) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __d[__i] = this->__data_[__i] + __val;
-  }
 
   return __self(__d, this->__shape_);
 }
@@ -152,9 +142,7 @@ tensor<_Tp>& tensor<_Tp>::operator+=(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] += __other[__i];
-  }
 
   return *this;
 }
@@ -206,9 +194,7 @@ tensor<_Tp>& tensor<_Tp>::operator+=(const_reference __val) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = this->__data_[__i] + __val;
-  }
 
   return *this;
 }
@@ -218,9 +204,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
   this->__check_is_arithmetic_type("template class must be an arithmetic type");
 
   if (__other.shape() != this->__shape_)
-  {
     throw std::invalid_argument("Cannot add two tensors with different shapes");
-  }
 
   data_t     __d(this->__data_.size());
   index_type __i = 0;
@@ -264,9 +248,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_[__i]; __i++)
-  {
     __d[__i] = this->__data_[__i] - __other[__i];
-  }
 
   return __self(__d, this->__shape_);
 }
@@ -319,9 +301,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const value_type __val) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     __d[__i] = this->__data_[__i] - __val;
-  }
 
   return __self(*this);
 }
@@ -371,9 +351,7 @@ tensor<_Tp>& tensor<_Tp>::operator-=(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] -= __other[__i];
-  }
 
   return *this;
 }
@@ -423,9 +401,7 @@ tensor<_Tp>& tensor<_Tp>::operator*=(const tensor& __other) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] *= __other[__i];
-  }
 
   return *this;
 }
@@ -440,9 +416,7 @@ tensor<_Tp>& tensor<_Tp>::operator*=(const_reference __val) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] *= __val;
-  }
 
   return *this;
 }
@@ -454,9 +428,7 @@ tensor<_Tp>& tensor<_Tp>::operator/=(const tensor& __other) const {
   index_type __i = 0;
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] /= __other[__i];
-  }
 
   return *this;
 }
@@ -467,9 +439,7 @@ tensor<_Tp>& tensor<_Tp>::operator/=(const_reference __val) const {
   index_type __i = 0;
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] /= __val;
-  }
 
   return *this;
 }
@@ -521,9 +491,7 @@ tensor<_Tp>& tensor<_Tp>::operator-=(const_reference __val) const {
 #endif
 
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] -= __val;
-  }
 
   return *this;
 }
@@ -531,22 +499,9 @@ tensor<_Tp>& tensor<_Tp>::operator-=(const_reference __val) const {
 template<class _Tp>
 bool tensor<_Tp>::operator==(const tensor& __other) const {
   if ((this->__shape_ != __other.shape()) && (this->__strides_ != __other.strides()))
-  {
     return false;
-  }
 
   return this->__data_ == __other.storage();
-}
-
-template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator=(const tensor& __other) const {
-  if (this != &__other)
-  {
-    this->__data_    = __other.storage();
-    this->__shape_   = __other.shape();
-    this->__strides_ = __other.strides();
-  }
-  return *this;
 }
 
 template<class _Tp>
@@ -568,9 +523,7 @@ tensor<bool>& tensor<_Tp>::operator!() const {
 #endif
   size_t __i = 0;
   for (; __i < this->__data_.size(); __i++)
-  {
     this->__data_[__i] = !(this->__data_[__i]);
-  }
 
   return *this;
 }

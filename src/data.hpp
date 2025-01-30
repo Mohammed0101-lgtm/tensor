@@ -503,32 +503,32 @@ tensor<_Tp>& tensor<_Tp>::negative_() const {
 
   if constexpr (std::is_same_v<value_type, _f32>)
   {
-    neon_f32 __neg_multiplier = vdup_n_f32(-1);
+    neon_f32 __neg_multiplier = vdupq_n_f32(-1);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       neon_f32 __v   = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
       neon_f32 __neg = vmulq_f32(__v, __neg_multiplier);
-      vst1q_f32(reinterpret_cast<neon_f32*>(&this->__data_[__i]), __neg);
+      vst1q_f32(reinterpret_cast<_f32*>(&this->__data_[__i]), __neg);
     }
   }
   else if constexpr (std::is_same_v<value_type, _s32>)
   {
-    neon_s32 __neg_multiplier = vdup_n_s32(-1);
+    neon_s32 __neg_multiplier = vdupq_n_s32(-1);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       neon_s32 __v   = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
       neon_s32 __neg = vmulq_s32(__v, __neg_multiplier);
-      vst1q_s32(reinterpret_cast<neon_s32*>(&this->__data_[__i]), __neg);
+      vst1q_s32(reinterpret_cast<_s32*>(&this->__data_[__i]), __neg);
     }
   }
   else if constexpr (std::is_same_v<value_type, _u32>)
   {
-    neon_s32 __neg_multiplier = vdup_n_s32(-1);
+    neon_s32 __neg_multiplier = vdupq_n_s32(-1);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
     {
       neon_u32 __v   = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
       neon_u32 __neg = vmulq_u32(__v, __neg_multiplier);
-      vst1q_u32(reinterpret_cast<neon_u32*>(&this->__data_[__i]), __neg);
+      vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __neg);
     }
   }
 
