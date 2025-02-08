@@ -22,7 +22,7 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
   }
 
   shape_type __ret_sh = {this->__shape_[0], __other.shape()[1]};
-  data_t     __ret_d(__ret_sh[0] * __ret_sh[1], 0);
+  data_t     __ret_d(__ret_sh[0] * __ret_sh[1], value_type(0));
 
 #if defined(__ARM_NEON)
   if constexpr (std::is_floating_point<value_type>::value)
@@ -474,7 +474,7 @@ tensor<_Tp>& tensor<_Tp>::relu_() const {
 #ifdef __CUDACC__
   if (this->__is_cuda_tensor)
   {
-    value_type* __d_data = thrust::raw_pointer_cast(this->__data_.data());
+    pointer __d_data = thrust::raw_pointer_cast(this->__data_.data());
     thrust::transform(thrust::device, __d_data, d_data + __s, __d_data,
                       [] __device__(value_type __x) { return max(__x, value_type(0)); });
     return;
