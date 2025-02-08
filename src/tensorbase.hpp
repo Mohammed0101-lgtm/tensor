@@ -60,7 +60,6 @@ using neon_s32   = int32x4_t;
 using neon_u32   = uint32x4_t;
 using neon_f32   = float32x4_t;
 using neon_f64   = float64x2_t;
-using neon_f32_2 = float32x2_t;
 
 #endif
 
@@ -1032,26 +1031,6 @@ class tensor
   /// @param __other The tensor whose values are used to fill this tensor.
   /// @return A reference to the tensor after the fill operation has been applied.
   tensor& fill_(const tensor& __other) const;
-
-  /// @brief Computes the element-wise less-than comparison between the tensor and another tensor, modifying the tensor in place.
-  /// @param __other The tensor to compare with.
-  /// @return A reference to the tensor after the element-wise less-than operation has been applied.
-  tensor& less_(const tensor& __other) const;
-
-  /// @brief Computes the element-wise less-than comparison between the tensor and a scalar value, modifying the tensor in place.
-  /// @param __val The scalar value to compare with.
-  /// @return A reference to the tensor after the element-wise less-than operation has been applied.
-  tensor& less_(const value_type __val) const;
-
-  /// @brief Computes the element-wise greater-than comparison between the tensor and another tensor, modifying the tensor in place.
-  /// @param __other The tensor to compare with.
-  /// @return A reference to the tensor after the element-wise greater-than operation has been applied.
-  tensor& greater_(const tensor& __other) const;
-
-  /// @brief Computes the element-wise greater-than comparison between the tensor and a scalar value, modifying the tensor in place.
-  /// @param __val The scalar value to compare with.
-  /// @return A reference to the tensor after the element-wise greater-than operation has been applied.
-  tensor& greater_(const value_type __val) const;
 
   /// @brief Applies the element-wise sigmoid function to the tensor, modifying the tensor in place.
   /// @return A reference to the tensor after the sigmoid operation has been applied.
