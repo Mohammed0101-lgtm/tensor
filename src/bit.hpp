@@ -432,3 +432,23 @@ tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const tensor& __other) {
 
   return *this;
 }
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::fill_(const value_type __val) const {
+  index_type __i = 0;
+  for (; __i < this->__data_.size(); ++__i)
+    this->__data_[__i] = __val;
+
+  return *this;
+}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::fill_(const tensor& __other) const {
+  assert(this->__shape_ == __other.shape());
+
+  index_type __i = 0;
+  for (; __i < this->__data_.size(); ++__i)
+    this->__data_[__i] = __other[__i];
+
+  return *this;
+}
