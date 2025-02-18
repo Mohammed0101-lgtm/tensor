@@ -59,153 +59,51 @@ C.print();
 Tensor Class
 
 ```cpp
-template<typename T>
-class tensor {
-public:
-    Tensor(std::vector<size_t> shape, std::vector<T> data);
-    void print() const;
-    tensor<T> operator+(const tensor<T>& other) const;
-    tensor<T> operator-(const tensor<T>& other) const;
-    tensor<T> operator*(const tensor<T>& other) const;
-    tensor<T> operator/(const tensor<T>& other) const;
-    tensor<T> matmul(const tensor<T>& other) const;
-    tensor<T> transpose() const;
-};
-
-
 template<class _Tp>
 class tensor
 {
  public:
-  using __self                 = tensor;
-  using value_type             = _Tp;
-  using data_t                 = std::vector<value_type>;
-  using index_type             = int64_t;
-  using shape_type             = std::vector<index_type>;
-  using reference              = value_type&;
-  using const_reference        = const value_type&;
-  using pointer                = value_type*;
-  using const_pointer          = const value_type*;
-  using iterator               = std::__wrap_iter<pointer>;
-  using const_iterator         = std::__wrap_iter<const_pointer>;
-  using reverse_iterator       = std::reverse_iterator<iterator>;
-  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-
- private:
-  mutable data_t                  __data_;
-  mutable shape_type              __shape_;
-  mutable std::vector<index_type> __strides_;
-  Device                          __device_;
-  bool                            __is_cuda_tensor_ = false;
-
- public:
   tensor() = default;
 
-  explicit tensor(const shape_type& __sh, const value_type& __v, Device __d = Device::CPU) :
-      __shape_(__sh),
-      __data_(this->__computeSize(__sh), __v),
-      __device_(__d) {
-    this->__compute_strides();
-  }
+  explicit tensor(const shape_type& __sh, const value_type& __v, Device __d = Device::CPU);
+  explicit tensor(const shape_type& __sh, Device __d = Device::CPU);
+  explicit tensor(const data_t& __d, const shape_type& __sh, Device __dev = Device::CPU);
 
-  explicit tensor(const shape_type& __sh, Device __d = Device::CPU) :
-      __shape_(__sh),
-      __device_(__d) {
-    index_type __s = this->__computeSize(__sh);
-    this->__data_  = data_t(__s);
-    this->__compute_strides();
-  }
-
-  explicit tensor(const data_t& __d, const shape_type& __sh, Device __dev = Device::CPU) :
-      __data_(__d),
-      __shape_(__sh),
-      __device_(__dev) {
-    this->__compute_strides();
-  }
-
-  tensor(const tensor& __t) :
-      __data_(__t.storage()),
-      __shape_(__t.shape()),
-      __strides_(__t.strides()),
-      __device_(__t.device()) {}
-
-  tensor(tensor&& __t) noexcept :
-      __data_(std::move(__t.storage())),
-      __shape_(std::move(__t.shape())),
-      __strides_(std::move(__t.strides())),
-      __device_(std::move(__t.device())) {}
-
-  tensor(const shape_type& __sh, std::initializer_list<value_type> init_list, Device __d = Device::CPU) :
-      __shape_(__sh),
-      __device_(__d) {
-    index_type __s = this->__computeSize(__sh);
-    assert(init_list.size() == static_cast<size_t>(__s) && "Initializer list size must match tensor size");
-    this->__data_ = data_t(init_list);
-    this->__compute_strides();
-  }
-
-  tensor(const shape_type& __sh, const tensor& __other) :
-      __data_(__other.storage()),
-      __shape_(__sh),
-      __device_(__other.device()) {
-    this->__compute_strides();
-  }
-
- private:
-  class __destroy_tensor
-  {
-   public:
-    explicit __destroy_tensor(tensor& __tens) :
-        __tens_(__tens) {}
-
-    void operator()() {}
-
-   private:
-    tensor& __tens_;
-  };
+  tensor(const tensor& __t);
+  tensor(tensor&& __t) noexcept;
+  tensor(const shape_type& __sh, std::initializer_list<value_type> init_list, Device __d = Device::CPU);
+  tensor(const shape_type& __sh, const tensor& __other);
 
  public:
-  ~tensor() { __destroy_tensor (*this)(); }
-
+  ~tensor();
   data_t storage() const noexcept;
-
   iterator begin() noexcept;
   iterator end() noexcept;
-
   const_iterator begin() const noexcept;
   const_iterator end() const noexcept;
-
   reverse_iterator rbegin() noexcept;
   reverse_iterator rend() noexcept;
-
   const_reverse_iterator rbegin() const noexcept;
   const_reverse_iterator rend() const noexcept;
-
   tensor<int64_t>   long_() const;
   tensor<int32_t>   int32_() const;
   tensor<uint32_t>  uint32_() const;
   tensor<uint64_t>  unsigned_long_() const;
   tensor<float32_t> float32_() const;
   tensor<float64_t> double_() const;
-
   shape_type shape() const noexcept;
   shape_type strides() const noexcept;
-
   Device device() const noexcept { return this->__device_; }
   size_t n_dims() const noexcept;
-
   index_type size(const index_type __dim) const;
   index_type capacity() const noexcept;
   index_type count_nonzero(index_type __dim = -1) const;
   index_type lcm() const;
   index_type hash() const;
-
   reference at(shape_type __idx);
   reference operator[](const index_type __in);
-
   const_reference at(const shape_type __idx) const;
   const_reference operator[](const index_type __in) const;
-
   bool empty() const;
   tensor<bool> bool_() const;
   tensor<bool> logical_not() const;
