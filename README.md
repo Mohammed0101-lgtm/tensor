@@ -48,9 +48,9 @@ int main() {
 
 Performing Operations
 
-Tensor<float> A({2, 2}, {1, 2, 3, 4});
-Tensor<float> B({2, 2}, {5, 6, 7, 8});
-Tensor<float> C = A + B; // Element-wise addition
+tensor<float> A({2, 2}, {1, 2, 3, 4});
+tensor<float> B({2, 2}, {5, 6, 7, 8});
+tensor<float> C = A + B; // Element-wise addition
 C.print();
 ```
 
@@ -64,12 +64,12 @@ class tensor {
 public:
     Tensor(std::vector<size_t> shape, std::vector<T> data);
     void print() const;
-    Tensor<T> operator+(const Tensor<T>& other) const;
-    Tensor<T> operator-(const Tensor<T>& other) const;
-    Tensor<T> operator*(const Tensor<T>& other) const;
-    Tensor<T> operator/(const Tensor<T>& other) const;
-    Tensor<T> matmul(const Tensor<T>& other) const;
-    Tensor<T> transpose() const;
+    tensor<T> operator+(const tensor<T>& other) const;
+    tensor<T> operator-(const tensor<T>& other) const;
+    tensor<T> operator*(const tensor<T>& other) const;
+    tensor<T> operator/(const tensor<T>& other) const;
+    tensor<T> matmul(const tensor<T>& other) const;
+    tensor<T> transpose() const;
 };
 ```
 
@@ -85,34 +85,39 @@ void print() const
 ```
 Prints the tensor contents.
 
-operator+, operator-, operator*, operator/
-Perform element-wise operations.
+operator+, operator-, operator*, operator/: Perform element-wise operations.
 
-matmul(const Tensor<T>& other): Performs matrix multiplication.
+```cpp
+matmul(const Tensor<T>& other) 
+```
+Performs matrix multiplication.
 
-transpose(): Returns the transposed tensor.
+```cpp
+transpose()
+``` 
+Returns the transposed tensor.
 
-Performance Considerations
+* Performance Considerations
 
-Uses row-major storage for efficient cache utilization.
+- Uses row-major storage for efficient cache utilization.
 
-Avoids unnecessary copies by using move semantics.
+- Avoids unnecessary copies by using move semantics.
 
-Operations are optimized for multi-dimensional computations.
+- Operations are optimized for multi-dimensional computations.
 
-Roadmap
+* Roadmap
 
-Support for slicing and indexing operations.
+- Support for slicing and indexing operations.
 
-Addition of broadcasting rules for element-wise operations.
+- Addition of broadcasting rules for element-wise operations.
 
-More optimized parallelized computations using multi-threading.
+- More optimized parallelized computations using multi-threading.
 
-Contributing
+* Contributing
 
 Contributions are welcome! Feel free to submit pull requests, report issues, or suggest enhancements.
 
-License
+## License
 
 MIT License
 
