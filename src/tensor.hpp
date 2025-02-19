@@ -4,6 +4,7 @@
 #include "arithmetic.hpp"
 #include "bit.hpp"
 #include "compare.hpp"
+#include "operators.hpp"
 #include "data.hpp"
 #include "linear.hpp"
 #include "logical.hpp"
