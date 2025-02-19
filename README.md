@@ -313,7 +313,7 @@ class tensor
 ## Key Methods
 
 ```cpp
-Tensor(std::vector<size_t> shape, std::vector<T> data)
+tensor(std::vector<size_t> shape, std::vector<T> data)
 ```
 Initializes a tensor with a given shape and data.
 
