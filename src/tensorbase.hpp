@@ -56,10 +56,10 @@ using _u32 = uint32_t;
 using _f32 = float32_t;
 using _f64 = float64_t;
 
-using neon_s32   = int32x4_t;
-using neon_u32   = uint32x4_t;
-using neon_f32   = float32x4_t;
-using neon_f64   = float64x2_t;
+using neon_s32 = int32x4_t;
+using neon_u32 = uint32x4_t;
+using neon_f32 = float32x4_t;
+using neon_f64 = float64x2_t;
 
 #endif
 
@@ -371,6 +371,7 @@ class tensor
   /// @return A reference to the current tensor after the assignment.
   tensor<_Tp>& operator=(const tensor<_Tp>&) = default;
 
+  tensor<bool>& operator!() const;
 
   /// @brief Extracts a slice of the tensor along the specified dimension.
   /// @param __dim The dimension along which to slice.
