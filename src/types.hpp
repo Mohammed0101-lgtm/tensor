@@ -107,11 +107,11 @@ tensor<_u32> tensor<_Tp>::uint32_() const {
   if (this->empty())
     return tensor<_u32>({}, this->__shape_);
 
-  std::vector<_u32> __d;
+  std::vector<_u32> __d(this->__data_.size());  
   index_type        __i = 0;
 
 #if defined(__ARM_NEON)
-  const index_type __simd_end = this->__data_.size() - (this->__data_.size() - _ARM64_REG_WIDTH);
+  const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
   if constexpr (std::is_floating_point<value_type>::value)
   {
@@ -135,8 +135,8 @@ tensor<_u32> tensor<_Tp>::uint32_() const {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i += _ARM64_REG_WIDTH)
-    __d.push_back(static_cast<_u32>(this->__data_[__i]));
+  for (; __i < this->__data_.size(); __i++)
+    __d[__i] = static_cast<_u32>(this->__data_[__i]);
 
   return tensor<_u32>(__d, this->__shape_);
 }

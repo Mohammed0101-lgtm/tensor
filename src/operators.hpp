@@ -2,6 +2,15 @@
 
 #include "tensorbase.hpp"
 
+template<class _Tp>
+typename tensor<_Tp>::reference tensor<_Tp>::operator()(std::initializer_list<index_type> __index_list) {
+  return this->__data_[this->__compute_index(shape_type(__index_list))];
+}
+
+template<class _Tp>
+typename tensor<_Tp>::const_reference tensor<_Tp>::operator()(std::initializer_list<index_type> __index_list) const {
+  return this->__data_[this->__compute_index(shape_type(__index_list))];
+}
 
 template<class _Tp>
 bool tensor<_Tp>::operator!=(const tensor& __other) const {
@@ -17,7 +26,7 @@ typename tensor<_Tp>::reference tensor<_Tp>::operator[](const index_type __in) {
 }
 
 template<class _Tp>
-tensor<_Tp>::const_reference tensor<_Tp>::operator[](const index_type __in) const {
+typename tensor<_Tp>::const_reference tensor<_Tp>::operator[](const index_type __in) const {
   if (__in >= this->__data_.size() || __in < 0)
     throw std::out_of_range("Access index is out of range");
 

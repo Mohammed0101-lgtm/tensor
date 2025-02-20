@@ -206,6 +206,9 @@ class tensor
   const_reference at(const shape_type __idx) const;
   const_reference operator[](const index_type __in) const;
 
+  reference       operator()(std::initializer_list<index_type> __index_list);
+  const_reference operator()(std::initializer_list<index_type> __index_list) const;
+
   bool empty() const;
 
   /// @brief Converts the tensor elements to boolean values.
@@ -1247,7 +1250,7 @@ class tensor
 
   [[nodiscard]] index_type __compute_index(const std::vector<index_type>& __idx) const {
     if (__idx.size() != this->__shape_.size())
-      throw std::out_of_range("input indices does not match the tensor __shape_");
+      throw std::out_of_range("input indices does not match the tensor shape");
 
     index_type __index = 0;
     index_type __i     = 0;

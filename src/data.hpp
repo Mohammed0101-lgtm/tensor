@@ -88,7 +88,8 @@ typename tensor<_Tp>::index_type tensor<_Tp>::size(const index_type __dim) const
 
   if (__dim == 0)
     return this->__data_.size();
-  return this->__shape_[__dim];
+    
+  return this->__shape_[__dim - 1];
 }
 
 template<class _Tp>
