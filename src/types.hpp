@@ -3,6 +3,62 @@
 #include "tensorbase.hpp"
 
 
+template<class, class = std::void_t<>>
+struct has_plus_operator: std::false_type
+{
+};
+
+template<class _Tp>
+struct has_plus_operator<_Tp, std::void_t<decltype(std::declval<_Tp>() + std::declval<_Tp>())>>: std::true_type
+{
+};
+
+template<class _Tp>
+constexpr bool has_plus_operator_v = has_plus_operator<_Tp>::value;
+
+
+template<class, class = std::void_t<>>
+struct has_minus_operator: std::false_type
+{
+};
+
+template<class _Tp>
+struct has_minus_operator<_Tp, std::void_t<decltype(std::declval<_Tp>() + std::declval<_Tp>())>>: std::true_type
+{
+};
+
+template<class _Tp>
+constexpr bool has_minus_operator_v = has_minus_operator<_Tp>::value;
+
+
+template<class, class = std::void_t<>>
+struct has_times_operator: std::false_type
+{
+};
+
+template<class _Tp>
+struct has_times_operator<_Tp, std::void_t<decltype(std::declval<_Tp>() + std::declval<_Tp>())>>: std::true_type
+{
+};
+
+template<class _Tp>
+constexpr bool has_times_operator_v = has_times_operator<_Tp>::value;
+
+
+template<class, class = std::void_t<>>
+struct has_divide_operator: std::false_type
+{
+};
+
+template<class _Tp>
+struct has_divide_operator<_Tp, std::void_t<decltype(std::declval<_Tp>() + std::declval<_Tp>())>>: std::true_type
+{
+};
+
+template<class _Tp>
+constexpr bool has_divide_operator_v = has_divide_operator<_Tp>::value;
+
+
 template<class _Tp>
 tensor<_s32> tensor<_Tp>::int32_() const {
   static_assert(std::is_convertible<value_type, _s32>::value);
