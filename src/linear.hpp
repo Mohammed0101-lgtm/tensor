@@ -1,10 +1,14 @@
 #pragma once
 
 #include "tensorbase.hpp"
+#include "types.hpp"
 
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
+  static_assert(has_times_operator_v<value_type>);
+  static_assert(has_plus_operator_v<value_type>);
+
   if (this->__shape_.size() != 2 || __other.shape().size() != 2)
     throw std::invalid_argument("matmul is only supported for 2D tensors");
 
@@ -25,21 +29,24 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
   data_t     __ret_d(__ret_sh[0] * __ret_sh[1], value_type(0));
 
 #if defined(__ARM_NEON)
-  if constexpr (std::is_floating_point<value_type>::value)
+  if constexpr (std::is_same_v<value_type, _f32>)
   {
-    for (int __i = 0; __i < __ret_sh[0]; __i += _ARM64_REG_WIDTH)
+    for (int64_t __i = 0; __i < __ret_sh[0]; __i += _ARM64_REG_WIDTH)
     {
-      for (int __j = 0; __j < __ret_sh[1]; __j += _ARM64_REG_WIDTH)
+      for (int64_t __j = 0; __j < __ret_sh[1]; __j += _ARM64_REG_WIDTH)
       {
-        for (int __k = 0; __k < this->__shape_[1]; __k += _ARM64_REG_WIDTH)
+        for (int64_t __k = 0; __k < this->__shape_[1]; __k += _ARM64_REG_WIDTH)
         {
-          for (int __ii = __i; __ii < std::min(static_cast<index_type>(__i + _ARM64_REG_WIDTH), __ret_sh[0]); __ii++)
+          for (int64_t __ii = __i; __ii < std::min(static_cast<index_type>(__i + _ARM64_REG_WIDTH), __ret_sh[0]);
+               __ii++)
           {
-            for (int __jj = __j; __jj < std::min(static_cast<index_type>(__j + _ARM64_REG_WIDTH), __ret_sh[1]); __jj++)
+            for (int64_t __jj = __j; __jj < std::min(static_cast<index_type>(__j + _ARM64_REG_WIDTH), __ret_sh[1]);
+                 __jj++)
             {
               neon_f32 __sum_vec = vdupq_n_f32(0);
 
-              for (int __kk = __k; __kk < std::min(static_cast<index_type>(__k + _ARM64_REG_WIDTH), this->__shape_[1]);
+              for (int64_t __kk = __k;
+                   __kk < std::min(static_cast<index_type>(__k + _ARM64_REG_WIDTH), this->__shape_[1]);
                    __kk += _ARM64_REG_WIDTH)
               {
                 neon_f32 __a_vec =
@@ -60,21 +67,24 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
       }
     }
   }
-  else if constexpr (std::is_signed<value_type>::value)
+  else if constexpr (std::is_same_v<value_type, _s32>)
   {
-    for (int __i = 0; __i < __ret_sh[0]; __i += _ARM64_REG_WIDTH)
+    for (int64_t __i = 0; __i < __ret_sh[0]; __i += _ARM64_REG_WIDTH)
     {
-      for (int __j = 0; __j < __ret_sh[1]; __j += _ARM64_REG_WIDTH)
+      for (int64_t __j = 0; __j < __ret_sh[1]; __j += _ARM64_REG_WIDTH)
       {
-        for (int __k = 0; __k < this->__shape_[1]; __k += _ARM64_REG_WIDTH)
+        for (int64_t __k = 0; __k < this->__shape_[1]; __k += _ARM64_REG_WIDTH)
         {
-          for (int __ii = __i; __ii < std::min(static_cast<index_type>(__i + _ARM64_REG_WIDTH), __ret_sh[0]); __ii++)
+          for (int64_t __ii = __i; __ii < std::min(static_cast<index_type>(__i + _ARM64_REG_WIDTH), __ret_sh[0]);
+               __ii++)
           {
-            for (int __jj = __j; __jj < std::min(static_cast<index_type>(__j + _ARM64_REG_WIDTH), __ret_sh[1]); __jj++)
+            for (int64_t __jj = __j; __jj < std::min(static_cast<index_type>(__j + _ARM64_REG_WIDTH), __ret_sh[1]);
+                 __jj++)
             {
               neon_s32 __sum_vec = vdupq_n_s32(0);
 
-              for (int __kk = __k; __kk < std::min(static_cast<index_type>(__k + _ARM64_REG_WIDTH), this->__shape_[1]);
+              for (int64_t __kk = __k;
+                   __kk < std::min(static_cast<index_type>(__k + _ARM64_REG_WIDTH), this->__shape_[1]);
                    __kk += _ARM64_REG_WIDTH)
               {
                 neon_s32 __a_vec =
@@ -97,19 +107,22 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
   }
   else if constexpr (std::is_unsigned<value_type>::value)
   {
-    for (int __i = 0; __i < __ret_sh[0]; __i += _ARM64_REG_WIDTH)
+    for (int64_t __i = 0; __i < __ret_sh[0]; __i += _ARM64_REG_WIDTH)
     {
-      for (int __j = 0; __j < __ret_sh[1]; __j += _ARM64_REG_WIDTH)
+      for (int64_t __j = 0; __j < __ret_sh[1]; __j += _ARM64_REG_WIDTH)
       {
-        for (int __k = 0; __k < this->__shape_[1]; __k += _ARM64_REG_WIDTH)
+        for (int64_t __k = 0; __k < this->__shape_[1]; __k += _ARM64_REG_WIDTH)
         {
-          for (int __ii = __i; __ii < std::min(static_cast<index_type>(__i + _ARM64_REG_WIDTH), __ret_sh[0]); __ii++)
+          for (int64_t __ii = __i; __ii < std::min(static_cast<index_type>(__i + _ARM64_REG_WIDTH), __ret_sh[0]);
+               __ii++)
           {
-            for (int __jj = __j; __jj < std::min(static_cast<index_type>(__j + _ARM64_REG_WIDTH), __ret_sh[1]); __jj++)
+            for (int64_t __jj = __j; __jj < std::min(static_cast<index_type>(__j + _ARM64_REG_WIDTH), __ret_sh[1]);
+                 __jj++)
             {
               neon_u32 __sum_vec = vdupq_n_u32(0);
 
-              for (int __kk = __k; __kk < std::min(static_cast<index_type>(__k + _ARM64_REG_WIDTH), this->__shape_[1]);
+              for (int64_t __kk = __k;
+                   __kk < std::min(static_cast<index_type>(__k + _ARM64_REG_WIDTH), this->__shape_[1]);
                    __kk += _ARM64_REG_WIDTH)
               {
                 neon_u32 __a_vec =
@@ -178,6 +191,19 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
     }
   }
 #endif
+
+#pragma omp parallel for collapse(2)
+  for (int64_t __i = 0; __i < __ret_sh[0]; __i++)
+  {
+    for (int64_t __j = 0; __j < __ret_sh[1]; __j++)
+    {
+      value_type __sum = value_type(0);
+      for (int64_t __k = 0; __k < this->__shape_[1]; __k++)
+        __sum = __sum + (this->__data_[__i * this->__shape_[1] + __k] * __other[__k * __other.shape()[1] + __j]);
+
+      __ret_d[__i * __ret_sh[1] + __j] = __sum;
+    }
+  }
 
   return __self(__ret_d, __ret_sh);
 }

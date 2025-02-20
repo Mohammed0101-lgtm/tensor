@@ -34,11 +34,6 @@ typename tensor<_Tp>::index_type tensor<_Tp>::capacity() const noexcept {
 }
 
 template<class _Tp>
-bool tensor<_Tp>::operator!=(const tensor& __other) const {
-  return !(*this == __other);
-}
-
-template<class _Tp>
 bool tensor<_Tp>::empty() const {
   return this->__data_.empty();
 }
@@ -326,7 +321,6 @@ typename tensor<_Tp>::index_type tensor<_Tp>::hash() const {
 
   return __hash_val;
 }
-
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::row(const index_type __index) const {
