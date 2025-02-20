@@ -1,4 +1,4 @@
-#include "src/tensor.hpp"  // Assuming this is the main header file for the tensor library
+#include "src/tensor.hpp"  
 #include <iostream>
 
 // Custom struct for testing custom data types
@@ -25,7 +25,7 @@ int main() {
   tensor<int> A({2, 2}, {1, 2, 3, 4});
   tensor<int> B({2, 2}, {5, 6, 7, 8});
 
-
+  /*
   std::cout << "Tensor A:\n" << "\n";
   A.print();
   std::cout << "Tensor B:\n" << "\n";
@@ -35,10 +35,8 @@ int main() {
   std::cout << "A + B:\n" << "\n";
   C.print();
 
-  /*
-    auto D = A * B;
-    std::cout << "A * B:\n" << D << "\n";
-    */
+  auto D = A * B;
+  std::cout << "A * B:\n" << D << "\n";
 
   auto D = A.matmul(B);
   std::cout << "A * B:\n" << "\n";
@@ -60,6 +58,7 @@ int main() {
   auto H = E.matmul(F);
   std::cout << "E * F:\n" << "\n";
   H.print();
+  */
 
   // Test with custom data structure
   tensor<CustomData> I({2, 2}, {{1, 1.1}, {2, 2.2}, {3, 3.3}, {4, 4.4}});
@@ -77,6 +76,10 @@ int main() {
   auto L = I.matmul(J);
   std::cout << "I * J:\n" << "\n";
   L.print();
+
+  auto m = L.transpose();
+  std::cout << "T of m:\n" << "\n";
+  m.print();
 
   return 0;
 }
