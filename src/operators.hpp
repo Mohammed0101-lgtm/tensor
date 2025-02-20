@@ -26,7 +26,8 @@ tensor<_Tp>::const_reference tensor<_Tp>::operator[](const index_type __in) cons
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
-  this->__check_is_arithmetic_type("template class must be an arithmetic type");
+  static_assert(has_plus_operator_v<value_type>);
+
   if (__other.shape() != this->__shape_)
     throw std::invalid_argument("Cannot add two tensors with different shapes");
 
@@ -79,7 +80,8 @@ tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator+(const value_type __val) const {
-  this->__check_is_arithmetic_type("template class must be an arithmetic type");
+  static_assert(has_plus_operator_v<value_type>);
+
   data_t     __d(this->__data_.size());
   index_type __i = 0;
 
@@ -132,7 +134,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const value_type __val) const {
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator+=(const tensor& __other) const {
-  this->__check_is_arithmetic_type("template class must be an arithmetic type");
+  static_assert(has_plus_operator_v<value_type>);
 
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
@@ -149,7 +151,7 @@ tensor<_Tp>& tensor<_Tp>::operator+=(const tensor& __other) const {
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator+=(const_reference __val) const {
-  this->__check_is_arithmetic_type("template class must be an arithmetic type");
+  static_assert(has_plus_operator_v<value_type>);
   index_type __i = 0;
 
 #if defined(__ARM_NEON)
@@ -201,7 +203,7 @@ tensor<_Tp>& tensor<_Tp>::operator+=(const_reference __val) const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
-  this->__check_is_arithmetic_type("template class must be an arithmetic type");
+  static_assert(has_minus_operator_v<value_type>);
 
   if (__other.shape() != this->__shape_)
     throw std::invalid_argument("Cannot add two tensors with different shapes");
@@ -255,7 +257,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator-(const value_type __val) const {
-  this->__check_is_arithmetic_type("template class must be an arithmetic type");
+  static_assert(has_minus_operator_v<value_type>);
   data_t     __d(this->__data_.size());
   index_type __i = 0;
 
@@ -308,7 +310,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const value_type __val) const {
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator-=(const tensor& __other) const {
-  this->__check_is_arithmetic_type("template class must be an arithmetic type");
+  static_assert(has_minus_operator_v<value_type>);
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
 
@@ -358,7 +360,7 @@ tensor<_Tp>& tensor<_Tp>::operator-=(const tensor& __other) const {
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator*=(const tensor& __other) const {
-  this->__check_is_arithmetic_type("template class must be an arithmetic type");
+  static_assert(has_times_operator_v<value_type>);
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
 
@@ -408,7 +410,7 @@ tensor<_Tp>& tensor<_Tp>::operator*=(const tensor& __other) const {
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator*=(const_reference __val) const {
-  this->__check_is_arithmetic_type("template class must be an arithmetic type");
+  static_assert(has_times_operator_v<value_type>);
   index_type __i = 0;
 
 #if defined(__ARM_NEON)
@@ -423,7 +425,7 @@ tensor<_Tp>& tensor<_Tp>::operator*=(const_reference __val) const {
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator/=(const tensor& __other) const {
-  this->__check_is_arithmetic_type("template class must be an arithmetic type");
+  static_assert(has_divide_operator_v<value_type>);
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
 
@@ -435,7 +437,7 @@ tensor<_Tp>& tensor<_Tp>::operator/=(const tensor& __other) const {
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator/=(const_reference __val) const {
-  this->__check_is_arithmetic_type("template class must be an arithmetic type");
+  static_assert(has_divide_operator_v<value_type>);
   index_type __i = 0;
 
   for (; __i < this->__data_.size(); __i++)
@@ -446,7 +448,7 @@ tensor<_Tp>& tensor<_Tp>::operator/=(const_reference __val) const {
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator-=(const_reference __val) const {
-  this->__check_is_arithmetic_type("template class must be an arithmetic type");
+  static_assert(has_minus_operator_v<value_type>);
   index_type __i = 0;
 
 #if defined(__ARM_NEON)
