@@ -46,7 +46,7 @@ tensor<_Tp>& tensor<_Tp>::fmax_(const value_type __val) {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::fmax_(const tensor<value_type>& __other) {
+tensor<_Tp>& tensor<_Tp>::fmax_(const tensor& __other) {
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
 
