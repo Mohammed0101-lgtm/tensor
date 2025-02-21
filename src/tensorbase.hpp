@@ -319,6 +319,16 @@ class tensor
   /// @return A new tensor containing the result of the subtraction.
   tensor operator-(const value_type __val) const;
 
+  /// @brief Multiply a scalar value with each element of the tensor.
+  /// @param __val The scalar value to multiply with.
+  /// @return A new tensor containing the result of the multiplication.
+  tensor operator*(const value_type __val) const;
+
+  /// @brief Multiply each element of the input tensor with each element of the tensor.
+  /// @param __other The tensor to multiply with.
+  /// @return A new tensor containing the result of the multiplication.
+  tensor operator*(const tensor& __other) const;
+
   /// @brief Subtracts the elements of another tensor from this tensor and updates the current tensor.
   /// @param __other The tensor to subtract.
   /// @return A reference to the current tensor after the subtraction.
