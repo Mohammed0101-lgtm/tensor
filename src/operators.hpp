@@ -142,6 +142,31 @@ tensor<_Tp> tensor<_Tp>::operator+(const value_type __val) const {
 }
 
 template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator*(const value_type __val) const {
+  static_assert(has_times_operator_v<value_type>);
+  data_t     __d(this->__data_.size());
+  index_type __i = 0;
+
+  for (; __i < this->__data_.size(); __i++)
+    __d[__i] = this->__data_[__i] + __val;
+
+  return __self(this->__shape_, __d);
+}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator*(const tensor& __other) const {
+  static_assert(has_times_operator_v<value_type>);
+  assert(this->__shape_ == __other.shape());
+  data_t     __d(this->__data_.size());
+  index_type __i = 0;
+
+  for (; __i < this->__data_.size(); __i++)
+    __d[__i] = this->__data_[__i] * __other[__i];
+
+  return __self(this->__shape_, __d)
+}
+
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator+=(const tensor& __other) const {
   static_assert(has_plus_operator_v<value_type>);
 
