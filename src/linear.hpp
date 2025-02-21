@@ -1898,11 +1898,11 @@ tensor<_Tp>& tensor<_Tp>::log_softmax_(const index_type __dim) const {
 
   assert(__dim < this->__shape_.size() && "Dimension out of range for log_softmax");
 
-  tensor<value_type> __max_values  = this->argmax_(__dim);
-  tensor<value_type> __shifted     = *this - __max_values.expand_as(this->__shape_, __dim);
-  tensor<value_type> __exp_values  = __shifted.exp();
-  tensor<value_type> __sum_exp     = __exp_values.sum(__dim);
-  tensor<value_type> __log_sum_exp = __sum_exp.log();
+  tensor __max_values  = this->argmax_(__dim);
+  tensor __shifted     = *this - __max_values.expand_as(this->__shape_, __dim);
+  tensor __exp_values  = __shifted.exp();
+  tensor __sum_exp     = __exp_values.sum(__dim);
+  tensor __log_sum_exp = __sum_exp.log();
   *this                            = __shifted - __log_sum_exp.expand_as(this->__shape_, __dim);
 
   return *this;
@@ -1949,5 +1949,6 @@ tensor<_Tp> tensor<_Tp>::squeeze(index_type __dim) const {
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::squeeze_(index_type __dim) const {
+
   return *this;
 }
