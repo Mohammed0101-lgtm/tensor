@@ -216,6 +216,37 @@ TEST(TensorTest, NotEqualOperatorTest) {
   EXPECT_FALSE(a != c);
 }
 
+TEST(TensorTest, PlusOperatorTest) {
+  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+  
+  tensor<int> expected({2, 3}, {2, 4, 6, 8, 10, 12});
+
+  EXPECT_EQ(t + q, expected);
+}
+
+TEST(TensorTest, MinusOperatorTest) {
+  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+
+  tensor<int> expected({2, 3}, {0, 0, 0, 0, 0, 0});
+
+  EXPECT_EQ(t - q, expected);
+}
+
+TEST(TensorTest, TimesOperatorTest) {
+  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+
+  tensor<int> expected({2, 3}, {1, 1, 1, 1, 1, 1});
+
+  EXPECT_EQ(t * q, expected);
+}
+
+TEST(TensorTest, DivideOperatorTest) {
+
+}
+
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
