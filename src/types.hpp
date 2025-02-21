@@ -107,7 +107,7 @@ tensor<_u32> tensor<_Tp>::uint32_() const {
   if (this->empty())
     return tensor<_u32>({}, this->__shape_);
 
-  std::vector<_u32> __d(this->__data_.size());  
+  std::vector<_u32> __d(this->__data_.size());
   index_type        __i = 0;
 
 #if defined(__ARM_NEON)
