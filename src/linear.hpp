@@ -1903,7 +1903,7 @@ tensor<_Tp>& tensor<_Tp>::log_softmax_(const index_type __dim) const {
   tensor __exp_values  = __shifted.exp();
   tensor __sum_exp     = __exp_values.sum(__dim);
   tensor __log_sum_exp = __sum_exp.log();
-  *this                            = __shifted - __log_sum_exp.expand_as(this->__shape_, __dim);
+  *this                = __shifted - __log_sum_exp.expand_as(this->__shape_, __dim);
 
   return *this;
 }
