@@ -80,7 +80,7 @@ typename tensor<_Tp>::const_reverse_iterator tensor<_Tp>::rend() const noexcept 
 
 template<class _Tp>
 typename tensor<_Tp>::index_type tensor<_Tp>::size(const index_type __dim) const {
-  if (__dim < 0 || __dim >= static_cast<index_type>(this->__shape_.size()))
+  if (__dim < 0 || __dim > static_cast<index_type>(this->__shape_.size()))
     throw std::invalid_argument("dimension input is out of range");
 
   if (this->__data_.empty())
@@ -88,7 +88,7 @@ typename tensor<_Tp>::index_type tensor<_Tp>::size(const index_type __dim) const
 
   if (__dim == 0)
     return this->__data_.size();
-    
+
   return this->__shape_[__dim - 1];
 }
 
@@ -120,77 +120,63 @@ typename tensor<_Tp>::const_reference tensor<_Tp>::at(const tensor<_Tp>::shape_t
 template<class _Tp>
 typename tensor<_Tp>::index_type tensor<_Tp>::count_nonzero(index_type __dim) const {
   this->__check_is_scalar_type("Cannot compare a non-scalar value to zero");
-  index_type __c = 0;
-
+  index_type __c           = 0;
+  index_type __local_count = 0;
+  index_type __i           = 0;
   if (__dim == -1)
   {
-
-#pragma omp parallel
-    {
-      index_type __local_count = 0;
-
 #ifdef __AVX__
-      if constexpr (std::is_same_v<value_type, _f32>)
-      {
-        index_type __size = this->__data_.size();
-        index_type __i    = 0;
+    if constexpr (std::is_same_v<value_type, _f32>)
+    {
+      index_type __size = this->__data_.size();
+      index_type __i    = 0;
 
-        for (; __i + _AVX_REG_WIDTH <= __size; __i += _AVX_REG_WIDTH)
-        {
-          __m256 __vec          = _mm256_loadu_ps(&this->__data_[__i]);
-          __m256 __nonzero_mask = _mm256_cmp_ps(__vec, _mm256_setzero_ps(), _CMP_NEQ_OQ);
-          __local_count += _mm256_movemask_ps(__nonzero_mask);
-        }
+      for (; __i + _AVX_REG_WIDTH <= __size; __i += _AVX_REG_WIDTH)
+      {
+        __m256 __vec          = _mm256_loadu_ps(&this->__data_[__i]);
+        __m256 __nonzero_mask = _mm256_cmp_ps(__vec, _mm256_setzero_ps(), _CMP_NEQ_OQ);
+        __local_count += _mm256_movemask_ps(__nonzero_mask);
       }
+    }
 
 #endif
-      index_type __i = 0;
+
 
 #if defined(__ARM_NEON)
-      if constexpr (std::is_floating_point<value_type>::value)
+    if constexpr (std::is_floating_point<value_type>::value)
+    {
+      for (; __i < this->__data_.size(); __i += _ARM64_REG_WIDTH)
       {
-        index_type __size = this->__data_.size();
-
-        for (; __i + _ARM64_REG_WIDTH <= __size; __i += _ARM64_REG_WIDTH)
-        {
-          neon_f32 __vec          = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
-          neon_u32 __nonzero_mask = vcgtq_f32(__vec, vdupq_n_f32(0.0f));
-          __local_count += vaddvq_u32(__nonzero_mask);
-        }
+        neon_f32 __vec          = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
+        neon_u32 __nonzero_mask = vcgtq_f32(__vec, vdupq_n_f32(0.0f));
+        __local_count += vaddvq_u32(vandq_u32(__nonzero_mask, vdupq_n_u32(1)));
       }
-      else if constexpr (std::is_unsigned<value_type>::value)
-      {
-        index_type __size = this->__data_.size();
-
-        for (; __i + _ARM64_REG_WIDTH <= __size; __i += _ARM64_REG_WIDTH)
-        {
-          neon_u32 __vec          = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
-          neon_u32 __nonzero_mask = vcgtq_u32(__vec, vdupq_n_u32(0));
-          __local_count += vaddvq_u32(__nonzero_mask);
-        }
-      }
-      else if constexpr (std::is_signed<value_type>::value)
-      {
-        index_type __size = this->__data_.size();
-
-        for (; __i + _ARM64_REG_WIDTH <= __size; __i += _ARM64_REG_WIDTH)
-        {
-          neon_s32 __vec          = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-          neon_s32 __nonzero_mask = vcgtq_s32(__vec, vdupq_n_s32(0));
-          __local_count += vaddvq_s32(__nonzero_mask);
-        }
-      }
-
-#endif
-      for (index_type __j = __i; __j < this->__data_.size(); __j++)
-      {
-        if (this->__data_[__j] != 0)
-          __local_count++;
-      }
-
-#pragma omp atomic
-      __c += __local_count;
     }
+    else if constexpr (std::is_unsigned<value_type>::value)
+    {
+      for (; __i < this->__data_.size(); __i += _ARM64_REG_WIDTH)
+      {
+        neon_u32 __vec          = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
+        neon_u32 __nonzero_mask = vcgtq_u32(__vec, vdupq_n_u32(0));
+        __local_count += vaddvq_u32(vandq_u32(__nonzero_mask, vdupq_n_u32(1)));
+      }
+    }
+    else if constexpr (std::is_signed<value_type>::value)
+    {
+      for (; __i < this->__data_.size(); __i += _ARM64_REG_WIDTH)
+      {
+        neon_s32 __vec          = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
+        neon_u32 __nonzero_mask = vcgtq_s32(__vec, vdupq_n_s32(0));
+        __local_count += vaddvq_u32(vandq_u32(__nonzero_mask, vdupq_n_u32(1)));
+      }
+    }
+#endif
+#pragma omp parallel for reduction(+ : __local_count)
+    for (index_type __j = __i; __j < this->__data_.size(); __j++)
+      if (this->__data_[__j] != 0)
+        __local_count++;
+
+    __c += __local_count;
   }
   else
   {
