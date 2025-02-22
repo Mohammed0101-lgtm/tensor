@@ -101,7 +101,7 @@ class tensor
  public:
   tensor() = default;
 
-  explicit tensor(const shape_type& __sh, const value_type& __v, Device __d = Device::CPU) :
+  explicit tensor(const shape_type& __sh, const_reference __v, Device __d = Device::CPU) :
       __shape_(__sh),
       __data_(this->__computeSize(__sh), __v),
       __device_(__d) {
@@ -116,10 +116,12 @@ class tensor
     this->__compute_strides();
   }
 
-  explicit tensor(const data_t& __d, const shape_type& __sh, Device __dev = Device::CPU) :
-      __data_(__d),
+  explicit tensor(const shape_type& __sh, const data_t& __d, Device __dev = Device::CPU) :
       __shape_(__sh),
       __device_(__dev) {
+    index_type __s = this->__computeSize(__sh);
+    assert(__d.size() == static_cast<size_t>(__s) && "Initial data vector must match the tensor size");
+    this->__data_ = __d;
     this->__compute_strides();
   }
 
@@ -363,6 +365,16 @@ class tensor
   /// @param __val The scalar value to divide by.
   /// @return A reference to the current tensor after the division.
   tensor& operator/=(const_reference __val) const;
+
+  /// @brief Divides each element of the tensor by the corresponding element of the other tensor
+  /// @param __other The other tensor to divide by (should not contain a zero)
+  /// @return A tensor the contains the result of the division
+  tensor operator/(const tensor& __other) const;
+
+  /// @brief Divides each element of the tensor by a scalar value
+  /// @param __val The scalar value to divide by (non zero)
+  /// @return A tensor the contains the result of the division
+  tensor operator/(const_reference __val) const;
 
   /// @brief Multiplies each element of the tensor by a scalar value and updates the current tensor.
   /// @param __val The scalar value to multiply with.
@@ -693,7 +705,7 @@ class tensor
   /// @brief Computes the element-wise maximum between the tensor and a scalar value.
   /// @param __val The scalar value to compare with.
   /// @return A new tensor containing the element-wise maximum values.
-  tensor maximum(const value_type& __val) const;
+  tensor maximum(const_reference __val) const;
 
   /// @brief Computes the distance between the tensor and another tensor.
   /// @param __other The tensor to compute the distance from.
