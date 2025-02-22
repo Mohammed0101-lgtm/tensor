@@ -9,17 +9,17 @@ size_t tensor<_Tp>::n_dims() const noexcept {
 }
 
 template<class _Tp>
-typename tensor<_Tp>::shape_type tensor<_Tp>::shape() const noexcept {
+inline typename tensor<_Tp>::shape_type tensor<_Tp>::shape() const noexcept {
   return this->__shape_;
 }
 
 template<class _Tp>
-typename tensor<_Tp>::data_t tensor<_Tp>::storage() const noexcept {
+inline typename tensor<_Tp>::data_t tensor<_Tp>::storage() const noexcept {
   return this->__data_;
 }
 
 template<class _Tp>
-typename tensor<_Tp>::shape_type tensor<_Tp>::strides() const noexcept {
+inline typename tensor<_Tp>::shape_type tensor<_Tp>::strides() const noexcept {
   return this->__strides_;
 }
 
@@ -44,12 +44,12 @@ typename tensor<_Tp>::iterator tensor<_Tp>::begin() noexcept {
 }
 
 template<class _Tp>
-typename tensor<_Tp>::const_iterator tensor<_Tp>::begin() const noexcept {
+inline typename tensor<_Tp>::const_iterator tensor<_Tp>::begin() const noexcept {
   return this->__data_.begin();
 }
 
 template<class _Tp>
-typename tensor<_Tp>::iterator tensor<_Tp>::end() noexcept {
+inline typename tensor<_Tp>::iterator tensor<_Tp>::end() noexcept {
   return this->__data_.end();
 }
 
@@ -187,6 +187,17 @@ typename tensor<_Tp>::index_type tensor<_Tp>::count_nonzero(index_type __dim) co
   }
 
   return __c;
+}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::push_back(value_type __v) const {
+  if (this->__shape_.size() != 1)
+    throw std::range_error("push_back is only supported for one dimensional tensors");
+
+  this->__data_.push_back(__v);
+  this->__shape_[0]++;
+  this->__compute_strides();
+  return *this;
 }
 
 template<class _Tp>
@@ -469,7 +480,7 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::clone() const {
   data_t     __d = this->__data_;
   shape_type __s = this->__shape_;
-  return __self(__d, __s);
+  return __self(__s, __d);
 }
 
 template<class _Tp>
