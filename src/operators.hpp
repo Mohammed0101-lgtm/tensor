@@ -84,7 +84,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
   for (; __i < this->__data_.size(); __i++)
     __d[__i] = this->__data_[__i] + __other[__i];
 
-  return __self(__d, this->__shape_);
+  return __self(this->__shape_, __d);
 }
 
 template<class _Tp>
@@ -163,7 +163,7 @@ tensor<_Tp> tensor<_Tp>::operator*(const tensor& __other) const {
   for (; __i < this->__data_.size(); __i++)
     __d[__i] = this->__data_[__i] * __other[__i];
 
-  return __self(this->__shape_, __d)
+  return __self(this->__shape_, __d);
 }
 
 template<class _Tp>
@@ -286,7 +286,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
   for (; __i < this->__data_[__i]; __i++)
     __d[__i] = this->__data_[__i] - __other[__i];
 
-  return __self(__d, this->__shape_);
+  return __self(this->__shape_, __d);
 }
 
 template<class _Tp>
@@ -443,6 +443,22 @@ tensor<_Tp>& tensor<_Tp>::operator*=(const tensor& __other) const {
 }
 
 template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator/(const_reference __val) const {
+  static_assert(has_divide_operator_v<value_type>);
+
+  if (__val == value_type(0))
+    throw std::invalid_argument("Cannot divide by zero : undefined operation");
+
+  data_t     __d(this->__data_.size());
+  index_type __i = 0;
+
+  for (; __i < this->__data_.size(); __i++)
+    __d[__i] = this->__data_[__i] / __val;
+
+  return __self(this->__shape_, __d);
+}
+
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator*=(const_reference __val) const {
   static_assert(has_times_operator_v<value_type>);
   index_type __i = 0;
@@ -478,6 +494,24 @@ tensor<_Tp>& tensor<_Tp>::operator/=(const_reference __val) const {
     this->__data_[__i] /= __val;
 
   return *this;
+}
+
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator/(const tensor& __other) const {
+  static_assert(has_divide_operator_v<value_type>);
+  
+  if (__other.count_nonzero() != __other.size(0))
+    throw std::invalid_argument("Cannot divide by zero : undefined operation");
+
+  assert(this->__shape_ == __other.shape());
+
+  data_t     __d(this->__data_.size());
+  index_type __i = 0;
+
+  for (; __i < this->__data_.size(); __i++)
+    __d[__i] = this->__data_[__i] / __other[__i];
+
+  return __self(this->__shape_, __d);
 }
 
 template<class _Tp>
