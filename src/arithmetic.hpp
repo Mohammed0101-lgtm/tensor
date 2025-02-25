@@ -1689,6 +1689,17 @@ tensor<_Tp>& tensor<_Tp>::dist_(const tensor& __other) {
 }
 
 template <class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::dist_(const tensor& __other) const {
+  return this->dist_(__other);
+}
+
+template <class _Tp>
+inline tensor<_Tp>& tensor<_Tp>::dist_(const value_type __val) {
+  // TODO: implement dist_
+  return *this;
+}
+
+template <class _Tp>
 const tensor<_Tp>& tensor<_Tp>::dist_(const value_type __val) const {
   index_type __i = 0;
 
