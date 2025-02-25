@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "arithmetic.hpp"
 #include "bit.hpp"
 #include "compare.hpp"
