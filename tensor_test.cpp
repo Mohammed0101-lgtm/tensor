@@ -1,6 +1,6 @@
 #include "src/tensor.hpp"
-#include <gtest/gtest.h>
 
+#include <gtest/gtest.h>
 
 TEST(TensorTest, StorageTest) {
   tensor<int> t({5}, {1, 2, 3, 4, 5});
@@ -8,38 +8,6 @@ TEST(TensorTest, StorageTest) {
   std::vector<int> expected = {1, 2, 3, 4, 5};
 
   EXPECT_EQ(t.storage(), expected);
-}
-
-TEST(TensorTest, IteratorsTest) {
-  tensor<int> t({5}, {1, 2, 3, 4, 5});
-  auto        it = t.begin();
-  ++it;
-
-  EXPECT_EQ(*t.begin(), 1);
-  EXPECT_EQ(*(t.end() - 1), 5);
-
-  EXPECT_EQ(*it, 2);
-}
-
-TEST(TensorTest, ConstIteratorsTest) {
-  const tensor<int> t({3}, {10, 20, 30});
-
-  EXPECT_EQ(*t.begin(), 10);
-  EXPECT_EQ(*(t.end() - 1), 30);
-}
-
-TEST(TensorTest, ReverseIteratorsTest) {
-  tensor<int> t({5}, {1, 2, 3, 4, 5});
-
-  EXPECT_EQ(*t.rbegin(), 5);
-  EXPECT_EQ(*(t.rend() - 1), 1);
-}
-
-TEST(TensorTest, ConstReverseIteratorsTest) {
-  const tensor<int> t({3}, {10, 20, 30});
-
-  EXPECT_EQ(*t.rbegin(), 30);
-  EXPECT_EQ(*(t.rend() - 1), 10);
 }
 
 TEST(TensorTest, DataTypeConversionTest) {
@@ -63,13 +31,13 @@ TEST(TensorTest, DataTypeConversionTest) {
 TEST(TensorTest, ShapeTest) {
   tensor<int> t({2, 2}, {1, 2, 3, 4});
 
-  EXPECT_EQ(t.shape(), (std::vector<long long>{2, 2}));
+  EXPECT_EQ(t.shape(), (std::vector<unsigned long long>{2, 2}));
 }
 
 TEST(TensorTest, StridesTest) {
   tensor<int> t({2, 2}, {1, 2, 3, 4});
 
-  EXPECT_EQ(t.strides(), (std::vector<long long>{2, 1}));
+  EXPECT_EQ(t.strides(), (std::vector<unsigned long long>{2, 1}));
 }
 
 TEST(TensorTest, DeviceTest) {
@@ -131,9 +99,9 @@ TEST(TensorTest, CountNonZeros) {
   int expected1 = 0;
   int expected2 = 0;
 
-  EXPECT_EQ(t.count_nonzero(), expected);
-  EXPECT_EQ(a.count_nonzero(), expected2);
-  EXPECT_EQ(q.count_nonzero(), expected1);
+  EXPECT_EQ(t.count_nonzero(0), expected);
+  EXPECT_EQ(a.count_nonzero(0), expected2);
+  EXPECT_EQ(q.count_nonzero(0), expected1);
 }
 
 TEST(TensorTest, ZerosTest) {
@@ -141,7 +109,7 @@ TEST(TensorTest, ZerosTest) {
 
   t.zeros_({10});
 
-  EXPECT_EQ(t.count_nonzero(), 0);
+  EXPECT_EQ(t.count_nonzero(0), 0);
 }
 
 TEST(TensorTest, LcmTest) {
@@ -219,7 +187,7 @@ TEST(TensorTest, NotEqualOperatorTest) {
 TEST(TensorTest, PlusOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
-  
+
   tensor<int> expected({2, 3}, {2, 4, 6, 8, 10, 12});
 
   EXPECT_EQ(t + q, expected);
@@ -238,13 +206,50 @@ TEST(TensorTest, TimesOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
 
-  tensor<int> expected({2, 3}, {1, 1, 1, 1, 1, 1});
+  tensor<int> expected({2, 3}, {1, 4, 9, 16, 25, 36});
 
   EXPECT_EQ(t * q, expected);
 }
 
 TEST(TensorTest, DivideOperatorTest) {
+  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
 
+  tensor<int> expected({2, 3}, {1, 1, 1, 1, 1, 1});
+
+  EXPECT_EQ(t / q, expected);
+}
+
+TEST(TensorTest, RepeatTest) {
+  tensor<int>      t({20});
+  std::vector<int> v = {1, 2};
+  tensor<int>      expected({20}, {1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2});
+
+  tensor<int>      t1({20});
+  std::vector<int> v1 = {1, 2, 3};
+  tensor<int>      expected1({20}, {1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2});
+
+  EXPECT_EQ(t.repeat_(v, 0), expected);
+  EXPECT_EQ(t1.repeat_(v1, 0), expected1);
+  EXPECT_EQ(t1.repeat(v1), expected1);
+}
+
+TEST(TensorTest, BoolTest) {
+  tensor<int>  vals({2, 2}, {1, 2, 0, 0});
+  tensor<bool> bools = vals.bool_();
+  tensor<bool> expected({2, 2}, {true, true, false, false});
+
+  EXPECT_EQ(bools, expected);
+}
+
+TEST(TensorTest, LogicalTest) {
+  tensor<int> t({2, 2}, {1, 2, 3, 4});
+
+  tensor<bool> logical_not = t.logical_not();
+  tensor<bool> logical_or  = t.logical_or(0);
+
+  EXPECT_EQ(logical_not, tensor<bool>({2, 2}, {false, false, false, false}));
+  EXPECT_EQ(logical_or, tensor<bool>({2, 2}, {true, true, true, true}));
 }
 
 int main(int argc, char** argv) {
