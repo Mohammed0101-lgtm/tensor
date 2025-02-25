@@ -111,7 +111,7 @@ class tensor
   tensor<bool> logical_or(const tensor<_Tp>& __other) const;
   tensor<bool> less_equal(const tensor<_Tp>& __other) const;
   tensor<bool> less_equal(const _Tp __val) const;
-  tensor<bool> greater_equal(const tensor<_Tp>& __other) const;
+  tensor<bool> greater_equal(const tensor<_Tp>::tensor_reference __other) const;
   tensor<bool> greater_equal(const _Tp __val) const;
   tensor<bool> equal(const tensor<_Tp>& __other) const;
   tensor<bool> equal(const _Tp __val) const;
@@ -172,7 +172,7 @@ class tensor
   tensor<_Tp> asin() const;
   tensor<_Tp> asinh() const;
   tensor<_Tp> abs() const;
-  tensor<_Tp> logical_xor(const tensor<_Tp>& __other) const;
+   logical_xor(const tensor<_Tp>& __other) const;
   tensor<_Tp> logical_xor(const _Tp __val) const;
   tensor<_Tp> logical_and(const tensor<_Tp>& __other) const;
   tensor<_Tp> logical_and(const _Tp __val) const;
