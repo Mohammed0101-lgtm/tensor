@@ -1751,28 +1751,49 @@ class tensor<bool> {
     return *this;
   }
 
-  const tensor<bool>& logical_not_() const { return this->logical_not_(); }
+  const tensor<bool>& logical_not_() const {
+    index_type __i = 0;
+    for (; __i < this->__data_.size(); __i++) this->__data_[__i] = ~(this->__data_[__i]);
+    return *this;
+  }
 
-  const tensor<bool>& logical_or_(const value_type __val) const { return this->logical_or_(__val); }
+  const tensor<bool>& logical_or_(const value_type __val) const {
+    index_type __i = 0;
+    for (; __i < this->__data_.size(); __i++) this->__data_[__i] = this->__data_[__i] || __val;
+    return *this;
+  }
 
   const tensor<bool>& logical_or_(const tensor& __other) const {
-    return this->logical_or_(__other);
+    index_type __i = 0;
+    for (; __i < this->__data_.size(); __i++)
+      this->__data_[__i] = this->__data_[__i] || __other[__i];
+    return *this;
   }
 
   const tensor<bool>& logical_and_(const value_type __val) const {
-    return this->logical_and_(__val);
+    index_type __i = 0;
+    for (; __i < this->__data_.size(); __i++) this->__data_[__i] = this->__data_[__i] && __val;
+    return *this;
   }
 
   const tensor<bool>& logical_and_(const tensor& __other) const {
-    return this->logical_and_(__other);
+    index_type __i = 0;
+    for (; __i < this->__data_.size(); __i++)
+      this->__data_[__i] = this->__data_[__i] && __other[__i];
+    return *this;
   }
 
   const tensor<bool>& logical_xor_(const value_type __val) const {
-    return this->logical_xor_(__val);
+    index_type __i = 0;
+    for (; __i < this->__data_.size(); __i++) this->__data_[__i] = this->__data_[__i] ^ __val;
+    return *this;
   }
 
   const tensor<bool>& logical_xor_(const tensor& __other) const {
-    return this->logical_xor_(__other);
+    index_type __i = 0;
+    for (; __i < this->__data_.size(); __i++)
+      this->__data_[__i] = this->__data_[__i] ^ __other[__i];
+    return *this;
   }
 
  private:
@@ -1788,10 +1809,7 @@ class tensor<bool> {
       std::cout << "[";
 
       for (size_t i = 0; i < shape[depth]; ++i) {
-        if constexpr (std::is_floating_point<_Tp>::value)
-          std::cout << std::fixed << std::setprecision(4) << __data_[index + i];
-        else
-          std::cout << __data_[index + i];
+        std::cout << __data_[index + i];
 
         if (i < shape[depth] - 1) std::cout << ", ";
       }
