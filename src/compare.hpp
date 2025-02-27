@@ -11,7 +11,7 @@ tensor<bool> tensor<_Tp>::not_equal(const tensor& __other) const {
   std::vector<bool> __ret(this->__data_.size());
   index_type        __i = 0;
 
-  for (; __i < this->__data_.size(); __i++) __ret[__i] = (this->__data_[__i] != __other[__i]);
+  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] != __other[__i]);
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -24,7 +24,7 @@ tensor<bool> tensor<_Tp>::not_equal(const value_type __val) const {
   std::vector<bool> __ret(this->__data_.size());
   index_type        __i = 0;
 
-  for (; __i < this->__data_.size(); __i++) __ret[__i] = (this->__data_[__i] != __val);
+  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] != __val);
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -38,7 +38,7 @@ tensor<bool> tensor<_Tp>::less(const tensor& __other) const {
   std::vector<bool> __ret(this->__data_.size());
   index_type        __i = 0;
 
-  for (; __i < this->__data_.size(); __i++) __ret[__i] = (this->__data_[__i] < __other[__i]);
+  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] < __other[__i]);
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -51,7 +51,7 @@ tensor<bool> tensor<_Tp>::less(const value_type __val) const {
   std::vector<bool> __ret(this->__data_.size());
   index_type        __i = 0;
 
-  for (; __i < this->__data_.size(); __i++) __ret[__i] = (this->__data_[__i] < __val);
+  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] < __val);
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -65,7 +65,7 @@ tensor<bool> tensor<_Tp>::greater(const tensor& __other) const {
   std::vector<bool> __ret(this->__data_.size());
   index_type        __i = 0;
 
-  for (; __i < this->__data_.size(); __i++) __ret[__i] = (this->__data_[__i] > __other[__i]);
+  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] > __other[__i]);
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -78,7 +78,7 @@ tensor<bool> tensor<_Tp>::greater(const value_type __val) const {
   std::vector<bool> __ret(this->__data_.size());
   index_type        __i = 0;
 
-  for (; __i < this->__data_.size(); __i++) __ret[__i] = (this->__data_[__i] > __val);
+  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] > __val);
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -134,7 +134,7 @@ tensor<bool> tensor<_Tp>::equal(const tensor& __other) const {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) __ret[__i] = (this->__data_[__i] == __other[__i]);
+  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] == __other[__i]);
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -193,7 +193,7 @@ tensor<bool> tensor<_Tp>::equal(const value_type __val) const {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) __ret[__i] = (this->__data_[__i] == __val);
+  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] == __val);
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -235,7 +235,7 @@ tensor<bool> tensor<_Tp>::less_equal(const tensor& __other) const {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++)
+  for (; __i < this->__data_.size(); ++__i)
     __ret[__i] = (this->__data_[__i] <= __other[__i]) ? 1 : 0;
 
   std::vector<bool> __to_bool(__ret.size());
@@ -284,7 +284,7 @@ tensor<bool> tensor<_Tp>::less_equal(const value_type __val) const {
 
 #endif
 
-  for (; __i < this->__data_.size(); __i++) __ret[__i] = (this->__data_[__i] <= __val) ? 1 : 0;
+  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] <= __val) ? 1 : 0;
 
   std::vector<bool> __to_bool(__ret.size());
   for (int i = __i; i >= 0; i--) __to_bool[i] = __ret[i] == 1 ? true : false;
@@ -350,7 +350,7 @@ tensor<bool> tensor<_Tp>::greater_equal(const tensor& __other) const {
 
 #endif
 
-  for (; __i < this->__data_.size(); __i++) __ret[__i] = (this->__data_[__i] >= __other[__i]);
+  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] >= __other[__i]);
 
   return tensor<bool>(__ret, this->__shape_);
 }
@@ -410,7 +410,7 @@ tensor<bool> tensor<_Tp>::greater_equal(const value_type __val) const {
 
 #endif
 
-  for (; __i < this->__data_.size(); __i++) __ret[__i] = (this->__data_[__i] >= __val);
+  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] >= __val);
 
   return tensor<bool>(__ret, this->__shape_);
 }
