@@ -30,7 +30,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_right_shift_(const int __amount) {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] >>= __amount;
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] >>= __amount;
 
   return *this;
 }
@@ -68,7 +68,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_left_shift_(const int __amount) {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] <<= __amount;
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] <<= __amount;
 
   return *this;
 }
@@ -107,7 +107,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_or_(const value_type __val) {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] |= __val;
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __val;
 
   return *this;
 }
@@ -146,7 +146,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const value_type __val) {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] ^= __val;
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] ^= __val;
 
   return *this;
 }
@@ -197,7 +197,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_not_() {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] = ~this->__data_[__i];
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = ~this->__data_[__i];
 
   return *this;
 }
@@ -236,7 +236,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_and_(const value_type __val) {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] &= __val;
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] &= __val;
 
   return *this;
 }
@@ -311,7 +311,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_and_(const tensor& __other) {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] &= __other[__i];
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] &= __other[__i];
 
   return *this;
 }
@@ -365,7 +365,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_or_(const tensor& __other) {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] |= __other[__i];
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __other[__i];
 
   return *this;
 }
@@ -405,7 +405,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const tensor& __other) {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] ^= __other[__i];
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] ^= __other[__i];
 
   return *this;
 }
