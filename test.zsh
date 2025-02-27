@@ -1,4 +1,6 @@
 rm -rf build
-cmake -B build
-cmake --build build
-./build/tensor_test
+mkdir build
+cd build
+cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ ..
+make
+./tensor_test
