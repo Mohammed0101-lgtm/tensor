@@ -33,7 +33,7 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type __val) {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++)
+  for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(this->__data_[__i] || __val);
 
   return *this;
@@ -76,7 +76,7 @@ tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_type __val) {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++)
+  for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(this->__data_[__i] ^ __val);
 
   return *this;
@@ -119,7 +119,7 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type __val) {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++)
+  for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(this->__data_[__i] && __val);
 
   return *this;
@@ -222,7 +222,7 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& __other) {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++)
+  for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = (this->__data_[__i] || __other[__i]);
 
   return *this;
@@ -264,7 +264,7 @@ tensor<_Tp>& tensor<_Tp>::logical_xor_(const tensor& __other) {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++)
+  for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = (this->__data_[__i] ^ __other[__i]);
 
   return *this;
@@ -306,7 +306,7 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const tensor& __other) {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++)
+  for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = (this->__data_[__i] && __other[__i]);
 
   return *this;
