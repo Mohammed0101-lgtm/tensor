@@ -33,10 +33,10 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
         for (int64_t __k = 0; __k < this->__shape_[1]; __k += _ARM64_REG_WIDTH) {
           for (int64_t __ii = __i;
                __ii < std::min(static_cast<index_type>(__i + _ARM64_REG_WIDTH), __ret_sh[0]);
-               __ii++) {
+               ++__ii) {
             for (int64_t __jj = __j;
                  __jj < std::min(static_cast<index_type>(__j + _ARM64_REG_WIDTH), __ret_sh[1]);
-                 __jj++) {
+                 ++__jj) {
               neon_f32 __sum_vec = vdupq_n_f32(0);
 
               for (int64_t __kk = __k;
@@ -66,10 +66,10 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
         for (int64_t __k = 0; __k < this->__shape_[1]; __k += _ARM64_REG_WIDTH) {
           for (int64_t __ii = __i;
                __ii < std::min(static_cast<index_type>(__i + _ARM64_REG_WIDTH), __ret_sh[0]);
-               __ii++) {
+               ++__ii) {
             for (int64_t __jj = __j;
                  __jj < std::min(static_cast<index_type>(__j + _ARM64_REG_WIDTH), __ret_sh[1]);
-                 __jj++) {
+                 ++__jj) {
               neon_s32 __sum_vec = vdupq_n_s32(0);
 
               for (int64_t __kk = __k;
@@ -99,10 +99,10 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
         for (int64_t __k = 0; __k < this->__shape_[1]; __k += _ARM64_REG_WIDTH) {
           for (int64_t __ii = __i;
                __ii < std::min(static_cast<index_type>(__i + _ARM64_REG_WIDTH), __ret_sh[0]);
-               __ii++) {
+               ++__ii) {
             for (int64_t __jj = __j;
                  __jj < std::min(static_cast<index_type>(__j + _ARM64_REG_WIDTH), __ret_sh[1]);
-                 __jj++) {
+                 ++__jj) {
               neon_u32 __sum_vec = vdupq_n_u32(0);
 
               for (int64_t __kk = __k;
@@ -160,13 +160,13 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
     for (int __j = 0; __j < __ret_sh[1]; __j += __blockSize) {
       for (int __k = 0; __k < this->__shape_[1]; __k += __blockSize) {
         for (int __ii = __i;
-             __ii < std::min(static_cast<index_type>(__i + __blockSize), __ret_sh[0]); __ii++) {
+             __ii < std::min(static_cast<index_type>(__i + __blockSize), __ret_sh[0]); ++__ii) {
           for (int __jj = __j;
-               __jj < std::min(static_cast<index_type>(__j + __blockSize), __ret_sh[1]); __jj++) {
+               __jj < std::min(static_cast<index_type>(__j + __blockSize), __ret_sh[1]); ++__jj) {
             value_type __sum = 0;
             for (int __kk = __k;
                  __kk < std::min(static_cast<index_type>(__k + __blockSize), this->__shape_[1]);
-                 __kk++) {
+                 ++__kk) {
               __sum += this->at({__ii, __kk}) * __other.at({__kk, __jj});
             }
             __ret_d[__ii * __ret_sh[1] + __jj] += __sum;
@@ -178,10 +178,10 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
 #endif
 
 #pragma omp parallel for collapse(2)
-  for (int64_t __i = 0; __i < __ret_sh[0]; __i++) {
-    for (int64_t __j = 0; __j < __ret_sh[1]; __j++) {
+  for (int64_t __i = 0; __i < __ret_sh[0]; ++__i) {
+    for (int64_t __j = 0; __j < __ret_sh[1]; ++__j) {
       value_type __sum = value_type(0);
-      for (int64_t __k = 0; __k < this->__shape_[1]; __k++)
+      for (int64_t __k = 0; __k < this->__shape_[1]; ++__k)
         __sum = __sum + (this->__data_[__i * this->__shape_[1] + __k] *
                          __other[__k * __other.shape()[1] + __j]);
 
@@ -200,7 +200,7 @@ __global__ void matmul_kernel(_Tp* __a, _Tp* __b, _Tp* __c, int __m, int __n, in
 
   if (__row < __m && __col < __k) {
     _Tp __sum = 0;
-    for (int __i = 0; __i < __n; __i++) __sum += __a[__row * __n + __i] * __b[__i * __k + __col];
+    for (int __i = 0; __i < __n; ++__i) __sum += __a[__row * __n + __i] * __b[__i * __k + __col];
 
     __c[__row * __k + __col] = __sum;
   }
@@ -356,7 +356,7 @@ tensor<_Tp> tensor<_Tp>::absolute(const tensor& __tensor) const {
   }
 #endif
 
-  for (; __i < __s; __i++)
+  for (; __i < __s; ++__i)
     __a.push_back(static_cast<value_type>(std::fabs(_f32(__tensor.storage()[__i]))));
 
   return __self(__a, __tensor.__shape_);
@@ -406,7 +406,7 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
       uint32x2_t sum_half = vadd_u32(vget_high_u32(sum_vec), vget_low_u32(sum_vec));
       __ret               = vget_lane_u32(vpadd_u32(sum_half, sum_half), 0);
 
-      for (; __i < __size; __i++)
+      for (; __i < __size; ++__i)
         __ret +=
             static_cast<value_type>(__this_data[__i]) * static_cast<value_type>(__other_data[__i]);
     } else if constexpr (std::is_signed<value_type>::value) {
@@ -422,7 +422,7 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
       int32x2_t sum_half = vadd_s32(vget_high_s32(sum_vec), vget_low_s32(sum_vec));
       __ret              = vget_lane_s32(vpadd_s32(sum_half, sum_half), 0);
 
-      for (; __i < __size; __i++)
+      for (; __i < __size; ++__i)
         __ret +=
             static_cast<value_type>(__this_data[__i]) * static_cast<value_type>(__other_data[__i]);
     }
@@ -436,6 +436,7 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
 
   if (this->__shape_.size() == 3 && __other.shape().size() == 3)
     return this->cross_product(__other);
+
   return __self();
 }
 
@@ -507,7 +508,7 @@ tensor<_Tp>& tensor<_Tp>::relu_() {
   }
 #endif
 
-  for (__i = 0; __i < __s; __i++) this->__data_[__i] = std::max(this->__data_[__i], value_type(0));
+  for (__i = 0; __i < __s; ++__i) this->__data_[__i] = std::max(this->__data_[__i], value_type(0));
 
   return *this;
 }
@@ -545,19 +546,19 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
         if (__i + _ARM64_REG_WIDTH <= __rows && __j + _ARM64_REG_WIDTH <= __cols) {
           float32x4x4_t __input;
 
-          for (index_type __k = 0; __k < _ARM64_REG_WIDTH; __k++)
+          for (index_type __k = 0; __k < _ARM64_REG_WIDTH; ++__k)
             __input.val[__k] = vld1q_f32(
                 reinterpret_cast<const _f32*>(&this->__data_[(__i + __k) * __cols + __j]));
 
           float32x4x4_t __output = vld4q_f32(reinterpret_cast<const _f32*>(&__input));
 
-          for (index_type __k = 0; __k < _ARM64_REG_WIDTH; __k++)
+          for (index_type __k = 0; __k < _ARM64_REG_WIDTH; ++__k)
             vst1q_f32(&__ret.__data_[(__j + __k) * __rows + __i], __output.val[__k]);
         } else {
           for (index_type __ii = __i;
-               __ii < std::min(static_cast<index_type>(__i + _ARM64_REG_WIDTH), __rows); __ii++) {
+               __ii < std::min(static_cast<index_type>(__i + _ARM64_REG_WIDTH), __rows); ++__ii) {
             for (index_type __jj = __j;
-                 __jj < std::min(static_cast<index_type>(__j + _ARM64_REG_WIDTH), __cols); __jj++) {
+                 __jj < std::min(static_cast<index_type>(__j + _ARM64_REG_WIDTH), __cols); ++__jj) {
               __ret.at({__jj, __ii}) = this->at({__ii, __jj});
             }
           }
@@ -570,7 +571,7 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
         if (__i + _ARM64_REG_WIDTH <= __rows && __j + _ARM64_REG_WIDTH <= __cols) {
           int32x4x4_t __input;
 
-          for (index_type __k = 0; __k < _ARM64_REG_WIDTH; __k++)
+          for (index_type __k = 0; __k < _ARM64_REG_WIDTH; ++__k)
             __input.val[__k] = vld1q_s32(
                 reinterpret_cast<const _s32*>(&this->__data_[(__i + __k) * __cols + __j]));
 
@@ -580,9 +581,9 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
             vst1q_s32(&__ret.__data_[(__j + __k) * __rows + __i], __output.val[__k]);
         } else {
           for (index_type __ii = __i;
-               __ii < std::min(static_cast<index_type>(__i + _ARM64_REG_WIDTH), __rows); __ii++) {
+               __ii < std::min(static_cast<index_type>(__i + _ARM64_REG_WIDTH), __rows); ++__ii) {
             for (index_type __jj = __j;
-                 __jj < std::min(static_cast<index_type>(__j + _ARM64_REG_WIDTH), __cols); __jj++) {
+                 __jj < std::min(static_cast<index_type>(__j + _ARM64_REG_WIDTH), __cols); ++__jj) {
               __ret.at({__jj, __ii}) = this->at({__ii, __jj});
             }
           }
@@ -595,19 +596,19 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
         if (__i + _ARM64_REG_WIDTH <= __rows && __j + _ARM64_REG_WIDTH <= __cols) {
           uint32x4x4_t __input;
 
-          for (index_type __k = 0; __k < _ARM64_REG_WIDTH; __k++)
+          for (index_type __k = 0; __k < _ARM64_REG_WIDTH; ++__k)
             __input.val[__k] = vld1q_u32(
                 reinterpret_cast<const _u32*>(&this->__data_[(__i + __k) * __cols + __j]));
 
           uint32x4x4_t __output = vld4q_u32(reinterpret_cast<const _u32*>(&__input));
 
-          for (index_type __k = 0; __k < _ARM64_REG_WIDTH; __k++)
+          for (index_type __k = 0; __k < _ARM64_REG_WIDTH; ++__k)
             vst1q_u32(&__ret.__data_[(__j + __k) * __rows + __i], __output.val[__k]);
         } else {
           for (index_type __ii = __i;
-               __ii < std::min(static_cast<index_type>(__i + _ARM64_REG_WIDTH), __rows); __ii++) {
+               __ii < std::min(static_cast<index_type>(__i + _ARM64_REG_WIDTH), __rows); ++__ii) {
             for (index_type __jj = __j;
-                 __jj < std::min(static_cast<index_type>(__j + _ARM64_REG_WIDTH), __cols); __jj++) {
+                 __jj < std::min(static_cast<index_type>(__j + _ARM64_REG_WIDTH), __cols); ++__jj) {
               __ret.at({__jj, __ii}) = this->at({__ii, __jj});
             }
           }
@@ -619,10 +620,10 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
   {
     index_type __i = 0;
 
-    for (; __i < __rows; __i++) {
+    for (; __i < __rows; ++__i) {
       index_type __j = 0;
 
-      for (; __j < __cols; __j++) __ret.at({__j, __i}) = this->at({__i, __j});
+      for (; __j < __cols; ++__j) __ret.at({__j, __i}) = this->at({__i, __j});
     }
   }
 
@@ -663,7 +664,7 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argsort(index_type __d,
       neon_u32    __cmp_result =
           __ascending ? vcltq_f32(__data_vec, __cmp_vec) : vcgtq_f32(__data_vec, __cmp_vec);
 
-      for (int __j = 0; __j < _ARM64_REG_WIDTH; __j++)
+      for (int __j = 0; __j < _ARM64_REG_WIDTH; ++__j)
         __indices[__i + __j] = (__cmp_result[__j] ? __i + __j : __i + __j + 1);
     }
   } else if constexpr (std::is_signed<value_type>::value) {
@@ -675,7 +676,7 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argsort(index_type __d,
       neon_u32  __cmp_result =
           __ascending ? vcltq_s32(__data_vec, __cmp_vec) : vcgtq_s32(__data_vec, __cmp_vec);
 
-      for (int __j = 0; __j < _ARM64_REG_WIDTH; __j++)
+      for (int __j = 0; __j < _ARM64_REG_WIDTH; ++__j)
         __indices[__i + __j] = (__cmp_result[__j] ? __i + __j : __i + __j + 1);
     }
   } else if constexpr (std::is_unsigned<value_type>::value) {
@@ -687,12 +688,12 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argsort(index_type __d,
       neon_u32   __cmp_result =
           __ascending ? vcltq_u32(__data_vec, __cmp_vec) : vcgtq_u32(__data_vec, __cmp_vec);
 
-      for (int __j = 0; __j < _ARM64_REG_WIDTH; __j++)
+      for (int __j = 0; __j < _ARM64_REG_WIDTH; ++__j)
         __indices[__i + __j] = (__cmp_result[__j] ? __i + __j : __i + __j + 1);
     }
   }
 
-  for (; __i < __size; __i++) __indices[__i] = __i;
+  for (; __i < __size; ++__i) __indices[__i] = __i;
 #endif
 
   std::sort(__indices.begin(), __indices.end(), [&](index_type __a, index_type __b) {
@@ -732,7 +733,7 @@ tensor<_Tp>& tensor<_Tp>::sigmoid_() {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++)
+  for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] =
         static_cast<value_type>(1.0 / (1.0 + std::exp(-static_cast<double>(this->__data_[__i]))));
 
@@ -812,7 +813,7 @@ tensor<_Tp>& tensor<_Tp>::clipped_relu_(const value_type __clip_limit) {
   }
 #endif
 
-  for (; __i < __s; __i++)
+  for (; __i < __s; ++__i)
     this->__data_[__i] = std::min(std::max(this->__data_[__i], value_type(0)), __clip_limit);
 
   return *this;
@@ -907,9 +908,8 @@ tensor<_Tp>& tensor<_Tp>::clamp_(const_pointer __min_val, const_pointer __max_va
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) {
+  for (; __i < this->__data_.size(); ++__i) {
     if (__min_val) this->__data_[__i] = std::max(*__min_val, this->__data_[__i]);
-
     if (__max_val) this->__data_[__i] = std::min(*__max_val, this->__data_[__i]);
   }
 
@@ -952,7 +952,7 @@ tensor<_Tp>& tensor<_Tp>::floor_() {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++)
+  for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::floor(static_cast<_f32>(this->__data_[__i])));
 
   return *this;
@@ -979,7 +979,7 @@ tensor<_Tp>& tensor<_Tp>::ceil_() {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++)
+  for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::ceil(static_cast<_f32>(this->__data_[__i])));
 
   return *this;
@@ -1012,15 +1012,14 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
   index_type __inner_size = 1;
   index_type __i          = 0;
 
-  for (; __i < __dim; __i++) __outer_size *= this->__shape_[__i];
-
-  for (__i = __dim + 1; __i < this->__shape_.size(); __i++) __inner_size *= this->__shape_[__i];
+  for (; __i < __dim; ++__i) __outer_size *= this->__shape_[__i];
+  for (__i = __dim + 1; __i < this->__shape_.size(); ++__i) __inner_size *= this->__shape_[__i];
 
 #if defined(__AVX2__)
   if constexpr (std::is_same_v<_Tp, _f32>) {
-    for (__i = 0; __i < __outer_size; __i++) {
+    for (__i = 0; __i < __outer_size; ++__i) {
       index_type __j = 0;
-      for (; __j < __inner_size; __j++) {
+      for (; __j < __inner_size; ++__j) {
         __m256     __max_vec       = _mm256_set1_ps(-std::numeric_limits<_f32>::infinity());
         __m256i    __index_vec     = _mm256_setzero_si256();
         __m256i    __increment     = _mm256_set1_epi32(1);
@@ -1046,14 +1045,14 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
         _f32       __max_value = __max_values[0];
         index_type __max_index = __indices[0];
 
-        for (int __k = 1; __k < _AVX_REG_WIDTH; __k++) {
+        for (int __k = 1; __k < _AVX_REG_WIDTH; ++__k) {
           if (__max_values[__k] > __max_value) {
             __max_value = __max_values[__k];
             __max_index = __indices[__k];
           }
         }
 
-        for (; __k < this->__shape_[__dim]; __k++) {
+        for (; __k < this->__shape_[__dim]; ++__k) {
           _f32 __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
           if (__v > __max_value) {
             __max_value = __v;
@@ -1067,9 +1066,9 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
 
 #elif defined(__ARM_NEON)
   if constexpr (std::is_floating_point<value_type>::value) {
-    for (__i = 0; __i < __outer_size; __i++) {
+    for (__i = 0; __i < __outer_size; ++__i) {
       index_type __j = 0;
-      for (; __j < __inner_size; __j++) {
+      for (; __j < __inner_size; ++__j) {
         neon_f32   __max_vec       = vdupq_n_f32(-std::numeric_limits<_f32>::infinity());
         neon_u32   __index_vec     = vdupq_n_u32(0);
         neon_u32   __increment     = vdupq_n_u32(1);
@@ -1094,14 +1093,14 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
         _f32       __max_value = __max_values[0];
         index_type __max_index = __indices[0];
 
-        for (int __k = 1; __k < _ARM64_REG_WIDTH; __k++) {
+        for (int __k = 1; __k < _ARM64_REG_WIDTH; ++__k) {
           if (__max_values[__k] > __max_value) {
             __max_value = __max_values[__k];
             __max_index = __indices[__k];
           }
         }
 
-        for (; __k < this->__shape_[__dim]; __k++) {
+        for (; __k < this->__shape_[__dim]; ++__k) {
           _f32 __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
           if (__v > __max_value) {
             __max_value = __v;
@@ -1112,9 +1111,9 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
       }
     }
   } else if constexpr (std::is_signed<value_type>::value) {
-    for (__i = 0; __i < __outer_size; __i++) {
+    for (__i = 0; __i < __outer_size; ++__i) {
       index_type __j = 0;
-      for (; __j < __inner_size; __j++) {
+      for (; __j < __inner_size; ++__j) {
         neon_s32   __max_vec       = vdupq_n_s32(-std::numeric_limits<_s32>::infinity());
         neon_u32   __index_vec     = vdupq_n_u32(0);
         neon_u32   __increment     = vdupq_n_u32(1);
@@ -1139,14 +1138,14 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
         _s32       __max_value = __max_values[0];
         index_type __max_index = __indices[0];
 
-        for (int __k = 1; __k < _ARM64_REG_WIDTH; __k++) {
+        for (int __k = 1; __k < _ARM64_REG_WIDTH; ++__k) {
           if (__max_values[__k] > __max_value) {
             __max_value = __max_values[__k];
             __max_index = __indices[__k];
           }
         }
 
-        for (; __k < this->__shape_[__dim]; __k++) {
+        for (; __k < this->__shape_[__dim]; ++__k) {
           _s32 __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
 
           if (__v > __max_value) {
@@ -1159,9 +1158,9 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
       }
     }
   } else if constexpr (std::is_unsigned<value_type>::value) {
-    for (__i = 0; __i < __outer_size; __i++) {
+    for (__i = 0; __i < __outer_size; ++__i) {
       index_type __j = 0;
-      for (; __j < __inner_size; __j++) {
+      for (; __j < __inner_size; ++__j) {
         neon_u32   __max_vec       = vdupq_n_u32(-std::numeric_limits<_u32>::infinity());
         neon_u32   __index_vec     = vdupq_n_u32(0);
         neon_u32   __increment     = vdupq_n_u32(1);
@@ -1186,14 +1185,14 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
         _u32       __max_value = __max_values[0];
         index_type __max_index = __indices[0];
 
-        for (int __k = 1; __k < _ARM64_REG_WIDTH; __k++) {
+        for (int __k = 1; __k < _ARM64_REG_WIDTH; ++__k) {
           if (__max_values[__k] > __max_value) {
             __max_value = __max_values[__k];
             __max_index = __indices[__k];
           }
         }
 
-        for (; __k < this->__shape_[__dim]; __k++) {
+        for (; __k < this->__shape_[__dim]; ++__k) {
           _u32 __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
 
           if (__v > __max_value) {
@@ -1208,13 +1207,13 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
 
 #endif
   {
-    for (__i = 0; __i < __outer_size; __i++) {
+    for (__i = 0; __i < __outer_size; ++__i) {
       index_type __j = 0;
-      for (; __j < __inner_size; __j++) {
+      for (; __j < __inner_size; ++__j) {
         index_type __max_index = 0;
         value_type __max_value = this->__data_[__i * this->__shape_[__dim] * __inner_size + __j];
         index_type __k         = 1;
-        for (; __k < this->__shape_[__dim]; __k++) {
+        for (; __k < this->__shape_[__dim]; ++__k) {
           value_type __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
 
           if (__v > __max_value) {
@@ -1246,14 +1245,14 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type __dim) const {
   index_type __inner_size = 1;
   index_type __i          = 0;
 
-  for (; __i < __dim; __i++) __outer_size *= this->__shape_[__i];
+  for (; __i < __dim; ++__i) __outer_size *= this->__shape_[__i];
 
-  for (__i = __dim + 1; __i < static_cast<index_type>(this->__shape_.size()); __i++)
+  for (__i = __dim + 1; __i < static_cast<index_type>(this->__shape_.size()); ++__i)
     __inner_size *= this->__shape_[__i];
 #if defined(__AVX2__)
   if constexpr (std::is_same_v<_Tp, _f32>) {
-    for (__i = 0; __i < __outer_size; __i++) {
-      for (index_type __j = 0; __j < __inner_size; __j++) {
+    for (__i = 0; __i < __outer_size; ++__i) {
+      for (index_type __j = 0; __j < __inner_size; ++__j) {
         __m256     __max_vec = _mm256_set1_ps(-std::numeric_limits<_f32>::infinity());
         index_type __k       = 0;
 
@@ -1264,7 +1263,7 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type __dim) const {
         }
 
         _f32 __max_value = _mm256_reduce_max_ps(__max_vec);
-        for (; __k < this->__shape_[__dim]; __k++) {
+        for (; __k < this->__shape_[__dim]; ++__k) {
           _f32 __v    = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
           __max_value = std::max(__max_value, __v);
         }
@@ -1276,8 +1275,8 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type __dim) const {
 
 #elif defined(__ARM_NEON)
   if constexpr (std::is_floating_point<value_type>::value) {
-    for (__i = 0; __i < __outer_size; __i++) {
-      for (index_type __j = 0; __j < __inner_size; __j++) {
+    for (__i = 0; __i < __outer_size; ++__i) {
+      for (index_type __j = 0; __j < __inner_size; ++__j) {
         neon_f32   __max_vec = vdupq_n_f32(-std::numeric_limits<_f32>::infinity());
         index_type __k       = 0;
 
@@ -1288,7 +1287,7 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type __dim) const {
         }
 
         _f32 __max_value = vmaxvq_f32(__max_vec);
-        for (; __k < this->__shape_[__dim]; __k++) {
+        for (; __k < this->__shape_[__dim]; ++__k) {
           _f32 __v    = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
           __max_value = std::max(__max_value, __v);
         }
@@ -1297,8 +1296,8 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type __dim) const {
       }
     }
   } else if constexpr (std::is_signed<value_type>::value) {
-    for (__i = 0; __i < __outer_size; __i++) {
-      for (index_type __j = 0; __j < __inner_size; __j++) {
+    for (__i = 0; __i < __outer_size; ++__i) {
+      for (index_type __j = 0; __j < __inner_size; ++__j) {
         neon_s32   __max_vec = vdupq_n_s32(-std::numeric_limits<_s32>::infinity());
         index_type __k       = 0;
 
@@ -1309,7 +1308,7 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type __dim) const {
         }
 
         _s32 __max_value = vmaxvq_s32(__max_vec);
-        for (; __k < this->__shape_[__dim]; __k++) {
+        for (; __k < this->__shape_[__dim]; ++__k) {
           _s32 __v    = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
           __max_value = std::max(__max_value, __v);
         }
@@ -1318,8 +1317,8 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type __dim) const {
       }
     }
   } else if constexpr (std::is_unsigned<value_type>::value) {
-    for (__i = 0; __i < __outer_size; __i++) {
-      for (index_type __j = 0; __j < __inner_size; __j++) {
+    for (__i = 0; __i < __outer_size; ++__i) {
+      for (index_type __j = 0; __j < __inner_size; ++__j) {
         neon_u32   __max_vec = vdupq_n_u32(-std::numeric_limits<_u32>::infinity());
         index_type __k       = 0;
 
@@ -1330,7 +1329,7 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type __dim) const {
         }
 
         _u32 __max_value = vmaxvq_u32(__max_vec);
-        for (; __k < this->__shape_[__dim]; __k++) {
+        for (; __k < this->__shape_[__dim]; ++__k) {
           _u32 __v    = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
           __max_value = std::max(__max_value, __v);
         }
@@ -1342,12 +1341,12 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type __dim) const {
 
 #endif
   {
-    for (__i = 0; __i < __outer_size; __i++) {
+    for (__i = 0; __i < __outer_size; ++__i) {
       index_type __j = 0;
-      for (; __j < __inner_size; __j++) {
+      for (; __j < __inner_size; ++__j) {
         value_type __max_value = this->__data_[__i * this->__shape_[__dim] * __inner_size + __j];
         index_type __k         = 1;
-        for (; __k < this->__shape_[__dim]; __k++) {
+        for (; __k < this->__shape_[__dim]; ++__k) {
           value_type __v = this->__data_[(__i * this->__shape_[__dim] + __k) * __inner_size + __j];
 
           if (__v > __max_value) __max_value = __v;
@@ -1383,8 +1382,8 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
   const index_type __inner_size = this->size(0) / (__outer_size * __axis_size);
 
   if constexpr (std::is_floating_point<value_type>::value) {
-    for (index_type __outer = 0; __outer < __outer_size; __outer++) {
-      for (index_type __inner = 0; __inner < __inner_size; __inner++) {
+    for (index_type __outer = 0; __outer < __outer_size; ++__outer) {
+      for (index_type __inner = 0; __inner < __inner_size; ++__inner) {
         neon_f32   __sum_vec = vdupq_n_f32(0.0f);
         index_type __i       = __outer * __axis_size * __inner_size + __inner;
         index_type __j       = 0;
@@ -1397,7 +1396,7 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
 
         _f32 __sum = vaddvq_f32(__sum_vec);
 
-        for (; __j < __axis_size; __j++) {
+        for (; __j < __axis_size; ++__j) {
           __sum += this->__data_[__i];
           __i += __inner_size;
         }
@@ -1406,8 +1405,8 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
       }
     }
   } else if constexpr (std::is_signed<value_type>::value) {
-    for (index_type __outer = 0; __outer < __outer_size; __outer++) {
-      for (index_type __inner = 0; __inner < __inner_size; __inner++) {
+    for (index_type __outer = 0; __outer < __outer_size; ++__outer) {
+      for (index_type __inner = 0; __inner < __inner_size; ++__inner) {
         neon_s32   __sum_vec = vdupq_n_s32(0);
         index_type __i       = __outer * __axis_size * __inner_size + __inner;
         index_type __j       = 0;
@@ -1420,7 +1419,7 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
 
         _s32 __sum = vaddvq_s32(__sum_vec);
 
-        for (; __j < __axis_size; __j++) {
+        for (; __j < __axis_size; ++__j) {
           __sum += this->__data_[__i];
           __i += __inner_size;
         }
@@ -1429,8 +1428,8 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
       }
     }
   } else if constexpr (std::is_unsigned<value_type>::value) {
-    for (index_type __outer = 0; __outer < __outer_size; __outer++) {
-      for (index_type __inner = 0; __inner < __inner_size; __inner++) {
+    for (index_type __outer = 0; __outer < __outer_size; ++__outer) {
+      for (index_type __inner = 0; __inner < __inner_size; ++__inner) {
         neon_u32   __sum_vec = vdupq_n_u32(0);
         index_type __i       = __outer * __axis_size * __inner_size + __inner;
         index_type __j       = 0;
@@ -1443,7 +1442,7 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
 
         _u32 __sum = vaddvq_u32(__sum_vec);
 
-        for (; __j < __axis_size; __j++) {
+        for (; __j < __axis_size; ++__j) {
           __sum += this->__data_[__i];
           __i += __inner_size;
         }
@@ -1454,7 +1453,7 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
   } else {
 #endif
     index_type __i = 0;
-    for (; __i < static_cast<index_type>(this->__data_.size()); __i++) {
+    for (; __i < static_cast<index_type>(this->__data_.size()); ++__i) {
       std::vector<index_type> __orig(this->__shape_.size());
       index_type              __index = __i;
       index_type              __j     = static_cast<index_type>(this->__shape_.size()) - 1;
@@ -1494,7 +1493,6 @@ tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __sta
   index_type __end_i   = __end.value_or(__s);
 
   if (__start_i < 0) __start_i += __s;
-
   if (__end_i < 0) __end_i += __s;
 
   __start_i               = std::max(index_type(0), std::min(__start_i, __s));
@@ -1538,7 +1536,7 @@ tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __sta
       }
 
       for (index_type __i = __vector_end, __j = __vector_end - __start_i; __i < __end_i;
-           __i++, __j++)
+           ++__i, ++__j)
         __ret.__data_[__j] = this->__data_[__i];
     } else if constexpr (std::is_signed<value_type>::value && __step == 1) {
       for (index_type __i = __start_i, __j = 0; __i < __vector_end;
@@ -1554,13 +1552,13 @@ tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __sta
       }
     }
 
-    for (index_type __i = __vector_end, __j = __vector_end - __start_i; __i < __end_i; __i++, __j++)
+    for (index_type __i = __vector_end, __j = __vector_end - __start_i; __i < __end_i; ++__i, ++__j)
       __ret.__data_[__j] = this->__data_[__i];
 
 #endif
     index_type __i = __start_i, __j = 0;
 
-    for (; __i < __end_i; __i += __step, __j++) __ret({__j}) = this->at({__i});
+    for (; __i < __end_i; __i += __step, ++__j) __ret({__j}) = this->at({__i});
 #if defined(__CUDACC__)
   }
 #endif
@@ -1585,15 +1583,15 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_type __dim) const {
         _mm256_storeu_ps(&__ret[__i], __result);
       }
 
-      for (; __i < __flat.size(); __i++) __ret[__i] = __ret[__i - 1] * __flat[__i];
+      for (; __i < __flat.size(); ++__i) __ret[__i] = __ret[__i - 1] * __flat[__i];
     } else {
       index_type __i = 1;
-      for (; __i < __flat.size(); __i++) __ret[__i] = __ret[__i - 1] * __flat[__i];
+      for (; __i < __flat.size(); ++__i) __ret[__i] = __ret[__i - 1] * __flat[__i];
     }
 #else
     index_type __i = 1;
 
-    for (; __i < __flat.size(); __i++) __ret[__i] = __ret[__i - 1] * __flat[__i];
+    for (; __i < __flat.size(); ++__i) __ret[__i] = __ret[__i - 1] * __flat[__i];
 #endif
 
     return __self(__ret, {__flat.size()});
@@ -1610,7 +1608,7 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_type __dim) const {
 #if defined(__AVX2__)
 
     if constexpr (std::is_same_v<_Tp, _f32>) {
-      for (index_type __i = 0; __i < __outer_size; __i++) {
+      for (index_type __i = 0; __i < __outer_size; ++__i) {
         index_type __base = __i * __st;
         __ret[__base]     = __data_[__base];
         index_type __j    = 1;
@@ -1622,7 +1620,7 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_type __dim) const {
           _mm256_storeu_ps(&__ret[__base + __j], __result);
         }
 
-        for (; __j < __inner_size; __j++) {
+        for (; __j < __inner_size; ++__j) {
           index_type __curr = __base + __j;
           __ret[__curr]     = __ret[__base + __j - 1] * __data_[__curr];
         }
@@ -1632,7 +1630,7 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_type __dim) const {
         index_type __base = __i * __st;
         __ret[__base]     = __data_[__base];
 
-        for (index_type __j = 1; __j < __inner_size; __j++) {
+        for (index_type __j = 1; __j < __inner_size; ++__j) {
           index_type __curr = __base + __j;
           __ret[__curr]     = __ret[__base + __j - 1] * __data_[__curr];
         }
@@ -1642,12 +1640,12 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_type __dim) const {
 #else
     index_type __i = 0;
 
-    for (; __i < __outer_size; __i++) {
+    for (; __i < __outer_size; ++__i) {
       index_type __base = __i * __st;
       __ret[__base]     = __data_[__base];
       index_type __j    = 1;
 
-      for (; __j < __inner_size; __j++) {
+      for (; __j < __inner_size; ++__j) {
         index_type __curr = __base + __j;
         __ret[__curr]     = __ret[__base + __j - 1] * __data_[__curr];
       }
@@ -1662,11 +1660,10 @@ template <class _Tp>
 tensor<_Tp> tensor<_Tp>::cat(const std::vector<tensor<_Tp>>& __others, index_type __dim) const {
   for (const tensor& __t : __others) {
     index_type __i = 0;
-    for (; __i < this->__shape_.size(); __i++) {
+    for (; __i < this->__shape_.size(); ++__i)
       if (__i != __dim && this->__shape_[__i] != __t.__shape_[__i])
         throw std::invalid_argument(
             "Cannot concatenate tensors with different shapes along non-concatenation dimensions");
-    }
   }
 
   shape_type __ret_sh = this->__shape_;
@@ -1687,15 +1684,15 @@ tensor<_Tp>& tensor<_Tp>::transpose_() {
   if (this->__shape_.size() != 2)
     throw std::runtime_error("Transpose operation is only valid for 2D tensors");
 
-  const auto rows = this->__shape_[0];
-  const auto cols = this->__shape_[1];
+  const index_type __rows = this->__shape_[0];
+  const index_type __cols = this->__shape_[1];
 
-  if (rows != cols)
+  if (__rows != __cols)
     throw std::runtime_error("In-place transpose is only supported for square tensors");
 
-  for (index_type i = 0; i < rows; i++)
-    for (index_type j = i + 1; j < cols; j++)
-      std::swap(this->__data_[i * cols + j], this->__data_[j * cols + i]);
+  for (index_type __i = 0; __i < __rows; ++__i)
+    for (index_type __j = __i + 1; __j < __cols; ++__j)
+      std::swap(this->__data_[__i * __cols + __j], this->__data_[__j * __cols + __i]);
 
   return *this;
 }
@@ -1708,14 +1705,12 @@ inline const tensor<_Tp>& tensor<_Tp>::transpose_() const {
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::log_softmax_(const index_type __dim) {
   assert(__dim < this->__shape_.size() && "Dimension out of range for log_softmax");
-
   tensor __max_values  = this->argmax_(__dim);
   tensor __shifted     = *this - __max_values.expand_as(this->__shape_, __dim);
   tensor __exp_values  = __shifted.exp();
   tensor __sum_exp     = __exp_values.sum(__dim);
   tensor __log_sum_exp = __sum_exp.log();
   *this                = __shifted - __log_sum_exp.expand_as(this->__shape_, __dim);
-
   return *this;
 }
 
@@ -1729,21 +1724,21 @@ tensor<_Tp> tensor<_Tp>::det() const {
   if (this->__shape_.size() != 2 || this->__shape_[0] != this->__shape_[1])
     throw std::invalid_argument("det: tensor must be a square matrix (n x n)");
 
-  index_type n = this->__shape_[0];
+  index_type __n = this->__shape_[0];
 
-  if (n == 2)
+  if (__n == 2)
     return tensor<_Tp>(this->__data_[0] * this->__data_[3] - this->__data_[1] * this->__data_[2]);
 
-  value_type determinant = 0;
-  tensor     minor;
+  value_type __determinant = 0;
+  tensor     __minor;
 
-  for (index_type col = 0; col < n; ++col) {
-    minor           = this->get_minor(0, col);
-    value_type sign = (col % 2 == 0) ? 1 : -1;
-    determinant += sign * this->__data_[col] * minor.det();
+  for (index_type __col = 0; __col < __n; ++__col) {
+    __minor           = this->get_minor(0, __col);
+    value_type __sign = (__col % 2 == 0) ? 1 : -1;
+    __determinant += __sign * this->__data_[__col] * __minor.det();
   }
 
-  return __self(determinant);
+  return __self(__determinant);
 }
 
 template <class _Tp>
