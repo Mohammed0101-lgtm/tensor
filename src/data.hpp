@@ -4,7 +4,7 @@
 
 template <class _Tp>
 inline tensor<_Tp> tensor<_Tp>::reshape_as(const tensor& __other) const {
-  return this->reshape(__other.__shape_);
+  return this->reshape(__other.shape());
 }
 
 template <class _Tp>
@@ -239,7 +239,7 @@ tensor<_Tp> tensor<_Tp>::row(const index_type __index) const {
 
   for (; __i < __end; ++__i) __r.push_back(this->__data_[__i]);
 
-  return __self(__r, {this->__shape_[1]});
+  return __self({this->__shape_[1]}, __r);
 }
 
 template <class _Tp>
@@ -256,7 +256,7 @@ tensor<_Tp> tensor<_Tp>::col(const index_type __index) const {
   for (; __i < this->__shape_[0]; ++__i)
     __c.push_back(this->__data_[this->__compute_index({__i, __index})]);
 
-  return __self(__c, {this->__shape_[0]});
+  return __self({this->__shape_[0]}, __c);
 }
 
 template <class _Tp>
