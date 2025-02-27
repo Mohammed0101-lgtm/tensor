@@ -83,8 +83,8 @@ typename tensor<_Tp>::index_type tensor<_Tp>::count_nonzero(index_type __dim) co
     }
 #endif
 #pragma omp parallel for reduction(+ : __local_count)
-    for (index_type __j = __i; __j < this->__data_.size(); __j++)
-      if (this->__data_[__j] != 0) __local_count++;
+    for (index_type __j = __i; __j < this->__data_.size(); ++__j)
+      if (this->__data_[__j] != 0) ++__local_count;
 
     __c += __local_count;
   } else {
@@ -103,7 +103,7 @@ inline tensor<_Tp>& tensor<_Tp>::push_back(value_type __v) const {
     throw std::range_error("push_back is only supported for one dimensional tensors");
 
   this->__data_.push_back(__v);
-  this->__shape_[0]++;
+  ++this->__shape_[0];
   this->__compute_strides();
   return *this;
 }
@@ -147,7 +147,7 @@ tensor<_Tp>& tensor<_Tp>::zeros_(shape_type __sh) {
   }
 #endif
 
-  for (; __i < __s; __i++) this->__data_[__i] = value_type(0.0);
+  for (; __i < __s; ++__i) this->__data_[__i] = value_type(0.0);
 
   return *this;
 }
@@ -193,7 +193,7 @@ tensor<_Tp>& tensor<_Tp>::ones_(shape_type __sh) {
   }
 #endif
 
-  for (; __i < __s; __i++) this->__data_[__i] = value_type(1.0);
+  for (; __i < __s; ++__i) this->__data_[__i] = value_type(1.0);
 
   return *this;
 }
@@ -218,7 +218,7 @@ inline typename tensor<_Tp>::index_type tensor<_Tp>::hash() const {
 
   index_type __i = 0;
 
-  for (; __i < this->__data_.size(); __i++)
+  for (; __i < this->__data_.size(); ++__i)
     __hash_val ^= __hasher(this->__data_[__i]) + 0x9e3779b9 + (__hash_val << 6) + (__hash_val >> 2);
 
   return __hash_val;
@@ -237,7 +237,7 @@ tensor<_Tp> tensor<_Tp>::row(const index_type __index) const {
   index_type __end   = this->__shape_[1] * __index + this->__shape_[1];
   index_type __i     = __start;
 
-  for (; __i < __end; __i++) __r.push_back(this->__data_[__i]);
+  for (; __i < __end; ++__i) __r.push_back(this->__data_[__i]);
 
   return __self(__r, {this->__shape_[1]});
 }
@@ -253,7 +253,7 @@ tensor<_Tp> tensor<_Tp>::col(const index_type __index) const {
   data_t     __c;
   index_type __i = 0;
 
-  for (; __i < this->__shape_[0]; __i++)
+  for (; __i < this->__shape_[0]; ++__i)
     __c.push_back(this->__data_[this->__compute_index({__i, __index})]);
 
   return __self(__c, {this->__shape_[0]});
@@ -368,7 +368,7 @@ tensor<_Tp>& tensor<_Tp>::randomize_(const shape_type& __sh, bool __bounded) {
   }
 #endif
 
-  for (; __i < static_cast<index_type>(__s); __i++)
+  for (; __i < static_cast<index_type>(__s); ++__i)
     this->__data_[__i] = value_type(__bounded ? __bounded_dist(__gen) : __unbounded_dist(__gen));
 
   return *this;
@@ -419,7 +419,7 @@ tensor<_Tp>& tensor<_Tp>::negative_() {
 
 #endif
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] = -this->__data_[__i];
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = -this->__data_[__i];
 
   return *this;
 }
@@ -472,14 +472,14 @@ tensor<_Tp>& tensor<_Tp>::repeat_(const data_t& __d, int __dim) {
   unsigned int __nbatches  = __total_size / __d.size();
   size_t       __remainder = __total_size % __d.size();
 
-  for (unsigned int __i = 0; __i < __nbatches; __i++) {
-    for (size_t __j = __start, __k = 0; __k < __d.size(); __j++, __k++)
+  for (unsigned int __i = 0; __i < __nbatches; ++__i) {
+    for (size_t __j = __start, __k = 0; __k < __d.size(); ++__j, ++__k)
       this->__data_[__j] = __d[__k];
 
     __start += __d.size();
   }
 
-  for (size_t __j = __start, __k = 0; __j < __total_size && __k < __remainder; __j++, __k++)
+  for (size_t __j = __start, __k = 0; __j < __total_size && __k < __remainder; ++__j, ++__k)
     this->__data_[__j] = __d[__k];
 
   return *this;
@@ -521,7 +521,7 @@ tensor<_Tp> tensor<_Tp>::all() const {
   bool       __result = true;
   index_type __i      = 0;
 
-  for (; __i < this->__data_.size(); __i++) {
+  for (; __i < this->__data_.size(); ++__i) {
     if (this->__data_[__i] == static_cast<value_type>(0)) {
       __result = false;
       break;
@@ -558,7 +558,7 @@ tensor<_Tp> tensor<_Tp>::gcd(const tensor& __other) const {
   tensor     __ret = this->clone();
   index_type __i   = 0;
 
-  for (; __i < this->__data_.size(); __i++) {
+  for (; __i < this->__data_.size(); ++__i) {
     index_type __gcd__ = static_cast<index_type>(this->__data_[__i] * __other[__i]);
     index_type __lcm__ =
         __lcm(static_cast<index_type>(this->__data_[__i]), static_cast<index_type>(__other[__i]));
@@ -574,7 +574,7 @@ tensor<_Tp> tensor<_Tp>::gcd(const value_type __val) const {
   tensor     __ret = this->clone();
   index_type __i   = 0;
 
-  for (; __i < this->__data_.size(); __i++) {
+  for (; __i < this->__data_.size(); ++__i) {
     index_type __gcd__ = static_cast<index_type>(this->__data_[__i] * __val);
     index_type __lcm__ =
         __lcm(static_cast<index_type>(this->__data_[__i]), static_cast<index_type>(__val));
