@@ -75,7 +75,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) __d[__i] = this->__data_[__i] + __other[__i];
+  for (; __i < this->__data_.size(); ++__i) __d[__i] = this->__data_[__i] + __other[__i];
 
   return __self(this->__shape_, __d);
 }
@@ -120,7 +120,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const value_type __val) const {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) __d[__i] = this->__data_[__i] + __val;
+  for (; __i < this->__data_.size(); ++__i) __d[__i] = this->__data_[__i] + __val;
 
   return __self(__d, this->__shape_);
 }
@@ -131,7 +131,7 @@ tensor<_Tp> tensor<_Tp>::operator*(const value_type __val) const {
   data_t     __d(this->__data_.size());
   index_type __i = 0;
 
-  for (; __i < this->__data_.size(); __i++) __d[__i] = this->__data_[__i] + __val;
+  for (; __i < this->__data_.size(); ++__i) __d[__i] = this->__data_[__i] + __val;
 
   return __self(this->__shape_, __d);
 }
@@ -143,7 +143,7 @@ tensor<_Tp> tensor<_Tp>::operator*(const tensor& __other) const {
   data_t     __d(this->__data_.size());
   index_type __i = 0;
 
-  for (; __i < this->__data_.size(); __i++) __d[__i] = this->__data_[__i] * __other[__i];
+  for (; __i < this->__data_.size(); ++__i) __d[__i] = this->__data_[__i] * __other[__i];
 
   return __self(this->__shape_, __d);
 }
@@ -159,7 +159,7 @@ tensor<_Tp>& tensor<_Tp>::operator+=(const tensor& __other) const {
 
 #endif
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] += __other[__i];
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] += __other[__i];
 
   return *this;
 }
@@ -202,7 +202,7 @@ tensor<_Tp>& tensor<_Tp>::operator+=(const_reference __val) const {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] = this->__data_[__i] + __val;
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = this->__data_[__i] + __val;
 
   return *this;
 }
@@ -247,7 +247,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
   }
 #endif
 
-  for (; __i < this->__data_[__i]; __i++) __d[__i] = this->__data_[__i] - __other[__i];
+  for (; __i < this->__data_[__i]; ++__i) __d[__i] = this->__data_[__i] - __other[__i];
 
   return __self(this->__shape_, __d);
 }
@@ -291,7 +291,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const value_type __val) const {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) __d[__i] = this->__data_[__i] - __val;
+  for (; __i < this->__data_.size(); ++__i) __d[__i] = this->__data_[__i] - __val;
 
   return __self(*this);
 }
@@ -332,7 +332,7 @@ tensor<_Tp>& tensor<_Tp>::operator-=(const tensor& __other) const {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] -= __other[__i];
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] -= __other[__i];
 
   return *this;
 }
@@ -373,7 +373,7 @@ tensor<_Tp>& tensor<_Tp>::operator*=(const tensor& __other) const {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] *= __other[__i];
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] *= __other[__i];
 
   return *this;
 }
@@ -388,7 +388,7 @@ tensor<_Tp> tensor<_Tp>::operator/(const_reference __val) const {
   data_t     __d(this->__data_.size());
   index_type __i = 0;
 
-  for (; __i < this->__data_.size(); __i++) __d[__i] = this->__data_[__i] / __val;
+  for (; __i < this->__data_.size(); ++__i) __d[__i] = this->__data_[__i] / __val;
 
   return __self(this->__shape_, __d);
 }
@@ -402,7 +402,7 @@ tensor<_Tp>& tensor<_Tp>::operator*=(const_reference __val) const {
 
 #endif
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] *= __val;
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] *= __val;
 
   return *this;
 }
@@ -413,7 +413,7 @@ tensor<_Tp>& tensor<_Tp>::operator/=(const tensor& __other) const {
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] /= __other[__i];
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] /= __other[__i];
 
   return *this;
 }
@@ -423,7 +423,7 @@ tensor<_Tp>& tensor<_Tp>::operator/=(const_reference __val) const {
   static_assert(has_divide_operator_v<value_type>);
   index_type __i = 0;
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] /= __val;
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] /= __val;
 
   return *this;
 }
@@ -440,7 +440,7 @@ tensor<_Tp> tensor<_Tp>::operator/(const tensor& __other) const {
   data_t     __d(this->__data_.size());
   index_type __i = 0;
 
-  for (; __i < this->__data_.size(); __i++) __d[__i] = this->__data_[__i] / __other[__i];
+  for (; __i < this->__data_.size(); ++__i) __d[__i] = this->__data_[__i] / __other[__i];
 
   return __self(this->__shape_, __d);
 }
@@ -483,7 +483,7 @@ tensor<_Tp>& tensor<_Tp>::operator-=(const_reference __val) const {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] -= __val;
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] -= __val;
 
   return *this;
 }
@@ -511,7 +511,7 @@ tensor<bool>& tensor<_Tp>::operator!() const {
 #if defined(__ARM_NEON)
 #endif
   size_t __i = 0;
-  for (; __i < this->__data_.size(); __i++) this->__data_[__i] = !(this->__data_[__i]);
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = !(this->__data_[__i]);
 
   return *this;
 }
