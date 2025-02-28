@@ -257,6 +257,27 @@ TEST(TensorTest, LogicalTest) {
   EXPECT_EQ(logical_and, tensor<bool>({2, 2}, {false, false, false, false}));
 }
 
+TEST(TensorTest, LessEqualTest) {
+  tensor<int> t({2, 2}, {1, 2, 3, 4});
+  tensor<int> other({2, 2}, {1, 2, 3, 4});
+  tensor<bool> expected({2, 2}, {true, true, true, true});
+  EXPECT_EQ(t.less_equal(other), expected);
+}
+
+TEST(TensorTest, LessEqualTest1) {
+  tensor<int> t({2, 2}, {1, 2, 3, 4});
+  tensor<int> other1({2, 2}, {2, 3, 4, 5});
+  tensor<bool> expected1({2, 2}, {false, false, false, false});
+  EXPECT_EQ(t.less_equal(other1), expected1);
+}
+
+TEST(TensorTest, LessEqualTest2) {
+  tensor<int> t({2, 2}, {1, 2, 3, 4});
+  tensor<int> other2({2, 2}, {0, 3, 2, 6});
+  tensor<bool> expected2({2, 2}, {true, false, true, false});
+  EXPECT_EQ(t.less_equal(other2), expected2);
+}
+
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
