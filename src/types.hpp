@@ -71,7 +71,7 @@ tensor<_s32> tensor<_Tp>::int32_() const {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) __d.push_back(static_cast<_s32>(this->__data_[__i]));
+  for (; __i < this->__data_.size(); ++__i) __d.push_back(static_cast<_s32>(this->__data_[__i]));
 
   return tensor<_s32>(this->__shape_, __d);
 }
@@ -105,7 +105,7 @@ tensor<_u32> tensor<_Tp>::uint32_() const {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) __d[__i] = static_cast<_u32>(this->__data_[__i]);
+  for (; __i < this->__data_.size(); ++__i) __d[__i] = static_cast<_u32>(this->__data_[__i]);
 
   return tensor<_u32>(this->__shape_, __d);
 }
@@ -146,7 +146,7 @@ tensor<_f32> tensor<_Tp>::float32_() const {
   }
 #endif
 
-  for (; __i < this->__data_.size(); __i++) __d[__i] = static_cast<_f32>(this->__data_[__i]);
+  for (; __i < this->__data_.size(); ++__i) __d[__i] = static_cast<_f32>(this->__data_[__i]);
 
   return tensor<_f32>(this->__shape_, __d);
 }
@@ -172,7 +172,7 @@ tensor<_f64> tensor<_Tp>::double_() const {
 
 #endif
 
-  for (; __i < this->__data_.size(); __i++) __d[__i] = static_cast<_f64>(this->__data_[__i]);
+  for (; __i < this->__data_.size(); ++__i) __d[__i] = static_cast<_f64>(this->__data_[__i]);
 
   return tensor<_f64>(this->__shape_, __d);
 }
@@ -211,7 +211,7 @@ tensor<uint64_t> tensor<_Tp>::unsigned_long_() const {
 
 #endif
 
-  for (; __i < this->__data_.size(); __i++) __d[__i] = static_cast<uint64_t>(this->__data_[__i]);
+  for (; __i < this->__data_.size(); ++__i) __d[__i] = static_cast<uint64_t>(this->__data_[__i]);
 
   return tensor<uint64_t>(this->__shape_, __d);
 }
@@ -262,7 +262,7 @@ tensor<int64_t> tensor<_Tp>::long_() const {
 
 #endif
 
-  for (; __i < this->__data_.size(); __i++) __d[__i] = static_cast<int64_t>(this->__data_[__i]);
+  for (; __i < this->__data_.size(); ++__i) __d[__i] = static_cast<int64_t>(this->__data_[__i]);
 
   return tensor<int64_t>(this->__shape_, __d);
 }
@@ -273,7 +273,7 @@ tensor<bool> tensor<_Tp>::bool_() const {
 
   static_assert(std::is_convertible<value_type, bool>::value);
 
-  for (index_type __i = 0; __i < this->__data_.size(); __i++)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     __d.push_back(static_cast<bool>(this->__data_[__i]));
 
   return tensor<bool>(this->__shape_, __d);
