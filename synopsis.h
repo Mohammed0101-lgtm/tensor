@@ -2,9 +2,8 @@
 //  tensor synopsis
 //
 
-template<class _Tp>
-class tensor
-{
+template <class _Tp>
+class tensor {
  public:
   using __self                 = tensor;
   using value_t                = _Tp;
@@ -38,11 +37,9 @@ class tensor
   tensor(const shape_t& __sh, const tensor& __other);
 
  private:
-  class __destroy_tensor
-  {
+  class __destroy_tensor {
    public:
-    explicit __destroy_tensor(tensor& __tens) :
-        __tens_(__tens) {}
+    explicit __destroy_tensor(tensor& __tens) : __tens_(__tens) {}
 
     void operator()() {}
 
@@ -129,9 +126,8 @@ class tensor
   tensor&       operator=(tensor&& __other) const noexcept;
   tensor<bool>& operator!() const;
 
-
-  tensor
-  slice(index_type __dim, std::optional<index_type> __start, std::optional<index_type> __end, index_type __step) const;
+  tensor slice(index_type __dim, std::optional<index_type> __start, std::optional<index_type> __end,
+               index_type __step) const;
   tensor fmax(const tensor& __other) const;
   tensor fmax(const value_type __val) const;
   tensor fmod(const tensor& __other) const;
@@ -308,7 +304,7 @@ class tensor
   static void      __check_is_arithmetic_type(const std::string __msg);
   static void      __check_is_scalar_type(const std::string __msg);
   static void      __check_is_integral_type(const std::string __msg);
-  template<typename __t>
+  template <typename __t>
   size_t   computeStride(size_t dim, const shape_t& shape) const;
   void     printRecursive(size_t index, size_t depth, const shape_t& shape) const;
   void     __compute_strides();
