@@ -208,40 +208,37 @@ tensor<bool> tensor<_Tp>::less_equal(const tensor& __other) const {
   index_type        __i = 0;
 
 #if defined(__ARM_NEON)
-
-  size_t vector_size = this->__data_.size() / _ARM64_REG_WIDTH * _ARM64_REG_WIDTH;
+  size_t __vs = this->__data_.size() / _ARM64_REG_WIDTH * _ARM64_REG_WIDTH;
 
   if constexpr (std::is_same_v<value_type, _f32>) {
-    for (; __i < vector_size; __i += _ARM64_REG_WIDTH) {
-      neon_f32 vec_a    = vld1q_f32(this->__data_.data() + __i);
-      neon_f32 vec_b    = vld1q_f32(__other.__data_.data() + __i);
-      neon_u32 leq_mask = vcleq_f32(vec_a, vec_b);
-      vst1q_u32(&__ret[__i], leq_mask);
+    for (; __i < __vs; __i += _ARM64_REG_WIDTH) {
+      neon_f32 __va       = vld1q_f32(this->__data_.data() + __i);
+      neon_f32 __vb       = vld1q_f32(__other.__data_.data() + __i);
+      neon_u32 __leq_mask = vcleq_f32(__va, __vb);
+      vst1q_u32(&__ret[__i], __leq_mask);
     }
   } else if constexpr (std::is_same_v<value_type, _s32>) {
-    for (; __i < vector_size; __i += _ARM64_REG_WIDTH) {
-      neon_s32 vec_a    = vld1q_s32(this->__data_.data() + __i);
-      neon_s32 vec_b    = vld1q_s32(__other.__data_.data() + __i);
-      neon_u32 leq_mask = vcleq_s32(vec_a, vec_b);
-      vst1q_u32(&__ret[__i], leq_mask);
+    for (; __i < __vs; __i += _ARM64_REG_WIDTH) {
+      neon_s32 __va       = vld1q_s32(this->__data_.data() + __i);
+      neon_s32 __vb       = vld1q_s32(__other.__data_.data() + __i);
+      neon_u32 __leq_mask = vcleq_s32(__va, __vb);
+      vst1q_u32(&__ret[__i], __leq_mask);
     }
   } else if constexpr (std::is_same_v<value_type, _u32>) {
-    for (; __i < vector_size; __i += _ARM64_REG_WIDTH) {
-      neon_u32 vec_a    = vld1q_u32(this->__data_.data() + __i);
-      neon_u32 vec_b    = vld1q_u32(__other.__data_.data() + __i);
-      neon_u32 leq_mask = vcleq_u32(vec_a, vec_b);
-      vst1q_u32(&__ret[__i], leq_mask);
+    for (; __i < __vs; __i += _ARM64_REG_WIDTH) {
+      neon_u32 __va       = vld1q_u32(this->__data_.data() + __i);
+      neon_u32 __vb       = vld1q_u32(__other.__data_.data() + __i);
+      neon_u32 __leq_mask = vcleq_u32(__va, __vb);
+      vst1q_u32(&__ret[__i], __leq_mask);
     }
   }
 #endif
+  std::vector<bool> __d(this->__data_.size());
 
-  for (; __i < this->__data_.size(); ++__i)
-    __ret[__i] = (this->__data_[__i] <= __other[__i]) ? 1 : 0;
+  for (; __i < __d.size(); ++__i)
+    __d[__i] = (this->__data_[__i] <= __other[__i]) ? true : false;
 
-  std::vector<bool> __to_bool(__ret.size());
-  for (int i = __i; i >= 0; i--) __to_bool[i] = __ret[i] == 1 ? true : false;
-
-  return tensor<bool>(__to_bool, this->__shape_);
+  return tensor<bool>(this->__shape_, __d);
 }
 
 template <class _Tp>
