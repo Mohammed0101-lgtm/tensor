@@ -1,8 +1,0 @@
-[
-{
-  "directory": "/Users/mohamedrabbit/tensor/build",
-  "command": "/usr/bin/clang++ -isystem /opt/homebrew/include  -Xclang -fopenmp -g -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -Xclang -fopenmp -o CMakeFiles/tensor_test.dir/tensor_test.cpp.o -c /Users/mohamedrabbit/tensor/tensor_test.cpp",
-  "file": "/Users/mohamedrabbit/tensor/tensor_test.cpp",
-  "output": "CMakeFiles/tensor_test.dir/tensor_test.cpp.o"
-}
-]
