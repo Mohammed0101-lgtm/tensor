@@ -1361,7 +1361,12 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type __dim) const {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::pop_back() const {
+  if (this->__shape_.size() != 1)
+    throw std::range_error("push_back is only supported for one dimensional tensors");
+
   this->__data_.pop_back();
+  --(this->__shape_[0]);
+  this->__compute_strides();
   return *this;
 }
 
@@ -1676,7 +1681,7 @@ tensor<_Tp> tensor<_Tp>::cat(const std::vector<tensor<_Tp>>& __others, index_typ
 
   for (const tensor& __t : __others) __c.insert(__c.end(), __t.__data_.begin(), __t.__data_.end());
 
-  return __self(__c, __ret_sh);
+  return __self(__ret_sh, __c);
 }
 
 template <class _Tp>
