@@ -327,7 +327,7 @@ operator+, operator-, operator*, operator/: Perform element-wise operations.
 ```cpp
 matmul(const Tensor<T>& other) 
 ```
-Performs matrix multiplication.
+Performs matrix transposition.
 
 ```cpp
 transpose()
