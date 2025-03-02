@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+#include <iostream>
+
 TEST(TensorTest, StorageTest) {
   tensor<int> t({5}, {1, 2, 3, 4, 5});
 
@@ -42,10 +44,10 @@ TEST(TensorTest, StridesTest) {
 
 TEST(TensorTest, DeviceTest) {
   tensor<int> t({4}, {1, 2, 3, 4});
-  tensor<int> q({4}, {1, 2, 3, 4}, Device::CUDA);
+  tensor<int> q({4}, {1, 2, 3, 4}, tensor<int>::Device::CUDA);
 
-  EXPECT_EQ(t.device(), Device::CPU);
-  EXPECT_EQ(q.device(), Device::CUDA);
+  EXPECT_EQ(t.device(), tensor<int>::Device::CPU);
+  EXPECT_EQ(q.device(), tensor<int>::Device::CUDA);
 }
 
 TEST(TensorTest, NdimsTest) {
@@ -259,23 +261,205 @@ TEST(TensorTest, LogicalTest) {
 
 TEST(TensorTest, LessEqualTest) {
   tensor<int> t({2, 2}, {1, 2, 3, 4});
+
   tensor<int> other({2, 2}, {1, 2, 3, 4});
-  tensor<bool> expected({2, 2}, {true, true, true, true});
-  EXPECT_EQ(t.less_equal(other), expected);
-}
-
-TEST(TensorTest, LessEqualTest1) {
-  tensor<int> t({2, 2}, {1, 2, 3, 4});
   tensor<int> other1({2, 2}, {2, 3, 4, 5});
-  tensor<bool> expected1({2, 2}, {false, false, false, false});
+  tensor<int> other2({2, 2}, {0, 3, 2, 6});
+
+  tensor<bool> expected({2, 2}, {true, true, true, true});
+  tensor<bool> expected1({2, 2}, {true, true, true, true});
+  tensor<bool> expected2({2, 2}, {false, true, false, true});
+
+  EXPECT_EQ(t.less_equal(other), expected);
   EXPECT_EQ(t.less_equal(other1), expected1);
+  EXPECT_EQ(t.less_equal(other2), expected2);
 }
 
-TEST(TensorTest, LessEqualTest2) {
+TEST(TensorTest, GreaterEqualTest) {
   tensor<int> t({2, 2}, {1, 2, 3, 4});
+
+  tensor<int> other({2, 2}, {1, 2, 3, 4});
+  tensor<int> other1({2, 2}, {2, 3, 4, 5});
   tensor<int> other2({2, 2}, {0, 3, 2, 6});
+
+  tensor<bool> expected({2, 2}, {true, true, true, true});
+  tensor<bool> expected1({2, 2}, {false, false, false, false});
   tensor<bool> expected2({2, 2}, {true, false, true, false});
-  EXPECT_EQ(t.less_equal(other2), expected2);
+
+  EXPECT_EQ(t.greater_equal(other), expected);
+  EXPECT_EQ(t.greater_equal(other1), expected1);
+  EXPECT_EQ(t.greater_equal(other2), expected2);
+}
+
+TEST(TensorTest, EqualTest) {
+  tensor<int> t({2, 2}, {1, 2, 3, 4});
+
+  tensor<int> other({2, 2}, {1, 2, 3, 4});
+  tensor<int> other1({2, 2}, {2, 3, 4, 5});
+  tensor<int> other2({2, 2}, {0, 3, 2, 6});
+
+  tensor<bool> expected({2, 2}, {true, true, true, true});
+  tensor<bool> expected1({2, 2}, {false, false, false, false});
+  tensor<bool> expected2({2, 2}, {false, false, false, false});
+
+  EXPECT_EQ(t.equal(other), expected);
+  EXPECT_EQ(t.equal(other1), expected1);
+  EXPECT_EQ(t.equal(other2), expected2);
+}
+
+TEST(TensorTest, EqualTest1) {
+  tensor<int> t({2, 2}, {1, 2, 3, 4});
+
+  int other  = 1;
+  int other1 = 2;
+  int other2 = 3;
+
+  tensor<bool> expected({2, 2}, {true, false, false, false});
+  tensor<bool> expected1({2, 2}, {false, true, false, false});
+  tensor<bool> expected2({2, 2}, {false, false, true, false});
+
+  EXPECT_EQ(t.equal(other), expected);
+  EXPECT_EQ(t.equal(other1), expected1);
+  EXPECT_EQ(t.equal(other2), expected2);
+}
+
+TEST(TensorTest, NotEqualTest) {
+  tensor<int> t({2, 2}, {1, 2, 3, 4});
+
+  tensor<int> other({2, 2}, {1, 2, 3, 4});
+  tensor<int> other1({2, 2}, {2, 3, 4, 5});
+  tensor<int> other2({2, 2}, {0, 3, 2, 6});
+
+  tensor<bool> expected({2, 2}, {false, false, false, false});
+  tensor<bool> expected1({2, 2}, {true, true, true, true});
+  tensor<bool> expected2({2, 2}, {true, true, true, true});
+
+  EXPECT_EQ(t.not_equal(other), expected);
+  EXPECT_EQ(t.not_equal(other1), expected1);
+  EXPECT_EQ(t.not_equal(other2), expected2);
+}
+
+TEST(TensorTest, NotEqualTest1) {
+  tensor<int> t({2, 2}, {1, 2, 3, 4});
+
+  int other  = 1;
+  int other1 = 2;
+  int other2 = 3;
+
+  tensor<bool> expected({2, 2}, {false, true, true, true});
+  tensor<bool> expected1({2, 2}, {true, false, true, true});
+  tensor<bool> expected2({2, 2}, {true, true, false, true});
+
+  EXPECT_EQ(t.not_equal(other), expected);
+  EXPECT_EQ(t.not_equal(other1), expected1);
+  EXPECT_EQ(t.not_equal(other2), expected2);
+}
+
+TEST(TensorTest, LessTest) {
+  tensor<int> t({2, 2}, {1, 2, 3, 4});
+
+  tensor<int> other({2, 2}, {1, 2, 3, 4});
+  tensor<int> other1({2, 2}, {2, 3, 4, 5});
+  tensor<int> other2({2, 2}, {0, 3, 2, 6});
+
+  tensor<bool> expected({2, 2}, {false, false, false, false});
+  tensor<bool> expected1({2, 2}, {true, true, true, true});
+  tensor<bool> expected2({2, 2}, {false, true, false, true});
+
+  EXPECT_EQ(t.less(other), expected);
+  EXPECT_EQ(t.less(other1), expected1);
+  EXPECT_EQ(t.less(other2), expected2);
+}
+
+TEST(TensorTest, LessTest1) {
+  tensor<int> t({2, 2}, {1, 2, 3, 4});
+
+  int other  = 1;
+  int other1 = 2;
+  int other2 = 3;
+
+  tensor<bool> expected({2, 2}, {false, false, false, false});
+  tensor<bool> expected1({2, 2}, {true, false, false, false});
+  tensor<bool> expected2({2, 2}, {true, true, false, false});
+
+  EXPECT_EQ(t.less(other), expected);
+  EXPECT_EQ(t.less(other1), expected1);
+  EXPECT_EQ(t.less(other2), expected2);
+}
+
+TEST(TensorTest, GreaterTest) {
+  tensor<int> t({2, 2}, {1, 2, 3, 4});
+
+  tensor<int> other({2, 2}, {1, 2, 3, 4});
+  tensor<int> other1({2, 2}, {2, 3, 4, 5});
+  tensor<int> other2({2, 2}, {0, 3, 2, 6});
+
+  tensor<bool> expected({2, 2}, {false, false, false, false});
+  tensor<bool> expected1({2, 2}, {false, false, false, false});
+  tensor<bool> expected2({2, 2}, {true, false, true, false});
+
+  EXPECT_EQ(t.greater(other), expected);
+  EXPECT_EQ(t.greater(other1), expected1);
+  EXPECT_EQ(t.greater(other2), expected2);
+}
+
+TEST(TensorTest, GreaterTest1) {
+  tensor<int> t({2, 2}, {1, 2, 3, 4});
+
+  int other  = 1;
+  int other1 = 2;
+  int other2 = 3;
+
+  tensor<bool> expected({2, 2}, {false, true, true, true});
+  tensor<bool> expected1({2, 2}, {false, false, true, true});
+  tensor<bool> expected2({2, 2}, {false, false, false, true});
+
+  EXPECT_EQ(t.greater(other), expected);
+  EXPECT_EQ(t.greater(other1), expected1);
+  EXPECT_EQ(t.greater(other2), expected2);
+}
+
+TEST(TensorTest, SliceTest) {
+  // Case 1: Slice first row
+  tensor<int> t1({2, 2}, {1, 2, 3, 4});
+  tensor<int> expected1({2}, {1, 2});
+  EXPECT_EQ(t1.slice(0, 0, 1, 2), expected1);
+
+  // Case 2: Slice second row
+  tensor<int> expected2({2}, {3, 4});
+  EXPECT_EQ(t1.slice(0, 1, 2, 2), expected2);
+
+  // Case 3: Slice first column
+  tensor<int> expected3({2}, {1, 3});
+  EXPECT_EQ(t1.slice(1, 0, 2, 1), expected3);
+
+  // Case 4: Slice second column
+  tensor<int> expected4({2}, {2, 4});
+  EXPECT_EQ(t1.slice(1, 1, 2, 1), expected4);
+
+  // Case 5: Slice entire tensor (should return the same tensor)
+  EXPECT_EQ(t1.slice(0, 0, 2, 2), t1);
+
+  // Case 6: Slice single element
+  tensor<int> expected5({1}, {3});
+  EXPECT_EQ(t1.slice(0, 1, 2, 1).slice(1, 0, 1, 1), expected5);
+
+  // Case 7: Slice with stride
+  tensor<int> t2({3, 3}, {1, 2, 3, 4, 5, 6, 7, 8, 9});
+  tensor<int> expected6({2}, {1, 3});
+  EXPECT_EQ(t2.slice(0, 0, 3, 2), expected6);
+
+  // Case 8: Slice middle row
+  tensor<int> expected7({3}, {4, 5, 6});
+  EXPECT_EQ(t2.slice(0, 1, 2, 3), expected7);
+
+  // Case 9: Slice middle column
+  tensor<int> expected8({3}, {2, 5, 8});
+  EXPECT_EQ(t2.slice(1, 1, 3, 1), expected8);
+
+  // Case 10: Slice last row
+  tensor<int> expected9({3}, {7, 8, 9});
+  EXPECT_EQ(t2.slice(0, 2, 3, 3), expected9);
 }
 
 int main(int argc, char** argv) {

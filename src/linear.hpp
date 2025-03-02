@@ -227,7 +227,7 @@ tensor<_Tp>& tensor<_Tp>::relu_() {
 #if defined(__ARM_NEON)
   return this->neon_relu_();
 #endif
-  if constexpr (std::is_unsigned<value_type>::value) return *this;
+  if constexpr (std::is_unsigned_v<value_type>) return *this;
 
   index_type __s = this->__data_.size();
   index_type __i = 0;
@@ -275,7 +275,7 @@ inline const tensor<_Tp>& tensor<_Tp>::relu_() const {
 #if defined(__ARM_NEON)
   return this->neon_relu_();
 #endif
-  if constexpr (std::is_unsigned<value_type>::value) return *this;
+  if constexpr (std::is_unsigned_v<value_type>) return *this;
 
   index_type __s = this->__data_.size();
   index_type __i = 0;
@@ -424,7 +424,7 @@ tensor<_Tp>& tensor<_Tp>::clipped_relu_(const value_type __clip_limit) {
 #if defined(__ARM_NEON)
   return this->neon_clipped_relu_(__clip_limit);
 #endif
-  if constexpr (std::is_unsigned<value_type>::value) return *this;
+  if constexpr (std::is_unsigned_v<value_type>) return *this;
 
   index_type __s = this->__data_.size();
   index_type __i = 0;
@@ -478,7 +478,7 @@ inline const tensor<_Tp>& tensor<_Tp>::clipped_relu_(const value_type __clip_lim
 #if defined(__ARM_NEON)
   return this->neon_clipped_relu_(__clip_limit);
 #endif
-  if constexpr (std::is_unsigned<value_type>::value) return *this;
+  if constexpr (std::is_unsigned_v<value_type>) return *this;
 
   index_type __s = this->__data_.size();
   index_type __i = 0;
@@ -638,7 +638,7 @@ tensor<_Tp>& tensor<_Tp>::floor_() {
 #if defined(__ARM_NEON)
   return this->neon_floor_();
 #endif
-  static_assert(std::is_floating_point<value_type>::value);
+  static_assert(std::is_floating_point_v<value_type>);
   index_type __i = 0;
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::floor(static_cast<_f32>(this->__data_[__i])));
@@ -651,7 +651,7 @@ inline const tensor<_Tp>& tensor<_Tp>::floor_() const {
 #if defined(__ARM_NEON)
   return this->neon_floor_();
 #endif
-  static_assert(std::is_floating_point<value_type>::value);
+  static_assert(std::is_floating_point_v<value_type>);
   index_type __i = 0;
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::floor(static_cast<_f32>(this->__data_[__i])));
@@ -664,7 +664,7 @@ tensor<_Tp>& tensor<_Tp>::ceil_() {
 #if defined(__ARM_NEON)
   return this->neon_ceil_();
 #endif
-  static_assert(std::is_floating_point<value_type>::value);
+  static_assert(std::is_floating_point_v<value_type>);
   index_type __i = 0;
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::ceil(static_cast<_f32>(this->__data_[__i])));
@@ -677,7 +677,7 @@ inline const tensor<_Tp>& tensor<_Tp>::ceil_() const {
 #if defined(__ARM_NEON)
   return this->neon_ceil_();
 #endif
-  static_assert(std::is_floating_point<value_type>::value);
+  static_assert(std::is_floating_point_v<value_type>);
   index_type __i = 0;
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::ceil(static_cast<_f32>(this->__data_[__i])));
@@ -910,7 +910,6 @@ tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __sta
   if (__dim < 0 || __dim >= static_cast<index_type>(this->__shape_.size()))
     throw std::out_of_range("Dimension out of range.");
 
-  tensor     __ret;
   index_type __s       = this->__shape_[__dim];
   index_type __start_i = __start.value_or(0);
   index_type __end_i   = __end.value_or(__s);
@@ -923,7 +922,7 @@ tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __sta
   index_type __slice_size = (__end_i - __start_i + __step - 1) / __step;
   shape_type __ret_dims   = this->__shape_;
   __ret_dims[-__dim]      = __slice_size;
-  __ret                   = __self(__ret_dims);
+  tensor __ret(__ret_dims);
 
 #if defined(__CUDACC__)
   if (this->__data_.size() >= 1024) {

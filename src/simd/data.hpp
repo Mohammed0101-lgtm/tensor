@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tensorbase.hpp"
+#include "../tensorbase.hpp"
 
 template <class _Tp>
 typename tensor<_Tp>::index_type tensor<_Tp>::neon_count_nonzero(index_type __dim) const {
@@ -8,19 +8,19 @@ typename tensor<_Tp>::index_type tensor<_Tp>::neon_count_nonzero(index_type __di
   index_type __local_count = 0;
   index_type __i           = 0;
   if (__dim == 0) {
-    if constexpr (std::is_floating_point<value_type>::value) {
+    if constexpr (std::is_floating_point_v<value_type>) {
       for (; __i < this->__data_.size(); __i += _ARM64_REG_WIDTH) {
         neon_f32 __vec          = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
         neon_u32 __nonzero_mask = vcgtq_f32(__vec, vdupq_n_f32(0.0f));
         __local_count += vaddvq_u32(vandq_u32(__nonzero_mask, vdupq_n_u32(1)));
       }
-    } else if constexpr (std::is_unsigned<value_type>::value) {
+    } else if constexpr (std::is_unsigned_v<value_type>) {
       for (; __i < this->__data_.size(); __i += _ARM64_REG_WIDTH) {
         neon_u32 __vec          = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
         neon_u32 __nonzero_mask = vcgtq_u32(__vec, vdupq_n_u32(0));
         __local_count += vaddvq_u32(vandq_u32(__nonzero_mask, vdupq_n_u32(1)));
       }
-    } else if constexpr (std::is_signed<value_type>::value) {
+    } else if constexpr (std::is_signed_v<value_type>) {
       for (; __i < this->__data_.size(); __i += _ARM64_REG_WIDTH) {
         neon_s32 __vec          = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
         neon_u32 __nonzero_mask = vcgtq_s32(__vec, vdupq_n_s32(0));
@@ -55,13 +55,13 @@ tensor<_Tp>& tensor<_Tp>::neon_zeros_(shape_type __sh) {
   const index_type __simd_end = __s - (__s % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     neon_f32 __zero_vec = vdupq_n_f32(0.0f);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) vst1q_f32(&this->__data_[__i], __zero_vec);
-  } else if constexpr (std::is_signed<value_type>::value) {
+  } else if constexpr (std::is_signed_v<value_type>) {
     neon_s32 __zero_vec = vdupq_n_s32(0);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) vst1q_s32(&this->__data_[__i], __zero_vec);
-  } else if constexpr (std::is_unsigned<value_type>::value) {
+  } else if constexpr (std::is_unsigned_v<value_type>) {
     neon_u32 __zero_vec = vdupq_n_u32(0);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) vst1q_u32(&this->__data_[__i], __zero_vec);
   }
@@ -84,17 +84,17 @@ tensor<_Tp>& tensor<_Tp>::neon_ones_(shape_type __sh) {
   const index_type __simd_end = __s - (__s % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     neon_f32 __one_vec = vdupq_n_f32(1.0f);
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
       vst1q_f32(reinterpret_cast<_f32*>(&this->__data_[__i]), __one_vec);
-  } else if constexpr (std::is_signed<value_type>::value) {
+  } else if constexpr (std::is_signed_v<value_type>) {
     neon_s32 __one_vec = vdupq_n_s32(1);
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
       vst1q_s32(reinterpret_cast<_s32*>(&this->__data_[__i]), __one_vec);
-  } else if constexpr (std::is_unsigned<value_type>::value) {
+  } else if constexpr (std::is_unsigned_v<value_type>) {
     neon_u32 __one_vec = vdupq_n_u32(1);
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
@@ -109,8 +109,7 @@ tensor<_Tp>& tensor<_Tp>::neon_ones_(shape_type __sh) {
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_randomize_(const shape_type& __sh, bool __bounded) {
   if (__bounded)
-    assert(std::is_floating_point<value_type>::value &&
-           "Cannot bound non floating point data type");
+    assert(std::is_floating_point_v<value_type> && "Cannot bound non floating point data type");
 
   if (__sh.empty() && this->__shape_.empty())
     throw std::invalid_argument("randomize_ : Shape must be initialized");
@@ -127,7 +126,7 @@ tensor<_Tp>& tensor<_Tp>::neon_randomize_(const shape_type& __sh, bool __bounded
   std::uniform_real_distribution<_f32> __bounded_dist(0.0f, 1.0f);
   index_type                           __i = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     const neon_f32 __scale = vdupq_n_f32(__bounded ? static_cast<_f32>(RAND_MAX) : 1.0f);
     for (; __i + _ARM64_REG_WIDTH <= static_cast<index_type>(__s); __i += _ARM64_REG_WIDTH) {
       neon_f32 __random_values;
@@ -143,7 +142,7 @@ tensor<_Tp>& tensor<_Tp>::neon_randomize_(const shape_type& __sh, bool __bounded
 
       vst1q_f32(&this->__data_[__i], __random_values);
     }
-  } else if constexpr (std::is_unsigned<value_type>::value) {
+  } else if constexpr (std::is_unsigned_v<value_type>) {
     const neon_f32 __scale = vdupq_n_f32(static_cast<_f32>(RAND_MAX));
     for (; __i + _ARM64_REG_WIDTH <= static_cast<index_type>(__s); __i += _ARM64_REG_WIDTH) {
       neon_f32 __rand_vals = {
@@ -154,7 +153,7 @@ tensor<_Tp>& tensor<_Tp>::neon_randomize_(const shape_type& __sh, bool __bounded
 
       vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __int_vals);
     }
-  } else if constexpr (std::is_signed<value_type>::value) {
+  } else if constexpr (std::is_signed_v<value_type>) {
     const neon_f32 __scale = vdupq_n_f32(static_cast<_f32>(RAND_MAX));
     for (; __i + _ARM64_REG_WIDTH <= static_cast<index_type>(__s); __i += _ARM64_REG_WIDTH) {
       neon_f32 __rand_vals = {

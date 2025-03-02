@@ -4,7 +4,7 @@
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::not_equal(const tensor& __other) const {
-  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
+  if (!std::is_integral_v<value_type> && !std::is_scalar_v<value_type>)
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
   assert(this->__shape_ == __other.shape() && "not_equal : tensor shapes");
@@ -18,7 +18,7 @@ tensor<bool> tensor<_Tp>::not_equal(const tensor& __other) const {
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::not_equal(const value_type __val) const {
-  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
+  if (!std::is_integral_v<value_type> && !std::is_scalar_v<value_type>)
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
   std::vector<bool> __ret(this->__data_.size());
@@ -31,7 +31,7 @@ tensor<bool> tensor<_Tp>::not_equal(const value_type __val) const {
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::less(const tensor& __other) const {
-  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
+  if (!std::is_integral_v<value_type> && !std::is_scalar_v<value_type>)
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
   assert(this->__shape_ == __other.shape());
@@ -45,7 +45,7 @@ tensor<bool> tensor<_Tp>::less(const tensor& __other) const {
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::less(const value_type __val) const {
-  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
+  if (!std::is_integral_v<value_type> && !std::is_scalar_v<value_type>)
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
   std::vector<bool> __ret(this->__data_.size());
@@ -58,7 +58,7 @@ tensor<bool> tensor<_Tp>::less(const value_type __val) const {
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::greater(const tensor& __other) const {
-  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
+  if (!std::is_integral_v<value_type> && !std::is_scalar_v<value_type>)
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
   assert(this->__shape_ == __other.shape());
@@ -72,7 +72,7 @@ tensor<bool> tensor<_Tp>::greater(const tensor& __other) const {
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::greater(const value_type __val) const {
-  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
+  if (!std::is_integral_v<value_type> && !std::is_scalar_v<value_type>)
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
   std::vector<bool> __ret(this->__data_.size());
@@ -88,7 +88,7 @@ tensor<bool> tensor<_Tp>::equal(const tensor& __other) const {
 #if defined(__ARM_NEON)
   return this->neon_equal(__other);
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
+  if (!std::is_integral_v<value_type> && !std::is_scalar_v<value_type>)
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
   assert(this->__shape_ == __other.shape() && "equal : tensor shapes");
@@ -104,7 +104,7 @@ tensor<bool> tensor<_Tp>::equal(const value_type __val) const {
 #if defined(__ARM_NEON)
   return this->neon_equal(__val);
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
+  if (!std::is_integral_v<value_type> && !std::is_scalar_v<value_type>)
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
   std::vector<bool> __ret(this->__data_.size());
@@ -136,11 +136,10 @@ tensor<bool> tensor<_Tp>::less_equal(const value_type __val) const {
 #if defined(__ARM_NEON)
   return this->neon_less_equal(__val);
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
-    throw std::runtime_error("Cannot compare non-integral or scalar value");
+  throw std::runtime_error("Cannot compare non-integral or scalar value");
 
   std::vector<_u32> __ret(this->__data_.size());
-  index_type        __i = 0;
+  if (!std::is_integral_v<value_type> && !std::is_scalar_v<value_type>) index_type __i = 0;
 
   for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] <= __val) ? 1 : 0;
 

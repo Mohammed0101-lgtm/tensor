@@ -90,7 +90,7 @@ tensor<_Tp>& tensor<_Tp>::fmod_(const value_type __val) {
 #if defined(__ARM_NEON)
   return this->neon_fmod_(__val);
 #endif
-  assert(std::is_floating_point<value_type>::value &&
+  assert(std::is_floating_point_v<value_type> &&
          "fmod : template class must be a floating point type");
   index_type __i = 0;
 
@@ -106,7 +106,7 @@ inline const tensor<_Tp>& tensor<_Tp>::fmod_(const value_type __val) const {
 #if defined(__ARM_NEON)
   return this->neon_fmod_(__val);
 #endif
-  assert(std::is_floating_point<value_type>::value &&
+  assert(std::is_floating_point_v<value_type> &&
          "fmod : template class must be a floating point type");
   index_type __i = 0;
 
@@ -819,7 +819,7 @@ tensor<_Tp>& tensor<_Tp>::abs_() {
 #if defined(__ARM_NEON)
   return this->neon_abs_();
 #endif
-  if (std::is_unsigned<value_type>::value) return *this;
+  if (std::is_unsigned_v<value_type>) return *this;
 
   index_type __i = 0;
   for (; __i < this->__data_.size(); ++__i)
@@ -833,7 +833,7 @@ inline const tensor<_Tp>& tensor<_Tp>::abs_() const {
 #if defined(__ARM_NEON)
   return this->neon_abs_();
 #endif
-  if (std::is_unsigned<value_type>::value) return *this;
+  if (std::is_unsigned_v<value_type>) return *this;
 
   index_type __i = 0;
   for (; __i < this->__data_.size(); ++__i)

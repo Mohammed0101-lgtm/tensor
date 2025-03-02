@@ -62,13 +62,12 @@ using neon_s32 = int32x4_t;
 using neon_u32 = uint32x4_t;
 using neon_f32 = float32x4_t;
 using neon_f64 = float64x2_t;
+using neon_u8  = uint8x16_t;
 
 #endif
 
 const int _ARM64_REG_WIDTH = 4;
 const int _AVX_REG_WIDTH   = 8;
-
-enum class Device { CPU, CUDA };
 
 template <class _Tp>
 class tensor {
@@ -87,6 +86,8 @@ class tensor {
   using reverse_iterator       = typename data_t::reverse_iterator;
   using const_reverse_iterator = typename data_t::const_reverse_iterator;
 
+  enum class Device { CPU, CUDA };
+
  private:
   mutable data_t     __data_;
   mutable shape_type __shape_;
@@ -96,54 +97,14 @@ class tensor {
 
  public:
   tensor() = default;
-
-  explicit tensor(const shape_type& __sh, const_reference __v, Device __d = Device::CPU)
-      : __shape_(__sh), __data_(this->__computeSize(__sh), __v), __device_(__d) {
-    this->__compute_strides();
-  }
-
-  explicit tensor(const shape_type& __sh, Device __d = Device::CPU)
-      : __shape_(__sh), __device_(__d) {
-    index_type __s = this->__computeSize(__sh);
-    this->__data_  = data_t(__s);
-    this->__compute_strides();
-  }
-
-  explicit tensor(const shape_type& __sh, const data_t& __d, Device __dev = Device::CPU)
-      : __shape_(__sh), __device_(__dev) {
-    index_type __s = this->__computeSize(__sh);
-    assert(__d.size() == static_cast<size_t>(__s) &&
-           "Initial data vector must match the tensor size");
-    this->__data_ = __d;
-    this->__compute_strides();
-  }
-
-  tensor(const tensor& __t)
-      : __data_(__t.storage()),
-        __shape_(__t.shape()),
-        __strides_(__t.strides()),
-        __device_(__t.device()) {}
-
-  tensor(tensor&& __t) noexcept
-      : __data_(std::move(__t.storage())),
-        __shape_(std::move(__t.shape())),
-        __strides_(std::move(__t.strides())),
-        __device_(std::move(__t.device())) {}
-
+  explicit tensor(const shape_type& __sh, const_reference __v, Device __d = Device::CPU);
+  explicit tensor(const shape_type& __sh, Device __d = Device::CPU);
+  explicit tensor(const shape_type& __sh, const data_t& __d, Device __dev = Device::CPU);
+  tensor(const tensor& __t);
+  tensor(tensor&& __t) noexcept;
+  tensor(const shape_type& __sh, const tensor& __other);
   tensor(const shape_type& __sh, std::initializer_list<value_type> init_list,
-         Device __d = Device::CPU)
-      : __shape_(__sh), __device_(__d) {
-    index_type __s = this->__computeSize(__sh);
-    assert(init_list.size() == static_cast<size_t>(__s) &&
-           "Initializer list size must match tensor size");
-    this->__data_ = data_t(init_list);
-    this->__compute_strides();
-  }
-
-  tensor(const shape_type& __sh, const tensor& __other)
-      : __data_(__other.storage()), __shape_(__sh), __device_(__other.device()) {
-    this->__compute_strides();
-  }
+         Device __d = Device::CPU);
 
  private:
   class __destroy_tensor {
@@ -159,41 +120,51 @@ class tensor {
  public:
   ~tensor() { __destroy_tensor (*this)(); }
 
-  data_t storage() const noexcept { return this->__data_; }
+  data_t storage() const noexcept;
 
-  tensor<int64_t>   long_() const;
-  tensor<int32_t>   int32_() const;
-  tensor<uint32_t>  uint32_() const;
-  tensor<uint64_t>  unsigned_long_() const;
+  tensor<int64_t> long_() const;
+
+  tensor<int32_t> int32_() const;
+
+  tensor<uint32_t> uint32_() const;
+
+  tensor<uint64_t> unsigned_long_() const;
+
   tensor<float32_t> float32_() const;
+
   tensor<float64_t> double_() const;
 
-  shape_type shape() const noexcept { return this->__shape_; }
+  shape_type shape() const noexcept;
 
-  shape_type strides() const noexcept { return this->__strides_; }
+  shape_type strides() const noexcept;
 
-  Device device() const noexcept { return this->__device_; }
+  Device device() const noexcept;
 
-  size_t n_dims() const noexcept { return this->__shape_.size(); }
+  size_t n_dims() const noexcept;
 
   index_type size(const index_type __dim) const;
 
-  index_type capacity() const noexcept { return this->__data_.capacity(); }
+  index_type capacity() const noexcept;
 
   index_type count_nonzero(index_type __dim = 0) const;
+
   index_type lcm() const;
+
   index_type hash() const;
 
   reference at(shape_type __idx);
+
   reference operator[](const index_type __idx);
 
   const_reference at(const shape_type __idx) const;
+
   const_reference operator[](const index_type __idx) const;
 
-  reference       operator()(std::initializer_list<index_type> __index_list);
+  reference operator()(std::initializer_list<index_type> __index_list);
+
   const_reference operator()(std::initializer_list<index_type> __index_list) const;
 
-  bool empty() const { return this->__data_.empty(); }
+  bool empty() const;
 
   /// @brief Converts the tensor elements to boolean values.
   /// @return A tensor of boolean values.
@@ -1432,6 +1403,96 @@ class tensor {
   tensor<index_type> argmax_(index_type __dim) const;
   tensor<index_type> argsort(index_type __dim = -1, bool __ascending = true) const;
 
+#if defined(__ARM_NEON)
+ private:
+  tensor&            neon_fmax_(const value_type __v);
+  tensor&            neon_fmax_(const tensor& __other);
+  tensor&            neon_fmod_(const value_type __val);
+  tensor&            neon_fmod_(const tensor& __other);
+  tensor&            neon_frac_();
+  tensor&            neon_log_();
+  tensor&            neon_log10_();
+  tensor&            neon_log2_();
+  tensor&            neon_exp_();
+  tensor&            neon_sqrt_();
+  tensor&            neon_cos_();
+  tensor&            neon_acos_();
+  tensor&            neon_sin_();
+  tensor&            neon_tan_();
+  tensor&            neon_tanh_();
+  tensor&            neon_sinc_();
+  tensor&            neon_atan_();
+  tensor&            neon_atanh_();
+  tensor&            neon_sinh_();
+  tensor&            neon_asinh_();
+  tensor&            neon_asin_();
+  tensor&            neon_cosh_();
+  tensor&            neon_acosh_();
+  tensor&            neon_pow_(const value_type __val);
+  tensor&            neon_pow_(const tensor& __other);
+  tensor&            neon_abs_();
+  tensor&            neon_dist_(const tensor& __other);
+  tensor&            neon_dist_(const value_type __val);
+  tensor&            neon_maximum_(const tensor& __other);
+  tensor&            neon_maximum_(const value_type __val);
+  tensor&            neon_bitwise_right_shift_(const int __amount);
+  tensor&            neon_bitwise_left_shift_(const int __amount);
+  tensor&            neon_bitwise_or_(const value_type __val);
+  tensor&            neon_bitwise_xor_(const value_type __val);
+  tensor&            neon_bitwise_not_();
+  tensor&            neon_bitwise_and_(const value_type __val);
+  tensor&            neon_bitwise_and_(const tensor& __other);
+  tensor&            neon_bitwise_or_(const tensor& __other);
+  tensor&            neon_bitwise_xor_(const tensor& __other);
+  tensor&            neon_zeros_(shape_type __sh = {});
+  tensor&            neon_ones_(shape_type __sh);
+  tensor&            neon_randomize_(const shape_type& __sh, bool __bounded);
+  tensor&            neon_negative_();
+  tensor&            neon_relu_();
+  tensor&            neon_sigmoid_();
+  tensor&            neon_clipped_relu_(const value_type __clip_limit);
+  tensor&            neon_clamp_(const_pointer __min_val, const_pointer __max_val);
+  tensor&            neon_floor_();
+  tensor&            neon_ceil_();
+  tensor&            neon_logical_or_(const value_type __val);
+  tensor&            neon_logical_xor_(const value_type __val);
+  tensor&            neon_logical_and_(const value_type __val);
+  tensor&            neon_logical_or_(const tensor& __other);
+  tensor&            neon_logical_xor_(const tensor& __other);
+  tensor&            neon_logical_and_(const tensor& __other);
+  tensor&            neon_operator_plus_eq(const_reference __val) const;
+  tensor&            neon_operator_minus_eq(const tensor& __other) const;
+  tensor&            neon_operator_times_eq(const tensor& __other) const;
+  tensor&            neon_operator_minus_eq(const_reference __val) const;
+  tensor<_s32>       neon_int32_() const;
+  tensor<_u32>       neon_uint32_() const;
+  tensor<_f32>       neon_float32_() const;
+  tensor<_f64>       neon_double_() const;
+  tensor<uint64_t>   neon_unsigned_long_() const;
+  tensor<int64_t>    neon_long_() const;
+  tensor             neon_operator_plus(const tensor& __other) const;
+  tensor             neon_operator_plus(const value_type __val) const;
+  tensor             neon_operator_minus(const tensor& __other) const;
+  tensor             neon_operator_minus(const value_type __val) const;
+  tensor             neon_transpose() const;
+  tensor             neon_matmul(const tensor& __other) const;
+  tensor             neon_absolute(const tensor& __tensor) const;
+  tensor             neon_cross_product(const tensor& __other) const;
+  tensor             neon_dot(const tensor& __other) const;
+  tensor             neon_argmax(index_type __dim) const;
+  tensor             neon_sum(const index_type __axis) const;
+  tensor             neon_slice(index_type __dim, std::optional<index_type> __start,
+                                std::optional<index_type> __end, index_type __step) const;
+  tensor<bool>       neon_equal(const tensor& __other) const;
+  tensor<bool>       neon_equal(const value_type __val) const;
+  tensor<bool>       neon_less_equal(const tensor& __other) const;
+  tensor<bool>       neon_less_equal(const value_type __val) const;
+  tensor<index_type> neon_argsort(index_type __d, bool __ascending) const;
+  tensor<index_type> neon_argmax_(index_type __dim) const;
+  index_type         neon_count_nonzero(index_type __dim) const;
+  double             neon_mean() const;
+#endif
+
  private:
   [[nodiscard]] size_t computeStride(size_t dim, const shape_type& shape) const noexcept;
   void                 printRecursive(size_t index, size_t depth, const shape_type& shape) const;
@@ -1556,11 +1617,13 @@ class tensor<bool> {
   using index_type             = uint64_t;
   using shape_type             = std::vector<index_type>;
   using reference              = typename data_t::reference;
-  using const_reference        = typename data_t::const_reference;
   using iterator               = typename data_t::iterator;
-  using const_iterator         = typename data_t::const_iterator;
   using reverse_iterator       = typename data_t::reverse_iterator;
+  using const_iterator         = typename data_t::const_iterator;
+  using const_reference        = typename data_t::const_reference;
   using const_reverse_iterator = typename data_t::const_reverse_iterator;
+
+  enum class Device { CPU, CUDA };
 
  private:
   mutable data_t     __data_;
@@ -1704,7 +1767,7 @@ class tensor<bool> {
   }
 
   tensor<bool> logical_xor(const tensor& __other) const {
-    return tensor<bool>(this->logical_xor(__other));
+    return tensor<bool>(this->logical_xor_(__other));
   }
 
   tensor<bool>& logical_not_() {
@@ -1991,6 +2054,7 @@ class tensor<bool> {
   }
 
   tensor<bool> permute(const index_type __dim) const {
+    // TODO : implement permute here
     data_t __d;
     return __self(this->__shape_, __d);
   }
@@ -2085,6 +2149,11 @@ class tensor<bool> {
     return *this;
   }
 
+  void print() const {
+    this->printRecursive(0, 0, __shape_);
+    std::cout << std::endl;
+  }
+
  private:
   [[nodiscard]]
   inline size_t computeStride(size_t __dim, const shape_type& __shape) const noexcept {
@@ -2098,7 +2167,7 @@ class tensor<bool> {
       std::cout << "[";
 
       for (size_t __i = 0; __i < __shape[__depth]; ++__i) {
-        std::cout << this->__data_[__index + __i];
+        std::cout << (this->__data_[__index + __i] ? "true" : "false");
 
         if (__i < __shape[__depth] - 1) std::cout << ", ";
       }

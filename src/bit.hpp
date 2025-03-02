@@ -51,7 +51,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_or_(const value_type __val) {
 #if defined(__ARM_NEON)
   return this->neon_bitwise_or_(__val);
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
 
   index_type __i = 0;
@@ -65,7 +65,7 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_or_(const value_type __val) const
 #if defined(__ARM_NEON)
   return this->neon_bitwise_or_(__val);
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
 
   index_type __i = 0;
@@ -79,7 +79,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const value_type __val) {
 #if defined(__ARM_NEON)
   return this->neon_bitwise_xor_(__val);
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
 
   index_type __i = 0;
@@ -93,7 +93,7 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const value_type __val) cons
 #if defined(__ARM_NEON)
   return this->neon_bitwise_xor_(__val);
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
 
   index_type __i = 0;
@@ -121,7 +121,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_not_() {
 #if defined(__ARM_NEON)
   return this->neon_bitwise_not_();
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise not on non integral or boolean value");
 
   index_type __i = 0;
@@ -135,7 +135,7 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_not_() const {
 #if defined(__ARM_NEON)
   return this->neon_bitwise_not_();
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise not on non integral or boolean value");
 
   index_type __i = 0;
@@ -149,7 +149,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_and_(const value_type __val) {
 #if defined(__ARM_NEON)
   return this->neon_bitwise_and_(__val);
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
 
   index_type __i = 0;
@@ -163,7 +163,7 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_and_(const value_type __val) cons
 #if defined(__ARM_NEON)
   return this->neon_bitwise_and_(__val);
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
 
   index_type __i = 0;
@@ -212,7 +212,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_and_(const tensor& __other) {
 #if defined(__ARM_NEON)
   return this->neon_bitwise_and_(__other);
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
 
   assert(this->__shape_ == __other.shape());
@@ -227,7 +227,7 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_and_(const tensor& __other) const
 #if defined(__ARM_NEON)
   return this->neon_bitwise_and_(__other);
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
 
   assert(this->__shape_ == __other.shape());
@@ -256,7 +256,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_or_(const tensor& __other) {
 #if defined(__ARM_NEON)
   return this->neon_bitwise_or_(__other);
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
 
   assert(this->__shape_ == __other.shape());
@@ -271,7 +271,7 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_or_(const tensor& __other) const 
 #if defined(__ARM_NEON)
   return this->neon_bitwise_or_(__other);
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
 
   assert(this->__shape_ == __other.shape());
@@ -286,7 +286,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const tensor& __other) {
 #if defined(__ARM_NEON)
   return this->neon_bitwise_xor_(__other);
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
 
   assert(this->__shape_ == __other.shape());
@@ -301,7 +301,7 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const tensor& __other) const
 #if defined(__ARM_NEON)
   return this->neon_bitwise_xor_(__other);
 #endif
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
 
   assert(this->__shape_ == __other.shape());

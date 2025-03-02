@@ -9,9 +9,9 @@ template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_fmax_(const value_type __v) {
   index_type __i = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-    neon_f32         __scalar_val = vdupq_n_f32(__val);
+    neon_f32         __scalar_val = vdupq_n_f32(__v);
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_f32 __a       = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
@@ -21,8 +21,7 @@ tensor<_Tp>& tensor<_Tp>::neon_fmax_(const value_type __v) {
     }
   }
 
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = std::fmax(this->__data_[__i], __val);
+  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = std::fmax(this->__data_[__i], __v);
 
   return *this;
 }
@@ -32,7 +31,7 @@ tensor<_Tp>& tensor<_Tp>::neon_fmax_(const tensor& __other) {
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -52,11 +51,11 @@ tensor<_Tp>& tensor<_Tp>::neon_fmax_(const tensor& __other) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_fmod_(const value_type __val) {
-  assert(std::is_floating_point<value_type>::value &&
+  assert(std::is_floating_point_v<value_type> &&
          "fmod : template class must be a floating point type");
   index_type __i = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     const index_type __simd_end = this->__data_.size() - (this->__data_.size() - _ARM64_REG_WIDTH);
     neon_f32         __b        = vdupq_n_f32(reinterpret_cast<_f32>(__val));
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -84,7 +83,7 @@ tensor<_Tp>& tensor<_Tp>::neon_fmod_(const tensor& __other) {
 
   index_type __i = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_f32 __a         = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
@@ -703,7 +702,7 @@ template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_sinc_() {
   index_type __i = 0;
 
-  if constexpr (std::is_same<value_type, _f32>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -1145,7 +1144,7 @@ tensor<_Tp>& tensor<_Tp>::neon_pow_(const value_type __val) {
 }
 
 template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::pow_(const tensor& __other) {
+tensor<_Tp>& tensor<_Tp>::neon_pow_(const tensor& __other) {
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
 
@@ -1205,66 +1204,10 @@ tensor<_Tp>& tensor<_Tp>::pow_(const tensor& __other) {
 }
 
 template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_pow_(const tensor& __other) {
-  assert(this->__shape_ == __other.shape());
-  index_type       __i        = 0;
-  const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-
-  if constexpr (std::is_same_v<value_type, _f32>) {
-    neon_f32 __base_vec   = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
-    neon_f32 __exp_vec    = vld1q_f32(reinterpret_cast<const _f32*>(&__other[__i]));
-    neon_f32 __result_vec = {
-        static_cast<_f32>(std::pow(static_cast<_f32>(vgetq_lane_f32(__base_vec, 0)),
-                                   static_cast<_f32>(vgetq_lane_f32(__exp_vec, 0)))),
-        static_cast<_f32>(std::pow(static_cast<_f32>(vgetq_lane_f32(__base_vec, 1)),
-                                   static_cast<_f32>(vgetq_lane_f32(__exp_vec, 1)))),
-        static_cast<_f32>(std::pow(static_cast<_f32>(vgetq_lane_f32(__base_vec, 2)),
-                                   static_cast<_f32>(vgetq_lane_f32(__exp_vec, 2)))),
-        static_cast<_f32>(std::pow(static_cast<_f32>(vgetq_lane_f32(__base_vec, 3)),
-                                   static_cast<_f32>(vgetq_lane_f32(__exp_vec, 3))))};
-    vst1q_f32(&this->__data_[__i], __result_vec);
-  } else if constexpr (std::is_same_v<value_type, _s32>) {
-    neon_s32 __base_vec   = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-    neon_s32 __exp_vec    = vld1q_s32(reinterpret_cast<const _s32*>(&__other[__i]));
-    neon_s32 __result_vec = {
-        static_cast<_s32>(std::pow(static_cast<_s32>(vgetq_lane_s32(__base_vec, 0)),
-                                   static_cast<_s32>(vgetq_lane_s32(__exp_vec, 0)))),
-        static_cast<_s32>(std::pow(static_cast<_s32>(vgetq_lane_s32(__base_vec, 1)),
-                                   static_cast<_s32>(vgetq_lane_s32(__exp_vec, 1)))),
-        static_cast<_s32>(std::pow(static_cast<_s32>(vgetq_lane_s32(__base_vec, 2)),
-                                   static_cast<_s32>(vgetq_lane_s32(__exp_vec, 2)))),
-        static_cast<_s32>(std::pow(static_cast<_s32>(vgetq_lane_s32(__base_vec, 3)),
-                                   static_cast<_s32>(vgetq_lane_s32(__exp_vec, 3))))};
-
-    vst1q_s32(&this->__data_[__i], __result_vec);
-  } else if constexpr (std::is_same_v<value_type, _u32>) {
-    neon_u32 __base_vec   = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
-    neon_u32 __exp_vec    = vld1q_u32(reinterpret_cast<const _u32*>(&__other[__i]));
-    neon_u32 __result_vec = {
-        static_cast<_u32>(std::pow(static_cast<_u32>(vgetq_lane_u32(__base_vec, 0)),
-                                   static_cast<_u32>(vgetq_lane_u32(__exp_vec, 0)))),
-        static_cast<_u32>(std::pow(static_cast<_u32>(vgetq_lane_u32(__base_vec, 1)),
-                                   static_cast<_u32>(vgetq_lane_u32(__exp_vec, 1)))),
-        static_cast<_u32>(std::pow(static_cast<_u32>(vgetq_lane_u32(__base_vec, 2)),
-                                   static_cast<_u32>(vgetq_lane_u32(__exp_vec, 2)))),
-        static_cast<_u32>(std::pow(static_cast<_u32>(vgetq_lane_u32(__base_vec, 3)),
-                                   static_cast<_u32>(vgetq_lane_u32(__exp_vec, 3))))};
-
-    vst1q_u32(&this->__data_[__i], __result_vec);
-  }
-
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(
-        std::pow(static_cast<_f32>(this->__data_[__i]), static_cast<_f32>(__other[__i])));
-
-  return *this;
-}
-
-template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_abs_() {
   index_type __i = 0;
 
-  if (std::is_unsigned<value_type>::value) return *this;
+  if (std::is_unsigned_v<value_type>) return *this;
 
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
@@ -1443,4 +1386,28 @@ tensor<_Tp>& tensor<_Tp>::neon_maximum_(const value_type __val) {
     this->__data_[__i] = std::max(this->__data_[__i], __val);
 
   return *this;
+}
+
+template <class _Tp>
+double tensor<_Tp>::neon_mean() const {
+  double __m = 0.0;
+
+  if (this->empty()) return __m;
+
+  const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+  neon_s32         __sum_vec  = vdupq_n_s32(0);
+  index_type       __i        = 0;
+
+  for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
+    neon_s32 __data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
+    __sum_vec           = vaddq_s32(__sum_vec, __data_vec);
+  }
+
+  _s32 __partial_sum[4];
+  vst1q_s32(__partial_sum, __sum_vec);
+  __m += __partial_sum[0] + __partial_sum[1] + __partial_sum[2] + __partial_sum[3];
+
+  for (; __i < this->__data_.size(); ++__i) __m += this->__data_[__i];
+
+  return static_cast<double>(__m) / static_cast<double>(this->__data_.size());
 }

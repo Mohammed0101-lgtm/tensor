@@ -262,8 +262,7 @@ tensor<_Tp>& tensor<_Tp>::randomize_(const shape_type& __sh, bool __bounded) {
   return this->neon_randomize_(__sh, __bounded);
 #endif
   if (__bounded)
-    assert(std::is_floating_point<value_type>::value &&
-           "Cannot bound non floating point data type");
+    assert(std::is_floating_point_v<value_type> && "Cannot bound non floating point data type");
 
   if (__sh.empty() && this->__shape_.empty())
     throw std::invalid_argument("randomize_ : Shape must be initialized");
@@ -316,8 +315,7 @@ inline const tensor<_Tp>& tensor<_Tp>::randomize_(const shape_type& __sh, bool _
   return this->neon_randomize_(__sh, __bounded);
 #endif
   if (__bounded)
-    assert(std::is_floating_point<value_type>::value &&
-           "Cannot bound non floating point data type");
+    assert(std::is_floating_point_v<value_type> && "Cannot bound non floating point data type");
 
   if (__sh.empty() && this->__shape_.empty())
     throw std::invalid_argument("randomize_ : Shape must be initialized");

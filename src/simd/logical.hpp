@@ -4,13 +4,13 @@
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type __val) {
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform logical OR on non-integral and non-boolean values");
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
-  if constexpr (std::is_same<value_type, _s32>::value || std::is_same<value_type, bool>::value) {
+  if constexpr (std::is_signed_v<value_type> || std::is_same_v<value_type, bool>) {
     neon_s32 __val_vec = vdupq_n_s32(static_cast<_s32>(__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -19,7 +19,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type __val) {
 
       vst1q_s32(&this->__data_[__i], __or);
     }
-  } else if constexpr (std::is_same<value_type, _u32>::value) {
+  } else if constexpr (std::is_unsigned_v<value_type>) {
     neon_u32 __val_vec = vdupq_n_u32(static_cast<_u32>(__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -38,14 +38,14 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type __val) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const value_type __val) {
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error(
         "Cannot get the element wise xor of non-integral and non-boolean value");
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
-  if constexpr (std::is_same<value_type, _s32>::value || std::is_same<value_type, bool>::value) {
+  if constexpr (std::is_signed_v<value_type> || std::is_same_v<value_type, bool>) {
     neon_s32 __val_vec = vdupq_n_s32(static_cast<_s32>(__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -54,7 +54,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const value_type __val) {
 
       vst1q_s32(&this->__data_[__i], __xor);
     }
-  } else if constexpr (std::is_same<value_type, _u32>::value) {
+  } else if constexpr (std::is_unsigned_v<value_type>) {
     neon_u32 __val_vec = vdupq_n_u32(static_cast<_u32>(__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -73,7 +73,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const value_type __val) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type __val) {
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error(
         "Cannot get the element wise and of non-integral and non-boolean value");
 
@@ -82,7 +82,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type __val) {
 #if defined(__ARM_NEON)
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-  if constexpr (std::is_same<value_type, _s32>::value) {
+  if constexpr (std::is_signed_v<value_type>) {
     neon_s32 __vals = vdupq_n_s32(reinterpret_cast<_s32>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -91,7 +91,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type __val) {
 
       vst1q_s32(&this->__data_[__i], __and);
     }
-  } else if constexpr (std::is_same<value_type, _u32>::value) {
+  } else if constexpr (std::is_unsigned_v<value_type>) {
     neon_u32 __vals = vdupq_n_u32(reinterpret_cast<_u32>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -111,7 +111,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type __val) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const tensor& __other) {
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error(
         "Cannot get the element wise not of non-integral and non-boolean value");
 
@@ -121,7 +121,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const tensor& __other) {
 #if defined(__ARM_NEON)
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-  if constexpr (std::is_unsigned<value_type>::value) {
+  if constexpr (std::is_unsigned_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_u32 __data_vec  = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
       neon_u32 __other_vec = vld1q_u32(reinterpret_cast<const _u32*>(&__other[__i]));
@@ -129,7 +129,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const tensor& __other) {
 
       vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __or_vec);
     }
-  } else if constexpr (std::is_signed<value_type>::value) {
+  } else if constexpr (std::is_signed_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_s32 __data_vec  = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
       neon_s32 __other_vec = vld1q_s32(reinterpret_cast<const _s32*>(&__other[__i]));
@@ -148,7 +148,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const tensor& __other) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const tensor& __other) {
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error(
         "Cannot get the element wise xor of non-integral and non-boolean value");
 
@@ -156,7 +156,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const tensor& __other) {
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
-  if constexpr (std::is_unsigned<value_type>::value) {
+  if constexpr (std::is_unsigned_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_u32 __data_vec  = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
       neon_u32 __other_vec = vld1q_u32(reinterpret_cast<const _u32*>(&__other[__i]));
@@ -164,7 +164,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const tensor& __other) {
 
       vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __xor_vec);
     }
-  } else if constexpr (std::is_signed<value_type>::value) {
+  } else if constexpr (std::is_signed_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_s32 __data_vec  = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
       neon_s32 __other_vec = vld1q_s32(reinterpret_cast<const _s32*>(&__other[__i]));
@@ -182,7 +182,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const tensor& __other) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const tensor& __other) {
-  if (!std::is_integral<value_type>::value && !std::is_same<value_type, bool>::value)
+  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error(
         "Cannot get the element-wise and of non-integral and non-boolean value");
 
@@ -190,7 +190,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const tensor& __other) {
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
-  if constexpr (std::is_unsigned<value_type>::value) {
+  if constexpr (std::is_unsigned_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_u32 __data_vec  = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
       neon_u32 __other_vec = vld1q_u32(reinterpret_cast<const _u32*>(&__other[__i]));
@@ -198,7 +198,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const tensor& __other) {
 
       vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __and_vec);
     }
-  } else if constexpr (std::is_signed<value_type>::value) {
+  } else if constexpr (std::is_signed_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_s32 __data_vec  = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
       neon_s32 __other_vec = vld1q_s32(reinterpret_cast<const _s32*>(&__other[__i]));

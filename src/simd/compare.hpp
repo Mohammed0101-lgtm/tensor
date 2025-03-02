@@ -1,115 +1,97 @@
 #pragma once
 
-#include "tensorbase.hpp"
+#include "../tensorbase.hpp"
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::neon_equal(const tensor& __other) const {
-  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
-    throw std::runtime_error("Cannot compare non-integral or scalar value");
+  if constexpr (!std::is_arithmetic_v<value_type>)
+    throw std::runtime_error("Cannot compare non-numeric tensor types");
 
-  assert(this->__shape_ == __other.shape() && "equal : tensor shapes");
+  assert(this->__shape_ == __other.shape() && "equal : tensor shapes must match");
   std::vector<bool> __ret(this->__data_.size());
   const index_type  __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type        __i        = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_f32 __data_vec1  = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
-      neon_f32 __data_vec2  = vld1q_f32(reinterpret_cast<const _f32*>(&__other.__data_[__i]));
+      neon_f32 __data_vec1  = vld1q_f32(reinterpret_cast<const float*>(&this->__data_[__i]));
+      neon_f32 __data_vec2  = vld1q_f32(reinterpret_cast<const float*>(&__other.__data_[__i]));
       neon_u32 __cmp_result = vceqq_f32(__data_vec1, __data_vec2);
-      _u32     __mask       = vaddvq_u32(__cmp_result);
+      neon_u8  __mask       = vreinterpretq_u8_u32(__cmp_result);
 
-      __ret[__i]     = __mask & 1;
-      __ret[__i + 1] = (__mask >> 8) & 1;
-      __ret[__i + 2] = (__mask >> 16) & 1;
-      __ret[__i + 3] = (__mask >> 24) & 1;
+      __ret[__i]     = vgetq_lane_u8(__mask, 0);
+      __ret[__i + 1] = vgetq_lane_u8(__mask, 4);
+      __ret[__i + 2] = vgetq_lane_u8(__mask, 8);
+      __ret[__i + 3] = vgetq_lane_u8(__mask, 12);
     }
-  } else if constexpr (std::is_signed<value_type>::value) {
+  } else {  // Handles both signed and unsigned integers
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_s32 __data_vec1  = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-      neon_s32 __data_vec2  = vld1q_s32(reinterpret_cast<const _s32*>(&__other.__data_[__i]));
-      neon_u32 __cmp_result = vceqq_s32(__data_vec1, __data_vec2);
-      _u32     __mask       = vaddvq_u32(__cmp_result);
-
-      __ret[__i]     = __mask & 1;
-      __ret[__i + 1] = (__mask >> 8) & 1;
-      __ret[__i + 2] = (__mask >> 16) & 1;
-      __ret[__i + 3] = (__mask >> 24) & 1;
-    }
-  } else if constexpr (std::is_unsigned<value_type>::value) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_u32 __data_vec1  = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
-      neon_u32 __data_vec2  = vld1q_u32(reinterpret_cast<const _u32*>(&__other.__data_[__i]));
+      neon_u32 __data_vec1  = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
+      neon_u32 __data_vec2  = vld1q_u32(reinterpret_cast<const uint32_t*>(&__other.__data_[__i]));
       neon_u32 __cmp_result = vceqq_u32(__data_vec1, __data_vec2);
-      _u32     __mask       = vaddvq_u32(__cmp_result);
+      neon_u8  __mask       = vreinterpretq_u8_u32(__cmp_result);
 
-      __ret[__i]     = __mask & 1;
-      __ret[__i + 1] = (__mask >> 8) & 1;
-      __ret[__i + 2] = (__mask >> 16) & 1;
-      __ret[__i + 3] = (__mask >> 24) & 1;
+      __ret[__i]     = vgetq_lane_u8(__mask, 0);
+      __ret[__i + 1] = vgetq_lane_u8(__mask, 4);
+      __ret[__i + 2] = vgetq_lane_u8(__mask, 8);
+      __ret[__i + 3] = vgetq_lane_u8(__mask, 12);
     }
   }
 
-  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] == __other[__i]);
+  // Handle remaining elements
+  for (; __i < this->__data_.size(); ++__i)
+    __ret[__i] = (this->__data_[__i] == __other.__data_[__i]);
 
-  return tensor<bool>(__ret, this->__shape_);
+  return tensor<bool>(this->__shape_, __ret);
 }
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::neon_equal(const value_type __val) const {
-  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
-    throw std::runtime_error("Cannot compare non-integral or scalar value");
+  static_assert(std::is_arithmetic_v<value_type>, "Cannot compare non-numeric value");
 
   std::vector<bool> __ret(this->__data_.size());
-  index_type        __i = 0;
+  index_type        __i        = 0;
+  const index_type  __simd_end = this->__data_.size() - (this->__data_.size() % 4);
 
-  if constexpr (std::is_floating_point<value_type>::value) {
-    const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-    neon_f32         __val_vec  = vdupq_n_f32(__val);
+  if constexpr (std::is_floating_point_v<value_type>) {
+    float32x4_t __val_vec = vdupq_n_f32(__val);
 
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_f32 __data_vec   = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
-      neon_u32 __cmp_result = vceqq_f32(__data_vec, __val_vec);
-      _u32     __mask       = vaddvq_u32(__cmp_result);
+    for (; __i < __simd_end; __i += 4) {
+      float32x4_t __data_vec   = vld1q_f32(reinterpret_cast<const float*>(&this->__data_[__i]));
+      uint32x4_t  __cmp_result = vceqq_f32(__data_vec, __val_vec);
 
-      __ret[__i]     = __mask & 1;
-      __ret[__i + 1] = (__mask >> 8) & 1;
-      __ret[__i + 2] = (__mask >> 16) & 1;
-      __ret[__i + 3] = (__mask >> 24) & 1;
+      uint32_t results[4];
+      vst1q_u32(results, __cmp_result);  // Store results into an array
+      for (int j = 0; j < 4; ++j) __ret[__i + j] = results[j] != 0;
     }
-  } else if constexpr (std::is_signed<value_type>::value) {
-    const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-    neon_s32         __val_vec  = vdupq_n_s32(__val);
+  } else if constexpr (std::is_signed_v<value_type>) {
+    int32x4_t __val_vec = vdupq_n_s32(__val);
 
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_s32 __data_vec   = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-      neon_u32 __cmp_result = vceqq_s32(__data_vec, __val_vec);
-      _u32     __mask       = vaddvq_u32(__cmp_result);
+    for (; __i < __simd_end; __i += 4) {
+      int32x4_t  __data_vec   = vld1q_s32(reinterpret_cast<const int32_t*>(&this->__data_[__i]));
+      uint32x4_t __cmp_result = vceqq_s32(__data_vec, __val_vec);
 
-      __ret[__i]     = __mask & 1;
-      __ret[__i + 1] = (__mask >> 8) & 1;
-      __ret[__i + 2] = (__mask >> 16) & 1;
-      __ret[__i + 3] = (__mask >> 24) & 1;
+      uint32_t results[4];
+      vst1q_u32(results, __cmp_result);
+      for (int j = 0; j < 4; ++j) __ret[__i + j] = results[j] != 0;
     }
-  } else if constexpr (std::is_unsigned<value_type>::value) {
-    const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-    neon_u32         __val_vec  = vdupq_n_u32(__val);
+  } else if constexpr (std::is_unsigned_v<value_type>) {
+    uint32x4_t __val_vec = vdupq_n_u32(__val);
 
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_u32 __data_vec   = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
-      neon_u32 __cmp_result = vceqq_u32(__data_vec, __val_vec);
-      _u32     __mask       = vaddvq_u32(__cmp_result);
+    for (; __i < __simd_end; __i += 4) {
+      uint32x4_t __data_vec   = vld1q_u32(reinterpret_cast<const uint32_t*>(&this->__data_[__i]));
+      uint32x4_t __cmp_result = vceqq_u32(__data_vec, __val_vec);
 
-      __ret[__i]     = __mask & 1;
-      __ret[__i + 1] = (__mask >> 8) & 1;
-      __ret[__i + 2] = (__mask >> 16) & 1;
-      __ret[__i + 3] = (__mask >> 24) & 1;
+      uint32_t results[4];
+      vst1q_u32(results, __cmp_result);
+      for (int j = 0; j < 4; ++j) __ret[__i + j] = results[j] != 0;
     }
   }
 
+  // Handle the remaining elements that don't fit in a SIMD register
   for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] == __val);
 
-  return tensor<bool>(__ret, this->__shape_);
+  return tensor<bool>(this->__shape_, __ret);
 }
 
 template <class _Tp>
@@ -156,7 +138,7 @@ tensor<bool> tensor<_Tp>::neon_less_equal(const tensor& __other) const {
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::neon_less_equal(const value_type __val) const {
-  if (!std::is_integral<value_type>::value && !std::is_scalar<value_type>::value)
+  if (!std::is_integral_v<value_type> && !std::is_scalar_v<value_type>)
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
   std::vector<_u32> __ret(this->__data_.size());

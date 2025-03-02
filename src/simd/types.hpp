@@ -4,7 +4,7 @@
 
 template <class _Tp>
 tensor<_s32> tensor<_Tp>::neon_int32_() const {
-  static_assert(std::is_convertible<value_type, _s32>::value);
+  static_assert(std::is_convertible_v<value_type, _s32>);
 
   if (this->empty()) return tensor<_s32>(this->__shape_);
 
@@ -12,14 +12,14 @@ tensor<_s32> tensor<_Tp>::neon_int32_() const {
   const index_type  __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type        __i        = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_f32 __data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
       neon_s32 __int_vec  = vcvtq_s32_f32(__data_vec);
 
       vst1q_s32(reinterpret_cast<_s32*>(&__d[__i]), __int_vec);
     }
-  } else if constexpr (std::is_unsigned<value_type>::value) {
+  } else if constexpr (std::is_unsigned_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_u32 __data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
       neon_s32 __int_vec  = vreinterpretq_s32_u32(__data_vec);
@@ -35,7 +35,7 @@ tensor<_s32> tensor<_Tp>::neon_int32_() const {
 
 template <class _Tp>
 tensor<_u32> tensor<_Tp>::neon_uint32_() const {
-  static_assert(std::is_convertible<value_type, _u32>::value);
+  static_assert(std::is_convertible_v<value_type, _u32>);
 
   if (this->empty()) return tensor<_u32>(this->__shape_);
 
@@ -44,14 +44,14 @@ tensor<_u32> tensor<_Tp>::neon_uint32_() const {
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_f32 __data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
       neon_u32 __uint_vec = vcvtq_u32_f32(__data_vec);
 
       vst1q_u32(reinterpret_cast<_u32*>(&__d[__i]), __uint_vec);
     }
-  } else if constexpr (std::is_signed<value_type>::value) {
+  } else if constexpr (std::is_signed_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_s32 __data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
       neon_u32 __uint_vec = vreinterpretq_u32_s32(__data_vec);
@@ -67,7 +67,7 @@ tensor<_u32> tensor<_Tp>::neon_uint32_() const {
 
 template <class _Tp>
 tensor<_f32> tensor<_Tp>::neon_float32_() const {
-  static_assert(std::is_convertible<value_type, _f32>::value,
+  static_assert(std::is_convertible_v<value_type, _f32>,
                 "Tensor value type must be convertible to _f32.");
 
   if (this->empty()) return tensor<_f32>(this->__shape_);
@@ -106,7 +106,7 @@ tensor<_f32> tensor<_Tp>::neon_float32_() const {
 
 template <class _Tp>
 tensor<_f64> tensor<_Tp>::neon_double_() const {
-  static_assert(std::is_convertible<value_type, _f64>::value,
+  static_assert(std::is_convertible_v<value_type, _f64>,
                 "Tensor value type must be convertible to _f64.");
 
   if (this->empty()) return tensor<_f64>(this->__shape_);
@@ -127,7 +127,7 @@ tensor<_f64> tensor<_Tp>::neon_double_() const {
 
 template <class _Tp>
 tensor<uint64_t> tensor<_Tp>::neon_unsigned_long_() const {
-  static_assert(std::is_convertible<value_type, uint64_t>::value,
+  static_assert(std::is_convertible_v<value_type, uint64_t>,
                 "Tensor value type must be convertible to uint64_t.");
 
   if (this->empty()) return tensor<uint64_t>(this->__shape_);
@@ -136,7 +136,7 @@ tensor<uint64_t> tensor<_Tp>::neon_unsigned_long_() const {
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
-  if constexpr (std::is_unsigned<value_type>::value) {
+  if constexpr (std::is_unsigned_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_u32   __data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
       uint64x2_t __int_vec1 = vmovl_u32(vget_low_u32(__data_vec));
@@ -161,7 +161,7 @@ tensor<uint64_t> tensor<_Tp>::neon_unsigned_long_() const {
 
 template <class _Tp>
 tensor<int64_t> tensor<_Tp>::neon_long_() const {
-  static_assert(std::is_convertible<value_type, int64_t>::value,
+  static_assert(std::is_convertible_v<value_type, int64_t>,
                 "Tensor value type must be convertible to int64_t.");
 
   if (this->empty()) return tensor<int64_t>(this->__shape_);
@@ -170,7 +170,7 @@ tensor<int64_t> tensor<_Tp>::neon_long_() const {
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_f64  __data_vec1 = vld1q_f64(reinterpret_cast<const _f64*>(&this->__data_[__i]));
       neon_f64  __data_vec2 = vld1q_f64(reinterpret_cast<const _f64*>(&this->__data_[__i + 2]));
@@ -180,7 +180,7 @@ tensor<int64_t> tensor<_Tp>::neon_long_() const {
       vst1q_s64(reinterpret_cast<int64_t*>(&__d[__i]), __int_vec1);
       vst1q_s64(reinterpret_cast<int64_t*>(&__d[__i + 2]), __int_vec2);
     }
-  } else if constexpr (std::is_unsigned<value_type>::value) {
+  } else if constexpr (std::is_unsigned_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_u32   __data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
       uint64x2_t __int_vec1 = vmovl_u32(vget_low_u32(__data_vec));

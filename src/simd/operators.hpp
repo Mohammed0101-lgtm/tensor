@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tensorbase.hpp"
+#include "../tensorbase.hpp"
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_operator_plus(const tensor& __other) const {
@@ -13,7 +13,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_plus(const tensor& __other) const {
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_f32 __vec1   = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
       neon_f32 __vec2   = vld1q_f32(reinterpret_cast<const _f32*>(&__other[__i]));
@@ -21,7 +21,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_plus(const tensor& __other) const {
 
       vst1q_f32(reinterpret_cast<_f32*>(&__d[__i]), __result);
     }
-  } else if constexpr (std::is_signed<value_type>::value) {
+  } else if constexpr (std::is_signed_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_s32 __vec1   = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
       neon_s32 __vec2   = vld1q_s32(reinterpret_cast<const _s32*>(&__other[__i]));
@@ -29,7 +29,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_plus(const tensor& __other) const {
 
       vst1q_s32(reinterpret_cast<_s32*>(&__d[__i]), __result);
     }
-  } else if constexpr (std::is_unsigned<value_type>::value) {
+  } else if constexpr (std::is_unsigned_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_u32 __vec1   = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
       neon_u32 __vec2   = vld1q_u32(reinterpret_cast<const _u32*>(&__other[__i]));
@@ -52,7 +52,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_plus(const value_type __val) const {
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     neon_f32 __val_vec = vdupq_n_f32(reinterpret_cast<_f32>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -61,7 +61,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_plus(const value_type __val) const {
 
       vst1q_f32(&__d[__i], __res);
     }
-  } else if constexpr (std::is_signed<value_type>::value) {
+  } else if constexpr (std::is_signed_v<value_type>) {
     neon_s32 __val_vec = vdupq_n_s32(reinterpret_cast<_s32>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -70,7 +70,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_plus(const value_type __val) const {
 
       vst1q_s32(&__d[__i], __res);
     }
-  } else if constexpr (std::is_unsigned<value_type>::value) {
+  } else if constexpr (std::is_unsigned_v<value_type>) {
     neon_u32 __val_vec = vdupq_n_u32(reinterpret_cast<_u32>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -93,7 +93,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_plus_eq(const_reference __val) const {
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     neon_f32 __val_vec = vdupq_n_f32(reinterpret_cast<_f32>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -102,7 +102,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_plus_eq(const_reference __val) const {
 
       vst1q_f32(&this->__data_[__i], __add_vec);
     }
-  } else if constexpr (std::is_signed<value_type>::value) {
+  } else if constexpr (std::is_signed_v<value_type>) {
     neon_s32 __val_vec = vdupq_n_s32(reinterpret_cast<_s32>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -111,7 +111,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_plus_eq(const_reference __val) const {
 
       vst1q_s32(&this->__data_[__i], __add_vec);
     }
-  } else if constexpr (std::is_unsigned<value_type>::value) {
+  } else if constexpr (std::is_unsigned_v<value_type>) {
     neon_u32 __val_vec = vdupq_n_u32(reinterpret_cast<_u32>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -138,7 +138,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const tensor& __other) const {
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_f32 __vec = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
       neon_f32 __oth = vld1q_f32(reinterpret_cast<const _f32*>(&__other[__i]));
@@ -146,7 +146,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const tensor& __other) const {
 
       vst1q_f32(&__d[__i], __sub);
     }
-  } else if constexpr (std::is_signed<value_type>::value) {
+  } else if constexpr (std::is_signed_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_s32 __vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
       neon_s32 __oth = vld1q_s32(reinterpret_cast<const _s32*>(&__other[__i]));
@@ -154,7 +154,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const tensor& __other) const {
 
       vst1q_s32(&__d[__i], __sub);
     }
-  } else if constexpr (std::is_unsigned<value_type>::value) {
+  } else if constexpr (std::is_unsigned_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_u32 __vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
       neon_u32 __oth = vld1q_u32(reinterpret_cast<const _u32*>(&__other[__i]));
@@ -176,7 +176,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const value_type __val) const {
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     neon_f32 __vals = vdupq_n_f32(reinterpret_cast<_f32>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -185,7 +185,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const value_type __val) const {
 
       vst1q_f32(&__d[__i], __sub);
     }
-  } else if constexpr (std::is_signed<value_type>::value) {
+  } else if constexpr (std::is_signed_v<value_type>) {
     neon_s32 __vals = vdupq_n_s32(reinterpret_cast<_s32>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -194,7 +194,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const value_type __val) const {
 
       vst1q_s32(&__d[__i], __sub);
     }
-  } else if constexpr (std::is_unsigned<value_type>::value) {
+  } else if constexpr (std::is_unsigned_v<value_type>) {
     neon_u32 __vals = vdupq_n_u32(reinterpret_cast<_u32>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -217,7 +217,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const tensor& __other) const {
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_f32 __vec = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
       neon_f32 __oth = vld1q_f32(reinterpret_cast<const _f32*>(&__other[__i]));
@@ -225,7 +225,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const tensor& __other) const {
 
       vst1q_f32(&this->__data_[__i], __sub);
     }
-  } else if constexpr (std::is_signed<value_type>::value) {
+  } else if constexpr (std::is_signed_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_s32 __vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
       neon_s32 __oth = vld1q_s32(reinterpret_cast<const _s32*>(&__other[__i]));
@@ -233,7 +233,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const tensor& __other) const {
 
       vst1q_s32(&this->__data_[__i], __sub);
     }
-  } else if constexpr (std::is_unsigned<value_type>::value) {
+  } else if constexpr (std::is_unsigned_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_u32 __vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
       neon_u32 __oth = vld1q_u32(reinterpret_cast<const _u32*>(&__other[__i]));
@@ -256,7 +256,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_times_eq(const tensor& __other) const {
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_f32 __vec = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
       neon_f32 __oth = vld1q_f32(reinterpret_cast<const _f32*>(&__other[__i]));
@@ -264,7 +264,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_times_eq(const tensor& __other) const {
 
       vst1q_f32(&this->__data_[__i], __mul);
     }
-  } else if constexpr (std::is_signed<value_type>::value) {
+  } else if constexpr (std::is_signed_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_s32 __vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
       neon_s32 __oth = vld1q_s32(reinterpret_cast<const _s32*>(&__other[__i]));
@@ -272,7 +272,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_times_eq(const tensor& __other) const {
 
       vst1q_s32(&this->__data_[__i], __mul);
     }
-  } else if constexpr (std::is_unsigned<value_type>::value) {
+  } else if constexpr (std::is_unsigned_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_u32 __vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
       neon_u32 __oth = vld1q_u32(reinterpret_cast<const _u32*>(&__other[__i]));
@@ -294,7 +294,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const_reference __val) const {
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
-  if constexpr (std::is_floating_point<value_type>::value) {
+  if constexpr (std::is_floating_point_v<value_type>) {
     neon_f32 __val = vld1q_f32(reinterpret_cast<const _f32*>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -303,7 +303,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const_reference __val) const {
 
       vst1q_f32(&this->__data_[__i], __sub);
     }
-  } else if constexpr (std::is_unsigned<value_type>::value) {
+  } else if constexpr (std::is_unsigned_v<value_type>) {
     neon_u32 __val = vld1q_u32(reinterpret_cast<const _u32*>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -312,7 +312,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const_reference __val) const {
 
       vst1q_u32(&this->__data_[__i], __sub);
     }
-  } else if constexpr (std::is_signed<value_type>::value) {
+  } else if constexpr (std::is_signed_v<value_type>) {
     neon_s32 __val = vld1q_s32(reinterpret_cast<const _s32*>(&__val));
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
