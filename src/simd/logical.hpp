@@ -29,7 +29,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type __val) {
       vst1q_u32(&this->__data_[__i], __or);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(this->__data_[__i] || __val);
 
@@ -64,7 +64,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const value_type __val) {
       vst1q_u32(&this->__data_[__i], __xor);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(this->__data_[__i] ^ __val);
 
@@ -77,10 +77,8 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type __val) {
     throw std::runtime_error(
         "Cannot get the element wise and of non-integral and non-boolean value");
 
-  index_type __i = 0;
-
-#if defined(__ARM_NEON)
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+  index_type __i = 0;
 
   if constexpr (std::is_signed_v<value_type>) {
     neon_s32 __vals = vdupq_n_s32(reinterpret_cast<_s32>(&__val));
@@ -101,8 +99,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type __val) {
       vst1q_u32(&this->__data_[__i], __and);
     }
   }
-#endif
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(this->__data_[__i] && __val);
 
@@ -116,10 +113,8 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const tensor& __other) {
         "Cannot get the element wise not of non-integral and non-boolean value");
 
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
-
-#if defined(__ARM_NEON)
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+  index_type __i = 0;
 
   if constexpr (std::is_unsigned_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
@@ -138,8 +133,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const tensor& __other) {
       vst1q_s32(reinterpret_cast<_s32*>(&this->__data_[__i]), __or_vec);
     }
   }
-#endif
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = (this->__data_[__i] || __other[__i]);
 
@@ -173,7 +167,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const tensor& __other) {
       vst1q_s32(reinterpret_cast<_s32*>(&this->__data_[__i]), __xor_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = (this->__data_[__i] ^ __other[__i]);
 
@@ -207,7 +201,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const tensor& __other) {
       vst1q_s32(reinterpret_cast<_s32*>(&this->__data_[__i]), __and_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = (this->__data_[__i] && __other[__i]);
 
