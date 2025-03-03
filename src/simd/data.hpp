@@ -65,7 +65,7 @@ tensor<_Tp>& tensor<_Tp>::neon_zeros_(shape_type __sh) {
     neon_u32 __zero_vec = vdupq_n_u32(0);
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) vst1q_u32(&this->__data_[__i], __zero_vec);
   }
-
+#pragma omp parallel
   for (; __i < __s; ++__i) this->__data_[__i] = value_type(0.0);
 
   return *this;
@@ -100,7 +100,7 @@ tensor<_Tp>& tensor<_Tp>::neon_ones_(shape_type __sh) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH)
       vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __one_vec);
   }
-
+#pragma omp parallel
   for (; __i < __s; ++__i) this->__data_[__i] = value_type(1.0);
 
   return *this;
@@ -165,7 +165,7 @@ tensor<_Tp>& tensor<_Tp>::neon_randomize_(const shape_type& __sh, bool __bounded
       vst1q_s32(reinterpret_cast<_s32*>(&this->__data_[__i]), __int_vals);
     }
   }
-
+#pragma omp parallel
   for (; __i < static_cast<index_type>(__s); ++__i)
     this->__data_[__i] = value_type(__bounded ? __bounded_dist(__gen) : __unbounded_dist(__gen));
 
@@ -199,7 +199,7 @@ tensor<_Tp>& tensor<_Tp>::neon_negative_() {
       vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __neg);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = -this->__data_[__i];
 
   return *this;
