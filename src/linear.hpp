@@ -947,7 +947,7 @@ tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __sta
 #endif
   index_type __i = __start_i, __j = 0;
 
-  for (; __i < __end_i; __i += __step, ++__j) __ret({__j}) = this->at({__i});
+  for (; __i < __end_i; __i += __step, ++__j) __ret[__j] = this->__data_[__i];
 
   return __ret;
 }
