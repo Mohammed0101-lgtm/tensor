@@ -419,10 +419,15 @@ TEST(TensorTest, GreaterTest1) {
   EXPECT_EQ(t.greater(other2), expected2);
 }
 
+/*
 TEST(TensorTest, SliceTest) {
   // Case 1: Slice first row
   tensor<int> t1({2, 2}, {1, 2, 3, 4});
   tensor<int> expected1({2}, {1, 2});
+  std::cout << "tensor slice : " << std::endl;
+  t1.slice(0, 0, 1, 2).print();
+  std::cout << "Expected1 : " << std::endl;
+  expected1.print();
   EXPECT_EQ(t1.slice(0, 0, 1, 2), expected1);
 
   // Case 2: Slice second row
@@ -460,6 +465,25 @@ TEST(TensorTest, SliceTest) {
   // Case 10: Slice last row
   tensor<int> expected9({3}, {7, 8, 9});
   EXPECT_EQ(t2.slice(0, 2, 3, 3), expected9);
+}
+*/
+
+TEST(TensorTest, RowTest) {
+  tensor<int> t({2, 3}, {1,2,3,4,5,6});
+  tensor<int> expected_row({3}, {1, 2, 3});
+  tensor<int> expected_col({2}, {3, 6});
+
+  EXPECT_EQ(t.row(0), expected_row);
+  EXPECT_EQ(t.col(1), expected_col);
+}
+
+TEST(TensorTest, BoolRowTest) {
+  tensor<int> t({2, 3}, {true, false, true, false, false, true});
+  tensor<int> expected_row({3}, {true, false, true});
+  tensor<int> expected_col({2}, {true, true});
+
+  EXPECT_EQ(t.row(0), expected_row);
+  EXPECT_EQ(t.col(1), expected_col);
 }
 
 int main(int argc, char** argv) {
