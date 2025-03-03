@@ -1538,7 +1538,7 @@ template <class _Tp>
 inline typename tensor<_Tp>::index_type tensor<_Tp>::__compute_index(
     const std::vector<index_type>& __idx) const {
   if (__idx.size() != this->__shape_.size())
-    throw std::out_of_range("input indices does not match the tensor shape");
+    throw std::out_of_range("__compute_index : input indices does not match the tensor shape");
 
   index_type __index = 0;
   index_type __i     = 0;
@@ -2209,7 +2209,7 @@ class tensor<bool> {
   [[nodiscard]]
   index_type __compute_index(const std::vector<index_type>& __idx) const {
     if (__idx.size() != this->__shape_.size())
-      throw std::out_of_range("input indices does not match the tensor shape");
+      throw std::out_of_range("__compute_index : input indices does not match the tensor shape");
 
     index_type __index = 0;
     index_type __i     = 0;
