@@ -192,7 +192,7 @@ tensor<_Tp> tensor<_Tp>::neon_absolute(const tensor& __tensor) const {
   index_type __i = 0;
 
   // TODO : implement neon acceleration for absolute
-
+#pragma omp parallel
   for (; __i < __s; ++__i)
     __a.push_back(static_cast<value_type>(std::fabs(_f32(__tensor.storage()[__i]))));
 
@@ -392,10 +392,9 @@ tensor<_Tp> tensor<_Tp>::neon_transpose() const {
     }
   } else {
     index_type __i = 0;
-
+#pragma omp parallel
     for (; __i < __rows; ++__i) {
       index_type __j = 0;
-
       for (; __j < __cols; ++__j) __ret.at({__j, __i}) = this->at({__i, __j});
     }
   }
@@ -454,7 +453,7 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argsort(index_type __
         __indices[__i + __j] = (__cmp_result[__j] ? __i + __j : __i + __j + 1);
     }
   }
-
+#pragma omp parallel
   for (; __i < __size; ++__i) __indices[__i] = __i;
 
   std::sort(__indices.begin(), __indices.end(), [&](index_type __a, index_type __b) {
@@ -484,7 +483,7 @@ tensor<_Tp>& tensor<_Tp>::neon_sigmoid_() {
       vst1q_f32(reinterpret_cast<_f32*>(&this->__data_[__i]), __sigmoid);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] =
         static_cast<value_type>(1.0 / (1.0 + std::exp(-static_cast<double>(this->__data_[__i]))));
@@ -520,7 +519,7 @@ tensor<_Tp>& tensor<_Tp>::neon_clipped_relu_(const value_type __clip_limit) {
       vst1q_s32(&this->__data_[__i], __v);
     }
   }
-
+#pragma omp parallel
   for (; __i < __s; ++__i)
     this->__data_[__i] = std::min(std::max(this->__data_[__i], value_type(0)), __clip_limit);
 
@@ -569,7 +568,7 @@ tensor<_Tp>& tensor<_Tp>::neon_clamp_(const_pointer __min_val, const_pointer __m
       vst1q_u32(&this->__data_[__i], __clamped);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) {
     if (__min_val) this->__data_[__i] = std::max(*__min_val, this->__data_[__i]);
     if (__max_val) this->__data_[__i] = std::min(*__max_val, this->__data_[__i]);
@@ -591,7 +590,7 @@ tensor<_Tp>& tensor<_Tp>::neon_floor_() {
       vst1q_f32(&this->__data_[__i], __floor_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::floor(static_cast<_f32>(this->__data_[__i])));
 
@@ -611,7 +610,7 @@ tensor<_Tp>& tensor<_Tp>::neon_ceil_() {
       vst1q_f32(&this->__data_[__i], __ceil_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::ceil(static_cast<_f32>(this->__data_[__i])));
 
@@ -633,7 +632,10 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argmax_(index_type __
   index_type __inner_size = 1;
   index_type __i          = 0;
 
+#pragma omp parallel
   for (; __i < __dim; ++__i) __outer_size *= this->__shape_[__i];
+
+#pragma omp parallel
   for (__i = __dim + 1; __i < this->__shape_.size(); ++__i) __inner_size *= this->__shape_[__i];
 
   if constexpr (std::is_floating_point_v<value_type>) {
@@ -812,9 +814,10 @@ tensor<_Tp> tensor<_Tp>::neon_argmax(index_type __dim) const {
   index_type __outer_size = 1;
   index_type __inner_size = 1;
   index_type __i          = 0;
-
+#pragma omp parallel
   for (; __i < __dim; ++__i) __outer_size *= this->__shape_[__i];
 
+#pragma omp parallel
   for (__i = __dim + 1; __i < static_cast<index_type>(this->__shape_.size()); ++__i)
     __inner_size *= this->__shape_[__i];
 
@@ -881,8 +884,7 @@ tensor<_Tp> tensor<_Tp>::neon_argmax(index_type __dim) const {
         __ret.__data_[__i * __inner_size + __j] = __max_value;
       }
     }
-  } else
-
+  } else {
     for (__i = 0; __i < __outer_size; ++__i) {
       index_type __j = 0;
       for (; __j < __inner_size; ++__j) {
@@ -896,6 +898,7 @@ tensor<_Tp> tensor<_Tp>::neon_argmax(index_type __dim) const {
         __ret.__data_[__i * __inner_size + __j] = __max_value;
       }
     }
+  }
 
   return __ret;
 }
@@ -1057,12 +1060,15 @@ tensor<_Tp> tensor<_Tp>::neon_slice(index_type __dim, std::optional<index_type> 
     }
   }
 
-  for (index_type __i = __vector_end, __j = __vector_end - __start_i; __i < __end_i; ++__i, ++__j)
-    __ret.__data_[__j] = this->__data_[__i];
+  index_type __i = __vector_end;
+  index_type __j = __vector_end - __start_i;
+#pragma omp parallel
+  for (; __i < __end_i; ++__i, ++__j) __ret.__data_[__j] = this->__data_[__i];
 
-  index_type __i = __start_i, __j = 0;
-
-  for (; __i < __end_i; __i += __step, ++__j) __ret({__j}) = this->at({__i});
+  __i = __start_i;
+  __j = 0;
+#pragma omp parallel
+  for (; __i < __end_i; __i += __step, ++__j) __ret[__j] = this->__data_[__i];
 
   return __ret;
 }
