@@ -38,6 +38,7 @@ tensor<bool> tensor<_Tp>::neon_equal(const tensor& __other) const {
     }
   }
 
+#pragma omp parallel
   // Handle remaining elements
   for (; __i < this->__data_.size(); ++__i)
     __ret[__i] = (this->__data_[__i] == __other.__data_[__i]);
@@ -88,6 +89,7 @@ tensor<bool> tensor<_Tp>::neon_equal(const value_type __val) const {
     }
   }
 
+#pragma omp parallel
   // Handle the remaining elements that don't fit in a SIMD register
   for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] == __val);
 
@@ -129,8 +131,11 @@ tensor<bool> tensor<_Tp>::neon_less_equal(const tensor& __other) const {
 
   // Convert `__ret` (integer masks) to boolean
   std::vector<bool> __d(this->__data_.size());
+
+#pragma omp parallel
   for (size_t j = 0; j < __i; ++j) __d[j] = __ret[j] != 0;  // Convert mask to `true`/`false`
 
+#pragma omp parallel
   for (; __i < __d.size(); ++__i) __d[__i] = (this->__data_[__i] <= __other.__data_[__i]);
 
   return tensor<bool>(this->__shape_, __d);
@@ -172,9 +177,13 @@ tensor<bool> tensor<_Tp>::neon_less_equal(const value_type __val) const {
     }
   }
 
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] <= __val) ? 1 : 0;
 
   std::vector<bool> __to_bool(__ret.size());
+  index_type        __i = 0;
+
+#pragma omp parallel
   for (int i = __i; i >= 0; i--) __to_bool[i] = __ret[i] == 1 ? true : false;
 
   return tensor<bool>(__to_bool, this->__shape_);
