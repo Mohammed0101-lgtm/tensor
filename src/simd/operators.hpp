@@ -38,7 +38,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_plus(const tensor& __other) const {
       vst1q_u32(reinterpret_cast<_u32*>(&__d[__i]), __result);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __d[__i] = this->__data_[__i] + __other[__i];
 
   return __self(this->__shape_, __d);
@@ -80,7 +80,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_plus(const value_type __val) const {
       vst1q_u32(&__d[__i], __res);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __d[__i] = this->__data_[__i] + __val;
 
   return __self(__d, this->__shape_);
@@ -121,7 +121,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_plus_eq(const_reference __val) const {
       vst1q_u32(&this->__data_[__i], __add_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = this->__data_[__i] + __val;
 
   return *this;
@@ -163,7 +163,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const tensor& __other) const {
       vst1q_u32(&__d[__i], __sub);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_[__i]; ++__i) __d[__i] = this->__data_[__i] - __other[__i];
 
   return __self(this->__shape_, __d);
@@ -204,7 +204,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const value_type __val) const {
       vst1q_u32(&__d[__i], __sub);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __d[__i] = this->__data_[__i] - __val;
 
   return __self(*this);
@@ -242,7 +242,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const tensor& __other) const {
       vst1q_u32(&this->__data_[__i], __sub);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] -= __other[__i];
 
   return *this;
@@ -281,7 +281,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_times_eq(const tensor& __other) const {
       vst1q_u32(&this->__data_[__i], __mul);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] *= __other[__i];
 
   return *this;
@@ -322,7 +322,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const_reference __val) const {
       vst1q_s32(&this->__data_[__i], __sub);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] -= __val;
 
   return *this;
