@@ -27,7 +27,7 @@ tensor<_s32> tensor<_Tp>::neon_int32_() const {
       vst1q_s32(reinterpret_cast<_s32*>(&__d[__i]), __int_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __d.push_back(static_cast<_s32>(this->__data_[__i]));
 
   return tensor<_s32>(this->__shape_, __d);
@@ -59,7 +59,7 @@ tensor<_u32> tensor<_Tp>::neon_uint32_() const {
       vst1q_u32(reinterpret_cast<_u32*>(&__d[__i]), __uint_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __d[__i] = static_cast<_u32>(this->__data_[__i]);
 
   return tensor<_u32>(this->__shape_, __d);
@@ -98,7 +98,7 @@ tensor<_f32> tensor<_Tp>::neon_float32_() const {
       vst1q_f32(reinterpret_cast<_f32*>(&__d[__i]), __float_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __d[__i] = static_cast<_f32>(this->__data_[__i]);
 
   return tensor<_f32>(this->__shape_, __d);
@@ -114,12 +114,12 @@ tensor<_f64> tensor<_Tp>::neon_double_() const {
   std::vector<_f64> __d(this->__data_.size());
   const index_type  __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type        __i        = 0;
-
+#pragma omp parallel
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
     auto __data_vec = vld1q_f64(reinterpret_cast<const double*>(&this->__data_[__i]));
     vst1q_f64(reinterpret_cast<_f64*>(&__d[__i]), __data_vec);
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __d[__i] = static_cast<_f64>(this->__data_[__i]);
 
   return tensor<_f64>(this->__shape_, __d);
@@ -153,7 +153,7 @@ tensor<uint64_t> tensor<_Tp>::neon_unsigned_long_() const {
       vst1q_u64(reinterpret_cast<uint64_t*>(&__d[__i]), __uint_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __d[__i] = static_cast<uint64_t>(this->__data_[__i]);
 
   return tensor<uint64_t>(this->__shape_, __d);
@@ -199,7 +199,7 @@ tensor<int64_t> tensor<_Tp>::neon_long_() const {
       vst1q_s64(reinterpret_cast<int64_t*>(&__d[__i + 2]), __int_vec2);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __d[__i] = static_cast<int64_t>(this->__data_[__i]);
 
   return tensor<int64_t>(this->__shape_, __d);
