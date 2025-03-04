@@ -44,17 +44,16 @@ constexpr bool has_divide_operator_v = has_divide_operator<_Tp>::value;
 
 template <class _Tp>
 tensor<_s32> tensor<_Tp>::int32_() const {
+#if defined(__ARM_NEON)
+  return this->neon_int32_();
+#endif
   static_assert(std::is_convertible_v<value_type, _s32>);
 
   if (this->empty()) return tensor<_s32>(this->__shape_);
 
   std::vector<_s32> __d;
   index_type        __i = 0;
-
-#if defined(__ARM_NEON)
-  return this->neon_int32_();
-#endif
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __d.push_back(static_cast<_s32>(this->__data_[__i]));
 
   return tensor<_s32>(this->__shape_, __d);
@@ -71,6 +70,7 @@ tensor<_u32> tensor<_Tp>::uint32_() const {
 
   std::vector<_u32> __d(this->__data_.size());
   index_type        __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __d[__i] = static_cast<_u32>(this->__data_[__i]);
 
   return tensor<_u32>(this->__shape_, __d);
@@ -88,6 +88,7 @@ tensor<_f32> tensor<_Tp>::float32_() const {
 
   std::vector<_f32> __d(this->__data_.size());
   index_type        __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __d[__i] = static_cast<_f32>(this->__data_[__i]);
 
   return tensor<_f32>(this->__shape_, __d);
@@ -105,6 +106,7 @@ tensor<_f64> tensor<_Tp>::double_() const {
 
   std::vector<_f64> __d(this->__data_.size());
   index_type        __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __d[__i] = static_cast<_f64>(this->__data_[__i]);
 
   return tensor<_f64>(this->__shape_, __d);
@@ -122,6 +124,7 @@ tensor<uint64_t> tensor<_Tp>::unsigned_long_() const {
 
   std::vector<uint64_t> __d(this->__data_.size());
   index_type            __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __d[__i] = static_cast<uint64_t>(this->__data_[__i]);
 
   return tensor<uint64_t>(this->__shape_, __d);
@@ -139,7 +142,7 @@ tensor<int64_t> tensor<_Tp>::long_() const {
 
   std::vector<int64_t> __d(this->__data_.size());
   index_type           __i = 0;
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __d[__i] = static_cast<int64_t>(this->__data_[__i]);
 
   return tensor<int64_t>(this->__shape_, __d);
@@ -150,7 +153,7 @@ tensor<bool> tensor<_Tp>::bool_() const {
   std::vector<bool> __d;
 
   static_assert(std::is_convertible_v<value_type, bool>);
-
+#pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     __d.push_back(static_cast<bool>(this->__data_[__i]));
 
