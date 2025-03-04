@@ -1529,6 +1529,7 @@ template <class _Tp>
 inline
     typename tensor<_Tp>::index_type tensor<_Tp>::__computeSize(const shape_type& __dims) noexcept {
   uint64_t __ret = 1;
+#pragma omp parallel
   for (const index_type& __d : __dims) __ret *= __d;
   return __ret;
 }
@@ -1542,7 +1543,7 @@ inline typename tensor<_Tp>::index_type tensor<_Tp>::__compute_index(
 
   index_type __index = 0;
   index_type __i     = 0;
-
+#pragma omp parallel
   for (; __i < this->__shape_.size(); ++__i) __index += __idx[__i] * this->__strides_[__i];
 
   return __index;
@@ -1557,7 +1558,7 @@ void tensor<_Tp>::__compute_strides() {
 
   this->__strides_ = shape_type(this->__shape_.size(), 1);
   int __st = 1, __i = static_cast<int>(this->__shape_.size() - 1);
-
+#pragma omp parallel
   for (; __i >= 0; __i--) {
     this->__strides_[__i] = __st;
     __st *= this->__shape_[__i];
@@ -1601,6 +1602,7 @@ template <class _Tp>
 [[nodiscard]]
 inline size_t tensor<_Tp>::computeStride(size_t __dim, const shape_type& __shape) const noexcept {
   size_t __stride = 1;
+#pragma omp parallel
   for (size_t __i = __dim; __i < __shape.size(); ++__i) __stride *= __shape[__i];
   return __stride;
 }
@@ -1772,18 +1774,21 @@ class tensor<bool> {
 
   tensor<bool>& logical_not_() {
     index_type __i = 0;
+#pragma omp parallel
     for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = ~(this->__data_[__i]);
     return *this;
   }
 
   tensor<bool>& logical_or_(const value_type __val) {
     index_type __i = 0;
+#pragma omp parallel
     for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = this->__data_[__i] || __val;
     return *this;
   }
 
   tensor<bool>& logical_or_(const tensor& __other) {
     index_type __i = 0;
+#pragma omp parallel
     for (; __i < this->__data_.size(); ++__i)
       this->__data_[__i] = this->__data_[__i] || __other[__i];
     return *this;
@@ -1791,6 +1796,7 @@ class tensor<bool> {
 
   tensor<bool>& logical_and_(const value_type __val) {
     index_type __i = 0;
+#pragma omp parallel
     for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = this->__data_[__i] && __val;
     return *this;
   }
@@ -1804,12 +1810,14 @@ class tensor<bool> {
 
   tensor<bool>& logical_xor_(const value_type __val) {
     index_type __i = 0;
+#pragma omp parallel
     for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = this->__data_[__i] ^ __val;
     return *this;
   }
 
   tensor<bool>& logical_xor_(const tensor& __other) {
     index_type __i = 0;
+#pragma omp parallel
     for (; __i < this->__data_.size(); ++__i)
       this->__data_[__i] = this->__data_[__i] ^ __other[__i];
     return *this;
@@ -1817,18 +1825,21 @@ class tensor<bool> {
 
   const tensor<bool>& logical_not_() const {
     index_type __i = 0;
+#pragma omp parallel
     for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = ~(this->__data_[__i]);
     return *this;
   }
 
   const tensor<bool>& logical_or_(const value_type __val) const {
     index_type __i = 0;
+#pragma omp parallel
     for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = this->__data_[__i] || __val;
     return *this;
   }
 
   const tensor<bool>& logical_or_(const tensor& __other) const {
     index_type __i = 0;
+#pragma omp parallel
     for (; __i < this->__data_.size(); ++__i)
       this->__data_[__i] = this->__data_[__i] || __other[__i];
     return *this;
@@ -1836,12 +1847,14 @@ class tensor<bool> {
 
   const tensor<bool>& logical_and_(const value_type __val) const {
     index_type __i = 0;
+#pragma omp parallel
     for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = this->__data_[__i] && __val;
     return *this;
   }
 
   const tensor<bool>& logical_and_(const tensor& __other) const {
     index_type __i = 0;
+#pragma omp parallel
     for (; __i < this->__data_.size(); ++__i)
       this->__data_[__i] = this->__data_[__i] && __other[__i];
     return *this;
@@ -1849,12 +1862,14 @@ class tensor<bool> {
 
   const tensor<bool>& logical_xor_(const value_type __val) const {
     index_type __i = 0;
+#pragma omp parallel
     for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = this->__data_[__i] ^ __val;
     return *this;
   }
 
   const tensor<bool>& logical_xor_(const tensor& __other) const {
     index_type __i = 0;
+#pragma omp parallel
     for (; __i < this->__data_.size(); ++__i)
       this->__data_[__i] = this->__data_[__i] ^ __other[__i];
     return *this;
@@ -1862,12 +1877,14 @@ class tensor<bool> {
 
   tensor<bool>& operator!() {
     index_type __i = 0;
+#pragma omp parallel
     for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = !(this->__data_[__i]);
     return *this;
   }
 
   const tensor<bool>& operator!() const {
     index_type __i = 0;
+#pragma omp parallel
     for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = !(this->__data_[__i]);
     return *this;
   }
@@ -1895,6 +1912,7 @@ class tensor<bool> {
     __ret              = __self(__ret_dims);
 
     index_type __i = __start_i, __j = 0;
+#pragma omp parallel
     for (; __i < __end_i; __i += __step, ++__j) __ret({__j}) = this->at({__j});
 
     return __ret;
@@ -1911,7 +1929,7 @@ class tensor<bool> {
     index_type __start = this->__shape_[1] * __index;
     index_type __end   = this->__shape_[1] * __index + this->__shape_[1];
     index_type __i     = __start;
-
+#pragma omp parallel
     for (; __i < __end; ++__i) __r.push_back(this->__data_[__i]);
 
     return __self({this->__shape_[1]}, __r);
@@ -1926,7 +1944,7 @@ class tensor<bool> {
 
     data_t     __c;
     index_type __i = 0;
-
+#pragma omp parallel
     for (; __i < this->__shape_[0]; ++__i)
       __c.push_back(this->__data_[this->__compute_index({__i, __index})]);
 
@@ -2046,7 +2064,7 @@ class tensor<bool> {
 
       __start += __d.size();
     }
-
+#pragma omp parallel
     for (size_t __j = __start, __k = 0; __j < __total_size && __k < __remainder; ++__j, ++__k)
       this->__data_[__j] = __d[__k];
 
@@ -2070,12 +2088,13 @@ class tensor<bool> {
     }
 
     shape_type __ret_sh = this->__shape_;
+#pragma omp parallel
     for (const tensor& __t : __others) __ret_sh[__dim] += __t.__shape_[__dim];
 
     data_t __c;
     __c.reserve(this->__data_.size());
     __c.insert(__c.end(), this->__data_.begin(), this->__data_.end());
-
+#pragma omp parallel
     for (const tensor& __t : __others)
       __c.insert(__c.end(), __t.__data_.begin(), __t.__data_.end());
 
@@ -2111,7 +2130,7 @@ class tensor<bool> {
     std::uniform_int_distribution<int> __dist(0, 1);
 
     index_type __i = 0;
-
+#pragma omp parallel
     for (; __i < static_cast<index_type>(__s); ++__i)
       this->__data_[__i] = __dist(__gen) == 0 ? true : false;
 
@@ -2158,6 +2177,7 @@ class tensor<bool> {
   [[nodiscard]]
   inline size_t computeStride(size_t __dim, const shape_type& __shape) const noexcept {
     size_t __stride = 1;
+#pragma omp parallel
     for (size_t __i = __dim; __i < __shape.size(); __i++) __stride *= __shape[__i];
     return __stride;
   }
@@ -2199,7 +2219,7 @@ class tensor<bool> {
 
     this->__strides_ = shape_type(this->__shape_.size(), 1);
     int __st = 1, __i = static_cast<int>(this->__shape_.size() - 1);
-
+#pragma omp parallel
     for (; __i >= 0; __i--) {
       this->__strides_[__i] = __st;
       __st *= this->__shape_[__i];
@@ -2213,7 +2233,7 @@ class tensor<bool> {
 
     index_type __index = 0;
     index_type __i     = 0;
-
+#pragma omp parallel
     for (; __i < this->__shape_.size(); ++__i) __index += __idx[__i] * this->__strides_[__i];
 
     return __index;
@@ -2222,6 +2242,7 @@ class tensor<bool> {
   [[nodiscard]]
   static index_type __computeSize(const shape_type& __dims) noexcept {
     uint64_t __ret = 1;
+#pragma omp parallel
     for (const index_type& __d : __dims) __ret *= __d;
     return __ret;
   }
