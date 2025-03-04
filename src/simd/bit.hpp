@@ -26,7 +26,7 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_right_shift_(const int __amount) {
       vst1q_u32(&this->__data_[__i], __shifted_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] >>= __amount;
 
   return *this;
@@ -56,7 +56,7 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_left_shift_(const int __amount) {
       vst1q_u32(&this->__data_[__i], __shifted_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] <<= __amount;
 
   return *this;
@@ -87,7 +87,7 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_or_(const value_type __val) {
       vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __result_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __val;
 
   return *this;
@@ -118,7 +118,7 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_xor_(const value_type __val) {
       vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __result_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] ^= __val;
 
   return *this;
@@ -147,7 +147,7 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_not_() {
       vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __result_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = ~this->__data_[__i];
 
   return *this;
@@ -178,7 +178,7 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_and_(const value_type __val) {
       vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __result_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] &= __val;
 
   return *this;
@@ -210,7 +210,7 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_and_(const tensor& __other) {
       vst1q_s32(reinterpret_cast<_s32*>(&this->__data_[__i]), __xor_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] &= __other[__i];
 
   return *this;
@@ -242,7 +242,7 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_or_(const tensor& __other) {
       vst1q_s32(reinterpret_cast<_s32*>(&this->__data_[__i]), __xor_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __other[__i];
 
   return *this;
@@ -274,7 +274,7 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_xor_(const tensor& __other) {
       vst1q_s32(reinterpret_cast<_s32*>(&this->__data_[__i]), __xor_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] ^= __other[__i];
 
   return *this;
