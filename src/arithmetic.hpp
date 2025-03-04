@@ -822,6 +822,7 @@ tensor<_Tp>& tensor<_Tp>::abs_() {
   if (std::is_unsigned_v<value_type>) return *this;
 
   index_type __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::abs(this->__data_[__i]));
 
@@ -836,6 +837,7 @@ inline const tensor<_Tp>& tensor<_Tp>::abs_() const {
   if (std::is_unsigned_v<value_type>) return *this;
 
   index_type __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::abs(this->__data_[__i]));
 
@@ -870,6 +872,7 @@ tensor<_Tp>& tensor<_Tp>::dist_(const tensor& __other) {
 #endif
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(
         std::abs(static_cast<_f64>(this->__data_[__i] - __other.__data_[__i])));
@@ -883,6 +886,7 @@ inline const tensor<_Tp>& tensor<_Tp>::dist_(const tensor& __other) const {
   return this->neon_dist_(__other);
 #endif
   index_type __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(
         std::abs(static_cast<_f64>(this->__data_[__i] - __other.__data_[__i])));
@@ -896,6 +900,7 @@ inline const tensor<_Tp>& tensor<_Tp>::dist_(const value_type __val) const {
   return this->neon_dist_(__val);
 #endif
   index_type __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] =
         static_cast<value_type>(std::abs(static_cast<_f64>(this->__data_[__i] - __val)));
@@ -909,6 +914,7 @@ tensor<_Tp>& tensor<_Tp>::dist_(const value_type __val) {
   return this->neon_dist_(__val);
 #endif
   index_type __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] =
         static_cast<value_type>(std::abs(static_cast<_f64>(this->__data_[__i] - __val)));
@@ -933,6 +939,7 @@ inline tensor<_Tp> tensor<_Tp>::remainder(const tensor& __other) const {
 template <class _Tp>
 inline tensor<_Tp>& tensor<_Tp>::remainder_(const value_type __val) {
   assert(__val != 0 && "Remainder by zero is undefined");
+#pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] %= __val;
   return *this;
 }
@@ -940,6 +947,7 @@ inline tensor<_Tp>& tensor<_Tp>::remainder_(const value_type __val) {
 template <class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::remainder_(const value_type __val) const {
   assert(__val != 0 && "Remainder by zero is undefined");
+#pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] %= __val;
   return *this;
 }
@@ -949,6 +957,7 @@ inline tensor<_Tp>& tensor<_Tp>::remainder_(const tensor& __other) {
   assert(__other.count_nonzero() == __other.size(0) && "Remainder by zero is undefined");
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] %= __other.__data_[__i];
   return *this;
 }
@@ -958,6 +967,7 @@ inline const tensor<_Tp>& tensor<_Tp>::remainder_(const tensor& __other) const {
   assert(__other.count_nonzero() == __other.size(0) && "Remainder by zero is undefined");
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] %= __other.__data_[__i];
   return *this;
 }
@@ -983,6 +993,7 @@ tensor<_Tp>& tensor<_Tp>::maximum_(const tensor& __other) {
 #endif
   assert(this->__shape_ == __other.shape());
   index_type __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = std::max(this->__data_[__i], __other.__data_[__i]);
 
@@ -995,6 +1006,7 @@ inline const tensor<_Tp>& tensor<_Tp>::maximum_(const tensor& __other) const {
   return this->neon_maximum_(__other);
 #endif
   index_type __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = std::max(this->__data_[__i], __other.__data_[__i]);
 
@@ -1007,6 +1019,7 @@ tensor<_Tp>& tensor<_Tp>::maximum_(const value_type __val) {
   return this->neon_maximum_(__val);
 #endif
   index_type __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = std::max(this->__data_[__i], __val);
 
@@ -1019,6 +1032,7 @@ inline const tensor<_Tp>& tensor<_Tp>::maximum_(const value_type __val) const {
   return this->neon_maximum_(__val);
 #endif
   index_type __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = std::max(this->__data_[__i], __val);
 
@@ -1045,6 +1059,7 @@ double tensor<_Tp>::mean() const {
   if (this->empty()) return __m;
 
   index_type __i = 0;
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __m += this->__data_[__i];
 
   return static_cast<double>(__m) / static_cast<double>(this->__data_.size());
@@ -1059,7 +1074,7 @@ template <class _Tp>
 inline typename tensor<_Tp>::index_type tensor<_Tp>::lcm() const {
   index_type __ret = static_cast<index_type>(this->__data_[0]);
   index_type __i   = 1;
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     __ret = __lcm(static_cast<index_type>(this->__data_[__i]), __ret);
 
@@ -1072,10 +1087,9 @@ inline tensor<_Tp> tensor<_Tp>::expand_as(shape_type __sh, index_type __dim) con
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::lcm(const tensor& __other) const {
   assert(this->__shape_ == __other.shape());
-
   tensor     __ret = this->clone();
   index_type __i   = 0;
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     __ret[__i] = static_cast<value_type>(this->__lcm(static_cast<index_type>(this->__data_[__i]),
                                                      static_cast<index_type>(__other[__i])));
@@ -1112,7 +1126,7 @@ double tensor<_Tp>::mode(const index_type __dim) const {
 
   value_type __ret  = 0;
   size_t     __most = 0;
-
+#pragma omp parallel
   for (const std::pair<value_type, size_t>& __pair : __counts) {
     if (__pair.second > __most) {
       __ret  = __pair.first;
