@@ -20,7 +20,7 @@ tensor<_Tp>& tensor<_Tp>::neon_fmax_(const value_type __v) {
       vst1q_f32(&this->__data_[__i], __max_val);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = std::fmax(this->__data_[__i], __v);
 
   return *this;
@@ -42,7 +42,7 @@ tensor<_Tp>& tensor<_Tp>::neon_fmax_(const tensor& __other) {
       vst1q_f32(&this->__data_[__i], __max_val);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = std::fmax(this->__data_[__i], __other[__i]);
 
@@ -68,7 +68,7 @@ tensor<_Tp>& tensor<_Tp>::neon_fmod_(const value_type __val) {
       vst1q_f32(&this->__data_[__i], __mod);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(
         std::fmod(static_cast<_f32>(this->__data_[__i]), static_cast<_f32>(__val)));
@@ -96,7 +96,7 @@ tensor<_Tp>& tensor<_Tp>::neon_fmod_(const tensor& __other) {
       vst1q_f32(&this->__data_[__i], __mod);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(
         std::fmod(static_cast<_f32>(this->__data_[__i]), static_cast<_f32>(__other[__i])));
@@ -141,7 +141,7 @@ tensor<_Tp>& tensor<_Tp>::neon_frac_() {
       vst1q_f64(&this->__data_[__i], __atan_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(this->__frac(this->__data_[__i]));
 
@@ -197,7 +197,7 @@ tensor<_Tp>& tensor<_Tp>::neon_log_() {
       vst1q_s32(&this->__data_[__i], __log_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::log(this->__data_[__i]));
 
@@ -253,7 +253,7 @@ tensor<_Tp>& tensor<_Tp>::neon_log10_() {
       vst1q_s32(&this->__data_[__i], __log_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::log10(this->__data_[__i]));
 
@@ -309,7 +309,7 @@ tensor<_Tp>& tensor<_Tp>::neon_log2_() {
       vst1q_s32(&this->__data_[__i], __log2_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::log2(this->__data_[__i]));
 
@@ -365,7 +365,7 @@ tensor<_Tp>& tensor<_Tp>::neon_exp_() {
       vst1q_s32(&this->__data_[__i], __exp_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::exp(this->__data_[__i]));
 
@@ -421,7 +421,7 @@ tensor<_Tp>& tensor<_Tp>::neon_sqrt_() {
       vst1q_u32(&this->__data_[__i], __sqrt_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::sqrt(this->__data_[__i]));
 
@@ -477,7 +477,7 @@ tensor<_Tp>& tensor<_Tp>::neon_cos_() {
       vst1q_u32(&this->__data_[__i], __cos_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::cos(this->__data_[__i]));
 
@@ -519,7 +519,7 @@ tensor<_Tp>& tensor<_Tp>::neon_acos_() {
       vst1q_s32(&this->__data_[__i], __cos_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::acos(this->__data_[__i]));
 
@@ -575,7 +575,7 @@ tensor<_Tp>& tensor<_Tp>::neon_sin_() {
       vst1q_u32(&this->__data_[__i], __sin_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::sin(this->__data_[__i]));
 
@@ -630,7 +630,7 @@ tensor<_Tp>& tensor<_Tp>::neon_tan_() {
       vst1q_u32(&this->__data_[__i], __tan_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::tan(this->__data_[__i]));
 
@@ -686,7 +686,7 @@ tensor<_Tp>& tensor<_Tp>::neon_tanh_() {
       vst1q_u32(&this->__data_[__i], __tanh_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::tanh(static_cast<_f32>(this->__data_[__i])));
 
@@ -716,7 +716,7 @@ tensor<_Tp>& tensor<_Tp>::neon_sinc_() {
       vst1q_f32(reinterpret_cast<_f32*>(&this->__data_[__i]), __sinc_v);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = (std::abs(this->__data_[__i]) < 1e-6)
                              ? static_cast<value_type>(1.0)
@@ -774,7 +774,7 @@ tensor<_Tp>& tensor<_Tp>::neon_atan_() {
       vst1q_s32(&this->__data_[__i], __atan_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::atan(this->__data_[__i]));
 
@@ -829,7 +829,7 @@ tensor<_Tp>& tensor<_Tp>::neon_atanh_() {
       vst1q_s32(&this->__data_[__i], __atan_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::atan(this->__data_[__i]));
 
@@ -885,7 +885,7 @@ tensor<_Tp>& tensor<_Tp>::neon_sinh_() {
       vst1q_u32(&this->__data_[__i], __sinh_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::sinh(this->__data_[__i]));
 
@@ -940,7 +940,7 @@ tensor<_Tp>& tensor<_Tp>::neon_asinh_() {
       vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __asinh_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::asinh(this->__data_[__i]));
 
@@ -995,7 +995,7 @@ tensor<_Tp>& tensor<_Tp>::neon_asin_() {
       vst1q_u32(&this->__data_[__i], __asin_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::asin(this->__data_[__i]));
 
@@ -1050,7 +1050,7 @@ tensor<_Tp>& tensor<_Tp>::neon_cosh_() {
       vst1q_u32(&this->__data_[__i], __cosh_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::cosh(this->__data_[__i]));
 
@@ -1105,7 +1105,7 @@ tensor<_Tp>& tensor<_Tp>::neon_acosh_() {
       vst1q_u32(&this->__data_[__i], __acosh_vec);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::acosh(this->__data_[__i]));
 
@@ -1146,11 +1146,9 @@ tensor<_Tp>& tensor<_Tp>::neon_pow_(const value_type __val) {
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_pow_(const tensor& __other) {
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
-
-#if defined(__ARM_NEON)
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+  index_type       __i        = 0;
 
   if constexpr (std::is_same_v<value_type, _f32>) {
     neon_f32 __base_vec   = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
@@ -1194,8 +1192,8 @@ tensor<_Tp>& tensor<_Tp>::neon_pow_(const tensor& __other) {
 
     vst1q_u32(&this->__data_[__i], __result_vec);
   }
-#endif
 
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(
         std::pow(static_cast<_f32>(this->__data_[__i]), static_cast<_f32>(__other[__i])));
@@ -1241,7 +1239,7 @@ tensor<_Tp>& tensor<_Tp>::neon_abs_() {
     }
   }
   // don't need to check for unsigned values because they are already positive
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::abs(this->__data_[__i]));
 
@@ -1276,7 +1274,7 @@ tensor<_Tp>& tensor<_Tp>::neon_dist_(const tensor& __other) {
       vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __diff);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(
         std::abs(static_cast<_f64>(this->__data_[__i] - __other.__data_[__i])));
@@ -1311,7 +1309,7 @@ tensor<_Tp>& tensor<_Tp>::neon_dist_(const value_type __val) {
       vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __diff);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] =
         static_cast<value_type>(std::abs(static_cast<_f64>(this->__data_[__i] - __val)));
@@ -1347,7 +1345,7 @@ tensor<_Tp>& tensor<_Tp>::neon_maximum_(const tensor& __other) {
       vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __max);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = std::max(this->__data_[__i], __other.__data_[__i]);
 
@@ -1381,7 +1379,7 @@ tensor<_Tp>& tensor<_Tp>::neon_maximum_(const value_type __val) {
       vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __max);
     }
   }
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = std::max(this->__data_[__i], __val);
 
@@ -1397,7 +1395,7 @@ double tensor<_Tp>::neon_mean() const {
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   neon_s32         __sum_vec  = vdupq_n_s32(0);
   index_type       __i        = 0;
-
+#pragma omp parallel
   for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
     neon_s32 __data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
     __sum_vec           = vaddq_s32(__sum_vec, __data_vec);
@@ -1406,7 +1404,7 @@ double tensor<_Tp>::neon_mean() const {
   _s32 __partial_sum[4];
   vst1q_s32(__partial_sum, __sum_vec);
   __m += __partial_sum[0] + __partial_sum[1] + __partial_sum[2] + __partial_sum[3];
-
+#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __m += this->__data_[__i];
 
   return static_cast<double>(__m) / static_cast<double>(this->__data_.size());
