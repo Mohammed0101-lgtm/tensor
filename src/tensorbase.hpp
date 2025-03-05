@@ -463,7 +463,8 @@ class tensor {
   /// @param __min_val A pointer to the minimum value (optional).
   /// @param __max_val A pointer to the maximum value (optional).
   /// @return A new tensor with values clamped to the specified range.
-  tensor clamp(const_pointer __min_val = nullptr, const_pointer __max_val = nullptr) const;
+  tensor clamp(const_reference __min_val = std::numeric_limits<value_type>::lowest(),
+               const_reference __max_val = std::numeric_limits<value_type>::max()) const;
 
   /// @brief Computes the cosine of each element in the tensor.
   /// @return A new tensor containing the cosine of each element.
@@ -1039,8 +1040,10 @@ class tensor {
   /// @param __max_val The maximum value for clamping, or nullptr to skip the
   /// maximum bound.
   /// @return A reference to the tensor after the clamping has been applied.
-  tensor&       clamp_(const_pointer __min_val = nullptr, const_pointer __max_val = nullptr);
-  const tensor& clamp_(const_pointer __min_val = nullptr, const_pointer __max_val = nullptr) const;
+  tensor&       clamp_(const_reference __min_val = std::numeric_limits<value_type>::lowest(),
+                       const_reference __max_val = std::numeric_limits<value_type>::max());
+  const tensor& clamp_(const_reference __min_val = std::numeric_limits<value_type>::lowest(),
+                       const_reference __max_val = std::numeric_limits<value_type>::max()) const;
 
   /// @brief Applies bitwise NOT operation to each element in the tensor,
   /// modifying the tensor in place.
@@ -1451,7 +1454,7 @@ class tensor {
   tensor&            neon_relu_();
   tensor&            neon_sigmoid_();
   tensor&            neon_clipped_relu_(const value_type __clip_limit);
-  tensor&            neon_clamp_(const_pointer __min_val, const_pointer __max_val);
+  tensor&            neon_clamp_(const_reference __min_val = std::numeric_limits<value_type>::lowest(), const_reference __max_val = std::numeric_limits<value_type>::max());
   tensor&            neon_floor_();
   tensor&            neon_ceil_();
   tensor&            neon_logical_or_(const value_type __val);
@@ -1528,8 +1531,7 @@ template <class _Tp>
 [[nodiscard]]
 inline
     typename tensor<_Tp>::index_type tensor<_Tp>::__computeSize(const shape_type& __dims) noexcept {
-  uint64_t __ret = 1;
-#pragma omp parallel
+  index_type __ret = 1;
   for (const index_type& __d : __dims) __ret *= __d;
   return __ret;
 }
