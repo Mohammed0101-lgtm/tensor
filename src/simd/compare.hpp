@@ -181,7 +181,7 @@ tensor<bool> tensor<_Tp>::neon_less_equal(const value_type __val) const {
   for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] <= __val) ? 1 : 0;
 
   std::vector<bool> __to_bool(__ret.size());
-  index_type        __i = 0;
+  __i = 0;
 
 #pragma omp parallel
   for (int i = __i; i >= 0; i--) __to_bool[i] = __ret[i] == 1 ? true : false;
