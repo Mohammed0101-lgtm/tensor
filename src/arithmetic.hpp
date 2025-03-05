@@ -1059,7 +1059,6 @@ double tensor<_Tp>::mean() const {
   if (this->empty()) return __m;
 
   index_type __i = 0;
-#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __m += this->__data_[__i];
 
   return static_cast<double>(__m) / static_cast<double>(this->__data_.size());
@@ -1074,7 +1073,6 @@ template <class _Tp>
 inline typename tensor<_Tp>::index_type tensor<_Tp>::lcm() const {
   index_type __ret = static_cast<index_type>(this->__data_[0]);
   index_type __i   = 1;
-#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
     __ret = __lcm(static_cast<index_type>(this->__data_[__i]), __ret);
 
@@ -1126,7 +1124,6 @@ double tensor<_Tp>::mode(const index_type __dim) const {
 
   value_type __ret  = 0;
   size_t     __most = 0;
-#pragma omp parallel
   for (const std::pair<value_type, size_t>& __pair : __counts) {
     if (__pair.second > __most) {
       __ret  = __pair.first;
