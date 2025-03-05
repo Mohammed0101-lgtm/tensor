@@ -527,15 +527,13 @@ tensor<_Tp>& tensor<_Tp>::neon_clipped_relu_(const value_type __clip_limit) {
 }
 
 template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_clamp_(const_pointer __min_val, const_pointer __max_val) {
+tensor<_Tp>& tensor<_Tp>::neon_clamp_(const_reference __min_val, const_reference __max_val) {
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
   if constexpr (std::is_floating_point_v<value_type>) {
-    neon_f32 __min_vec =
-        vdupq_n_f32(__min_val ? *__min_val : std::numeric_limits<value_type>::lowest());
-    neon_f32 __max_vec =
-        vdupq_n_f32(__max_val ? *__max_val : std::numeric_limits<value_type>::max());
+    neon_f32 __min_vec = vdupq_n_f32(__min_val);
+    neon_f32 __max_vec = vdupq_n_f32(__max_val);
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_f32 __data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
@@ -544,10 +542,8 @@ tensor<_Tp>& tensor<_Tp>::neon_clamp_(const_pointer __min_val, const_pointer __m
       vst1q_f32(&this->__data_[__i], __clamped);
     }
   } else if constexpr (std::is_signed_v<value_type>) {
-    neon_s32 __min_vec =
-        vdupq_n_s32(__min_val ? *__min_val : std::numeric_limits<value_type>::lowest());
-    neon_s32 __max_vec =
-        vdupq_n_s32(__max_val ? *__max_val : std::numeric_limits<value_type>::max());
+    neon_s32 __min_vec = vdupq_n_s32(__min_val);
+    neon_s32 __max_vec = vdupq_n_s32(__max_val);
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_s32 __data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
@@ -556,10 +552,8 @@ tensor<_Tp>& tensor<_Tp>::neon_clamp_(const_pointer __min_val, const_pointer __m
       vst1q_s32(&this->__data_[__i], __clamped);
     }
   } else if constexpr (std::is_unsigned_v<value_type>) {
-    neon_u32 __min_vec =
-        vdupq_n_u32(__min_val ? *__min_val : std::numeric_limits<value_type>::lowest());
-    neon_u32 __max_vec =
-        vdupq_n_u32(__max_val ? *__max_val : std::numeric_limits<value_type>::max());
+    neon_u32 __min_vec = vdupq_n_u32(__min_val);
+    neon_u32 __max_vec = vdupq_n_u32(__max_val);
 
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
       neon_u32 __data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
@@ -570,8 +564,8 @@ tensor<_Tp>& tensor<_Tp>::neon_clamp_(const_pointer __min_val, const_pointer __m
   }
 #pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) {
-    if (__min_val) this->__data_[__i] = std::max(*__min_val, this->__data_[__i]);
-    if (__max_val) this->__data_[__i] = std::min(*__max_val, this->__data_[__i]);
+    this->__data_[__i] = std::max(__min_val, this->__data_[__i]);
+    this->__data_[__i] = std::min(__max_val, this->__data_[__i]);
   }
 
   return *this;
