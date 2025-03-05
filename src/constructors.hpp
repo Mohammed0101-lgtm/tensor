@@ -28,9 +28,8 @@ tensor<_Tp>::tensor(const shape_type& __sh, const data_t& __d, Device __dev)
 template <class _Tp>
 tensor<_Tp>::tensor(const shape_type& __sh, std::initializer_list<value_type> init_list, Device __d)
     : __shape_(__sh), __device_(__d) {
-  index_type __s = this->__computeSize(__sh);
-  assert(init_list.size() == static_cast<size_t>(__s) &&
-         "Initializer list size must match tensor size");
+  if (static_cast<index_type>(init_list.size()) != this->__computeSize(__sh))
+    throw std::invalid_argument("Initializer list size must match the tensor size");
   this->__data_ = data_t(init_list);
   this->__compute_strides();
 }
