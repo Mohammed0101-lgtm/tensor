@@ -419,9 +419,7 @@ TEST(TensorTest, GreaterTest1) {
   EXPECT_EQ(t.greater(other2), expected2);
 }
 
-/*
 TEST(TensorTest, SliceTest) {
-  // Case 1: Slice first row
   tensor<int> t1({2, 2}, {1, 2, 3, 4});
   tensor<int> expected1({2}, {1, 2});
   std::cout << "tensor slice : " << std::endl;
@@ -430,43 +428,33 @@ TEST(TensorTest, SliceTest) {
   expected1.print();
   EXPECT_EQ(t1.slice(0, 0, 1, 2), expected1);
 
-  // Case 2: Slice second row
   tensor<int> expected2({2}, {3, 4});
   EXPECT_EQ(t1.slice(0, 1, 2, 2), expected2);
 
-  // Case 3: Slice first column
   tensor<int> expected3({2}, {1, 3});
   EXPECT_EQ(t1.slice(1, 0, 2, 1), expected3);
 
-  // Case 4: Slice second column
   tensor<int> expected4({2}, {2, 4});
   EXPECT_EQ(t1.slice(1, 1, 2, 1), expected4);
 
-  // Case 5: Slice entire tensor (should return the same tensor)
   EXPECT_EQ(t1.slice(0, 0, 2, 2), t1);
 
-  // Case 6: Slice single element
   tensor<int> expected5({1}, {3});
   EXPECT_EQ(t1.slice(0, 1, 2, 1).slice(1, 0, 1, 1), expected5);
 
-  // Case 7: Slice with stride
   tensor<int> t2({3, 3}, {1, 2, 3, 4, 5, 6, 7, 8, 9});
   tensor<int> expected6({2}, {1, 3});
   EXPECT_EQ(t2.slice(0, 0, 3, 2), expected6);
 
-  // Case 8: Slice middle row
   tensor<int> expected7({3}, {4, 5, 6});
   EXPECT_EQ(t2.slice(0, 1, 2, 3), expected7);
 
-  // Case 9: Slice middle column
   tensor<int> expected8({3}, {2, 5, 8});
   EXPECT_EQ(t2.slice(1, 1, 3, 1), expected8);
 
-  // Case 10: Slice last row
   tensor<int> expected9({3}, {7, 8, 9});
   EXPECT_EQ(t2.slice(0, 2, 3, 3), expected9);
 }
-*/
 
 TEST(TensorTest, RowTest) {
   tensor<int> t({2, 3}, {1,2,3,4,5,6});
