@@ -563,13 +563,13 @@ inline const tensor<_Tp>& tensor<_Tp>::unsqueeze_(index_type __dim) const {
 }
 
 template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::clamp_(const_pointer __min_val, const_pointer __max_val) {
+tensor<_Tp>& tensor<_Tp>::clamp_(const_reference __min_val, const_reference __max_val) {
   index_type __i = 0;
 
 #if defined(__AVX2__)
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _AVX_REG_WIDTH);
-  __m256 __min_vec = _mm256_set1_ps(__min_val ? *__min_val : std::numeric_limits<_Tp>::lowest());
-  __m256 __max_vec = _mm256_set1_ps(__max_val ? *__max_val : std::numeric_limits<_Tp>::max());
+  __m256           __min_vec  = _mm256_set1_ps(__min_val);
+  __m256           __max_vec  = _mm256_set1_ps(__max_val);
 
   for (; __i < __simd_end; __i += _AVX_REG_WIDTH) {
     __m256 __data_vec = _mm256_loadu_ps(&this->__data_[__i]);
@@ -583,22 +583,22 @@ tensor<_Tp>& tensor<_Tp>::clamp_(const_pointer __min_val, const_pointer __max_va
 #endif
 #pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) {
-    if (__min_val) this->__data_[__i] = std::max(*__min_val, this->__data_[__i]);
-    if (__max_val) this->__data_[__i] = std::min(*__max_val, this->__data_[__i]);
+    this->__data_[__i] = std::max(__min_val, this->__data_[__i]);
+    this->__data_[__i] = std::min(__max_val, this->__data_[__i]);
   }
 
   return *this;
 }
 
 template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::clamp_(const_pointer __min_val,
-                                              const_pointer __max_val) const {
+inline const tensor<_Tp>& tensor<_Tp>::clamp_(const_reference __min_val,
+                                              const_reference __max_val) const {
   index_type __i = 0;
 
 #if defined(__AVX2__)
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _AVX_REG_WIDTH);
-  __m256 __min_vec = _mm256_set1_ps(__min_val ? *__min_val : std::numeric_limits<_Tp>::lowest());
-  __m256 __max_vec = _mm256_set1_ps(__max_val ? *__max_val : std::numeric_limits<_Tp>::max());
+  __m256 __min_vec = _mm256_set1_ps(__min_val );
+  __m256 __max_vec = _mm256_set1_ps(__max_val );
 
   for (; __i < __simd_end; __i += _AVX_REG_WIDTH) {
     __m256 __data_vec = _mm256_loadu_ps(&this->__data_[__i]);
@@ -612,15 +612,15 @@ inline const tensor<_Tp>& tensor<_Tp>::clamp_(const_pointer __min_val,
 #endif
 #pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) {
-    if (__min_val) this->__data_[__i] = std::max(*__min_val, this->__data_[__i]);
-    if (__max_val) this->__data_[__i] = std::min(*__max_val, this->__data_[__i]);
+    this->__data_[__i] = std::max(__min_val, this->__data_[__i]);
+    this->__data_[__i] = std::min(__max_val, this->__data_[__i]);
   }
 
   return *this;
 }
 
 template <class _Tp>
-tensor<_Tp> tensor<_Tp>::clamp(const_pointer __min_val, const_pointer __max_val) const {
+tensor<_Tp> tensor<_Tp>::clamp(const_reference __min_val, const_reference __max_val) const {
   __self __ret = this->clone();
   __ret.clamp_(__min_val, __max_val);
   return __ret;
@@ -710,9 +710,8 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
   index_type __outer_size = 1;
   index_type __inner_size = 1;
   index_type __i          = 0;
-#pragma omp parallel
+
   for (; __i < __dim; ++__i) __outer_size *= this->__shape_[__i];
-#pragma omp parallel
   for (__i = __dim + 1; __i < this->__shape_.size(); ++__i) __inner_size *= this->__shape_[__i];
 
 #if defined(__AVX2__)
@@ -805,9 +804,8 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type __dim) const {
   index_type __outer_size = 1;
   index_type __inner_size = 1;
   index_type __i          = 0;
-#pragma omp parallel
+
   for (; __i < __dim; ++__i) __outer_size *= this->__shape_[__i];
-#pragma omp parallel
   for (__i = __dim + 1; __i < static_cast<index_type>(this->__shape_.size()); ++__i)
     __inner_size *= this->__shape_[__i];
 #if defined(__AVX2__)
@@ -882,7 +880,6 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
   data_t __ret_data(__ret_size, value_type(0.0f));
 
   index_type __i = 0;
-#pragma omp parallel
   for (; __i < static_cast<index_type>(this->__data_.size()); ++__i) {
     std::vector<index_type> __orig(this->__shape_.size());
     index_type              __index = __i;
@@ -1060,13 +1057,11 @@ tensor<_Tp> tensor<_Tp>::cat(const std::vector<tensor<_Tp>>& __others, index_typ
   }
 
   shape_type __ret_sh = this->__shape_;
-#pragma omp parallel
   for (const tensor& __t : __others) __ret_sh[__dim] += __t.__shape_[__dim];
 
   data_t __c;
   __c.reserve(this->__data_.size());
   __c.insert(__c.end(), this->__data_.begin(), this->__data_.end());
-#pragma omp parallel
   for (const tensor& __t : __others) __c.insert(__c.end(), __t.__data_.begin(), __t.__data_.end());
 
   return __self(__ret_sh, __c);
@@ -1082,7 +1077,7 @@ tensor<_Tp>& tensor<_Tp>::transpose_() {
 
   if (__rows != __cols)
     throw std::runtime_error("In-place transpose is only supported for square tensors");
-#pragma omp parallel
+
   for (index_type __i = 0; __i < __rows; ++__i)
     for (index_type __j = __i + 1; __j < __cols; ++__j)
       std::swap(this->__data_[__i * __cols + __j], this->__data_[__j * __cols + __i]);
@@ -1124,7 +1119,7 @@ tensor<_Tp> tensor<_Tp>::det() const {
 
   value_type __determinant = 0;
   tensor     __minor;
-#pragma omp parallel
+
   for (index_type __col = 0; __col < __n; ++__col) {
     __minor           = this->get_minor(0, __col);
     value_type __sign = (__col % 2 == 0) ? 1 : -1;
