@@ -51,10 +51,10 @@ tensor<_s32> tensor<_Tp>::int32_() const {
 
   if (this->empty()) return tensor<_s32>(this->__shape_);
 
-  std::vector<_s32> __d;
+  std::vector<_s32> __d(this->__data_.size());
   index_type        __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) __d.push_back(static_cast<_s32>(this->__data_[__i]));
+  for (; __i < this->__data_.size(); ++__i) __d[__i] = static_cast<_s32>(this->__data_[__i]);
 
   return tensor<_s32>(this->__shape_, __d);
 }
@@ -150,12 +150,12 @@ tensor<int64_t> tensor<_Tp>::long_() const {
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::bool_() const {
-  std::vector<bool> __d;
+  std::vector<bool> __d(this->__data_.size());
 
   static_assert(std::is_convertible_v<value_type, bool>);
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    __d.push_back(static_cast<bool>(this->__data_[__i]));
+    __d[__i] = static_cast<bool>(this->__data_[__i]);
 
   return tensor<bool>(this->__shape_, __d);
 }
