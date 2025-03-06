@@ -626,10 +626,7 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argmax_(index_type __
   index_type __inner_size = 1;
   index_type __i          = 0;
 
-#pragma omp parallel
   for (; __i < __dim; ++__i) __outer_size *= this->__shape_[__i];
-
-#pragma omp parallel
   for (__i = __dim + 1; __i < this->__shape_.size(); ++__i) __inner_size *= this->__shape_[__i];
 
   if constexpr (std::is_floating_point_v<value_type>) {
@@ -808,10 +805,8 @@ tensor<_Tp> tensor<_Tp>::neon_argmax(index_type __dim) const {
   index_type __outer_size = 1;
   index_type __inner_size = 1;
   index_type __i          = 0;
-#pragma omp parallel
-  for (; __i < __dim; ++__i) __outer_size *= this->__shape_[__i];
 
-#pragma omp parallel
+  for (; __i < __dim; ++__i) __outer_size *= this->__shape_[__i];
   for (__i = __dim + 1; __i < static_cast<index_type>(this->__shape_.size()); ++__i)
     __inner_size *= this->__shape_[__i];
 
@@ -1057,7 +1052,7 @@ tensor<_Tp> tensor<_Tp>::neon_slice(index_type __dim, std::optional<index_type> 
   index_type __i = __vector_end;
   index_type __j = __vector_end - __start_i;
 #pragma omp parallel
-  for (; __i < __end_i; ++__i, ++__j) __ret.__data_[__j] = this->__data_[__i];
+  for (; __i < __end_i; ++__i, ++__j) __ret[__j] = this->__data_[__i];
 
   __i = __start_i;
   __j = 0;
