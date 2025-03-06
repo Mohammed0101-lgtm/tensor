@@ -133,10 +133,10 @@ tensor<bool> tensor<_Tp>::neon_less_equal(const tensor& __other) const {
   std::vector<bool> __d(this->__data_.size());
 
 #pragma omp parallel
-  for (size_t j = 0; j < __i; ++j) __d[j] = __ret[j] != 0;  // Convert mask to `true`/`false`
+  for (size_t __j = 0; __j < __i; ++__j) __d[__j] = __ret[__j] != 0; 
 
 #pragma omp parallel
-  for (; __i < __d.size(); ++__i) __d[__i] = (this->__data_[__i] <= __other.__data_[__i]);
+  for (; __i < __d.size(); ++__i) __d[__i] = (this->__data_[__i] <= __other[__i]);
 
   return tensor<bool>(this->__shape_, __d);
 }
