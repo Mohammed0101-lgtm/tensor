@@ -27,7 +27,6 @@ tensor<_s32> tensor<_Tp>::neon_int32_() const {
       vst1q_s32(reinterpret_cast<_s32*>(&__d[__i]), __int_vec);
     }
   }
-#pragma omp parallel
   for (; __i < this->__data_.size(); ++__i) __d.push_back(static_cast<_s32>(this->__data_[__i]));
 
   return tensor<_s32>(this->__shape_, __d);
