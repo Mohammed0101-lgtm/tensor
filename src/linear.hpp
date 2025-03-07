@@ -913,6 +913,8 @@ tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __sta
   if (__dim < 0 || __dim >= static_cast<index_type>(this->__shape_.size()))
     throw std::out_of_range("Dimension out of range.");
 
+  if (__step == 0) throw std::invalid_argument("Step cannot be equal to zero");
+
   index_type __s       = this->__shape_[__dim];
   index_type __start_i = __start.value_or(0);
   index_type __end_i   = __end.value_or(__s);
@@ -924,7 +926,7 @@ tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __sta
   __end_i                 = std::max(index_type(0), std::min(__end_i, __s));
   index_type __slice_size = (__end_i - __start_i + __step - 1) / __step;
   shape_type __ret_dims   = this->__shape_;
-  __ret_dims[-__dim]      = __slice_size;
+  __ret_dims[__dim]       = __slice_size;
   tensor __ret(__ret_dims);
 
 #if defined(__CUDACC__)
@@ -948,9 +950,9 @@ tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __sta
     cudaFree(__d_output);
   }
 #endif
-  index_type __i = __start_i, __j = 0;
 #pragma omp parallel
-  for (; __i < __end_i; __i += __step, ++__j) __ret[__j] = this->__data_[__i];
+  for (index_type __i = __start_i, __j = 0; __i < __end_i; __i += __step, ++__j)
+    __ret[__j] = this->__data_[__i];
 
   return __ret;
 }
