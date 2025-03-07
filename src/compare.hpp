@@ -75,7 +75,9 @@ tensor<bool> tensor<_Tp>::greater(const value_type __val) const {
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::equal(const tensor& __other) const {
-  return !(this->not_equal(__other));
+  tensor<bool> __ret = this->not_equal(__other);
+  __ret.logical_not_();
+  return __ret;
 }
 
 template <class _Tp>
