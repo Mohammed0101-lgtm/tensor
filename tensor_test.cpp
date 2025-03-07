@@ -457,7 +457,7 @@ TEST(TensorTest, SliceTest) {
 }
 
 TEST(TensorTest, RowTest) {
-  tensor<int> t({2, 3}, {1,2,3,4,5,6});
+  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> expected_row({3}, {1, 2, 3});
   tensor<int> expected_col({2}, {3, 6});
 
