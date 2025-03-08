@@ -597,8 +597,8 @@ inline const tensor<_Tp>& tensor<_Tp>::clamp_(const_reference __min_val,
 
 #if defined(__AVX2__)
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _AVX_REG_WIDTH);
-  __m256 __min_vec = _mm256_set1_ps(__min_val );
-  __m256 __max_vec = _mm256_set1_ps(__max_val );
+  __m256           __min_vec  = _mm256_set1_ps(__min_val);
+  __m256           __max_vec  = _mm256_set1_ps(__max_val);
 
   for (; __i < __simd_end; __i += _AVX_REG_WIDTH) {
     __m256 __data_vec = _mm256_loadu_ps(&this->__data_[__i]);
