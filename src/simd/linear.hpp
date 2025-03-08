@@ -1009,7 +1009,7 @@ tensor<_Tp> tensor<_Tp>::neon_slice(index_type __dim, std::optional<index_type> 
   if (__dim < 0 || __dim >= static_cast<index_type>(this->__shape_.size()))
     throw std::out_of_range("Dimension out of range.");
 
-  if (__step == 0) throw std::invalid_argument("Step cannot be equal to zero");
+  if (__step == 0) throw std::invalid_argument("Step cannot be zero.");
 
   index_type __s       = this->__shape_[__dim];
   index_type __start_i = __start.value_or(0);
@@ -1034,9 +1034,6 @@ tensor<_Tp> tensor<_Tp>::neon_slice(index_type __dim, std::optional<index_type> 
       neon_f32 __vec = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
       vst1q_f32(&(__ret.__data_[__j]), __vec);
     }
-
-    for (index_type __i = __vector_end, __j = __vector_end - __start_i; __i < __end_i; ++__i, ++__j)
-      __ret.__data_[__j] = this->__data_[__i];
   } else if (std::is_signed_v<value_type> && __step == 1) {
     for (index_type __i = __start_i, __j = 0; __i < __vector_end;
          __i += _ARM64_REG_WIDTH, __j += _ARM64_REG_WIDTH) {
@@ -1051,13 +1048,20 @@ tensor<_Tp> tensor<_Tp>::neon_slice(index_type __dim, std::optional<index_type> 
     }
   }
 
-#pragma omp parallel
-  for (index_type __i = __vector_end, __j = __vector_end - __start_i; __i < __end_i; ++__i, ++__j)
-    __ret[__j] = this->__data_[__i];
+  // Handle remaining elements
+  index_type remaining = (__end_i - __start_i) % _ARM64_REG_WIDTH;
+  if (remaining > 0) {
+    for (index_type __i = __vector_end, __j = __vector_end - __start_i; __i < __end_i;
+         ++__i, ++__j) {
+      __ret.__data_[__j] = this->__data_[__i];
+    }
+  }
 
-#pragma omp parallel
-  for (index_type __i = __start_i, __j = 0; __i < __end_i; __i += __step, ++__j)
-    __ret[__j] = this->__data_[__i];
+#pragma omp parallel for
+  for (index_type __i = __start_i; __i < __end_i; __i += __step) {
+    index_type __j = (__i - __start_i) / __step;
+    __ret[__j]     = this->__data_[__i];
+  }
 
   return __ret;
 }
