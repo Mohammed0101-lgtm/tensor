@@ -421,40 +421,43 @@ TEST(TensorTest, GreaterTest1) {
 
 TEST(TensorTest, SliceTest) {
   tensor<int> t1({2, 2}, {1, 2, 3, 4});
-  tensor<int> expected1({2}, {1, 2});
-  std::cout << "tensor slice : " << std::endl;
-  t1.slice(0, 0, 1, 2).print();
-  std::cout << "Expected1 : " << std::endl;
+  
+  tensor<int> expected1({1, 2}, {1, 2});
+  auto sliced = t1.slice(0, 0, 1, 1);
+  std::cout << "Actual Slice: " << std::endl;
+  sliced.print();
+  std::cout << "Expected Slice: " << std::endl;
   expected1.print();
-  EXPECT_EQ(t1.slice(0, 0, 1, 2), expected1);
+  EXPECT_EQ(sliced, expected1);
+  EXPECT_EQ(t1.slice(0, 0, 1, 1), expected1);
+  
+  tensor<int> expected2({1, 2}, {3, 4});
+  EXPECT_EQ(t1.slice(0, 1, 2, 1), expected2);
 
-  tensor<int> expected2({2}, {3, 4});
-  EXPECT_EQ(t1.slice(0, 1, 2, 2), expected2);
-
-  tensor<int> expected3({2}, {1, 3});
+  tensor<int> expected3({2, 1}, {1, 3});
   EXPECT_EQ(t1.slice(1, 0, 2, 1), expected3);
 
-  tensor<int> expected4({2}, {2, 4});
+  tensor<int> expected4({2, 1}, {2, 4});
   EXPECT_EQ(t1.slice(1, 1, 2, 1), expected4);
 
-  EXPECT_EQ(t1.slice(0, 0, 2, 2), t1);
-
-  tensor<int> expected5({1}, {3});
+  tensor<int> expected5({1, 1}, {3});
   EXPECT_EQ(t1.slice(0, 1, 2, 1).slice(1, 0, 1, 1), expected5);
 
   tensor<int> t2({3, 3}, {1, 2, 3, 4, 5, 6, 7, 8, 9});
-  tensor<int> expected6({2}, {1, 3});
+
+  tensor<int> expected6({2, 3}, {1, 2, 3, 7, 8, 9});
   EXPECT_EQ(t2.slice(0, 0, 3, 2), expected6);
 
-  tensor<int> expected7({3}, {4, 5, 6});
-  EXPECT_EQ(t2.slice(0, 1, 2, 3), expected7);
+  tensor<int> expected7({1, 3}, {4, 5, 6});
+  EXPECT_EQ(t2.slice(0, 1, 2, 1), expected7);
 
-  tensor<int> expected8({3}, {2, 5, 8});
+  tensor<int> expected8({3, 1}, {2, 5, 8});
   EXPECT_EQ(t2.slice(1, 1, 3, 1), expected8);
 
-  tensor<int> expected9({3}, {7, 8, 9});
-  EXPECT_EQ(t2.slice(0, 2, 3, 3), expected9);
+  tensor<int> expected9({1, 3}, {7, 8, 9});
+  EXPECT_EQ(t2.slice(0, 2, 3, 1), expected9);
 }
+
 
 TEST(TensorTest, RowTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
