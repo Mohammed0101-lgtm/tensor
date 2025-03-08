@@ -10,9 +10,8 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type __val) {
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform logical OR on non-integral and non-boolean values");
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(this->__data_[__i] || __val);
 
   return *this;
@@ -26,9 +25,8 @@ inline const tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type __val) const
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform logical OR on non-integral and non-boolean values");
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(this->__data_[__i] || __val);
 
   return *this;
@@ -43,9 +41,8 @@ tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_type __val) {
     throw std::runtime_error(
         "Cannot get the element wise xor of non-integral and non-boolean value");
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(this->__data_[__i] ^ __val);
 
   return *this;
@@ -60,9 +57,8 @@ inline const tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_type __val) cons
     throw std::runtime_error(
         "Cannot get the element wise xor of non-integral and non-boolean value");
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(this->__data_[__i] ^ __val);
 
   return *this;
@@ -77,9 +73,8 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type __val) {
     throw std::runtime_error(
         "Cannot get the element wise and of non-integral and non-boolean value");
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(this->__data_[__i] && __val);
 
   return *this;
@@ -94,9 +89,8 @@ inline const tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type __val) cons
     throw std::runtime_error(
         "Cannot get the element wise and of non-integral and non-boolean value");
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(this->__data_[__i] && __val);
 
   return *this;
@@ -175,9 +169,9 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& __other) {
         "Cannot get the element wise not of non-integral and non-boolean value");
 
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = (this->__data_[__i] || __other[__i]);
 
   return *this;
@@ -193,9 +187,9 @@ inline const tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& __other) const 
         "Cannot get the element wise not of non-integral and non-boolean value");
 
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = (this->__data_[__i] || __other[__i]);
 
   return *this;
@@ -211,9 +205,9 @@ tensor<_Tp>& tensor<_Tp>::logical_xor_(const tensor& __other) {
         "Cannot get the element wise xor of non-integral and non-boolean value");
 
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = (this->__data_[__i] ^ __other[__i]);
 
   return *this;
@@ -229,9 +223,9 @@ inline const tensor<_Tp>& tensor<_Tp>::logical_xor_(const tensor& __other) const
         "Cannot get the element wise xor of non-integral and non-boolean value");
 
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = (this->__data_[__i] ^ __other[__i]);
 
   return *this;
@@ -247,9 +241,9 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const tensor& __other) {
         "Cannot get the element-wise and of non-integral and non-boolean value");
 
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = (this->__data_[__i] && __other[__i]);
 
   return *this;
@@ -265,9 +259,9 @@ inline const tensor<_Tp>& tensor<_Tp>::logical_and_(const tensor& __other) const
         "Cannot get the element-wise and of non-integral and non-boolean value");
 
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = (this->__data_[__i] && __other[__i]);
 
   return *this;
