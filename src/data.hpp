@@ -110,9 +110,9 @@ tensor<_Tp>& tensor<_Tp>::zeros_(shape_type __sh) {
   size_t __s = this->__computeSize(this->__shape_);
   this->__data_.resize(__s);
   this->__compute_strides();
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < __s; ++__i) this->__data_[__i] = value_type(0.0);
+  for (index_type __i = 0; __i < __s; ++__i) this->__data_[__i] = value_type(0.0);
 
   return *this;
 }
@@ -130,9 +130,9 @@ inline const tensor<_Tp>& tensor<_Tp>::zeros_(shape_type __sh) const {
   size_t __s = this->__computeSize(this->__shape_);
   this->__data_.resize(__s);
   this->__compute_strides();
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < __s; ++__i) this->__data_[__i] = value_type(0.0);
+  for (index_type __i = 0; __i < __s; ++__i) this->__data_[__i] = value_type(0.0);
 
   return *this;
 }
@@ -150,9 +150,9 @@ tensor<_Tp>& tensor<_Tp>::ones_(shape_type __sh) {
   size_t __s = this->__computeSize(this->__shape_);
   this->__data_.resize(__s);
   this->__compute_strides();
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < __s; ++__i) this->__data_[__i] = value_type(1.0);
+  for (index_type __i = 0; __i < __s; ++__i) this->__data_[__i] = value_type(1.0);
 
   return *this;
 }
@@ -170,9 +170,9 @@ inline const tensor<_Tp>& tensor<_Tp>::ones_(shape_type __sh) const {
   size_t __s = this->__computeSize(this->__shape_);
   this->__data_.resize(__s);
   this->__compute_strides();
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < __s; ++__i) this->__data_[__i] = value_type(1.0);
+  for (index_type __i = 0; __i < __s; ++__i) this->__data_[__i] = value_type(1.0);
 
   return *this;
 }
@@ -373,9 +373,10 @@ tensor<_Tp>& tensor<_Tp>::negative_() {
 #if defined(__ARM_NEON)
   return this->neon_negative_();
 #endif
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = -this->__data_[__i];
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
+    this->__data_[__i] = -this->__data_[__i];
 
   return *this;
 }
@@ -385,9 +386,10 @@ inline const tensor<_Tp>& tensor<_Tp>::negative_() const {
 #if defined(__ARM_NEON)
   return this->neon_negative_();
 #endif
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = -this->__data_[__i];
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
+    this->__data_[__i] = -this->__data_[__i];
 
   return *this;
 }
@@ -486,23 +488,23 @@ const tensor<_Tp>& tensor<_Tp>::repeat_(const data_t& __d, int __dim) const {
 
   if (this->size(0) < __d.size()) this->__data_ = data_t(__d.begin(), __d.end());
 
-  size_t __start      = 0;
-  size_t __end        = __d.size();
-  size_t __total_size = this->size(0);
+  index_type __start      = 0;
+  index_type __end        = __d.size();
+  index_type __total_size = this->size(0);
 
   if (__total_size < __d.size()) return *this;
 
   unsigned int __nbatches  = __total_size / __d.size();
-  size_t       __remainder = __total_size % __d.size();
+  index_type   __remainder = __total_size % __d.size();
 
   for (unsigned int __i = 0; __i < __nbatches; ++__i) {
-    for (size_t __j = __start, __k = 0; __k < __d.size(); ++__j, ++__k)
+    for (index_type __j = __start, __k = 0; __k < __d.size(); ++__j, ++__k)
       this->__data_[__j] = __d[__k];
 
     __start += __d.size();
   }
 #pragma omp parallel
-  for (size_t __j = __start, __k = 0; __j < __total_size && __k < __remainder; ++__j, ++__k)
+  for (index_type __j = __start, __k = 0; __j < __total_size && __k < __remainder; ++__j, ++__k)
     this->__data_[__j] = __d[__k];
 
   return *this;
@@ -517,23 +519,23 @@ tensor<_Tp>& tensor<_Tp>::repeat_(const data_t& __d, int __dim) {
 
   if (this->size(0) < __d.size()) this->__data_ = data_t(__d.begin(), __d.end());
 
-  size_t __start      = 0;
-  size_t __end        = __d.size();
-  size_t __total_size = this->size(0);
+  index_type __start      = 0;
+  index_type __end        = __d.size();
+  index_type __total_size = this->size(0);
 
   if (__total_size < __d.size()) return *this;
 
   unsigned int __nbatches  = __total_size / __d.size();
-  size_t       __remainder = __total_size % __d.size();
+  index_type   __remainder = __total_size % __d.size();
 
   for (unsigned int __i = 0; __i < __nbatches; ++__i) {
-    for (size_t __j = __start, __k = 0; __k < __d.size(); ++__j, ++__k)
+    for (index_type __j = __start, __k = 0; __k < __d.size(); ++__j, ++__k)
       this->__data_[__j] = __d[__k];
 
     __start += __d.size();
   }
 #pragma omp parallel
-  for (size_t __j = __start, __k = 0; __j < __total_size && __k < __remainder; ++__j, ++__k)
+  for (index_type __j = __start, __k = 0; __j < __total_size && __k < __remainder; ++__j, ++__k)
     this->__data_[__j] = __d[__k];
 
   return *this;
@@ -590,19 +592,19 @@ tensor<_Tp> tensor<_Tp>::all() const {
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::any() const {
-  bool result = false;
+  bool __result = false;
 
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) {
     if (this->__data_[__i] != static_cast<value_type>(0)) {
-      result = true;
+      __result = true;
       break;
     }
   }
 
-  tensor ret;
-  ret.__data_ = {result ? static_cast<value_type>(1) : static_cast<value_type>(0)};
+  tensor __ret;
+  __ret.__data_ = {__result ? static_cast<value_type>(1) : static_cast<value_type>(0)};
 
-  return ret;
+  return __ret;
 }
 
 template <class _Tp>
