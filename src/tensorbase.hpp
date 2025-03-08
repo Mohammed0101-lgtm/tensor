@@ -1408,69 +1408,70 @@ class tensor {
 
 #if defined(__ARM_NEON)
  private:
-  tensor&            neon_fmax_(const value_type __v);
-  tensor&            neon_fmax_(const tensor& __other);
-  tensor&            neon_fmod_(const value_type __val);
-  tensor&            neon_fmod_(const tensor& __other);
-  tensor&            neon_frac_();
-  tensor&            neon_log_();
-  tensor&            neon_log10_();
-  tensor&            neon_log2_();
-  tensor&            neon_exp_();
-  tensor&            neon_sqrt_();
-  tensor&            neon_cos_();
-  tensor&            neon_acos_();
-  tensor&            neon_sin_();
-  tensor&            neon_tan_();
-  tensor&            neon_tanh_();
-  tensor&            neon_sinc_();
-  tensor&            neon_atan_();
-  tensor&            neon_atanh_();
-  tensor&            neon_sinh_();
-  tensor&            neon_asinh_();
-  tensor&            neon_asin_();
-  tensor&            neon_cosh_();
-  tensor&            neon_acosh_();
-  tensor&            neon_pow_(const value_type __val);
-  tensor&            neon_pow_(const tensor& __other);
-  tensor&            neon_abs_();
-  tensor&            neon_dist_(const tensor& __other);
-  tensor&            neon_dist_(const value_type __val);
-  tensor&            neon_maximum_(const tensor& __other);
-  tensor&            neon_maximum_(const value_type __val);
-  tensor&            neon_bitwise_right_shift_(const int __amount);
-  tensor&            neon_bitwise_left_shift_(const int __amount);
-  tensor&            neon_bitwise_or_(const value_type __val);
-  tensor&            neon_bitwise_xor_(const value_type __val);
-  tensor&            neon_bitwise_not_();
-  tensor&            neon_bitwise_and_(const value_type __val);
-  tensor&            neon_bitwise_and_(const tensor& __other);
-  tensor&            neon_bitwise_or_(const tensor& __other);
-  tensor&            neon_bitwise_xor_(const tensor& __other);
-  tensor&            neon_zeros_(shape_type __sh = {});
-  tensor&            neon_ones_(shape_type __sh);
-  tensor&            neon_randomize_(const shape_type& __sh, bool __bounded);
-  tensor&            neon_negative_();
-  tensor&            neon_relu_();
-  tensor&            neon_sigmoid_();
-  tensor&            neon_clipped_relu_(const value_type __clip_limit);
-  tensor&            neon_clamp_(const_reference __min_val = std::numeric_limits<value_type>::lowest(), const_reference __max_val = std::numeric_limits<value_type>::max());
-  tensor&            neon_floor_();
-  tensor&            neon_ceil_();
-  tensor&            neon_logical_or_(const value_type __val);
-  tensor&            neon_logical_xor_(const value_type __val);
-  tensor&            neon_logical_and_(const value_type __val);
-  tensor&            neon_logical_or_(const tensor& __other);
-  tensor&            neon_logical_xor_(const tensor& __other);
-  tensor&            neon_logical_and_(const tensor& __other);
-  tensor&            neon_operator_plus_eq(const_reference __val) const;
-  tensor&            neon_operator_minus_eq(const tensor& __other) const;
-  tensor&            neon_operator_times_eq(const tensor& __other) const;
-  tensor&            neon_operator_minus_eq(const_reference __val) const;
-  tensor<_s32>       neon_int32_() const;
-  tensor<_u32>       neon_uint32_() const;
-  tensor<_f32>       neon_float32_() const;
-  tensor<_f64>       neon_double_() const;
+  tensor&      neon_fmax_(const value_type __v);
+  tensor&      neon_fmax_(const tensor& __other);
+  tensor&      neon_fmod_(const value_type __val);
+  tensor&      neon_fmod_(const tensor& __other);
+  tensor&      neon_frac_();
+  tensor&      neon_log_();
+  tensor&      neon_log10_();
+  tensor&      neon_log2_();
+  tensor&      neon_exp_();
+  tensor&      neon_sqrt_();
+  tensor&      neon_cos_();
+  tensor&      neon_acos_();
+  tensor&      neon_sin_();
+  tensor&      neon_tan_();
+  tensor&      neon_tanh_();
+  tensor&      neon_sinc_();
+  tensor&      neon_atan_();
+  tensor&      neon_atanh_();
+  tensor&      neon_sinh_();
+  tensor&      neon_asinh_();
+  tensor&      neon_asin_();
+  tensor&      neon_cosh_();
+  tensor&      neon_acosh_();
+  tensor&      neon_pow_(const value_type __val);
+  tensor&      neon_pow_(const tensor& __other);
+  tensor&      neon_abs_();
+  tensor&      neon_dist_(const tensor& __other);
+  tensor&      neon_dist_(const value_type __val);
+  tensor&      neon_maximum_(const tensor& __other);
+  tensor&      neon_maximum_(const value_type __val);
+  tensor&      neon_bitwise_right_shift_(const int __amount);
+  tensor&      neon_bitwise_left_shift_(const int __amount);
+  tensor&      neon_bitwise_or_(const value_type __val);
+  tensor&      neon_bitwise_xor_(const value_type __val);
+  tensor&      neon_bitwise_not_();
+  tensor&      neon_bitwise_and_(const value_type __val);
+  tensor&      neon_bitwise_and_(const tensor& __other);
+  tensor&      neon_bitwise_or_(const tensor& __other);
+  tensor&      neon_bitwise_xor_(const tensor& __other);
+  tensor&      neon_zeros_(shape_type __sh = {});
+  tensor&      neon_ones_(shape_type __sh);
+  tensor&      neon_randomize_(const shape_type& __sh, bool __bounded);
+  tensor&      neon_negative_();
+  tensor&      neon_relu_();
+  tensor&      neon_sigmoid_();
+  tensor&      neon_clipped_relu_(const value_type __clip_limit);
+  tensor&      neon_clamp_(const_reference __min_val = std::numeric_limits<value_type>::lowest(),
+                           const_reference __max_val = std::numeric_limits<value_type>::max());
+  tensor&      neon_floor_();
+  tensor&      neon_ceil_();
+  tensor&      neon_logical_or_(const value_type __val);
+  tensor&      neon_logical_xor_(const value_type __val);
+  tensor&      neon_logical_and_(const value_type __val);
+  tensor&      neon_logical_or_(const tensor& __other);
+  tensor&      neon_logical_xor_(const tensor& __other);
+  tensor&      neon_logical_and_(const tensor& __other);
+  tensor&      neon_operator_plus_eq(const_reference __val) const;
+  tensor&      neon_operator_minus_eq(const tensor& __other) const;
+  tensor&      neon_operator_times_eq(const tensor& __other) const;
+  tensor&      neon_operator_minus_eq(const_reference __val) const;
+  tensor<_s32> neon_int32_() const;
+  tensor<_u32> neon_uint32_() const;
+  tensor<_f32> neon_float32_() const;
+  tensor<_f64> neon_double_() const;
   tensor<uint64_t>   neon_unsigned_long_() const;
   tensor<int64_t>    neon_long_() const;
   tensor             neon_operator_plus(const tensor& __other) const;
@@ -1946,7 +1947,7 @@ class tensor<bool> {
     data_t     __c(this->__shape_[0]);
     index_type __i = 0;
     for (; __i < this->__shape_[0]; ++__i)
-      __c [ __i] = this->__data_[this->__compute_index({__i, __index})];
+      __c[__i] = this->__data_[this->__compute_index({__i, __index})];
 
     return __self({this->__shape_[0]}, __c);
   }
@@ -2130,8 +2131,7 @@ class tensor<bool> {
 
     index_type __i = 0;
 #pragma omp parallel
-    for (; __i < static_cast<index_type>(__s); ++__i)
-      this->__data_[__i] = (__dist(__gen) == 0);
+    for (; __i < static_cast<index_type>(__s); ++__i) this->__data_[__i] = (__dist(__gen) == 0);
 
     return *this;
   }
