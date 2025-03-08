@@ -7,9 +7,9 @@ inline tensor<_Tp>& tensor<_Tp>::bitwise_right_shift_(const int __amount) {
 #if defined(__ARM_NEON)
   return this->neon_bitwise_right_shift_(__amount);
 #endif
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] >>= __amount;
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] >>= __amount;
 
   return *this;
 }
@@ -19,9 +19,9 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_right_shift_(const int __amount) 
 #if defined(__ARM_NEON)
   return this->neon_bitwise_right_shift_(__amount);
 #endif
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] >>= __amount;
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] >>= __amount;
 
   return *this;
 }
@@ -31,9 +31,9 @@ inline tensor<_Tp>& tensor<_Tp>::bitwise_left_shift_(const int __amount) {
 #if defined(__ARM_NEON)
   return this->neon_bitwise_left_shift_(__amount);
 #endif
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] <<= __amount;
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] <<= __amount;
 
   return *this;
 }
@@ -43,9 +43,9 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_left_shift_(const int __amount) c
 #if defined(__ARM_NEON)
   return this->neon_bitwise_left_shift_(__amount);
 #endif
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] <<= __amount;
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] <<= __amount;
 
   return *this;
 }
@@ -58,9 +58,8 @@ tensor<_Tp>& tensor<_Tp>::bitwise_or_(const value_type __val) {
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __val;
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __val;
 
   return *this;
 }
@@ -73,9 +72,8 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_or_(const value_type __val) const
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __val;
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __val;
 
   return *this;
 }
@@ -88,9 +86,8 @@ tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const value_type __val) {
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] ^= __val;
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] ^= __val;
 
   return *this;
 }
@@ -103,9 +100,8 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const value_type __val) cons
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] ^= __val;
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] ^= __val;
 
   return *this;
 }
@@ -132,9 +128,9 @@ tensor<_Tp>& tensor<_Tp>::bitwise_not_() {
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise not on non integral or boolean value");
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = ~this->__data_[__i];
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
+    this->__data_[__i] = ~this->__data_[__i];
 
   return *this;
 }
@@ -147,9 +143,9 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_not_() const {
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise not on non integral or boolean value");
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = ~this->__data_[__i];
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
+    this->__data_[__i] = ~this->__data_[__i];
 
   return *this;
 }
@@ -162,9 +158,8 @@ tensor<_Tp>& tensor<_Tp>::bitwise_and_(const value_type __val) {
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] &= __val;
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] &= __val;
 
   return *this;
 }
@@ -177,9 +172,8 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_and_(const value_type __val) cons
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] &= __val;
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] &= __val;
 
   return *this;
 }
@@ -228,9 +222,8 @@ tensor<_Tp>& tensor<_Tp>::bitwise_and_(const tensor& __other) {
     throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
 
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] &= __other[__i];
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] &= __other[__i];
 
   return *this;
 }
@@ -244,9 +237,8 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_and_(const tensor& __other) const
     throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
 
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] &= __other[__i];
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] &= __other[__i];
 
   return *this;
 }
@@ -274,9 +266,8 @@ tensor<_Tp>& tensor<_Tp>::bitwise_or_(const tensor& __other) {
     throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
 
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __other[__i];
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __other[__i];
 
   return *this;
 }
@@ -290,9 +281,8 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_or_(const tensor& __other) const 
     throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
 
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __other[__i];
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __other[__i];
 
   return *this;
 }
@@ -306,9 +296,8 @@ tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const tensor& __other) {
     throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
 
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] ^= __other[__i];
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] ^= __other[__i];
 
   return *this;
 }
@@ -322,9 +311,8 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const tensor& __other) const
     throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
 
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] ^= __other[__i];
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] ^= __other[__i];
 
   return *this;
 }
@@ -344,9 +332,8 @@ template <class _Tp>
 inline tensor<_Tp>& tensor<_Tp>::fill_(const tensor& __other) {
   assert(this->__shape_ == __other.shape());
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = __other[__i];
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] = __other[__i];
 
   return *this;
 }
