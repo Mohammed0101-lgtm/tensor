@@ -9,9 +9,10 @@ tensor<bool> tensor<_Tp>::not_equal(const tensor& __other) const {
 
   assert(this->__shape_ == __other.shape() && "not_equal : tensor shapes");
   std::vector<bool> __ret(this->__data_.size());
-  index_type        __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] != __other[__i]);
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
+    __ret[__i] = (this->__data_[__i] != __other[__i]);
 
   return tensor<bool>(this->__shape_, __ret);
 }
@@ -22,9 +23,10 @@ tensor<bool> tensor<_Tp>::not_equal(const value_type __val) const {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
   std::vector<bool> __ret(this->__data_.size());
-  index_type        __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] != __val);
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
+    __ret[__i] = (this->__data_[__i] != __val);
 
   return tensor<bool>(this->__shape_, __ret);
 }
@@ -36,9 +38,10 @@ tensor<bool> tensor<_Tp>::less(const tensor& __other) const {
 
   assert(this->__shape_ == __other.shape());
   std::vector<bool> __ret(this->__data_.size());
-  index_type        __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] < __other[__i]);
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
+    __ret[__i] = (this->__data_[__i] < __other[__i]);
 
   return tensor<bool>(this->__shape_, __ret);
 }
@@ -49,9 +52,10 @@ tensor<bool> tensor<_Tp>::less(const value_type __val) const {
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
   std::vector<bool> __ret(this->__data_.size());
-  index_type        __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] < __val);
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
+    __ret[__i] = (this->__data_[__i] < __val);
 
   return tensor<bool>(this->__shape_, __ret);
 }
@@ -65,10 +69,12 @@ template <class _Tp>
 tensor<bool> tensor<_Tp>::greater(const value_type __val) const {
   if (!std::is_arithmetic_v<value_type>)
     throw std::logic_error("Cannot compare non arithmetic values");
+
   std::vector<bool> __ret(this->__data_.size());
-  index_type        __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) __ret[__i] = (this->__data_[__i] > __val);
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
+    __ret[__i] = (this->__data_[__i] > __val);
 
   return tensor<bool>(this->__shape_, __ret);
 }
@@ -95,9 +101,10 @@ tensor<bool> tensor<_Tp>::less_equal(const tensor& __other) const {
 
   assert(this->__shape_ == __other.shape());
   std::vector<bool> __ret(this->__data_.size());
-  index_type        __i = 0;
+
 #pragma omp parallel
-  for (; __i < __ret.size(); ++__i) __ret[__i] = (this->__data_[__i] <= __other.__data_[__i]);
+  for (index_type __i = 0; __i < __ret.size(); ++__i)
+    __ret[__i] = (this->__data_[__i] <= __other.__data_[__i]);
 
   return tensor<bool>(this->__shape_, __ret);
 }
@@ -111,9 +118,10 @@ tensor<bool> tensor<_Tp>::less_equal(const value_type __val) const {
     throw std::logic_error("Cannot compare non arithmetic values");
 
   std::vector<bool> __ret(this->__data_.size());
-  index_type        __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) __ret[__i] = this->__data_[__i] <= __val;
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
+    __ret[__i] = this->__data_[__i] <= __val;
 
   return tensor<bool>(this->__shape_, __ret);
 }
