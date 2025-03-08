@@ -24,8 +24,9 @@ tensor<_Tp>& tensor<_Tp>::fmax_(const value_type __val) {
 #if defined(__ARM_NEON)
   return this->neon_fmax(__val);
 #endif
-  size_t __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = std::fmax(this->__data_[__i], __val);
 
   return *this;
@@ -36,8 +37,9 @@ inline const tensor<_Tp>& tensor<_Tp>::fmax_(const value_type __val) const {
 #if defined(__ARM_NEON)
   return this->neon_fmax_(__val);
 #endif
-  size_t __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = std::fmax(this->__data_[__i], __val);
 
   return *this;
@@ -49,9 +51,9 @@ tensor<_Tp>& tensor<_Tp>::fmax_(const tensor& __other) {
   return this->neon_fmax_(__other);
 #endif
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
 
-  for (; __i < this->__data_.size(); ++__i)
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = std::fmax(this->__data_[__i], __other[__i]);
 
   return *this;
@@ -63,9 +65,9 @@ inline const tensor<_Tp>& tensor<_Tp>::fmax_(const tensor& __other) const {
   return this->neon_fmax_(__other);
 #endif
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
 
-  for (; __i < this->__data_.size(); ++__i)
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = std::fmax(this->__data_[__i], __other[__i]);
 
   return *this;
@@ -92,9 +94,9 @@ tensor<_Tp>& tensor<_Tp>::fmod_(const value_type __val) {
 #endif
   assert(std::is_floating_point_v<value_type> &&
          "fmod : template class must be a floating point type");
-  index_type __i = 0;
 
-  for (; __i < this->__data_.size(); ++__i)
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(
         std::fmod(static_cast<_f32>(this->__data_[__i]), static_cast<_f32>(__val)));
 
@@ -108,9 +110,9 @@ inline const tensor<_Tp>& tensor<_Tp>::fmod_(const value_type __val) const {
 #endif
   assert(std::is_floating_point_v<value_type> &&
          "fmod : template class must be a floating point type");
-  index_type __i = 0;
 
-  for (; __i < this->__data_.size(); ++__i)
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(
         std::fmod(static_cast<_f32>(this->__data_[__i]), static_cast<_f32>(__val)));
 
@@ -122,13 +124,11 @@ tensor<_Tp>& tensor<_Tp>::fmod_(const tensor& __other) {
 #if defined(__ARM_NEON)
   return this->neon_fmod_(__other);
 #endif
-
   if (this->__shape_ != __other.shape() || this->__data_.size() != __other.size(0))
     throw std::invalid_argument("Cannot divide two tensors of different shapes : fmax");
 
-  index_type __i = 0;
-
-  for (; __i < this->__data_.size(); ++__i)
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(
         std::fmod(static_cast<_f32>(this->__data_[__i]), static_cast<_f32>(__other[__i])));
 
@@ -140,13 +140,11 @@ inline const tensor<_Tp>& tensor<_Tp>::fmod_(const tensor& __other) const {
 #if defined(__ARM_NEON)
   return this->neon_fmod_(__other);
 #endif
-
   if (this->__shape_ != __other.shape() || this->__data_.size() != __other.size(0))
     throw std::invalid_argument("Cannot divide two tensors of different shapes : fmax");
 
-  index_type __i = 0;
-
-  for (; __i < this->__data_.size(); ++__i)
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(
         std::fmod(static_cast<_f32>(this->__data_[__i]), static_cast<_f32>(__other[__i])));
 
@@ -158,9 +156,9 @@ tensor<_Tp>& tensor<_Tp>::frac_() {
 #if defined(__ARM_NEON)
   return this->neon_frac_();
 #endif
-  index_type __i = 0;
 
-  for (; __i < this->__data_.size(); ++__i)
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(this->__frac(this->__data_[__i]));
 
   return *this;
@@ -171,9 +169,9 @@ inline const tensor<_Tp>& tensor<_Tp>::frac_() const {
 #if defined(__ARM_NEON)
   return this->neon_frac_();
 #endif
-  index_type __i = 0;
 
-  for (; __i < this->__data_.size(); ++__i)
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(this->__frac(this->__data_[__i]));
 
   return *this;
@@ -191,8 +189,9 @@ tensor<_Tp>& tensor<_Tp>::log_() {
 #if defined(__ARM_NEON)
   return this->neon_log_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::log(this->__data_[__i]));
 
   return *this;
@@ -203,8 +202,9 @@ inline const tensor<_Tp>& tensor<_Tp>::log_() const {
 #if defined(__ARM_NEON)
   return this->neon_log_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::log(this->__data_[__i]));
 
   return *this;
@@ -222,8 +222,9 @@ tensor<_Tp>& tensor<_Tp>::log10_() {
 #if defined(__ARM_NEON)
   return this->neon_log10_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::log10(this->__data_[__i]));
 
   return *this;
@@ -234,8 +235,9 @@ inline const tensor<_Tp>& tensor<_Tp>::log10_() const {
 #if defined(__ARM_NEON)
   return this->neon_log10_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::log10(this->__data_[__i]));
 
   return *this;
@@ -253,8 +255,9 @@ tensor<_Tp>& tensor<_Tp>::log2_() {
 #if defined(__ARM_NEON)
   return this->neon_log2_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::log2(this->__data_[__i]));
 
   return *this;
@@ -265,8 +268,9 @@ inline const tensor<_Tp>& tensor<_Tp>::log2_() const {
 #if defined(__ARM_NEON)
   return this->neon_log2_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::log2(this->__data_[__i]));
 
   return *this;
@@ -284,8 +288,9 @@ tensor<_Tp>& tensor<_Tp>::exp_() {
 #if defined(__ARM_NEON)
   return this->neon_exp_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::exp(this->__data_[__i]));
 
   return *this;
@@ -296,8 +301,9 @@ inline const tensor<_Tp>& tensor<_Tp>::exp_() const {
 #if defined(__ARM_NEON)
   return this->neon_exp_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::exp(this->__data_[__i]));
 
   return *this;
@@ -315,8 +321,9 @@ tensor<_Tp>& tensor<_Tp>::sqrt_() {
 #if defined(__ARM_NEON)
   return this->neon_sqrt_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::sqrt(this->__data_[__i]));
 
   return *this;
@@ -327,8 +334,9 @@ inline const tensor<_Tp>& tensor<_Tp>::sqrt_() const {
 #if defined(__ARM_NEON)
   return this->neon_sqrt_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::sqrt(this->__data_[__i]));
 
   return *this;
@@ -353,8 +361,9 @@ tensor<_Tp>& tensor<_Tp>::cos_() {
 #if defined(__ARM_NEON)
   return this->neon_cos_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::cos(this->__data_[__i]));
 
   return *this;
@@ -365,8 +374,9 @@ inline const tensor<_Tp>& tensor<_Tp>::cos_() const {
 #if defined(__ARM_NEON)
   return this->neon_cos_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::cos(this->__data_[__i]));
 
   return *this;
@@ -377,8 +387,9 @@ tensor<_Tp>& tensor<_Tp>::acos_() {
 #if defined(__ARM_NEON)
   return this->neon_acos_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::acos(this->__data_[__i]));
 
   return *this;
@@ -389,8 +400,9 @@ inline const tensor<_Tp>& tensor<_Tp>::acos_() const {
 #if defined(__ARM_NEON)
   return this->neon_acos_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::acos(this->__data_[__i]));
 
   return *this;
@@ -415,8 +427,9 @@ tensor<_Tp>& tensor<_Tp>::sin_() {
 #if defined(__ARM_NEON)
   return this->neon_sin_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::sin(this->__data_[__i]));
 
   return *this;
@@ -427,8 +440,9 @@ inline const tensor<_Tp>& tensor<_Tp>::sin_() const {
 #if defined(__ARM_NEON)
   return this->neon_sin_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::sin(this->__data_[__i]));
 
   return *this;
@@ -446,8 +460,9 @@ tensor<_Tp>& tensor<_Tp>::tan_() {
 #if defined(__ARM_NEON)
   return this->neon_tan_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::tan(this->__data_[__i]));
 
   return *this;
@@ -458,8 +473,9 @@ inline const tensor<_Tp>& tensor<_Tp>::tan_() const {
 #if defined(__ARM_NEON)
   return this->neon_tan_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::tan(this->__data_[__i]));
 
   return *this;
@@ -470,8 +486,9 @@ tensor<_Tp>& tensor<_Tp>::tanh_() {
 #if defined(__ARM_NEON)
   return this->neon_tanh_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::tanh(static_cast<_f32>(this->__data_[__i])));
 
   return *this;
@@ -482,8 +499,9 @@ inline const tensor<_Tp>& tensor<_Tp>::tanh_() const {
 #if defined(__ARM_NEON)
   return this->neon_tanh_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::tanh(static_cast<_f32>(this->__data_[__i])));
 
   return *this;
@@ -515,8 +533,9 @@ tensor<_Tp>& tensor<_Tp>::sinc_() {
 #if defined(__ARM_NEON)
   return this->neon_sinc_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = (std::abs(this->__data_[__i]) < 1e-6)
                              ? static_cast<value_type>(1.0)
                              : static_cast<value_type>(std::sin(M_PI * this->__data_[__i]) /
@@ -530,8 +549,9 @@ inline const tensor<_Tp>& tensor<_Tp>::sinc_() const {
 #if defined(__ARM_NEON)
   return this->neon_sinc_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = (std::abs(this->__data_[__i]) < 1e-6)
                              ? static_cast<value_type>(1.0)
                              : static_cast<value_type>(std::sin(M_PI * this->__data_[__i]) /
@@ -544,8 +564,9 @@ tensor<_Tp>& tensor<_Tp>::atan_() {
 #if defined(__ARM_NEON)
   return this->neon_atan_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::atan(this->__data_[__i]));
 
   return *this;
@@ -556,8 +577,9 @@ inline const tensor<_Tp>& tensor<_Tp>::atan_() const {
 #if defined(__ARM_NEON)
   return this->neon_atan_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::atan(this->__data_[__i]));
 
   return *this;
@@ -568,8 +590,9 @@ tensor<_Tp>& tensor<_Tp>::atanh_() {
 #if defined(__ARM_NEON)
   return this->neon_atanh_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::atan(this->__data_[__i]));
 
   return *this;
@@ -580,8 +603,9 @@ inline const tensor<_Tp>& tensor<_Tp>::atanh_() const {
 #if defined(__ARM_NEON)
   return this->neon_atanh_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::atan(this->__data_[__i]));
 
   return *this;
@@ -606,8 +630,9 @@ tensor<_Tp>& tensor<_Tp>::sinh_() {
 #if defined(__ARM_NEON)
   return this->neon_sinh_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::sinh(this->__data_[__i]));
 
   return *this;
@@ -618,8 +643,9 @@ inline const tensor<_Tp>& tensor<_Tp>::sinh_() const {
 #if defined(__ARM_NEON)
   return this->neon_sinh_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::sinh(this->__data_[__i]));
 
   return *this;
@@ -637,8 +663,9 @@ tensor<_Tp>& tensor<_Tp>::asinh_() {
 #if defined(__ARM_NEON)
   return this->neon_sinh_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::asinh(this->__data_[__i]));
 
   return *this;
@@ -649,8 +676,9 @@ inline const tensor<_Tp>& tensor<_Tp>::asinh_() const {
 #if defined(__ARM_NEON)
   return this->neon_sinh_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::asinh(this->__data_[__i]));
 
   return *this;
@@ -668,8 +696,9 @@ tensor<_Tp>& tensor<_Tp>::asin_() {
 #if defined(__ARM_NEON)
   return this->neon_asin_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::asin(this->__data_[__i]));
 
   return *this;
@@ -680,8 +709,9 @@ inline const tensor<_Tp>& tensor<_Tp>::asin_() const {
 #if defined(__ARM_NEON)
   return this->neon_asin_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::asin(this->__data_[__i]));
 
   return *this;
@@ -692,8 +722,9 @@ tensor<_Tp>& tensor<_Tp>::cosh_() {
 #if defined(__ARM_NEON)
   return this->neon_cosh_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::cosh(this->__data_[__i]));
 
   return *this;
@@ -704,8 +735,9 @@ inline const tensor<_Tp>& tensor<_Tp>::cosh_() const {
 #if defined(__ARM_NEON)
   return this->neon_cosh_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::cosh(this->__data_[__i]));
 
   return *this;
@@ -716,8 +748,9 @@ tensor<_Tp>& tensor<_Tp>::acosh_() {
 #if defined(__ARM_NEON)
   return this->neon_acosh_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::acosh(this->__data_[__i]));
 
   return *this;
@@ -728,8 +761,9 @@ inline const tensor<_Tp>& tensor<_Tp>::acosh_() const {
 #if defined(__ARM_NEON)
   return this->neon_acosh_();
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::acosh(this->__data_[__i]));
 
   return *this;
@@ -747,8 +781,9 @@ tensor<_Tp>& tensor<_Tp>::pow_(const value_type __val) {
 #if defined(__ARM_NEON)
   return this->neon_pow_(__val);
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::pow(this->__data_[__i], __val));
 
   return *this;
@@ -759,8 +794,9 @@ inline const tensor<_Tp>& tensor<_Tp>::pow_(const value_type __val) const {
 #if defined(__ARM_NEON)
   return this->neon_pow_(__val);
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::pow(this->__data_[__i], __val));
 
   return *this;
@@ -786,8 +822,9 @@ tensor<_Tp>& tensor<_Tp>::pow_(const tensor& __other) {
   return this->neon_pow_(__other);
 #endif
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(
         std::pow(static_cast<_f32>(this->__data_[__i]), static_cast<_f32>(__other[__i])));
 
@@ -799,8 +836,9 @@ inline const tensor<_Tp>& tensor<_Tp>::pow_(const tensor& __other) const {
 #if defined(__ARM_NEON)
   return this->neon_pow_(__other);
 #endif
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(
         std::pow(static_cast<_f32>(this->__data_[__i]), static_cast<_f32>(__other[__i])));
 
@@ -821,9 +859,8 @@ tensor<_Tp>& tensor<_Tp>::abs_() {
 #endif
   if (std::is_unsigned_v<value_type>) return *this;
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::abs(this->__data_[__i]));
 
   return *this;
@@ -836,9 +873,8 @@ inline const tensor<_Tp>& tensor<_Tp>::abs_() const {
 #endif
   if (std::is_unsigned_v<value_type>) return *this;
 
-  index_type __i = 0;
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(std::abs(this->__data_[__i]));
 
   return *this;
@@ -871,11 +907,11 @@ tensor<_Tp>& tensor<_Tp>::dist_(const tensor& __other) {
   return this->neon_dist_(__other);
 #endif
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(
-        std::abs(static_cast<_f64>(this->__data_[__i] - __other.__data_[__i])));
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
+    this->__data_[__i] =
+        static_cast<value_type>(std::abs(static_cast<_f64>(this->__data_[__i] - __other[__i])));
 
   return *this;
 }
@@ -885,11 +921,11 @@ inline const tensor<_Tp>& tensor<_Tp>::dist_(const tensor& __other) const {
 #if defined(__ARM_NEON)
   return this->neon_dist_(__other);
 #endif
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(
-        std::abs(static_cast<_f64>(this->__data_[__i] - __other.__data_[__i])));
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
+    this->__data_[__i] =
+        static_cast<value_type>(std::abs(static_cast<_f64>(this->__data_[__i] - __other[__i])));
 
   return *this;
 }
@@ -899,9 +935,9 @@ inline const tensor<_Tp>& tensor<_Tp>::dist_(const value_type __val) const {
 #if defined(__ARM_NEON)
   return this->neon_dist_(__val);
 #endif
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] =
         static_cast<value_type>(std::abs(static_cast<_f64>(this->__data_[__i] - __val)));
 
@@ -913,9 +949,9 @@ tensor<_Tp>& tensor<_Tp>::dist_(const value_type __val) {
 #if defined(__ARM_NEON)
   return this->neon_dist_(__val);
 #endif
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] =
         static_cast<value_type>(std::abs(static_cast<_f64>(this->__data_[__i] - __val)));
 
@@ -939,6 +975,7 @@ inline tensor<_Tp> tensor<_Tp>::remainder(const tensor& __other) const {
 template <class _Tp>
 inline tensor<_Tp>& tensor<_Tp>::remainder_(const value_type __val) {
   assert(__val != 0 && "Remainder by zero is undefined");
+
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] %= __val;
   return *this;
@@ -947,6 +984,7 @@ inline tensor<_Tp>& tensor<_Tp>::remainder_(const value_type __val) {
 template <class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::remainder_(const value_type __val) const {
   assert(__val != 0 && "Remainder by zero is undefined");
+
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] %= __val;
   return *this;
@@ -956,9 +994,9 @@ template <class _Tp>
 inline tensor<_Tp>& tensor<_Tp>::remainder_(const tensor& __other) {
   assert(__other.count_nonzero() == __other.size(0) && "Remainder by zero is undefined");
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] %= __other.__data_[__i];
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] %= __other[__i];
   return *this;
 }
 
@@ -966,9 +1004,9 @@ template <class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::remainder_(const tensor& __other) const {
   assert(__other.count_nonzero() == __other.size(0) && "Remainder by zero is undefined");
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) this->__data_[__i] %= __other.__data_[__i];
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] %= __other[__i];
   return *this;
 }
 
@@ -992,10 +1030,10 @@ tensor<_Tp>& tensor<_Tp>::maximum_(const tensor& __other) {
   return this->neon_maximum_(__other);
 #endif
   assert(this->__shape_ == __other.shape());
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = std::max(this->__data_[__i], __other.__data_[__i]);
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
+    this->__data_[__i] = std::max(this->__data_[__i], __other[__i]);
 
   return *this;
 }
@@ -1005,10 +1043,10 @@ inline const tensor<_Tp>& tensor<_Tp>::maximum_(const tensor& __other) const {
 #if defined(__ARM_NEON)
   return this->neon_maximum_(__other);
 #endif
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = std::max(this->__data_[__i], __other.__data_[__i]);
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
+    this->__data_[__i] = std::max(this->__data_[__i], __other[__i]);
 
   return *this;
 }
@@ -1018,9 +1056,9 @@ tensor<_Tp>& tensor<_Tp>::maximum_(const value_type __val) {
 #if defined(__ARM_NEON)
   return this->neon_maximum_(__val);
 #endif
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = std::max(this->__data_[__i], __val);
 
   return *this;
@@ -1031,9 +1069,9 @@ inline const tensor<_Tp>& tensor<_Tp>::maximum_(const value_type __val) const {
 #if defined(__ARM_NEON)
   return this->neon_maximum_(__val);
 #endif
-  index_type __i = 0;
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = std::max(this->__data_[__i], __val);
 
   return *this;
@@ -1058,8 +1096,7 @@ double tensor<_Tp>::mean() const {
 
   if (this->empty()) return __m;
 
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i) __m += this->__data_[__i];
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) __m += this->__data_[__i];
 
   return static_cast<double>(__m) / static_cast<double>(this->__data_.size());
 }
@@ -1072,8 +1109,8 @@ inline int64_t __lcm(const int64_t __a, const int64_t __b) {
 template <class _Tp>
 inline typename tensor<_Tp>::index_type tensor<_Tp>::lcm() const {
   index_type __ret = static_cast<index_type>(this->__data_[0]);
-  index_type __i   = 1;
-  for (; __i < this->__data_.size(); ++__i)
+
+  for (index_type __i = 1; __i < this->__data_.size(); ++__i)
     __ret = __lcm(static_cast<index_type>(this->__data_[__i]), __ret);
 
   return __ret;
@@ -1085,10 +1122,10 @@ inline tensor<_Tp> tensor<_Tp>::expand_as(shape_type __sh, index_type __dim) con
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::lcm(const tensor& __other) const {
   assert(this->__shape_ == __other.shape());
-  tensor     __ret = this->clone();
-  index_type __i   = 0;
+  tensor __ret = this->clone();
+
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     __ret[__i] = static_cast<value_type>(this->__lcm(static_cast<index_type>(this->__data_[__i]),
                                                      static_cast<index_type>(__other[__i])));
 
