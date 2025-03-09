@@ -78,7 +78,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type __val) {
         "Cannot get the element wise and of non-integral and non-boolean value");
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-  index_type __i = 0;
+  index_type       __i        = 0;
 
   if constexpr (std::is_signed_v<value_type>) {
     neon_s32 __vals = vdupq_n_s32(reinterpret_cast<_s32>(&__val));
@@ -114,7 +114,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const tensor& __other) {
 
   assert(this->__shape_ == __other.shape());
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-  index_type __i = 0;
+  index_type       __i        = 0;
 
   if constexpr (std::is_unsigned_v<value_type>) {
     for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
