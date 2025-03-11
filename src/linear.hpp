@@ -907,54 +907,63 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __start,
                                std::optional<index_type> __end, index_type __step) const {
-#if defined(__ARM_NEON)
-  return this->neon_slice(__dim, __start, __end, __step);
-#endif
-  if (__dim < 0 || __dim >= static_cast<index_type>(this->__shape_.size()))
-    throw std::out_of_range("Dimension out of range.");
+  if (this->empty()) return __self();
 
-  if (__step == 0) throw std::invalid_argument("Step cannot be equal to zero");
+  if (__dim <= 0 || __dim >= static_cast<index_type>(this->__shape_.size()))
+    throw std::invalid_argument("Invalid dimension provided");
 
-  index_type __s       = this->__shape_[__dim];
-  index_type __start_i = __start.value_or(0);
-  index_type __end_i   = __end.value_or(__s);
+  if (__start.has_value() && __end.has_value() && __start.value() >= __end.value())
+    throw std::invalid_argument("Start index must be less than end index");
 
-  if (__start_i < 0) __start_i += __s;
-  if (__end_i < 0) __end_i += __s;
+  if (__step == 0) throw std::invalid_argument("Step cannot be zero");
 
-  __start_i               = std::max(index_type(0), std::min(__start_i, __s));
-  __end_i                 = std::max(index_type(0), std::min(__end_i, __s));
-  index_type __slice_size = (__end_i - __start_i + __step - 1) / __step;
-  shape_type __ret_dims   = this->__shape_;
-  __ret_dims[__dim]       = __slice_size;
-  tensor __ret(__ret_dims);
+  index_type __start_val = __start.has_value() ? __start.value() : 0;
+  index_type __end_val   = __end.has_value() ? __end.value() : this->__shape_[__dim - 1];
 
-#if defined(__CUDACC__)
-  if (this->__data_.size() >= 1024) {
-    pointer __d_input;
-    pointer __d_output;
-    cudaMalloc(&__d_input, this->__data_.size() * sizeof(value_type));
-    cudaMalloc(&__d_output, __ret.__data_.size() * sizeof(value_type));
+  if (__start_val < 0 || __start_val >= this->__shape_[__dim - 1])
+    throw std::out_of_range("Start index out of range");
 
-    cudaMemcpy(__d_input, this->__data_.data(), this->__data_.size() * sizeof(value_type),
-               cudaMemcpyHostToDevice);
+  if (__end_val < 0 || __end_val > this->__shape_[__dim - 1])
+    throw std::out_of_range("End index out of range");
 
-    dim3 block(256);
-    dim3 grid(((__slice_size + block.x - 1) / block.x));
-    slice_kernel<<<grid, block>>>(__d_input, __d_output, __start_i, __end_i, __step, __slice_size);
+  if (__step < 0 && __start_val < __end_val)
+    throw std::invalid_argument("Step must be positive");
+  else if (__start_val > __end_val && __step > 0)
+    throw std::invalid_argument("Step must be negative");
 
-    cudaMemcpy(__ret.__data_.data(), __d_output, __ret.__data_.size() * sizeof(value_type),
-               cudaMemcpyDeviceToHost);
+  shape_type __ret_sh = this->__shape_;
+  __ret_sh[__dim - 1] = (__end_val - __start_val) / __step;
 
-    cudaFree(__d_input);
-    cudaFree(__d_output);
+  data_t     __ret_data;
+  index_type __i = 0;
+
+  for (; __i < this->__data_.size(); ++__i) {
+    shape_type __orig(this->__shape_.size());
+    index_type __index = __i;
+    index_type __j     = static_cast<index_type>(this->__shape_.size()) - 1;
+
+    for (; __j >= 0; __j--) {
+      __orig[__j] = __index % this->__shape_[__j];
+      __index /= this->__shape_[__j];
+    }
+
+    if (__orig[__dim - 1] < __start_val || __orig[__dim - 1] >= __end_val ||
+        (__orig[__dim - 1] - __start_val) % __step != 0)
+      continue;
+
+    __orig[__dim - 1]      = (__orig[__dim - 1] - __start_val) / __step;
+    index_type __ret_index = 0;
+    index_type __st        = 1;
+
+    for (__j = static_cast<index_type>(this->__shape_.size()) - 1; __j >= 0; __j--) {
+      __ret_index += __orig[__j] * __st;
+      __st *= __ret_sh[__j];
+    }
+
+    __ret_data.push_back(this->__data_[__i]);
   }
-#endif
-#pragma omp parallel
-  for (index_type __i = __start_i, __j = 0; __i < __end_i; __i += __step, ++__j)
-    __ret[__j] = this->__data_[__i];
 
-  return __ret;
+  return __self(__ret_sh, __ret_data);
 }
 
 template <class _Tp>
