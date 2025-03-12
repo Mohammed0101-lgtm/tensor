@@ -906,61 +906,45 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __start,
-                               std::optional<index_type> __end, index_type __step) const {
-  if (this->empty()) return __self();
+                               std::optional<index_type> __end, int64_t __step) const {
+  if (this->empty()) return __self();  // Return empty tensor
 
-  if (__dim <= 0 || __dim >= static_cast<index_type>(this->__shape_.size()))
+  // Validate dimension
+  if (__dim < 0 || __dim >= static_cast<index_type>(this->__shape_.size()))
     throw std::invalid_argument("Invalid dimension provided");
-
-  if (__start.has_value() && __end.has_value() && __start.value() >= __end.value())
-    throw std::invalid_argument("Start index must be less than end index");
 
   if (__step == 0) throw std::invalid_argument("Step cannot be zero");
 
-  index_type __start_val = __start.has_value() ? __start.value() : 0;
-  index_type __end_val   = __end.has_value() ? __end.value() : this->__shape_[__dim - 1];
+  // Get actual start and end values
+  index_type __s         = this->__shape_[__dim];
+  index_type __start_val = __start.value_or(__step > 0 ? 0 : __s - 1);
+  index_type __end_val   = __end.value_or(__step > 0 ? __s : -1);
 
-  if (__start_val < 0 || __start_val >= this->__shape_[__dim - 1])
-    throw std::out_of_range("Start index out of range");
+  // Handle negative indices
+  if (__start_val < 0) __start_val += __s;
+  if (__end_val < 0) __end_val += __s;
 
-  if (__end_val < 0 || __end_val > this->__shape_[__dim - 1])
-    throw std::out_of_range("End index out of range");
+  // Ensure start and end are within bounds
+  __start_val = std::clamp(__start_val, index_type(0), __s);
+  __end_val   = std::clamp(__end_val, index_type(0), __s);
 
-  if (__step < 0 && __start_val < __end_val)
-    throw std::invalid_argument("Step must be positive");
-  else if (__start_val > __end_val && __step > 0)
-    throw std::invalid_argument("Step must be negative");
+  // Adjust for direction
+  if ((__step > 0 && __start_val >= __end_val) || (__step < 0 && __start_val <= __end_val))
+    return __self({0});  // Return empty tensor if range is invalid
 
+  // Compute new shape
   shape_type __ret_sh = this->__shape_;
-  __ret_sh[__dim - 1] = (__end_val - __start_val) / __step;
+  __ret_sh[__dim] =
+      (std::abs(static_cast<int64_t>(__end_val - __start_val)) + std::abs(__step) - 1) /
+      std::abs(__step);
 
   data_t     __ret_data;
-  index_type __i = 0;
+  index_type __idx = __start_val;
 
-  for (; __i < this->__data_.size(); ++__i) {
-    shape_type __orig(this->__shape_.size());
-    index_type __index = __i;
-    index_type __j     = static_cast<index_type>(this->__shape_.size()) - 1;
-
-    for (; __j >= 0; __j--) {
-      __orig[__j] = __index % this->__shape_[__j];
-      __index /= this->__shape_[__j];
-    }
-
-    if (__orig[__dim - 1] < __start_val || __orig[__dim - 1] >= __end_val ||
-        (__orig[__dim - 1] - __start_val) % __step != 0)
-      continue;
-
-    __orig[__dim - 1]      = (__orig[__dim - 1] - __start_val) / __step;
-    index_type __ret_index = 0;
-    index_type __st        = 1;
-
-    for (__j = static_cast<index_type>(this->__shape_.size()) - 1; __j >= 0; __j--) {
-      __ret_index += __orig[__j] * __st;
-      __st *= __ret_sh[__j];
-    }
-
-    __ret_data.push_back(this->__data_[__i]);
+  // Efficiently iterate over valid indices
+  while ((__step > 0 && __idx < __end_val) || (__step < 0 && __idx > __end_val)) {
+    __ret_data.push_back(this->__data_[__idx]);
+    __idx += __step;
   }
 
   return __self(__ret_sh, __ret_data);
