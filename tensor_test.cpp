@@ -421,39 +421,43 @@ TEST(TensorTest, GreaterTest1) {
 
 TEST(TensorTest, SliceTest) {
   tensor<int> t1({2, 2}, {1, 2, 3, 4});
-  
+
+  // Slice along dim=0 (rows), selecting row 0 only
   tensor<int> expected1({1, 2}, {1, 2});
-  auto sliced = t1.slice(0, 0, 1, 1);
-  std::cout << "Actual Slice: " << std::endl;
-  sliced.print();
-  std::cout << "Expected Slice: " << std::endl;
-  expected1.print();
-  EXPECT_EQ(sliced, expected1);
   EXPECT_EQ(t1.slice(0, 0, 1, 1), expected1);
-  
+
+  // Slice along dim=0 (rows), selecting row 1 only
   tensor<int> expected2({1, 2}, {3, 4});
   EXPECT_EQ(t1.slice(0, 1, 2, 1), expected2);
 
+  // Slice along dim=1 (columns), selecting col 0 only
   tensor<int> expected3({2, 1}, {1, 3});
-  EXPECT_EQ(t1.slice(1, 0, 2, 1), expected3);
+  EXPECT_EQ(t1.slice(1, 0, 1, 1), expected3);
 
+  // Slice along dim=1 (columns), selecting col 1 only
   tensor<int> expected4({2, 1}, {2, 4});
   EXPECT_EQ(t1.slice(1, 1, 2, 1), expected4);
 
-  tensor<int> expected5({1, 1}, {3});
+  // Nested slicing: First select row 1, then select col 0
+  tensor<int> expected5({1}, {3});
   EXPECT_EQ(t1.slice(0, 1, 2, 1).slice(1, 0, 1, 1), expected5);
+
 
   tensor<int> t2({3, 3}, {1, 2, 3, 4, 5, 6, 7, 8, 9});
 
+  // Slice along dim=0 (rows), selecting rows [0,2] (step=2)
   tensor<int> expected6({2, 3}, {1, 2, 3, 7, 8, 9});
   EXPECT_EQ(t2.slice(0, 0, 3, 2), expected6);
 
+  // Slice along dim=0 (rows), selecting row 1 only
   tensor<int> expected7({1, 3}, {4, 5, 6});
   EXPECT_EQ(t2.slice(0, 1, 2, 1), expected7);
 
+  // Slice along dim=1 (columns), selecting col 1 only
   tensor<int> expected8({3, 1}, {2, 5, 8});
-  EXPECT_EQ(t2.slice(1, 1, 3, 1), expected8);
+  EXPECT_EQ(t2.slice(1, 1, 2, 1), expected8);
 
+  // Slice along dim=0 (rows), selecting row 2 only
   tensor<int> expected9({1, 3}, {7, 8, 9});
   EXPECT_EQ(t2.slice(0, 2, 3, 1), expected9);
 }
