@@ -930,13 +930,15 @@ tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __sta
 
   // Adjust for direction
   if ((__step > 0 && __start_val >= __end_val) || (__step < 0 && __start_val <= __end_val))
-    return __self({0});  // Return empty tensor if range is invalid
+    return __self();  // Return empty tensor if range is invalid
 
   // Compute new shape
-  shape_type __ret_sh = this->__shape_;
-  __ret_sh[__dim] =
-      (std::abs(static_cast<int64_t>(__end_val - __start_val)) + std::abs(__step) - 1) /
-      std::abs(__step);
+  shape_type __ret_sh     = this->__shape_;
+  index_type __slice_size = 0;
+  for (index_type __idx = __start_val;
+       (__step > 0 && __idx < __end_val) || (__step < 0 && __idx > __end_val); __idx += __step)
+    __slice_size++;
+  __ret_sh[__dim] = __slice_size;
 
   data_t     __ret_data;
   index_type __idx = __start_val;
@@ -948,6 +950,20 @@ tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __sta
   }
 
   return __self(__ret_sh, __ret_data);
+}
+
+template <class _Tp>
+tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __start, std::optional<index_type> __end, int64_t __step) {
+  if (this->empty())
+    return __self();
+
+  if (__dim < 0 || __dim >= static_cast<index_type>(this->__shape_.size()))
+    throw std::invalid_argument("Invalid dimension provided");
+  
+  if (__step == 0)
+    throw std::invalid_argument("Step cannot be zero");
+  
+  
 }
 
 template <class _Tp>
