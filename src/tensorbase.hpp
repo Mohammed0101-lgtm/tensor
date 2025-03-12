@@ -378,7 +378,7 @@ class tensor {
   /// @param __step The step size for the slice.
   /// @return A new tensor containing the sliced data.
   tensor slice(index_type __dim, std::optional<index_type> __start, std::optional<index_type> __end,
-               index_type __step) const;
+               int64_t __step) const;
 
   /// @brief Computes the element-wise maximum between this tensor and another
   /// tensor.
