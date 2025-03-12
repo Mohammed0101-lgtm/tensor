@@ -953,17 +953,14 @@ tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __sta
 }
 
 template <class _Tp>
-tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __start, std::optional<index_type> __end, int64_t __step) {
-  if (this->empty())
-    return __self();
+tensor<_Tp> tensor<_Tp>::slice(index_type __dim, std::optional<index_type> __start,
+                               std::optional<index_type> __end, int64_t __step) {
+  if (this->empty()) return __self();
 
   if (__dim < 0 || __dim >= static_cast<index_type>(this->__shape_.size()))
     throw std::invalid_argument("Invalid dimension provided");
-  
-  if (__step == 0)
-    throw std::invalid_argument("Step cannot be zero");
-  
-  
+
+  if (__step == 0) throw std::invalid_argument("Step cannot be zero");
 }
 
 template <class _Tp>
