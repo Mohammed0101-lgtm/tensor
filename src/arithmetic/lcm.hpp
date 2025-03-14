@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../tensorbase.hpp"
+#include "tensorbase.hpp"
 
 // used as a helper function
 inline int64_t __lcm(const int64_t __a, const int64_t __b) {
