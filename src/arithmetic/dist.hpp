@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../tensorbase.hpp"
+#include "tensorbase.hpp"
 
 template <class _Tp>
 inline tensor<_Tp> tensor<_Tp>::dist(const tensor& __other) const {
