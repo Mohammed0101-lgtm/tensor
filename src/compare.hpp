@@ -7,7 +7,7 @@ tensor<bool> tensor<_Tp>::not_equal(const tensor& __other) const {
   if (!std::is_integral_v<value_type> && !std::is_scalar_v<value_type>)
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
-  assert(this->__shape_ == __other.shape() && "not_equal : tensor shapes");
+  assert(__equal_shape(this->shape(), __other.shape()) && "not_equal : tensor shapes");
   std::vector<bool> __ret(this->__data_.size());
 
 #pragma omp parallel
@@ -36,7 +36,7 @@ tensor<bool> tensor<_Tp>::less(const tensor& __other) const {
   if (!std::is_integral_v<value_type> && !std::is_scalar_v<value_type>)
     throw std::runtime_error("Cannot compare non-integral or scalar value");
 
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
   std::vector<bool> __ret(this->__data_.size());
 
 #pragma omp parallel
@@ -99,7 +99,7 @@ tensor<bool> tensor<_Tp>::less_equal(const tensor& __other) const {
   if (!std::is_arithmetic_v<value_type>)
     throw std::runtime_error("Cannot compare non-numeric values");
 
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
   std::vector<bool> __ret(this->__data_.size());
 
 #pragma omp parallel
