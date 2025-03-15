@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../tensorbase.hpp"
+#include "tensorbase.hpp"
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::neon_equal(const tensor& __other) const {
   if constexpr (!std::is_arithmetic_v<value_type>)
     throw std::runtime_error("Cannot compare non-numeric tensor types");
 
-  assert(this->__shape_ == __other.shape() && "equal : tensor shapes must match");
+  assert(__equal_shape(this->shape(), __other.shape()) && "equal : tensor shapes must match");
   std::vector<bool> __ret(this->__data_.size());
   const index_type  __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type        __i        = 0;
@@ -101,7 +101,7 @@ tensor<bool> tensor<_Tp>::neon_less_equal(const tensor& __other) const {
   if (!std::is_arithmetic_v<value_type>)
     throw std::runtime_error("Cannot compare non-numeric values");
 
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
   std::vector<_u32> __ret(this->__data_.size());
   size_t            __vs = this->__data_.size() / _ARM64_REG_WIDTH * _ARM64_REG_WIDTH;
   index_type        __i  = 0;
