@@ -21,7 +21,7 @@ tensor<_Tp>& tensor<_Tp>::dist_(const tensor& __other) {
 #if defined(__ARM_NEON)
   return this->neon_dist_(__other);
 #endif
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
