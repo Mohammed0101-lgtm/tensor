@@ -19,7 +19,7 @@ inline typename tensor<_Tp>::index_type tensor<_Tp>::lcm() const {
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::lcm(const tensor& __other) const {
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
   tensor __ret = this->clone();
 
 #pragma omp parallel
