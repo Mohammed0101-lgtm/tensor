@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../tensorbase.hpp"
+#include "tensorbase.hpp"
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_bitwise_right_shift_(const int __amount) {
@@ -189,7 +189,7 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_and_(const tensor& __other) {
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
 
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
   const size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type   __i        = 0;
 
@@ -221,7 +221,7 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_or_(const tensor& __other) {
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
 
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
@@ -253,7 +253,7 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_xor_(const tensor& __other) {
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
 
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
