@@ -55,8 +55,8 @@ tensor<_Tp>& tensor<_Tp>::bitwise_or_(const value_type __val) {
 #if defined(__ARM_NEON)
   return this->neon_bitwise_or_(__val);
 #endif
-  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
+  if (!std::is_integral_v<value_type>)
+    throw std::runtime_error("Cannot perform a bitwise OR on non-integral values");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __val;
@@ -69,8 +69,8 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_or_(const value_type __val) const
 #if defined(__ARM_NEON)
   return this->neon_bitwise_or_(__val);
 #endif
-  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
+  if (!std::is_integral_v<value_type>)
+    throw std::runtime_error("Cannot perform a bitwise OR on non-integral values");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __val;
@@ -221,7 +221,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_and_(const tensor& __other) {
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
 
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] &= __other[__i];
 
@@ -236,7 +236,7 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_and_(const tensor& __other) const
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
 
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] &= __other[__i];
 
@@ -265,7 +265,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_or_(const tensor& __other) {
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
 
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __other[__i];
 
@@ -280,7 +280,7 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_or_(const tensor& __other) const 
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
 
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __other[__i];
 
@@ -295,7 +295,7 @@ tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const tensor& __other) {
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
 
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] ^= __other[__i];
 
@@ -310,7 +310,7 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const tensor& __other) const
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
 
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] ^= __other[__i];
 
@@ -330,7 +330,7 @@ inline const tensor<_Tp>& tensor<_Tp>::fill_(const value_type __val) const {
 
 template <class _Tp>
 inline tensor<_Tp>& tensor<_Tp>::fill_(const tensor& __other) {
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] = __other[__i];
