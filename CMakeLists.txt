@@ -3,6 +3,8 @@ project(TensorLibrary)
 
 set(CMAKE_CXX_STANDARD 20)
 
+include_directories(${CMAKE_SOURCE_DIR}/src)
+
 # Find required packages
 set(GTest_DIR /opt/homebrew/Cellar/googletest/1.16.0)  # Adjust if needed
 find_package(GTest REQUIRED)
