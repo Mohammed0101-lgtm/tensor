@@ -609,7 +609,7 @@ tensor<_Tp> tensor<_Tp>::any() const {
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::gcd(const tensor& __other) const {
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
 
   tensor     __ret = this->clone();
   index_type __i   = 0;
