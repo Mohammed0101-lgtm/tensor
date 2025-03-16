@@ -51,7 +51,7 @@ tensor<_Tp> tensor<_Tp>::absolute(const tensor& __tensor) const {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::pop_back() const {
-  if (this->__shape_.size() != 1)
+  if (__equal_shape(this->__shape_, shape_type(1, this->__shape_[0])))
     throw std::range_error("push_back is only supported for one dimensional tensors");
 
   this->__data_.pop_back();
