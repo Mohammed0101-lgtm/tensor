@@ -40,9 +40,9 @@ tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
 #if defined(__ARM_NEON)
   return this->neon_operator_plus(__other);
 #endif
-  static_assert(has_plus_operator_v<value_type>);
-  if (__other.shape() != this->__shape_)
-    throw std::invalid_argument("Cannot add two tensors with different shapes");
+  static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
+  assert(__equal_shape(this->shape(), __other.shape()) &&
+         "Cannot add two tensors with different shapes");
 
   data_t __d(this->__data_.size());
 
@@ -58,8 +58,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const value_type __val) const {
 #if defined(__ARM_NEON)
   return this->neon_operator_plus(__val);
 #endif
-  static_assert(has_plus_operator_v<value_type>);
-
+  static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
   data_t __d(this->__data_.size());
 
 #pragma omp parallel
@@ -70,7 +69,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const value_type __val) const {
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::operator*(const value_type __val) const {
-  static_assert(has_times_operator_v<value_type>);
+  static_assert(has_times_operator_v<value_type>, "Value type must have a times operator");
   data_t __d(this->__data_.size());
 
 #pragma omp parallel
@@ -81,8 +80,9 @@ tensor<_Tp> tensor<_Tp>::operator*(const value_type __val) const {
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::operator*(const tensor& __other) const {
-  static_assert(has_times_operator_v<value_type>);
-  assert(__equal_shape(this->shape(), __other.shape()));
+  static_assert(has_times_operator_v<value_type>, "Value type must have a times operator");
+  assert(__equal_shape(this->shape(), __other.shape()) &&
+         "Cannot multiply two tensors with different shapes");
   data_t __d(this->__data_.size());
 
 #pragma omp parallel
@@ -94,9 +94,9 @@ tensor<_Tp> tensor<_Tp>::operator*(const tensor& __other) const {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator+=(const tensor& __other) const {
-  static_assert(has_plus_operator_v<value_type>);
-
-  assert(__equal_shape(this->shape(), __other.shape()));
+  static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
+  assert(__equal_shape(this->shape(), __other.shape()) &&
+         "Cannot add two tensors with different shapes");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] += __other[__i];
@@ -109,7 +109,7 @@ tensor<_Tp>& tensor<_Tp>::operator+=(const_reference __val) const {
 #if defined(__ARM_NEON)
   return this->neon_operator_plus_eq(__val);
 #endif
-  static_assert(has_plus_operator_v<value_type>);
+  static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -123,10 +123,9 @@ tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
 #if defined(__ARM_NEON)
   return this->neon_operator_minus(__other);
 #endif
-  static_assert(has_minus_operator_v<value_type>);
-
-  if (__other.shape() != this->__shape_)
-    throw std::invalid_argument("Cannot add two tensors with different shapes");
+  static_assert(has_minus_operator_v<value_type>, "Value type must have a minus operator");
+  assert(__equal_shape(this->shape(), __other.shape()) &&
+         "Cannot subtract two tensors with different shapes");
 
   data_t __d(this->__data_.size());
 
@@ -142,7 +141,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const value_type __val) const {
 #if defined(__ARM_NEON)
   return this->neon_operator_minus(__val);
 #endif
-  static_assert(has_minus_operator_v<value_type>);
+  static_assert(has_minus_operator_v<value_type>, "Value type must have a minus operator");
   data_t __d(this->__data_.size());
 
 #pragma omp parallel
@@ -156,8 +155,9 @@ tensor<_Tp>& tensor<_Tp>::operator-=(const tensor& __other) const {
 #if defined(__ARM_NEON)
   return this->neon_operator_minus_eq(__other);
 #endif
-  static_assert(has_minus_operator_v<value_type>);
-  assert(__equal_shape(this->shape(), __other.shape()));
+  static_assert(has_minus_operator_v<value_type>, "Value type must have a minus operator");
+  assert(__equal_shape(this->shape(), __other.shape()) &&
+         "Cannot subtract two tensors with different shapes");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] -= __other[__i];
@@ -170,8 +170,9 @@ tensor<_Tp>& tensor<_Tp>::operator*=(const tensor& __other) const {
 #if defined(__ARM_NEON)
   return this->neon_operator_times_eq(__other);
 #endif
-  static_assert(has_times_operator_v<value_type>);
-  assert(__equal_shape(this->shape(), __other.shape()));
+  static_assert(has_times_operator_v<value_type>, "Value type must have a times operator");
+  assert(__equal_shape(this->shape(), __other.shape()) &&
+         "Cannot multiply two tensors with different shapes");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] *= __other[__i];
@@ -181,7 +182,7 @@ tensor<_Tp>& tensor<_Tp>::operator*=(const tensor& __other) const {
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::operator/(const_reference __val) const {
-  static_assert(has_divide_operator_v<value_type>);
+  static_assert(has_divide_operator_v<value_type>, "Value type must have a divide operator");
 
   if (__val == value_type(0))
     throw std::invalid_argument("Cannot divide by zero : undefined operation");
@@ -196,7 +197,7 @@ tensor<_Tp> tensor<_Tp>::operator/(const_reference __val) const {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator*=(const_reference __val) const {
-  static_assert(has_times_operator_v<value_type>);
+  static_assert(has_times_operator_v<value_type>, "Value type must have a times operator");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] *= __val;
@@ -214,8 +215,12 @@ inline tensor<_Tp>& tensor<_Tp>::operator=(const tensor& __other) const {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator/=(const tensor& __other) const {
-  static_assert(has_divide_operator_v<value_type>);
-  assert(__equal_shape(this->shape(), __other.shape()));
+  static_assert(has_divide_operator_v<value_type>, "Value type must have a divide operator");
+  assert(__equal_shape(this->shape(), __other.shape()) &&
+         "Cannot divide two tensors with different shapes");
+
+  if (__other.count_nonzero(0) != __other.size(0))
+    throw std::invalid_argument("Cannot divide by zero : undefined operation");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] /= __other[__i];
@@ -225,7 +230,10 @@ tensor<_Tp>& tensor<_Tp>::operator/=(const tensor& __other) const {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator/=(const_reference __val) const {
-  static_assert(has_divide_operator_v<value_type>);
+  static_assert(has_divide_operator_v<value_type>, "Value type must have a divide operator");
+
+  if (__val == value_type(0))
+    throw std::invalid_argument("Cannot divide by zero : undefined operation");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] /= __val;
@@ -235,12 +243,12 @@ tensor<_Tp>& tensor<_Tp>::operator/=(const_reference __val) const {
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::operator/(const tensor& __other) const {
-  static_assert(has_divide_operator_v<value_type>);
+  static_assert(has_divide_operator_v<value_type>, "Value type must have a divide operator");
+  assert(__equal_shape(this->shape(), __other.shape()) &&
+         "Cannot divide two tensors with different shapes");
 
   if (__other.count_nonzero(0) != __other.size(0))
     throw std::invalid_argument("Cannot divide by zero : undefined operation");
-
-  assert(__equal_shape(this->shape(), __other.shape()));
 
   data_t __d(this->__data_.size());
 
@@ -256,7 +264,7 @@ tensor<_Tp>& tensor<_Tp>::operator-=(const_reference __val) const {
 #if defined(__ARM_NEON)
   return this->neon_operator_minus_eq(__val);
 #endif
-  static_assert(has_minus_operator_v<value_type>);
+  static_assert(has_minus_operator_v<value_type>, "Value type must have a minus operator");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] -= __val;
