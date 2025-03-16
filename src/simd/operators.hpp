@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../tensorbase.hpp"
+#include "tensorbase.hpp"
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_operator_plus(const tensor& __other) const {
@@ -213,7 +213,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const value_type __val) const {
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const tensor& __other) const {
   static_assert(has_minus_operator_v<value_type>);
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
@@ -251,7 +251,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const tensor& __other) const {
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_operator_times_eq(const tensor& __other) const {
   static_assert(has_times_operator_v<value_type>);
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
   index_type __i = 0;
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
