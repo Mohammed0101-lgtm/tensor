@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../tensorbase.hpp"
+#include "tensorbase.hpp"
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type __val) {
@@ -112,7 +112,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const tensor& __other) {
     throw std::runtime_error(
         "Cannot get the element wise not of non-integral and non-boolean value");
 
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
@@ -146,7 +146,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const tensor& __other) {
     throw std::runtime_error(
         "Cannot get the element wise xor of non-integral and non-boolean value");
 
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
@@ -180,7 +180,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const tensor& __other) {
     throw std::runtime_error(
         "Cannot get the element-wise and of non-integral and non-boolean value");
 
-  assert(this->__shape_ == __other.shape());
+  assert(__equal_shape(this->shape(), __other.shape()));
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
