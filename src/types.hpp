@@ -42,6 +42,69 @@ struct has_divide_operator<_Tp, std::void_t<decltype(std::declval<_Tp>() + std::
 template <class _Tp>
 constexpr bool has_divide_operator_v = has_divide_operator<_Tp>::value;
 
+template <typename _Tp, typename = void>
+struct has_equal_operator : std::false_type {};
+
+template <typename _Tp>
+struct has_equal_operator<_Tp, std::void_t<decltype(std::declval<_Tp>() == std::declval<_Tp>())>>
+    : std::true_type {};
+
+template <typename _Tp>
+constexpr bool has_equal_operator_v = has_equal_operator<_Tp>::value;
+
+template <typename _Tp, typename = void>
+struct has_not_equal_operator : std::false_type {};
+
+template <typename _Tp>
+struct has_not_equal_operator<_Tp,
+                              std::void_t<decltype(std::declval<_Tp>() != std::declval<_Tp>())>>
+    : std::true_type {};
+
+template <typename _Tp>
+constexpr bool has_not_equal_operator_v = has_not_equal_operator<_Tp>::value;
+
+template <typename _Tp, typename = void>
+struct has_less_operator : std::false_type {};
+
+template <typename _Tp>
+struct has_less_operator<_Tp, std::void_t<decltype(std::declval<_Tp>() < std::declval<_Tp>())>>
+    : std::true_type {};
+
+template <typename _Tp>
+constexpr bool has_less_operator_v = has_less_operator<_Tp>::value;
+
+template <typename _Tp, typename = void>
+struct has_less_equal_operator : std::false_type {};
+
+template <typename _Tp>
+struct has_less_equal_operator<_Tp,
+                               std::void_t<decltype(std::declval<_Tp>() <= std::declval<_Tp>())>>
+    : std::true_type {};
+
+template <typename _Tp>
+constexpr bool has_less_equal_operator_v = has_less_equal_operator<_Tp>::value;
+
+template <typename _Tp, typename = void>
+struct has_greater_operator : std::false_type {};
+
+template <typename _Tp>
+struct has_greater_operator<_Tp, std::void_t<decltype(std::declval<_Tp>() > std::declval<_Tp>())>>
+    : std::true_type {};
+
+template <typename _Tp>
+constexpr bool has_greater_operator_v = has_greater_operator<_Tp>::value;
+
+template <typename _Tp, typename = void>
+struct has_greater_equal_operator : std::false_type {};
+
+template <typename _Tp>
+struct has_greater_equal_operator<_Tp,
+                                  std::void_t<decltype(std::declval<_Tp>() >= std::declval<_Tp>())>>
+    : std::true_type {};
+
+template <typename _Tp>
+constexpr bool has_greater_equal_operator_v = has_greater_equal_operator<_Tp>::value;
+
 template <class _Tp>
 tensor<_s32> tensor<_Tp>::int32_() const {
 #if defined(__ARM_NEON)

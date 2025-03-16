@@ -1507,8 +1507,25 @@ class tensor {
   [[nodiscard]] static _f32       __frac(const_reference __val) noexcept;
   // where the tensor is stored
   bool __is_cuda_device() const;
+  bool __equal_shape(const shape_type& __x, const shape_type& __y) const;
 
 };  // tensor class
+
+template <class _Tp>
+bool tensor<_Tp>::__equal_shape(const shape_type& __x, const shape_type& __y) const {
+  size_t __size_x = __x.size();
+  size_t __size_y = __y.size();
+
+  if (__size_x == __size_y) return __x == __y;
+
+  if (__size_x < __size_y) return __equal_shape(__y, __x);
+
+  int __diff = __size_x - __size_y;
+  for (size_t __i = 0; __i < __size_y; ++__i)
+    if (__x[__i + __diff] != __y[__i] && __x[__i + __diff] != 1 && __y[__i] != 1) return false;
+
+  return true;
+}
 
 template <class _Tp>
 inline bool tensor<_Tp>::__is_cuda_device() const {
@@ -1696,7 +1713,7 @@ class tensor<bool> {
   Device device() const noexcept { return this->__device_; }
 
   bool operator==(const tensor& __other) const {
-    return this->__shape_ == __other.shape() && this->__data_ == __other.storage();
+    return __equal_shape(this->shape(), __other.shape()) && this->__data_ == __other.storage();
   }
 
   bool operator!=(const tensor& __other) const { return !(*this == __other); }
@@ -1973,7 +1990,8 @@ class tensor<bool> {
   tensor<bool> reshape_as(const tensor& __other) const { return this->reshape(__other.shape()); }
 
   tensor<bool> transpose() const {
-    if (this->__shape_.size() != 2)
+    if (__equal_shape(this->__shape_, shape_type({this->__shape_[0], this->__shape_[1], 1}))
+        || __equal_shape(this->__shape_, shape_type({1, this->__shape_[0], this->__shape_[1]}))) 
       throw std::invalid_argument("Matrix transposition can only be done on 2D tensors");
 
     tensor           __ret({this->__shape_[1], this->__shape_[0]});
@@ -2173,6 +2191,21 @@ class tensor<bool> {
   }
 
  private:
+  bool __equal_shape(const shape_type& __x, const shape_type& __y) const {
+    size_t __size_x = __x.size();
+    size_t __size_y = __y.size();
+
+    if (__size_x == __size_y) return __x == __y;
+
+    if (__size_x < __size_y) return __equal_shape(__y, __x);
+
+    int __diff = __size_x - __size_y;
+    for (size_t __i = 0; __i < __size_y; ++__i)
+      if (__x[__i + __diff] != __y[__i] && __x[__i + __diff] != 1 && __y[__i] != 1) return false;
+
+    return true;
+  }
+
   [[nodiscard]]
   inline size_t computeStride(size_t __dim, const shape_type& __shape) const noexcept {
     size_t __stride = 1;
