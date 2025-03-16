@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../tensorbase.hpp"
+#include "tensorbase.hpp"
 
 template <class _Tp>
 typename tensor<_Tp>::index_type tensor<_Tp>::neon_count_nonzero(index_type __dim) const {
