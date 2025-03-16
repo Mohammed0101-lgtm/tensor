@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../tensorbase.hpp"
+#include "tensorbase.hpp"
 
 template <class _Tp>
 tensor<_s32> tensor<_Tp>::neon_int32_() const {
