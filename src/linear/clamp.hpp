@@ -135,3 +135,33 @@ tensor<_Tp> tensor<_Tp>::ceil() const {
   __ret.ceil_();
   return __ret;
 }
+
+template <class _Tp>
+tensor<_Tp> tensor<_Tp>::clamp_min(const_reference __min_val) const {
+  return this->clamp(__min_val);
+}
+
+template <class _Tp>
+inline tensor<_Tp>& tensor<_Tp>::clamp_min_(const_reference __min_val) {
+  return this->clamp_(__min_val);
+}
+
+template <class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::clamp_min_(const_reference __min_val) const {
+  return this->clamp_(__min_val);
+}
+//
+template <class _Tp>
+tensor<_Tp> tensor<_Tp>::clamp_max(const_reference __max_val) const {
+  return this->clamp(std::numeric_limits<value_type>::lowest(), __max_val);
+}
+
+template <class _Tp>
+inline tensor<_Tp>& tensor<_Tp>::clamp_max_(const_reference __max_val) {
+  return this->clamp_(std::numeric_limits<value_type>::lowest(), __max_val);
+}
+
+template <class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::clamp_max_(const_reference __max_val) const {
+  return this->clamp_(std::numeric_limits<value_type>::lowest(), __max_val);
+}
