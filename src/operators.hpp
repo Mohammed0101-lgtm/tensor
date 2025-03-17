@@ -274,7 +274,7 @@ tensor<_Tp>& tensor<_Tp>::operator-=(const_reference __val) const {
 
 template <class _Tp>
 bool tensor<_Tp>::operator==(const tensor& __other) const {
-  if (this->__equal_shape(this->shape(), __other.shape()) && this->__strides == __other.strides() &&
+  if (this->__equal_shape(this->shape(), __other.shape()) && this->__strides_ == __other.strides() &&
       this->__data_ == __other.storage())
     return true;
   return false;
