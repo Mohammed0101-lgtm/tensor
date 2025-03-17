@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tensorbase.hpp"
+#include "types.hpp"
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::not_equal(const tensor& __other) const {
