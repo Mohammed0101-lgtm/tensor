@@ -14,6 +14,8 @@ tensor<_Tp>& tensor<_Tp>::abs_() {
 #if defined(__ARM_NEON)
   return this->neon_abs_();
 #endif
+  static_assert(std::is_arithmetic_v<value_type>, "abs_() is only available for arithmetic types.");
+
   if (std::is_unsigned_v<value_type>) return *this;
 
 #pragma omp parallel
@@ -28,6 +30,8 @@ inline const tensor<_Tp>& tensor<_Tp>::abs_() const {
 #if defined(__ARM_NEON)
   return this->neon_abs_();
 #endif
+  static_assert(std::is_arithmetic_v<value_type>, "abs_() is only available for arithmetic types.");
+
   if (std::is_unsigned_v<value_type>) return *this;
 
 #pragma omp parallel
