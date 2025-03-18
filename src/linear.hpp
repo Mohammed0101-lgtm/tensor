@@ -22,27 +22,6 @@ tensor<_Tp> tensor<_Tp>::absolute(const tensor& __tensor) const {
   data_t     __a;
   __a.reserve(__s);
   index_type __i = 0;
-
-#ifdef __AVX__
-  if constexpr (std::is_same_v<value_type, _f32>) {
-    for (; __i + _AVX_REG_WIDTH <= __s; __i += _AVX_REG_WIDTH) {
-      __m256 __input     = _mm256_loadu_ps(&__tensor.storage()[__i]);
-      __m256 __abs_value = _mm256_abs_ps(__input);
-      _mm256_storeu_ps(&__a[__i], __abs_value);
-    }
-  }
-#endif
-
-#if defined(__SSE__)
-  if constexpr (std::is_same_v<value_type, _f32>) {
-    for (; __i + 4 <= __s; __i += 4) {
-      __m128 __input     = _mm_loadu_ps(&__tensor.storage()[__i]);
-      __m128 __abs_value = _mm_abs_ps(__input);
-      _mm_storeu_ps(&__a[__i], __abs_value);
-    }
-  }
-#endif
-
   for (; __i < __s; ++__i)
     __a.push_back(static_cast<value_type>(std::fabs(_f32(__tensor.storage()[__i]))));
 
