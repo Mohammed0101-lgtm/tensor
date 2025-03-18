@@ -50,20 +50,6 @@ typename tensor<_Tp>::index_type tensor<_Tp>::count_nonzero(index_type __dim) co
   index_type __local_count = 0;
   index_type __i           = 0;
   if (__dim == 0) {
-#ifdef __AVX__
-    if constexpr (std::is_same_v<value_type, _f32>) {
-      index_type __size = this->__data_.size();
-      index_type __i    = 0;
-
-      for (; __i + _AVX_REG_WIDTH <= __size; __i += _AVX_REG_WIDTH) {
-        __m256 __vec          = _mm256_loadu_ps(&this->__data_[__i]);
-        __m256 __nonzero_mask = _mm256_cmp_ps(__vec, _mm256_setzero_ps(), _CMP_NEQ_OQ);
-        __local_count += _mm256_movemask_ps(__nonzero_mask);
-      }
-    }
-
-#endif
-
 #pragma omp parallel for reduction(+ : __local_count)
     for (index_type __j = __i; __j < this->__data_.size(); ++__j)
       if (this->__data_[__j] != 0) ++__local_count;
@@ -278,29 +264,6 @@ tensor<_Tp>& tensor<_Tp>::randomize_(const shape_type& __sh, bool __bounded) {
   std::uniform_real_distribution<_f32> __bounded_dist(0.0f, 1.0f);
   index_type                           __i = 0;
 
-#if defined(__AVX__)
-  const __m256 __scale = _mm256_set1_ps(__bounded ? static_cast<_f32>(RAND_MAX) : 1.0f);
-  for (; __i + _AVX_REG_WIDTH <= static_cast<index_type>(__s); __i += _AVX_REG_WIDTH) {
-    __m256 __random_values = _mm256_setr_ps(
-        __bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen),
-        __bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen));
-
-    if (!__bounded) __random_values = _mm256_div_ps(__random_values, __scale);
-
-    _mm256_storeu_ps(&this->__data_[__i], __random_values);
-  }
-
-#elif defined(__SSE__)
-  const __m128 __scale = _mm_set1_ps(__bounded ? static_cast<_f32>(RAND_MAX) : 1.0f);
-  for (; __i + 4 <= static_cast<index_type>(__s); __i += 4) {
-    __m128 __random_values = _mm_setr_ps(__bounded_dist(__gen), __bounded_dist(__gen),
-                                         __bounded_dist(__gen), __bounded_dist(__gen));
-
-    if (!__bounded) __random_values = _mm_div_ps(__random_values, __scale);
-
-    _mm_storeu_ps(&this->__data_[__i], __random_values);
-  }
-#endif
 #pragma omp parallel
   for (; __i < static_cast<index_type>(__s); ++__i)
     this->__data_[__i] = value_type(__bounded ? __bounded_dist(__gen) : __unbounded_dist(__gen));
@@ -330,30 +293,6 @@ inline const tensor<_Tp>& tensor<_Tp>::randomize_(const shape_type& __sh, bool _
   std::uniform_real_distribution<_f32> __unbounded_dist(1.0f, static_cast<_f32>(RAND_MAX));
   std::uniform_real_distribution<_f32> __bounded_dist(0.0f, 1.0f);
   index_type                           __i = 0;
-
-#if defined(__AVX__)
-  const __m256 __scale = _mm256_set1_ps(__bounded ? static_cast<_f32>(RAND_MAX) : 1.0f);
-  for (; __i + _AVX_REG_WIDTH <= static_cast<index_type>(__s); __i += _AVX_REG_WIDTH) {
-    __m256 __random_values = _mm256_setr_ps(
-        __bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen),
-        __bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen), __bounded_dist(__gen));
-
-    if (!__bounded) __random_values = _mm256_div_ps(__random_values, __scale);
-
-    _mm256_storeu_ps(&this->__data_[__i], __random_values);
-  }
-
-#elif defined(__SSE__)
-  const __m128 __scale = _mm_set1_ps(__bounded ? static_cast<_f32>(RAND_MAX) : 1.0f);
-  for (; __i + 4 <= static_cast<index_type>(__s); __i += 4) {
-    __m128 __random_values = _mm_setr_ps(__bounded_dist(__gen), __bounded_dist(__gen),
-                                         __bounded_dist(__gen), __bounded_dist(__gen));
-
-    if (!__bounded) __random_values = _mm_div_ps(__random_values, __scale);
-
-    _mm_storeu_ps(&this->__data_[__i], __random_values);
-  }
-#endif
 #pragma omp parallel
   for (; __i < static_cast<index_type>(__s); ++__i)
     this->__data_[__i] = value_type(__bounded ? __bounded_dist(__gen) : __unbounded_dist(__gen));
