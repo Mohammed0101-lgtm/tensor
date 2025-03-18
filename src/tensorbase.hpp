@@ -1045,6 +1045,14 @@ class tensor {
   const tensor& clamp_(const_reference __min_val = std::numeric_limits<value_type>::lowest(),
                        const_reference __max_val = std::numeric_limits<value_type>::max()) const;
 
+  tensor        clamp_min(const_reference __min_val) const;
+  tensor&       clamp_min_(const_reference __min_val);
+  const tensor& clamp_min_(const_reference __min_val) const;
+
+  tensor        clamp_max(const_reference __max_val) const;
+  tensor&       clamp_max_(const_reference __max_val);
+  const tensor& clamp_max_(const_reference __max_val) const;
+
   /// @brief Applies bitwise NOT operation to each element in the tensor,
   /// modifying the tensor in place.
   /// @return A reference to the tensor after the bitwise NOT operation has been
@@ -1990,8 +1998,8 @@ class tensor<bool> {
   tensor<bool> reshape_as(const tensor& __other) const { return this->reshape(__other.shape()); }
 
   tensor<bool> transpose() const {
-    if (__equal_shape(this->__shape_, shape_type({this->__shape_[0], this->__shape_[1], 1}))
-        || __equal_shape(this->__shape_, shape_type({1, this->__shape_[0], this->__shape_[1]}))) 
+    if (__equal_shape(this->__shape_, shape_type({this->__shape_[0], this->__shape_[1], 1})) ||
+        __equal_shape(this->__shape_, shape_type({1, this->__shape_[0], this->__shape_[1]})))
       throw std::invalid_argument("Matrix transposition can only be done on 2D tensors");
 
     tensor           __ret({this->__shape_[1], this->__shape_[0]});
