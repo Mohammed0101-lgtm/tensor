@@ -50,27 +50,6 @@ tensor<_Tp> tensor<_Tp>::cross_product(const tensor& __other) const {
   __ret[2] = __a1 * __b2 - __a2 * __b1;
 #endif
 
-#if defined(__AVX2__)
-  __m256 __a      = _mm256_loadu_ps(reinterpret_cast<const _f32*>(this->__data_.data()));
-  __m256 __b      = _mm256_loadu_ps(reinterpret_cast<const _f32*>(__other.storage().data()));
-  __m256 __a_yzx  = _mm256_permute_ps(__a, _MM_SHUFFLE(3, 0, 2, 1));
-  __m256 __b_yzx  = _mm256_permute_ps(__b, _MM_SHUFFLE(3, 0, 2, 1));
-  __m256 __result = _mm256_sub_ps(_mm256_mul_ps(__a_yzx, __b), _mm256_mul_ps(__a, __b_yzx));
-  __result        = _mm256_permute_ps(__result, _MM_SHUFFLE(3, 0, 2, 1));
-  _mm256_storeu_ps(reinterpret_cast<_f32*>(__ret.storage().data()), __result);
-#endif
-
-#if defined(__SSE__)
-  __m128 __a      = _mm_loadu_ps(reinterpret_cast<const _f32*>(this->__data_.data()));
-  __m128 __b      = _mm_loadu_ps(reinterpret_cast<const _f32*>(__other.storage().data()));
-  __m128 __a_yzx  = _mm_shuffle_ps(__a, __a, _MM_SHUFFLE(3, 0, 2, 1));
-  __m128 __b_yzx  = _mm_shuffle_ps(__b, __b, _MM_SHUFFLE(3, 0, 2, 1));
-  __m128 __result = _mm_sub_ps(_mm_mul_ps(__a_yzx, __b), _mm_mul_ps(__a, __b_yzx));
-  __result        = _mm_shuffle_ps(__result, __result, _MM_SHUFFLE(3, 0, 2, 1));
-  _mm_storeu_ps(reinterpret_cast<_f32*>(__ret.storage().data()), __result);
-
-#endif
-
   return __ret;
 }
 
@@ -120,26 +99,9 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_type __dim) const {
     data_t __ret(__flat.size());
     __ret[0] = __flat[0];
 
-#if defined(__AVX2__)
-    if constexpr (std::is_same_v<_Tp, _f32>) {
-      index_type __i = 1;
-      for (; __i + _AVX_REG_WIDTH <= __flat.size(); __i += _AVX_REG_WIDTH) {
-        __m256 __prev   = _mm256_loadu_ps(&__ret[__i - 1]);
-        __m256 __curr   = _mm256_loadu_ps(&__flat[__i]);
-        __m256 __result = _mm256_mul_ps(__prev, __curr);
-        _mm256_storeu_ps(&__ret[__i], __result);
-      }
-
-      for (; __i < __flat.size(); ++__i) __ret[__i] = __ret[__i - 1] * __flat[__i];
-    } else {
-      index_type __i = 1;
-      for (; __i < __flat.size(); ++__i) __ret[__i] = __ret[__i - 1] * __flat[__i];
-    }
-#else
     index_type __i = 1;
 
     for (; __i < __flat.size(); ++__i) __ret[__i] = __ret[__i - 1] * __flat[__i];
-#endif
 
     return __self(__ret, {__flat.size()});
   } else {
@@ -152,39 +114,6 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_type __dim) const {
     index_type __inner_size = this->__shape_[__dim];
     index_type __st         = this->__strides_[__dim];
 
-#if defined(__AVX2__)
-
-    if constexpr (std::is_same_v<_Tp, _f32>) {
-      for (index_type __i = 0; __i < __outer_size; ++__i) {
-        index_type __base = __i * __st;
-        __ret[__base]     = __data_[__base];
-        index_type __j    = 1;
-
-        for (; __j + _AVX_REG_WIDTH <= __inner_size; __j += _AVX_REG_WIDTH) {
-          __m256 __prev   = _mm256_loadu_ps(&__ret[__base + __j - 1]);
-          __m256 __curr   = _mm256_loadu_ps(&__data_[__base + __j]);
-          __m256 __result = _mm256_mul_ps(__prev, __curr);
-          _mm256_storeu_ps(&__ret[__base + __j], __result);
-        }
-
-        for (; __j < __inner_size; ++__j) {
-          index_type __curr = __base + __j;
-          __ret[__curr]     = __ret[__base + __j - 1] * __data_[__curr];
-        }
-      }
-    } else {
-      for (index_type __i = 0; __i < __outer_size; ++__i) {
-        index_type __base = __i * __st;
-        __ret[__base]     = __data_[__base];
-
-        for (index_type __j = 1; __j < __inner_size; ++__j) {
-          index_type __curr = __base + __j;
-          __ret[__curr]     = __ret[__base + __j - 1] * __data_[__curr];
-        }
-      }
-    }
-
-#else
     index_type __i = 0;
 
     for (; __i < __outer_size; ++__i) {
