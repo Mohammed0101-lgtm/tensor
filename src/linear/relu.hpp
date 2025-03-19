@@ -43,32 +43,6 @@ tensor<_Tp>& tensor<_Tp>::clipped_relu_(const value_type __clip_limit) {
         [] __device__(value_type __x) { return min(max(__x, value_type(0)), __clip_limit); });
     return *this;
   }
-
-#elif defined(__SSE__)
-  if constexpr (std::is_same_v<value_type, _f32>) {
-    __m128 __zero = _mm_setzero_ps();
-    __m128 __clip = _mm_set1_ps(__clip_limit);
-
-    for (; __i + 4 <= __s; __i += 4) {
-      __m128 __x      = _mm_loadu_ps(&this->__data_[__i]);
-      __m128 __result = _mm_min_ps(_mm_max_ps(__x, __zero), __clip);
-
-      _mm_storeu_ps(&this->__data_[__i], __result);
-    }
-  }
-
-#elif defined(__AVX__)
-  if constexpr (std::is_same_v<value_type, _f32>) {
-    __m256 __zero = _mm256_setzero_ps();
-    __m256 __clip = _mm256_set1_ps(__clip_limit);
-
-    for (; __i + _AVX_REG_WIDTH <= __s; __i += _AVX_REG_WIDTH) {
-      __m256 __x      = _mm256_loadu_ps(&this->__data_[__i]);
-      __m256 __result = _mm256_min_ps(_mm256_max_ps(__x, __zero), __clip);
-
-      _mm256_storeu_ps(&this->__data_[__i], __result);
-    }
-  }
 #endif
 
   for (; __i < __s; ++__i)
@@ -96,32 +70,6 @@ inline const tensor<_Tp>& tensor<_Tp>::clipped_relu_(const value_type __clip_lim
         thrust::device, __d_data, __d_data + __s, __d_data,
         [] __device__(value_type __x) { return min(max(__x, value_type(0)), __clip_limit); });
     return *this;
-  }
-
-#elif defined(__SSE__)
-  if constexpr (std::is_same_v<value_type, _f32>) {
-    __m128 __zero = _mm_setzero_ps();
-    __m128 __clip = _mm_set1_ps(__clip_limit);
-
-    for (; __i + 4 <= __s; __i += 4) {
-      __m128 __x      = _mm_loadu_ps(&this->__data_[__i]);
-      __m128 __result = _mm_min_ps(_mm_max_ps(__x, __zero), __clip);
-
-      _mm_storeu_ps(&this->__data_[__i], __result);
-    }
-  }
-
-#elif defined(__AVX__)
-  if constexpr (std::is_same_v<value_type, _f32>) {
-    __m256 __zero = _mm256_setzero_ps();
-    __m256 __clip = _mm256_set1_ps(__clip_limit);
-
-    for (; __i + _AVX_REG_WIDTH <= __s; __i += _AVX_REG_WIDTH) {
-      __m256 __x      = _mm256_loadu_ps(&this->__data_[__i]);
-      __m256 __result = _mm256_min_ps(_mm256_max_ps(__x, __zero), __clip);
-
-      _mm256_storeu_ps(&this->__data_[__i], __result);
-    }
   }
 #endif
 
