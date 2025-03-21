@@ -43,10 +43,6 @@
 #include <arm_neon.h>
 #endif
 
-#if defined(__AVX__) || defined(__SSE__)
-#include <immintrin.h>
-#endif
-
 #if defined(USE_CUDA)
 #include <cuda_runtime.h>
 #endif
@@ -67,7 +63,6 @@ using neon_u8  = uint8x16_t;
 #endif
 
 const int _ARM64_REG_WIDTH = 4;
-const int _AVX_REG_WIDTH   = 8;
 
 template <class _Tp>
 class tensor {
