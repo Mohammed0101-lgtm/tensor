@@ -28,7 +28,7 @@ tensor<_Tp> tensor<_Tp>::cross_product(const tensor& __other) const {
 
   dim3 block(1);
   dim3 grid(1);
-  cross_product_kernel<<<grid, block>>>(__d_a, __d_b, __d_c);
+  cross_product_kernel<<<grid, block> > >(__d_a, __d_b, __d_c);
 
   cudaMemcpy(__ret.storage().data(), __d_c, 3 * sizeof(value_type), cudaMemcpyDeviceToHost);
 
@@ -61,7 +61,6 @@ __global__ void cross_product_kernel(_Tp* __a, _Tp* __b, _Tp* __c) {
   __c[2] = __a[0] * __b[1] - __a[1] * __b[0];
 }
 #endif
-
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
@@ -126,7 +125,6 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_type __dim) const {
         __ret[__curr]     = __ret[__base + __j - 1] * __data_[__curr];
       }
     }
-#endif
 
     return __self(__ret, this->__shape_);
   }
