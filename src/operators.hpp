@@ -291,12 +291,11 @@ tensor<_Tp>& tensor<_Tp>::operator=(tensor&& __other) const noexcept {
 }
 
 template <class _Tp>
-tensor<bool>& tensor<_Tp>::operator!() const {
-  static_assert(std::is_same_v<value_type, bool>);
+const tensor<bool>& tensor<_Tp>::operator!() const {
+  return this->logical_not();
+}
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = !(this->__data_[__i]);
-
-  return *this;
+template <class _Tp>
+tensor<bool>& tensor<_Tp>::operator!() {
+  return this->logical_not();
 }
