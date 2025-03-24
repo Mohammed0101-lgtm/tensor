@@ -5,7 +5,7 @@
 template <class _Tp>
 double tensor<_Tp>::mode(const index_type __dim) const {
   if (__dim >= this->n_dims() || __dim < -1)
-    throw std::invalid_argument("given dimension is out of range of the tensor dimensions");
+    throw __index_error__("given dimension is out of range of the tensor dimensions");
 
   index_type __stride = (__dim == -1) ? 0 : this->__strides_[__dim];
   index_type __end    = (__dim == -1) ? this->__data_.size() : this->__strides_[__dim];
@@ -30,7 +30,7 @@ double tensor<_Tp>::mode(const index_type __dim) const {
 template <class _Tp>
 double tensor<_Tp>::median(const index_type __dim) const {
   if (__dim >= this->n_dims() || __dim < -1)
-    throw std::invalid_argument("given dimension is out of range of the tensor dimensions");
+    throw __index_error__("given dimension is out of range of the tensor dimensions");
 
   index_type __stride = (__dim == -1) ? 0 : this->__strides_[__dim];
   index_type __end    = (__dim == -1) ? this->__data_.size() : this->__strides_[__dim];
