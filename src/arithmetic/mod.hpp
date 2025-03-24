@@ -22,9 +22,9 @@ tensor<_Tp>& tensor<_Tp>::fmod_(const value_type __val) {
   return this->neon_fmod_(__val);
 #endif
   if (!std::is_floating_point_v<value_type>)
-    throw std::logic_error("Cannot perform fmod on non-floating point values");
+    throw __type_error__("Cannot perform fmod on non-floating point values");
 
-  if (__val == value_type(0)) throw std::runtime_error("Cannot perform fmod with zero");
+  if (__val == value_type(0)) throw std::logic_error("Cannot perform fmod with zero");
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
     this->__data_[__i] = static_cast<value_type>(
@@ -39,9 +39,9 @@ inline const tensor<_Tp>& tensor<_Tp>::fmod_(const value_type __val) const {
   return this->neon_fmod_(__val);
 #endif
   if (!std::is_floating_point_v<value_type>)
-    throw std::logic_error("Cannot perform fmod on non-floating point values");
+    throw __type_error__("Cannot perform fmod on non-floating point values");
 
-  if (__val == value_type(0)) throw std::runtime_error("Cannot perform fmod with zero");
+  if (__val == value_type(0)) throw std::logic_error("Cannot perform fmod with zero");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -57,13 +57,13 @@ tensor<_Tp>& tensor<_Tp>::fmod_(const tensor& __other) {
   return this->neon_fmod_(__other);
 #endif
   if (!__equal_shape(this->shape(), __other.shape()) || this->__data_.size() != __other.size(0))
-    throw std::invalid_argument("Cannot divide two tensors of different shapes : fmod");
+    throw __shape_error__("Cannot divide two tensors of different shapes : fmod");
 
   if (!std::is_floating_point_v<value_type>)
-    throw std::logic_error("Cannot perform fmod on non-floating point values");
+    throw __type_error__("Cannot perform fmod on non-floating point values");
 
   if (__other.count_nonzero(0) != __other.size(0))
-    throw std::invalid_argument("Cannot divide by zero : undefined operation");
+    throw std::logic_error("Cannot divide by zero : undefined operation");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -79,13 +79,13 @@ inline const tensor<_Tp>& tensor<_Tp>::fmod_(const tensor& __other) const {
   return this->neon_fmod_(__other);
 #endif
   if (__equal_shape(this->shape(), __other.shape()) || this->__data_.size() != __other.size(0))
-    throw std::invalid_argument("Cannot divide two tensors of different shapes : fmod");
+    throw __shape_error__("Cannot divide two tensors of different shapes : fmod");
 
   if (!std::is_floating_point_v<value_type>)
-    throw std::logic_error("Cannot perform fmod on non-floating point values");
+    throw __type_error__("Cannot perform fmod on non-floating point values");
 
   if (__other.count_nonzero(0) != __other.size(0))
-    throw std::invalid_argument("Cannot divide by zero : undefined operation");
+    throw std::logic_error("Cannot divide by zero : undefined operation");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
