@@ -10,7 +10,7 @@ inline tensor<_Tp> tensor<_Tp>::reshape_as(const tensor& __other) const {
 template <class _Tp>
 inline typename tensor<_Tp>::index_type tensor<_Tp>::size(const index_type __dim) const {
   if (__dim < 0 || __dim > static_cast<index_type>(this->__shape_.size()))
-    throw std::invalid_argument("dimension input is out of range");
+    throw __index_error__("dimension input is out of range");
 
   if (__dim == 0) return this->__data_.size();
 
@@ -23,7 +23,7 @@ inline typename tensor<_Tp>::reference tensor<_Tp>::at(tensor<_Tp>::shape_type _
 
   index_type __i = this->__compute_index(__idx);
   if (__i < 0 || __i >= this->__data_.size())
-    throw std::invalid_argument("input indices are out of bounds");
+    throw __index_error__("input indices are out of bounds");
 
   return this->__data_[__i];
 }
@@ -36,7 +36,7 @@ inline typename tensor<_Tp>::const_reference tensor<_Tp>::at(
   index_type __i = this->__compute_index(__idx);
 
   if (__i < 0 || __i >= this->__data_.size())
-    throw std::invalid_argument("input indices are out of bounds");
+    throw __index_error__("input indices are out of bounds");
 
   return this->__data_[__i];
 }
@@ -57,7 +57,7 @@ typename tensor<_Tp>::index_type tensor<_Tp>::count_nonzero(index_type __dim) co
     __c += __local_count;
   } else {
     if (__dim < 0 || __dim >= static_cast<index_type>(__shape_.size()))
-      throw std::invalid_argument("Invalid dimension provided.");
+      throw __index_error__("Invalid dimension provided.");
 
     throw std::runtime_error("Dimension-specific non-zero counting is not implemented yet.");
   }
@@ -185,10 +185,10 @@ inline typename tensor<_Tp>::index_type tensor<_Tp>::hash() const {
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::row(const index_type __index) const {
   if (this->__shape_.size() != 2)
-    throw std::runtime_error("Cannot get a row from a non two dimensional tensor");
+    throw __shape_error__("Cannot get a row from a non two dimensional tensor");
 
   if (this->__shape_[0] <= __index || __index < 0)
-    throw std::invalid_argument("Index input is out of range");
+    throw __index_error__("Index input is out of range");
 
   data_t     __r;
   index_type __start = this->__shape_[1] * __index;
@@ -202,10 +202,10 @@ tensor<_Tp> tensor<_Tp>::row(const index_type __index) const {
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::col(const index_type __index) const {
   if (this->__shape_.size() != 2)
-    throw std::runtime_error("Cannot get a column from a non two dimensional tensor");
+    throw __shape_error__("Cannot get a column from a non two dimensional tensor");
 
   if (this->__shape_[1] <= __index || __index < 0)
-    throw std::invalid_argument("Index input out of range");
+    throw __index_error__("Index input out of range");
 
   data_t     __c;
   index_type __i = 0;
@@ -239,18 +239,21 @@ inline tensor<_Tp> tensor<_Tp>::randomize(const shape_type& __sh, bool __bounded
 }
 
 template <class _Tp>
-inline tensor<_Tp> tensor<_Tp>::get_minor(index_type __a, index_type __b) const {}
+inline tensor<_Tp> tensor<_Tp>::get_minor(index_type __a, index_type __b) const {
+  // not implemented yet
+  return tensor();
+}
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::randomize_(const shape_type& __sh, bool __bounded) {
 #if defined(__ARM_NEON)
   return this->neon_randomize_(__sh, __bounded);
 #endif
-  if (__bounded)
-    assert(std::is_floating_point_v<value_type> && "Cannot bound non floating point data type");
+  if (__bounded && !std::is_floating_point_v<value_type>)
+    throw __type_error__("Cannot bound non floating point data type");
 
   if (__sh.empty() && this->__shape_.empty())
-    throw std::invalid_argument("randomize_ : Shape must be initialized");
+    throw __shape_error__("randomize_ : Shape must be initialized");
 
   if (this->__shape_.empty() || this->__shape_ != __sh) this->__shape_ = __sh;
 
@@ -276,11 +279,11 @@ inline const tensor<_Tp>& tensor<_Tp>::randomize_(const shape_type& __sh, bool _
 #if defined(__ARM_NEON)
   return this->neon_randomize_(__sh, __bounded);
 #endif
-  if (__bounded)
-    assert(std::is_floating_point_v<value_type> && "Cannot bound non floating point data type");
+  if (__bounded && !std::is_floating_point_v<value_type>)
+    throw __type_error__("Cannot bound non floating point data type");
 
   if (__sh.empty() && this->__shape_.empty())
-    throw std::invalid_argument("randomize_ : Shape must be initialized");
+    throw __shape_error__("randomize_ : Shape must be initialized");
 
   if (this->__shape_.empty() || this->__shape_ != __sh) this->__shape_ = __sh;
 
@@ -369,8 +372,7 @@ void _nextPermutation(std::vector<int>& __arr) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::permute_(const index_type __dim) {
-  if (__dim < 0 || __dim > this->n_dims())
-    throw std::invalid_argument("Dimension index is out of range");
+  if (__dim < 0 || __dim > this->n_dims()) throw __index_error__("Dimension index is out of range");
 
   if (__dim == 0) {
     _nextPermutation(this->__data_);
@@ -392,7 +394,7 @@ tensor<_Tp>& tensor<_Tp>::permute_(const index_type __dim) {
 template <class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::permute_(const index_type __dim) const {
   if (__dim < 0 || __dim > this->n_dims())
-    throw std::invalid_argument("Dimension index is out of range");
+    throw __index_error__("Dimension index is out of range");
 
   if (__dim == 0) {
     _nextPermutation(this->__data_);
@@ -420,10 +422,7 @@ tensor<_Tp> tensor<_Tp>::permute(const index_type __dim) const {
 
 template <class _Tp>
 const tensor<_Tp>& tensor<_Tp>::repeat_(const data_t& __d, int __dim) const {
-  if (__d.empty()) {
-    std::cerr << "Error: Cannot repeat an empty data tensor." << std::endl;
-    std::exit(EXIT_FAILURE);
-  }
+  if (__d.empty()) throw std::invalid_argument("Cannot repeat an empty data tensor.");
 
   if (this->size(0) < __d.size()) this->__data_ = data_t(__d.begin(), __d.end());
 
@@ -451,10 +450,7 @@ const tensor<_Tp>& tensor<_Tp>::repeat_(const data_t& __d, int __dim) const {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::repeat_(const data_t& __d, int __dim) {
-  if (__d.empty()) {
-    std::cerr << "Error: Cannot repeat an empty data tensor." << std::endl;
-    std::exit(EXIT_FAILURE);
-  }
+  if (__d.empty()) throw std::invalid_argument("Cannot repeat an empty data tensor.");
 
   if (this->size(0) < __d.size()) this->__data_ = data_t(__d.begin(), __d.end());
 
