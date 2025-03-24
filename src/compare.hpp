@@ -88,7 +88,8 @@ tensor<bool> tensor<_Tp>::less_equal(const tensor& __other) const {
 #if defined(__ARM_NEON)
   return this->neon_less_equal(__other);
 #endif
-  static_assert(has_less_equal_operator_v<value_type>, "Value type must have a less equal operator");
+  static_assert(has_less_equal_operator_v<value_type>,
+                "Value type must have a less equal operator");
   assert(__equal_shape(this->shape(), __other.shape()));
   std::vector<bool> __ret(this->__data_.size());
 
@@ -104,7 +105,8 @@ tensor<bool> tensor<_Tp>::less_equal(const value_type __val) const {
 #if defined(__ARM_NEON)
   return this->neon_less_equal(__val);
 #endif
-  static_assert(has_less_equal_operator_v<value_type>, "Value type must have a less equal operator");
+  static_assert(has_less_equal_operator_v<value_type>,
+                "Value type must have a less equal operator");
   std::vector<bool> __ret(this->__data_.size());
 
 #pragma omp parallel
