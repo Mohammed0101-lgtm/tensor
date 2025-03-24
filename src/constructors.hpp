@@ -30,6 +30,7 @@ tensor<_Tp>::tensor(const shape_type& __sh, std::initializer_list<value_type> in
     : __shape_(__sh), __device_(__d) {
   if (static_cast<index_type>(init_list.size()) != this->__computeSize(__sh))
     throw std::invalid_argument("Initializer list size must match the tensor size");
+
   this->__data_ = data_t(init_list);
   this->__compute_strides();
 }
