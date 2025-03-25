@@ -4,8 +4,8 @@
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type __val) {
-  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error("Cannot perform logical OR on non-integral and non-boolean values");
+  if (!std::is_integral_v<value_type>)
+    throw __type_error__("Cannot perform logical OR on non-integral values");
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
@@ -38,9 +38,8 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type __val) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const value_type __val) {
-  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error(
-        "Cannot get the element wise xor of non-integral and non-boolean value");
+  if (!std::is_integral_v<value_type>)
+    throw __type_error__("Cannot get the element wise xor of non-integral and non-boolean value");
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
@@ -73,9 +72,8 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const value_type __val) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type __val) {
-  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error(
-        "Cannot get the element wise and of non-integral and non-boolean value");
+  if (!std::is_integral_v<value_type>)
+    throw __type_error__("Cannot get the element wise and of non-integral and non-boolean value");
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
@@ -108,9 +106,8 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type __val) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const tensor& __other) {
-  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error(
-        "Cannot get the element wise not of non-integral and non-boolean value");
+  if (!std::is_integral_v<value_type>)
+    throw __type_error__("Cannot get the element wise not of non-integral values");
 
   assert(__equal_shape(this->shape(), __other.shape()));
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -143,8 +140,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const tensor& __other) {
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const tensor& __other) {
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error(
-        "Cannot get the element wise xor of non-integral and non-boolean value");
+    throw __type_error__("Cannot get the element wise xor of non-integral and non-boolean value");
 
   assert(__equal_shape(this->shape(), __other.shape()));
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -177,8 +173,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const tensor& __other) {
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const tensor& __other) {
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error(
-        "Cannot get the element-wise and of non-integral and non-boolean value");
+    throw __type_error__("Cannot get the element-wise and of non-integral and non-boolean value");
 
   assert(__equal_shape(this->shape(), __other.shape()));
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
