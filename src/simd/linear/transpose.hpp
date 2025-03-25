@@ -4,8 +4,8 @@
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_transpose() const {
-  if (this->__shape_.size() != 2)
-    throw std::invalid_argument("Matrix transposition can only be done on 2D tensors");
+  if (!__equal_shape(this->__shape_, shape_type({this->__shape_[0], this->__shape_[1]})))
+    throw __shape_error__("Matrix transposition can only be done on 2D tensors");
 
   tensor           __ret({this->__shape_[1], this->__shape_[0]});
   const index_type __rows = this->__shape_[0];
