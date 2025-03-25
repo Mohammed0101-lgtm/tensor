@@ -4,7 +4,8 @@
 
 template <class _Tp>
 tensor<_s32> tensor<_Tp>::neon_int32_() const {
-  static_assert(std::is_convertible_v<value_type, _s32>);
+  if (!std::is_convertible_v<value_type, _s32>)
+    throw __type_error__("Type must be convertible to 32 bit signed int");
 
   if (this->empty()) return tensor<_s32>(this->__shape_);
 
@@ -34,7 +35,8 @@ tensor<_s32> tensor<_Tp>::neon_int32_() const {
 
 template <class _Tp>
 tensor<_u32> tensor<_Tp>::neon_uint32_() const {
-  static_assert(std::is_convertible_v<value_type, _u32>);
+  if (!std::is_convertible_v<value_type, _u32>)
+    throw __type_error__("Type must be convertible to unsigned 32 bit int");
 
   if (this->empty()) return tensor<_u32>(this->__shape_);
 
@@ -66,8 +68,8 @@ tensor<_u32> tensor<_Tp>::neon_uint32_() const {
 
 template <class _Tp>
 tensor<_f32> tensor<_Tp>::neon_float32_() const {
-  static_assert(std::is_convertible_v<value_type, _f32>,
-                "Tensor value type must be convertible to _f32.");
+  if (!std::is_convertible_v<value_type>)
+    throw __type_error__("Type must be convertible to 32 bit float");
 
   if (this->empty()) return tensor<_f32>(this->__shape_);
 
@@ -105,8 +107,8 @@ tensor<_f32> tensor<_Tp>::neon_float32_() const {
 
 template <class _Tp>
 tensor<_f64> tensor<_Tp>::neon_double_() const {
-  static_assert(std::is_convertible_v<value_type, _f64>,
-                "Tensor value type must be convertible to _f64.");
+  if (!std::is_convertible_v<value_type, _f64>)
+    throw __type_error__("Type must be convertible to 64 bit float");
 
   if (this->empty()) return tensor<_f64>(this->__shape_);
 
@@ -126,8 +128,8 @@ tensor<_f64> tensor<_Tp>::neon_double_() const {
 
 template <class _Tp>
 tensor<uint64_t> tensor<_Tp>::neon_unsigned_long_() const {
-  static_assert(std::is_convertible_v<value_type, uint64_t>,
-                "Tensor value type must be convertible to uint64_t.");
+  if (!std::is_convertible_v<value_type, uint64_t>)
+    throw __type_error__("Type must be convertible to unsigned 64 bit int");
 
   if (this->empty()) return tensor<uint64_t>(this->__shape_);
 
@@ -160,8 +162,8 @@ tensor<uint64_t> tensor<_Tp>::neon_unsigned_long_() const {
 
 template <class _Tp>
 tensor<int64_t> tensor<_Tp>::neon_long_() const {
-  static_assert(std::is_convertible_v<value_type, int64_t>,
-                "Tensor value type must be convertible to int64_t.");
+  if (!std::is_convertible_v<value_type, int64_t>)
+    throw __type_error__("Type must be convertible to 64 bit int");
 
   if (this->empty()) return tensor<int64_t>(this->__shape_);
 
