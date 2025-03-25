@@ -4,10 +4,10 @@
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_operator_plus(const tensor& __other) const {
-  static_assert(has_plus_operator_v<value_type>);
+  static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
 
-  if (__other.shape() != this->__shape_)
-    throw std::invalid_argument("Cannot add two tensors with different shapes");
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Cannot add two tensors with different shapes");
 
   data_t           __d(this->__data_.size());
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -46,7 +46,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_plus(const tensor& __other) const {
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_operator_plus(const value_type __val) const {
-  static_assert(has_plus_operator_v<value_type>);
+  static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
 
   data_t           __d(this->__data_.size());
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -88,7 +88,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_plus(const value_type __val) const {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_operator_plus_eq(const_reference __val) const {
-  static_assert(has_plus_operator_v<value_type>);
+  static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
@@ -129,10 +129,10 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_plus_eq(const_reference __val) const {
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_operator_minus(const tensor& __other) const {
-  static_assert(has_minus_operator_v<value_type>);
+  static_assert(has_minus_operator_v<value_type>, "Value type must have a minus operator");
 
-  if (__other.shape() != this->__shape_)
-    throw std::invalid_argument("Cannot add two tensors with different shapes");
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Cannot add two tensors with different shapes");
 
   data_t           __d(this->__data_.size());
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -171,7 +171,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const tensor& __other) const {
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_operator_minus(const value_type __val) const {
-  static_assert(has_minus_operator_v<value_type>);
+  static_assert(has_minus_operator_v<value_type>, "Value type must have a minus operator");
   data_t           __d(this->__data_.size());
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
@@ -212,7 +212,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const value_type __val) const {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const tensor& __other) const {
-  static_assert(has_minus_operator_v<value_type>);
+  static_assert(has_minus_operator_v<value_type>, "Value type must have a minus operator");
   assert(__equal_shape(this->shape(), __other.shape()));
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
@@ -250,7 +250,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const tensor& __other) const {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_operator_times_eq(const tensor& __other) const {
-  static_assert(has_times_operator_v<value_type>);
+  static_assert(has_times_operator_v<value_type>, "Value type must have a times operator");
   assert(__equal_shape(this->shape(), __other.shape()));
   index_type __i = 0;
 
@@ -289,7 +289,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_times_eq(const tensor& __other) const {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const_reference __val) const {
-  static_assert(has_minus_operator_v<value_type>);
+  static_assert(has_minus_operator_v<value_type>, "Value type must have a minus operator");
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
