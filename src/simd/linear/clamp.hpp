@@ -49,7 +49,8 @@ tensor<_Tp>& tensor<_Tp>::neon_clamp_(const_reference __min_val, const_reference
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_ceil_() {
-  static_assert(std::is_floating_point_v<value_type>);
+  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+
   index_type __i = 0;
 
   if constexpr (std::is_floating_point_v<value_type>) {
@@ -69,7 +70,8 @@ tensor<_Tp>& tensor<_Tp>::neon_ceil_() {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_floor_() {
-  static_assert(std::is_floating_point_v<value_type>);
+  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+
   index_type __i = 0;
 
   if constexpr (std::is_floating_point_v<value_type>) {
