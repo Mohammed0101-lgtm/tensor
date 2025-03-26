@@ -34,7 +34,7 @@ typename tensor<_Tp>::index_type tensor<_Tp>::neon_count_nonzero(index_type __di
     __c += __local_count;
   } else {
     if (__dim < 0 || __dim >= static_cast<index_type>(__shape_.size()))
-      throw std::invalid_argument("Invalid dimension provided.");
+      throw __index_error__("Invalid dimension provided.");
 
     throw std::runtime_error("Dimension-specific non-zero counting is not implemented yet.");
   }
@@ -112,7 +112,7 @@ tensor<_Tp>& tensor<_Tp>::neon_randomize_(const shape_type& __sh, bool __bounded
     assert(std::is_floating_point_v<value_type> && "Cannot bound non floating point data type");
 
   if (__sh.empty() && this->__shape_.empty())
-    throw std::invalid_argument("randomize_ : Shape must be initialized");
+    throw __shape_error__("randomize_ : Shape must be initialized");
 
   if (this->__shape_.empty() || this->__shape_ != __sh) this->__shape_ = __sh;
 
