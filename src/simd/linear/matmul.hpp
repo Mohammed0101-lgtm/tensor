@@ -7,13 +7,17 @@ tensor<_Tp> tensor<_Tp>::neon_matmul(const tensor& __other) const {
   static_assert(has_times_operator_v<value_type>, "Value type must have a times operator");
   static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
 
-  if (this->__shape_.size() != 2 || __other.shape().size() != 2)
-    throw std::invalid_argument("matmul is only supported for 2D tensors");
+  if (this->__shape_.size() < 2 || __other.shape().size() < 2)
+    throw __shape_error__("matmul is only supported for 2D tensors");
+
+  if (!__equal_shape(this->__shape_, shape_type({this->__shape_[0], this->__shape_[1]})) ||
+      !__equal_shape(__other.shape(), shape_type({__other.shape()[0], __other.shape()[1]})))
+    throw __shape_error__("matmul is only supported for 2D tensors");
 
   if (this->__shape_[1] != __other.shape()[0]) {
     if (this->__shape_[0] == __other.shape()[1]) return __other.matmul(*this);
 
-    throw std::invalid_argument(
+    throw __shape_error__(
         "Shape mismatch for matrix multiplication: "
         "this shape: [" +
         std::to_string(this->__shape_[0]) + ", " + std::to_string(this->__shape_[1]) +
