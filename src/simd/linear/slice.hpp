@@ -6,7 +6,7 @@ template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_slice(index_type __dim, std::optional<index_type> __start,
                                     std::optional<index_type> __end, index_type __step) const {
   if (__dim < 0 || __dim >= static_cast<index_type>(this->__shape_.size()))
-    throw std::out_of_range("Dimension out of range.");
+    throw __index_error__("Dimension out of range.");
 
   if (__step == 0) throw std::invalid_argument("Step cannot be zero.");
 
