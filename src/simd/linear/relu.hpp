@@ -6,7 +6,7 @@ template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_relu_() {
   return neon_clamp_min_(value_type(0));
 }
-
+/*
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_clipped_relu_(const value_type __clip_limit) {
   if constexpr (std::is_unsigned_v<value_type>) return *this;
@@ -38,6 +38,16 @@ tensor<_Tp>& tensor<_Tp>::neon_clipped_relu_(const value_type __clip_limit) {
 #pragma omp parallel
   for (; __i < __s; ++__i)
     this->__data_[__i] = std::min(std::max(this->__data_[__i], value_type(0)), __clip_limit);
+
+  return *this;
+}
+*/
+template <class _Tp>
+tensor<_Tp>& tensor<_Tp>::neon_clipped_relu_(const value_type __clip_limit) {
+  if constexpr (std::is_unsigned_v<value_type>) return *this;
+
+  this->neon_clamp_(value_type(0), std::numeric_limits<value_type>::max());
+  this->neon_clamp_(std::numeric_limits<value_type>::lowest(), __clip_limit);
 
   return *this;
 }
