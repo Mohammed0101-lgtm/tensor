@@ -1497,6 +1497,12 @@ class tensor {
   tensor<bool>       neon_equal(const value_type __val) const;
   tensor<bool>       neon_less_equal(const tensor& __other) const;
   tensor<bool>       neon_less_equal(const value_type __val) const;
+  tensor<bool>       neon_less(const value_type __val) const;
+  tensor<bool>       neon_less(const tensor& __other) const;
+  tensor<bool>       neon_greater(const value_type __val) const;
+  tensor<bool>       neon_greater(const tensor& __other) const;
+  tensor<bool>       neon_greater_equal(const value_type __val) const;
+  tensor<bool>       neon_greater_equal(const tensor& __other) const;
   tensor<index_type> neon_argsort(index_type __d, bool __ascending) const;
   tensor<index_type> neon_argmax_(index_type __dim) const;
   index_type         neon_count_nonzero(index_type __dim) const;
