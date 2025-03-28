@@ -4,6 +4,8 @@
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_clamp_(const_reference __min_val, const_reference __max_val) {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
