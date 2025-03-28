@@ -4,6 +4,8 @@
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_matmul(const tensor& __other) const {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   static_assert(has_times_operator_v<value_type>, "Value type must have a times operator");
   static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
 
