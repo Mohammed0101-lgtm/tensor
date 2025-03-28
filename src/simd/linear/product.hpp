@@ -4,6 +4,8 @@
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_cross_product(const tensor& __other) const {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   if (this->empty() || __other.empty())
     throw std::invalid_argument("Cannot cross product an empty vector");
 
@@ -47,6 +49,8 @@ tensor<_Tp> tensor<_Tp>::neon_cross_product(const tensor& __other) const {
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_dot(const tensor& __other) const {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   if (this->empty() || __other.empty())
     throw std::invalid_argument("Cannot dot product an empty vector");
 
