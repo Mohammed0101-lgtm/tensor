@@ -5,6 +5,8 @@
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_absolute(const tensor& __tensor) const {
+  if (std::is_unsigned_v<value_type>) return *this;
+
   index_type __s = __tensor.storage().size();
   data_t     __a;
   __a.reserve(__s);
