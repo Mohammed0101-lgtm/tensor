@@ -4,6 +4,8 @@
 
 template <class _Tp>
 typename tensor<_Tp>::index_type tensor<_Tp>::neon_count_nonzero(index_type __dim) const {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   index_type __c           = 0;
   index_type __local_count = 0;
   index_type __i           = 0;
@@ -44,6 +46,8 @@ typename tensor<_Tp>::index_type tensor<_Tp>::neon_count_nonzero(index_type __di
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_zeros_(shape_type __sh) {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   if (__sh.empty())
     __sh = this->__shape_;
   else
@@ -73,6 +77,8 @@ tensor<_Tp>& tensor<_Tp>::neon_zeros_(shape_type __sh) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_ones_(shape_type __sh) {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   if (__sh.empty())
     __sh = this->__shape_;
   else
@@ -108,6 +114,8 @@ tensor<_Tp>& tensor<_Tp>::neon_ones_(shape_type __sh) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_randomize_(const shape_type& __sh, bool __bounded) {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   if (__bounded)
     assert(std::is_floating_point_v<value_type> && "Cannot bound non floating point data type");
 
@@ -174,6 +182,8 @@ tensor<_Tp>& tensor<_Tp>::neon_randomize_(const shape_type& __sh, bool __bounded
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_negative_() {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
