@@ -68,7 +68,7 @@ tensor<_u32> tensor<_Tp>::neon_uint32_() const {
 
 template <class _Tp>
 tensor<_f32> tensor<_Tp>::neon_float32_() const {
-  if (!std::is_convertible_v<value_type>)
+  if (!std::is_convertible_v<value_type, _f32>)
     throw __type_error__("Type must be convertible to 32 bit float");
 
   if (this->empty()) return tensor<_f32>(this->__shape_);
