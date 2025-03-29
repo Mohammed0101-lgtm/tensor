@@ -18,7 +18,7 @@
 #include "compare.hpp"
 #include "constructors.hpp"
 #include "data.hpp"
-#include "get.hpp"
+#include "getters.hpp"
 #include "linear.hpp"
 #include "linear/arg.hpp"
 #include "linear/clamp.hpp"
