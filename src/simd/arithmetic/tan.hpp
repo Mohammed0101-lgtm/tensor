@@ -4,6 +4,8 @@
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_tan_() {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   index_type __i        = 0;
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
@@ -59,6 +61,8 @@ tensor<_Tp>& tensor<_Tp>::neon_tan_() {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_tanh_() {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   index_type __i = 0;
 
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -115,6 +119,8 @@ tensor<_Tp>& tensor<_Tp>::neon_tanh_() {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_atan_() {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   index_type __i        = 0;
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
@@ -170,6 +176,8 @@ tensor<_Tp>& tensor<_Tp>::neon_atan_() {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_atanh_() {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   index_type __i        = 0;
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
