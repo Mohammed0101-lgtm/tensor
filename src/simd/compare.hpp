@@ -4,10 +4,11 @@
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::neon_equal(const tensor& __other) const {
-  if constexpr (!std::is_arithmetic_v<value_type>)
-    throw std::runtime_error("Cannot compare non-numeric tensor types");
+  static_assert(has_equal_operator_v<value_type>, "Value type must have equal to operator");
 
-  assert(__equal_shape(this->shape(), __other.shape()) && "equal : tensor shapes must match");
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
+
   std::vector<bool> __ret(this->__data_.size());
   const index_type  __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type        __i        = 0;
@@ -48,7 +49,7 @@ tensor<bool> tensor<_Tp>::neon_equal(const tensor& __other) const {
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::neon_equal(const value_type __val) const {
-  static_assert(std::is_arithmetic_v<value_type>, "Cannot compare non-numeric value");
+  static_assert(has_equal_operator_v<value_type>, "Value type must have equal to operator");
 
   std::vector<bool> __ret(this->__data_.size());
   index_type        __i        = 0;
@@ -98,10 +99,11 @@ tensor<bool> tensor<_Tp>::neon_equal(const value_type __val) const {
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::neon_less_equal(const tensor& __other) const {
-  if (!std::is_arithmetic_v<value_type>)
-    throw std::runtime_error("Cannot compare non-numeric values");
+  static_assert(has_less_operator_v<value_type>, "Value type must have a less than operator");
 
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
+
   std::vector<_u32> __ret(this->__data_.size());
   size_t            __vs = this->__data_.size() / _ARM64_REG_WIDTH * _ARM64_REG_WIDTH;
   index_type        __i  = 0;
@@ -143,8 +145,8 @@ tensor<bool> tensor<_Tp>::neon_less_equal(const tensor& __other) const {
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::neon_less_equal(const value_type __val) const {
-  if (!std::is_integral_v<value_type> && !std::is_scalar_v<value_type>)
-    throw std::runtime_error("Cannot compare non-integral or scalar value");
+  static_assert(has_less_equal_operator_v<value_type>,
+                "Value type must have a less than or equal operator");
 
   std::vector<_u32> __ret(this->__data_.size());
   index_type        __i = 0;
