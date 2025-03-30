@@ -4,6 +4,8 @@
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_bitwise_right_shift_(const int __amount) {
+  if (!std::is_integral_v<value_type>) throw __type_error__("Type must be integral");
+
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
@@ -34,6 +36,8 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_right_shift_(const int __amount) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_bitwise_left_shift_(const int __amount) {
+  if (!std::is_integral_v<value_type>) throw __type_error__("Type must be integral");
+
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
@@ -64,8 +68,8 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_left_shift_(const int __amount) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_bitwise_or_(const value_type __val) {
-  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
+  if (!std::is_integral_v<value_type>)
+    throw __type_error__("Cannot perform a bitwise OR on non-integral values");
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
@@ -95,8 +99,8 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_or_(const value_type __val) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_bitwise_xor_(const value_type __val) {
-  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
+  if (!std::is_integral_v<value_type>)
+    throw __type_error__("Cannot perform a bitwise XOR on non-integral values");
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
@@ -127,7 +131,7 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_xor_(const value_type __val) {
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_bitwise_not_() {
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error("Cannot perform a bitwise not on non integral or boolean value");
+    throw __type_error__("Cannot perform a bitwise not on non-integral value");
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
@@ -155,8 +159,8 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_not_() {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_bitwise_and_(const value_type __val) {
-  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
+  if (!std::is_integral_v<value_type>)
+    throw __type_error__("Cannot perform a bitwise AND on non-integral values");
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
@@ -186,10 +190,12 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_and_(const value_type __val) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_bitwise_and_(const tensor& __other) {
-  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error("Cannot perform a bitwise AND on non-integral or non-boolean values");
+  if (!std::is_integral_v<value_type>)
+    throw __type_error__("Cannot perform a bitwise AND on non-integral values");
 
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
+
   const size_t __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type   __i        = 0;
 
@@ -218,10 +224,12 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_and_(const tensor& __other) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_bitwise_or_(const tensor& __other) {
-  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error("Cannot perform a bitwise OR on non-integral or non-boolean values");
+  if (!std::is_integral_v<value_type>)
+    throw __type_error__("Cannot perform a bitwise OR on non-integral values");
 
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
+
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
@@ -250,10 +258,12 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_or_(const tensor& __other) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_bitwise_xor_(const tensor& __other) {
-  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error("Cannot perform a bitwise XOR on non-integral or non-boolean values");
+  if (!std::is_integral_v<value_type>)
+    throw __type_error__("Cannot perform a bitwise XOR on non-integral values");
 
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
+
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
