@@ -393,8 +393,7 @@ tensor<_Tp>& tensor<_Tp>::permute_(const index_type __dim) {
 
 template <class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::permute_(const index_type __dim) const {
-  if (__dim < 0 || __dim > this->n_dims())
-    throw __index_error__("Dimension index is out of range");
+  if (__dim < 0 || __dim > this->n_dims()) throw __index_error__("Dimension index is out of range");
 
   if (__dim == 0) {
     _nextPermutation(this->__data_);
@@ -544,7 +543,8 @@ tensor<_Tp> tensor<_Tp>::any() const {
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::gcd(const tensor& __other) const {
-  assert(__equal_shape(this->shape(), __other.shape()));
+    if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
 
   tensor     __ret = this->clone();
   index_type __i   = 0;

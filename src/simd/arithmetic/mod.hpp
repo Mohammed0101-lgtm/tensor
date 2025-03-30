@@ -31,8 +31,8 @@ tensor<_Tp>& tensor<_Tp>::neon_fmod_(const value_type __val) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_fmod_(const tensor& __other) {
-  if (this->__shape_ != __other.shape() || this->__data_.size() != __other.size(0))
-    throw std::invalid_argument("Cannot divide two tensors of different shapes : fmax");
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Cannot divide two tensors of different shapes : fmax");
 
   index_type __i = 0;
 

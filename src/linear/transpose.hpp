@@ -5,7 +5,7 @@
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::transpose() const {
   if (this->__shape_.size() != 2)
-    throw std::invalid_argument("Matrix transposition can only be done on 2D tensors");
+    throw __shape_error__("Matrix transposition can only be done on 2D tensors");
 
   tensor           __ret({this->__shape_[1], this->__shape_[0]});
   const index_type __rows = this->__shape_[0];
@@ -51,13 +51,13 @@ __global__ void transpose_kernel(_Tp* __input, _Tp* __output, int __rows, int __
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::transpose_() {
   if (this->__shape_.size() != 2)
-    throw std::runtime_error("Transpose operation is only valid for 2D tensors");
+    throw __shape_error__("Transpose operation is only valid for 2D tensors");
 
   const index_type __rows = this->__shape_[0];
   const index_type __cols = this->__shape_[1];
 
   if (__rows != __cols)
-    throw std::runtime_error("In-place transpose is only supported for square tensors");
+    throw __shape_error__("In-place transpose is only supported for square tensors");
 
   for (index_type __i = 0; __i < __rows; ++__i)
     for (index_type __j = __i + 1; __j < __cols; ++__j)

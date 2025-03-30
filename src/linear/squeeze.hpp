@@ -5,7 +5,7 @@
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::unsqueeze(index_type __dim) const {
   if (__dim < 0 || __dim > static_cast<index_type>(this->__shape_.size()))
-    throw std::out_of_range("Dimension out of range in unsqueeze");
+    throw __index_error__("Dimension out of range in unsqueeze");
 
   shape_type __s = this->__shape_;
   __s.insert(__s.begin() + __dim, 1);
@@ -20,7 +20,7 @@ tensor<_Tp> tensor<_Tp>::unsqueeze(index_type __dim) const {
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::unsqueeze_(index_type __dim) {
   if (__dim < 0 || __dim > static_cast<index_type>(this->__shape_.size()))
-    throw std::out_of_range("Dimension out of range in unsqueeze");
+    throw __index_error__("Dimension out of range in unsqueeze");
 
   this->__shape_.insert(this->__shape_.begin() + __dim, 1);
 
@@ -30,7 +30,7 @@ tensor<_Tp>& tensor<_Tp>::unsqueeze_(index_type __dim) {
 template <class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::unsqueeze_(index_type __dim) const {
   if (__dim < 0 || __dim > static_cast<index_type>(this->__shape_.size()))
-    throw std::out_of_range("Dimension out of range in unsqueeze");
+    throw __index_error__("Dimension out of range in unsqueeze");
 
   this->__shape_.insert(this->__shape_.begin() + __dim, 1);
 

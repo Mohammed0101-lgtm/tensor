@@ -5,6 +5,7 @@
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_abs_() {
   index_type __i = 0;
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
   if (std::is_unsigned_v<value_type>) return *this;
 

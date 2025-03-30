@@ -7,6 +7,7 @@ tensor<_Tp>& tensor<_Tp>::sqrt_() {
 #if defined(__ARM_NEON)
   return this->neon_sqrt_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -20,6 +21,7 @@ inline const tensor<_Tp>& tensor<_Tp>::sqrt_() const {
 #if defined(__ARM_NEON)
   return this->neon_sqrt_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)

@@ -8,7 +8,7 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type __dim) 
   return this->neon_argmax_(__dim);
 #endif
   if (__dim < 0 || __dim >= this->__shape_.size())
-    throw std::out_of_range("Dimension out of range in argmax");
+    throw __index_error__("Dimension out of range in argmax");
 
   tensor<index_type> __ret;
   shape_type         __ret_sh = this->__shape_;
@@ -52,7 +52,7 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type __dim) const {
   return this->neon_argmax(__dim);
 #endif
   if (__dim < 0 || __dim >= this->__shape_.size())
-    throw std::out_of_range("Dimension out of range in argmax");
+    throw __index_error__("Dimension out of range in argmax");
 
   tensor     __ret;
   shape_type __ret_sh = this->__shape_;
@@ -97,7 +97,7 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argsort(index_type __d,
   index_type __adjusted = (__d < 0) ? __d + this->__data_.size() : __d;
 
   if (__adjusted != 0)
-    throw std::out_of_range("Invalid dimension for argsort: only 1D tensors are supported");
+    throw __index_error__("Invalid dimension for argsort: only 1D tensors are supported");
 
   index_type __size = static_cast<index_type>(this->__data_.size());
   shape_type __indices(__size);

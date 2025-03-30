@@ -8,7 +8,7 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
   return this->neon_sum(__axis);
 #endif
   if (__axis < 0 || __axis >= static_cast<index_type>(this->__shape_.size()))
-    throw std::invalid_argument("Invalid axis for sum");
+    throw __index_error__("Invalid axis for sum");
 
   shape_type __ret_sh = this->__shape_;
   __ret_sh[__axis]    = 1;

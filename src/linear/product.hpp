@@ -8,7 +8,7 @@ tensor<_Tp> tensor<_Tp>::cross_product(const tensor& __other) const {
     throw std::invalid_argument("Cannot cross product an empty vector");
 
   if (this->shape() != std::vector<int>{3} || __other.shape() != std::vector<int>{3})
-    throw std::invalid_argument("Cross product can only be performed on 3-element vectors");
+    throw std::logic_error("Cross product can only be performed on 3-element vectors");
 
   tensor __ret({3});
 
@@ -72,7 +72,7 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& __other) const {
 
   if (this->__shape_.size() == 1 && __other.shape().size() == 1) {
     if (this->__shape_[0] != __other.shape()[0])
-      throw std::invalid_argument("Vectors must have the same size for dot product");
+      throw __shape_error__("Vectors must have the same size for dot product");
 
     const_pointer __this_data  = this->__data_.data();
     const_pointer __other_data = __other.storage().data();
@@ -105,7 +105,7 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_type __dim) const {
     return __self(__ret, {__flat.size()});
   } else {
     if (__dim < 0 || __dim >= static_cast<index_type>(this->__shape_.size()))
-      throw std::invalid_argument("Invalid dimension provided.");
+      throw __index_error__("Invalid dimension provided for cumprod.");
 
     data_t __ret(this->__data_);
     // TODO : compute_outer_size() implementation

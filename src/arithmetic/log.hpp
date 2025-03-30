@@ -7,6 +7,7 @@ tensor<_Tp>& tensor<_Tp>::log_() {
 #if defined(__ARM_NEON)
   return this->neon_log_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -20,6 +21,7 @@ inline const tensor<_Tp>& tensor<_Tp>::log_() const {
 #if defined(__ARM_NEON)
   return this->neon_log_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -40,6 +42,7 @@ tensor<_Tp>& tensor<_Tp>::log10_() {
 #if defined(__ARM_NEON)
   return this->neon_log10_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -53,6 +56,7 @@ inline const tensor<_Tp>& tensor<_Tp>::log10_() const {
 #if defined(__ARM_NEON)
   return this->neon_log10_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -73,6 +77,7 @@ tensor<_Tp>& tensor<_Tp>::log2_() {
 #if defined(__ARM_NEON)
   return this->neon_log2_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -86,6 +91,7 @@ inline const tensor<_Tp>& tensor<_Tp>::log2_() const {
 #if defined(__ARM_NEON)
   return this->neon_log2_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)

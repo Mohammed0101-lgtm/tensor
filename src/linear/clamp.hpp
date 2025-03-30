@@ -21,7 +21,6 @@ tensor<_Tp>& tensor<_Tp>::clamp_(const_reference __min_val, const_reference __ma
 template <class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::clamp_(const_reference __min_val,
                                               const_reference __max_val) const {
-
 #if defined(__ARM_NEON)
   return this->neon_clamp_(__min_val, __max_val);
 #endif
@@ -54,7 +53,8 @@ tensor<_Tp>& tensor<_Tp>::floor_() {
 #if defined(__ARM_NEON)
   return this->neon_floor_();
 #endif
-  static_assert(std::is_floating_point_v<value_type>);
+  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+
   index_type __i = 0;
 #pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
@@ -68,7 +68,8 @@ inline const tensor<_Tp>& tensor<_Tp>::floor_() const {
 #if defined(__ARM_NEON)
   return this->neon_floor_();
 #endif
-  static_assert(std::is_floating_point_v<value_type>);
+  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+
   index_type __i = 0;
 #pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
@@ -82,7 +83,8 @@ tensor<_Tp>& tensor<_Tp>::ceil_() {
 #if defined(__ARM_NEON)
   return this->neon_ceil_();
 #endif
-  static_assert(std::is_floating_point_v<value_type>);
+  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+
   index_type __i = 0;
 #pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)
@@ -96,7 +98,8 @@ inline const tensor<_Tp>& tensor<_Tp>::ceil_() const {
 #if defined(__ARM_NEON)
   return this->neon_ceil_();
 #endif
-  static_assert(std::is_floating_point_v<value_type>);
+  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+
   index_type __i = 0;
 #pragma omp parallel
   for (; __i < this->__data_.size(); ++__i)

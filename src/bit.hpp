@@ -221,7 +221,8 @@ tensor<_Tp>& tensor<_Tp>::bitwise_and_(const tensor& __other) {
   if (!std::is_integral_v<value_type>)
     throw __type_error__("Cannot perform a bitwise AND on non-integral values");
 
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensor shapes must be equal");
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] &= __other[__i];
 
@@ -236,7 +237,8 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_and_(const tensor& __other) const
   if (!std::is_integral_v<value_type>)
     throw __type_error__("Cannot perform a bitwise AND on non-integral values");
 
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] &= __other[__i];
 
@@ -265,7 +267,8 @@ tensor<_Tp>& tensor<_Tp>::bitwise_or_(const tensor& __other) {
   if (!std::is_integral_v<value_type>)
     throw __type_error__("Cannot perform a bitwise OR on non-integral values");
 
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __other[__i];
 
@@ -280,7 +283,8 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_or_(const tensor& __other) const 
   if (!std::is_integral_v<value_type>)
     throw __type_error__("Cannot perform a bitwise OR on non-integral values");
 
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] |= __other[__i];
 
@@ -295,7 +299,8 @@ tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const tensor& __other) {
   if (!std::is_integral_v<value_type>)
     throw __type_error__("Cannot perform a bitwise XOR on non-integral values");
 
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] ^= __other[__i];
 
@@ -310,7 +315,8 @@ inline const tensor<_Tp>& tensor<_Tp>::bitwise_xor_(const tensor& __other) const
   if (!std::is_integral_v<value_type>)
     throw __type_error__("Cannot perform a bitwise XOR on non-integral values");
 
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] ^= __other[__i];
 
@@ -330,7 +336,8 @@ inline const tensor<_Tp>& tensor<_Tp>::fill_(const value_type __val) const {
 
 template <class _Tp>
 inline tensor<_Tp>& tensor<_Tp>::fill_(const tensor& __other) {
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] = __other[__i];

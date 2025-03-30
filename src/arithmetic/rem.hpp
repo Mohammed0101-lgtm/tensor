@@ -37,7 +37,9 @@ inline const tensor<_Tp>& tensor<_Tp>::remainder_(const value_type __val) const 
 template <class _Tp>
 inline tensor<_Tp>& tensor<_Tp>::remainder_(const tensor& __other) {
   assert(__other.count_nonzero() == __other.size(0) && "Remainder by zero is undefined");
-  assert(__equal_shape(this->shape(), __other.shape()));
+
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] %= __other[__i];
@@ -47,7 +49,9 @@ inline tensor<_Tp>& tensor<_Tp>::remainder_(const tensor& __other) {
 template <class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::remainder_(const tensor& __other) const {
   assert(__other.count_nonzero() == __other.size(0) && "Remainder by zero is undefined");
-  assert(__equal_shape(this->shape(), __other.shape()));
+
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] %= __other[__i];

@@ -21,7 +21,10 @@ tensor<_Tp>& tensor<_Tp>::dist_(const tensor& __other) {
 #if defined(__ARM_NEON)
   return this->neon_dist_(__other);
 #endif
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -36,6 +39,7 @@ inline const tensor<_Tp>& tensor<_Tp>::dist_(const tensor& __other) const {
 #if defined(__ARM_NEON)
   return this->neon_dist_(__other);
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -50,6 +54,7 @@ inline const tensor<_Tp>& tensor<_Tp>::dist_(const value_type __val) const {
 #if defined(__ARM_NEON)
   return this->neon_dist_(__val);
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -64,6 +69,7 @@ tensor<_Tp>& tensor<_Tp>::dist_(const value_type __val) {
 #if defined(__ARM_NEON)
   return this->neon_dist_(__val);
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)

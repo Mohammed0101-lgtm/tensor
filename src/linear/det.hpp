@@ -4,7 +4,7 @@
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::det() const {
-  if (this->__shape_.size() < 2) throw std::logic_error("det: tensor must be at least 2D");
+  if (this->__shape_.size() < 2) throw __shape_error__("det: tensor must be at least 2D");
 
   index_type __h, __w;
   if (this->__shape_.size() == 2) {
@@ -26,7 +26,7 @@ tensor<_Tp> tensor<_Tp>::det() const {
     }
   }
 
-  if (__h != __w) throw std::invalid_argument("det: tensor must be a square matrix (n x n)");
+  if (__h != __w) throw __shape_error__("det: tensor must be a square matrix (n x n)");
 
   index_type __n = __h;
 

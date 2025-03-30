@@ -4,6 +4,8 @@
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_fmax_(const value_type __v) {
+  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+
   index_type __i = 0;
 
   if constexpr (std::is_floating_point_v<value_type>) {
@@ -25,7 +27,11 @@ tensor<_Tp>& tensor<_Tp>::neon_fmax_(const value_type __v) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_fmax_(const tensor& __other) {
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
+
   index_type __i = 0;
 
   if constexpr (std::is_floating_point_v<value_type>) {
@@ -48,7 +54,9 @@ tensor<_Tp>& tensor<_Tp>::neon_fmax_(const tensor& __other) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_maximum_(const tensor& __other) {
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
+
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 

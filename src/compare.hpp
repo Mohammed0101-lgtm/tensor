@@ -5,9 +5,14 @@
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::not_equal(const tensor& __other) const {
+#if defined(__ARM_NEON)
+  return !(this->neon_equal(__other));
+#endif
   static_assert(has_not_equal_operator_v<value_type>, "Value type must have an equal operator");
 
-  assert(__equal_shape(this->shape(), __other.shape()) && "not_equal : tensor shapes");
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
+
   std::vector<bool> __ret(this->__data_.size());
 
 #pragma omp parallel
@@ -19,6 +24,9 @@ tensor<bool> tensor<_Tp>::not_equal(const tensor& __other) const {
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::not_equal(const value_type __val) const {
+#if defined(__ARM_NEON)
+  return !(this->neon_equal(__val));
+#endif
   static_assert(has_equal_operator_v<value_type>, "Value type must have an equal operator");
   std::vector<bool> __ret(this->__data_.size());
 
@@ -31,8 +39,14 @@ tensor<bool> tensor<_Tp>::not_equal(const value_type __val) const {
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::less(const tensor& __other) const {
+#if defined(__ARM_NEON)
+
+#endif
   static_assert(has_less_operator_v<value_type>, "Value type must have a less operator");
-  assert(__equal_shape(this->shape(), __other.shape()));
+
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
+
   std::vector<bool> __ret(this->__data_.size());
 
 #pragma omp parallel
@@ -90,7 +104,10 @@ tensor<bool> tensor<_Tp>::less_equal(const tensor& __other) const {
 #endif
   static_assert(has_less_equal_operator_v<value_type>,
                 "Value type must have a less equal operator");
-  assert(__equal_shape(this->shape(), __other.shape()));
+
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
+
   std::vector<bool> __ret(this->__data_.size());
 
 #pragma omp parallel
@@ -123,5 +140,16 @@ tensor<bool> tensor<_Tp>::greater_equal(const tensor& __other) const {
 
 template <class _Tp>
 tensor<bool> tensor<_Tp>::greater_equal(const value_type __val) const {
-  return !(this->less(__val));
+#if defined(__ARM_NEON)
+  return this->neon_greater_equal(__val);
+#endif
+  static_assert(has_greater_equal_operator_v<value_type>,
+                "Value type must have a less than or equal operator");
+
+  std::vector<bool> __ret(this->__data_.size());
+
+#pragma omp parallel
+  for (index_type __i = 0; __i < this->__data_.size(); ++__i) __ret[__i] = this->__data_ >= __val;
+
+  return tensor<bool>(this->__shape_, __ret);
 }

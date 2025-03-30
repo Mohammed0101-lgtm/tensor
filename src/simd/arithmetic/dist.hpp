@@ -4,7 +4,11 @@
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_dist_(const tensor& __other) {
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
+
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
   index_type       __i        = 0;
 
@@ -40,6 +44,8 @@ tensor<_Tp>& tensor<_Tp>::neon_dist_(const tensor& __other) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_dist_(const value_type __val) {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   index_type       __i        = 0;
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 

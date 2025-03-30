@@ -4,6 +4,8 @@
 
 template <class _Tp>
 double tensor<_Tp>::mode(const index_type __dim) const {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   if (__dim >= this->n_dims() || __dim < -1)
     throw __index_error__("given dimension is out of range of the tensor dimensions");
 
@@ -29,6 +31,8 @@ double tensor<_Tp>::mode(const index_type __dim) const {
 
 template <class _Tp>
 double tensor<_Tp>::median(const index_type __dim) const {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   if (__dim >= this->n_dims() || __dim < -1)
     throw __index_error__("given dimension is out of range of the tensor dimensions");
 
@@ -54,6 +58,8 @@ double tensor<_Tp>::mean() const {
 #if defined(__ARM_NEON)
   return this->neon_mean();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   double __m = 0.0;
 
   if (this->empty()) return __m;

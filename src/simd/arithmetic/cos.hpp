@@ -4,6 +4,8 @@
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_cos_() {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   index_type __i = 0;
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -60,6 +62,8 @@ tensor<_Tp>& tensor<_Tp>::neon_cos_() {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_acos_() {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   index_type __i = 0;
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -102,6 +106,8 @@ tensor<_Tp>& tensor<_Tp>::neon_acos_() {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_cosh_() {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   index_type       __i        = 0;
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
@@ -157,6 +163,8 @@ tensor<_Tp>& tensor<_Tp>::neon_cosh_() {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_acosh_() {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   index_type       __i        = 0;
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 

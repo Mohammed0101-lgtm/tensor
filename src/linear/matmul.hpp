@@ -12,7 +12,7 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
   static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
 
   if (this->n_dims() < 2 || __other.n_dims() < 2)
-    throw std::invalid_argument("matmul is only supported for 2D tensors");
+    throw __shape_error__("matmul is only supported for 2D tensors");
 
   // Get shape of 'this' tensor
   index_type __h, __w;
@@ -58,7 +58,7 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
 
   // Validate shapes for matrix multiplication
   if (__w != __h1) {
-    throw std::invalid_argument(
+    throw __shape_error__(
         "Shape mismatch for matrix multiplication: "
         "this shape: [" +
         std::to_string(__h) + ", " + std::to_string(__w) +

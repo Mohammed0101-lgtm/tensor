@@ -4,6 +4,8 @@
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_sin_() {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   index_type __i = 0;
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -65,6 +67,8 @@ inline neon_f32 vsinq_f32(neon_f32 __x) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_sinc_() {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   index_type __i = 0;
 
   if constexpr (std::is_floating_point_v<value_type>) {
@@ -93,6 +97,8 @@ tensor<_Tp>& tensor<_Tp>::neon_sinc_() {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_sinh_() {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   index_type __i = 0;
 
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
@@ -149,6 +155,8 @@ tensor<_Tp>& tensor<_Tp>::neon_sinh_() {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_asinh_() {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   index_type __i        = 0;
   index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 
@@ -204,6 +212,8 @@ tensor<_Tp>& tensor<_Tp>::neon_asinh_() {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_asin_() {
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+
   index_type       __i        = 0;
   const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
 

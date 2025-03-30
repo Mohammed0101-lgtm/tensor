@@ -7,6 +7,7 @@ tensor<_Tp>& tensor<_Tp>::sin_() {
 #if defined(__ARM_NEON)
   return this->neon_sin_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -20,6 +21,7 @@ inline const tensor<_Tp>& tensor<_Tp>::sin_() const {
 #if defined(__ARM_NEON)
   return this->neon_sin_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -54,6 +56,7 @@ tensor<_Tp>& tensor<_Tp>::sinc_() {
 #if defined(__ARM_NEON)
   return this->neon_sinc_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -70,6 +73,7 @@ inline const tensor<_Tp>& tensor<_Tp>::sinc_() const {
 #if defined(__ARM_NEON)
   return this->neon_sinc_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -92,6 +96,7 @@ tensor<_Tp>& tensor<_Tp>::sinh_() {
 #if defined(__ARM_NEON)
   return this->neon_sinh_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -105,6 +110,7 @@ inline const tensor<_Tp>& tensor<_Tp>::sinh_() const {
 #if defined(__ARM_NEON)
   return this->neon_sinh_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -125,6 +131,7 @@ tensor<_Tp>& tensor<_Tp>::asinh_() {
 #if defined(__ARM_NEON)
   return this->neon_sinh_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -138,6 +145,7 @@ inline const tensor<_Tp>& tensor<_Tp>::asinh_() const {
 #if defined(__ARM_NEON)
   return this->neon_sinh_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -158,6 +166,7 @@ tensor<_Tp>& tensor<_Tp>::asin_() {
 #if defined(__ARM_NEON)
   return this->neon_asin_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -171,6 +180,7 @@ inline const tensor<_Tp>& tensor<_Tp>::asin_() const {
 #if defined(__ARM_NEON)
   return this->neon_asin_();
 #endif
+  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)

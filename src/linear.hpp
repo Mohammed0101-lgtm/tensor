@@ -9,7 +9,7 @@ tensor<_Tp> tensor<_Tp>::reshape(const shape_type __sh) const {
   index_type __s = this->__computeSize(__sh);
 
   if (__s != this->__data_.size())
-    throw std::invalid_argument(
+    throw __shape_error__(
         "input shape must have size of elements equal to the current number of elements in the "
         "tensor data");
 
@@ -31,7 +31,7 @@ tensor<_Tp> tensor<_Tp>::absolute(const tensor& __tensor) const {
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::pop_back() const {
   if (__equal_shape(this->__shape_, shape_type(1, this->__shape_[0])))
-    throw std::range_error("push_back is only supported for one dimensional tensors");
+    throw __index_error__("push_back is only supported for one dimensional tensors");
 
   this->__data_.pop_back();
   --(this->__shape_[0]);
@@ -45,7 +45,7 @@ tensor<_Tp> tensor<_Tp>::cat(const std::vector<tensor<_Tp>>& __others, index_typ
     index_type __i = 0;
     for (; __i < this->__shape_.size(); ++__i)
       if (__i != __dim && this->__shape_[__i] != __t.__shape_[__i])
-        throw std::invalid_argument(
+        throw __shape_error__(
             "Cannot concatenate tensors with different shapes along non-concatenation "
             "dimensions");
   }

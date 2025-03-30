@@ -4,6 +4,8 @@
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_frac_() {
+  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+
   index_type __i = 0;
 
   if constexpr (std::is_same_v<value_type, _f32>) {

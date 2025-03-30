@@ -7,8 +7,8 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type __val) {
 #if defined(__ARM_NEON)
   return this->neon_logical_or_(__val);
 #endif
-  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error("Cannot perform logical OR on non-integral and non-boolean values");
+  if (!std::is_integral_v<value_type>)
+    throw __type_error__("Cannot perform logical OR on non-integral and non-boolean values");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -23,7 +23,7 @@ inline const tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type __val) const
   return this->neon_logical_or_(__val);
 #endif
   if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error("Cannot perform logical OR on non-integral and non-boolean values");
+    throw __type_error__("Cannot perform logical OR on non-integral and non-boolean values");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -51,11 +51,11 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& __other) {
 #if defined(__ARM_NEON)
   return this->neon_logical_or_(__other);
 #endif
-  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error(
-        "Cannot get the element wise not of non-integral and non-boolean value");
+  if (!std::is_integral_v<value_type>)
+    throw __type_error__("Cannot get the element wise not of non-integral and non-boolean value");
 
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
@@ -69,11 +69,11 @@ inline const tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& __other) const 
 #if defined(__ARM_NEON)
   return this->neon_logical_or_(__other);
 #endif
-  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw std::runtime_error(
-        "Cannot get the element wise not of non-integral and non-boolean value");
+  if (!std::is_integral_v<value_type>)
+    throw __type_error__("Cannot get the element wise not of non-integral and non-boolean value");
 
-  assert(__equal_shape(this->shape(), __other.shape()));
+  if (!__equal_shape(this->shape(), __other.shape()))
+    throw __shape_error__("Tensors shapes must be equal");
 
 #pragma omp parallel
   for (index_type __i = 0; __i < this->__data_.size(); ++__i)
