@@ -442,7 +442,6 @@ TEST(TensorTest, SliceTest) {
   tensor<int> expected5({1}, {3});
   EXPECT_EQ(t1.slice(0, 1, 2, 1).slice(1, 0, 1, 1), expected5);
 
-
   tensor<int> t2({3, 3}, {1, 2, 3, 4, 5, 6, 7, 8, 9});
 
   // Slice along dim=0 (rows), selecting rows [0,2] (step=2)
@@ -461,7 +460,6 @@ TEST(TensorTest, SliceTest) {
   tensor<int> expected9({1, 3}, {7, 8, 9});
   EXPECT_EQ(t2.slice(0, 2, 3, 1), expected9);
 }
-
 
 TEST(TensorTest, RowTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
