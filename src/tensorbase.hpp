@@ -69,7 +69,7 @@ const int _ARM64_REG_WIDTH = 4;
 template <class _Tp>
 class tensor {
  public:
-  using __self                 = tensor;
+  using self                   = tensor;
   using value_type             = _Tp;
   using data_t                 = std::vector<value_type>;
   using index_type             = uint64_t;
@@ -86,36 +86,35 @@ class tensor {
   enum class Device { CPU, CUDA };
 
  private:
-  mutable data_t     __data_;
-  mutable shape_type __shape_;
-  mutable shape_type __strides_;
-  Device             __device_;
-  bool               __is_cuda_tensor_ = false;
+  mutable data_t     data_;
+  mutable shape_type shape_;
+  mutable shape_type strides_;
+  Device             device_;
+  bool               is_cuda_tensor_ = false;
 
  public:
   tensor() = default;
-  explicit tensor(const shape_type& __sh, const_reference __v, Device __d = Device::CPU);
-  explicit tensor(const shape_type& __sh, Device __d = Device::CPU);
-  explicit tensor(const shape_type& __sh, const data_t& __d, Device __dev = Device::CPU);
-  tensor(const tensor& __t);
-  tensor(tensor&& __t) noexcept;
-  tensor(const shape_type& __sh, const tensor& __other);
-  tensor(const shape_type& __sh, std::initializer_list<value_type> init_list,
-         Device __d = Device::CPU);
+  explicit tensor(const shape_type& sh, const_reference v, Device d = Device::CPU);
+  explicit tensor(const shape_type& sh, Device d = Device::CPU);
+  explicit tensor(const shape_type& sh, const data_t& d, Device dev = Device::CPU);
+  tensor(const tensor& t);
+  tensor(tensor&& t) noexcept;
+  tensor(const shape_type& sh, const tensor& other);
+  tensor(const shape_type& sh, std::initializer_list<value_type> init_list, Device d = Device::CPU);
 
  private:
-  class __destroy_tensor {
+  class destroy_tensor {
    private:
-    tensor& __tens_;
+    tensor& tens_;
 
    public:
-    explicit __destroy_tensor(tensor& __tens) : __tens_(__tens) {}
+    explicit destroy_tensor(tensor& tens) : tens_(tens) {}
 
     void operator()() {}
   };
 
  public:
-  ~tensor() { __destroy_tensor (*this)(); }
+  ~tensor() { destroy_tensor (*this)(); }
 
   data_t storage() const noexcept;
 
@@ -139,27 +138,27 @@ class tensor {
 
   size_t n_dims() const noexcept;
 
-  index_type size(const index_type __dim) const;
+  index_type size(const index_type dim) const;
 
   index_type capacity() const noexcept;
 
-  index_type count_nonzero(index_type __dim = 0) const;
+  index_type count_nonzero(index_type dim = 0) const;
 
   index_type lcm() const;
 
   index_type hash() const;
 
-  reference at(shape_type __idx);
+  reference at(shape_type idx);
 
-  reference operator[](const index_type __idx);
+  reference operator[](const index_type idx);
 
-  const_reference at(const shape_type __idx) const;
+  const_reference at(const shape_type idx) const;
 
-  const_reference operator[](const index_type __idx) const;
+  const_reference operator[](const index_type idx) const;
 
-  reference operator()(std::initializer_list<index_type> __index_list);
+  reference operator()(std::initializer_list<index_type> index_list);
 
-  const_reference operator()(std::initializer_list<index_type> __index_list) const;
+  const_reference operator()(std::initializer_list<index_type> index_list) const;
 
   bool empty() const;
 
@@ -174,195 +173,195 @@ class tensor {
 
   /// @brief Computes the logical OR operation between each element and a scalar
   /// value.
-  /// @param __val The scalar value to compute the logical OR with.
+  /// @param val The scalar value to compute the logical OR with.
   /// @return A tensor of boolean values.
-  tensor<bool> logical_or(const value_type __val) const;
+  tensor<bool> logical_or(const value_type val) const;
 
   /// @brief Computes the logical OR operation between corresponding elements of
   /// two tensors.
-  /// @param __other The tensor to compute the logical OR with.
+  /// @param other The tensor to compute the logical OR with.
   /// @return A tensor of boolean values.
-  tensor<bool> logical_or(const tensor& __other) const;
+  tensor<bool> logical_or(const tensor& other) const;
 
   /// @brief Checks if each element is less than or equal to the corresponding
   /// element in another tensor.
-  /// @param __other The tensor to compare with.
+  /// @param other The tensor to compare with.
   /// @return A tensor of boolean values.
-  tensor<bool> less_equal(const tensor& __other) const;
+  tensor<bool> less_equal(const tensor& other) const;
 
   /// @brief Checks if each element is less than or equal to a scalar value.
-  /// @param __val The scalar value to compare with.
+  /// @param val The scalar value to compare with.
   /// @return A tensor of boolean values.
-  tensor<bool> less_equal(const value_type __val) const;
+  tensor<bool> less_equal(const value_type val) const;
 
   /// @brief Checks if each element is greater than or equal to the
   /// corresponding element in another tensor.
-  /// @param __other The tensor to compare with.
+  /// @param other The tensor to compare with.
   /// @return A tensor of boolean values.
-  tensor<bool> greater_equal(const tensor& __other) const;
+  tensor<bool> greater_equal(const tensor& other) const;
 
   /// @brief Checks if each element is greater than or equal to a scalar value.
-  /// @param __val The scalar value to compare with.
+  /// @param val The scalar value to compare with.
   /// @return A tensor of boolean values.
-  tensor<bool> greater_equal(const value_type __val) const;
+  tensor<bool> greater_equal(const value_type val) const;
 
   /// @brief Checks if each element is equal to the corresponding element in
   /// another tensor.
-  /// @param __other The tensor to compare with.
+  /// @param other The tensor to compare with.
   /// @return A tensor of boolean values.
-  tensor<bool> equal(const tensor& __other) const;
+  tensor<bool> equal(const tensor& other) const;
 
   /// @brief Checks if each element is equal to a scalar value.
-  /// @param __val The scalar value to compare with.
+  /// @param val The scalar value to compare with.
   /// @return A tensor of boolean values.
-  tensor<bool> equal(const value_type __val) const;
+  tensor<bool> equal(const value_type val) const;
 
   /// @brief Checks if each element is not equal to the corresponding element in
   /// another tensor.
-  /// @param __other The tensor to compare with.
+  /// @param other The tensor to compare with.
   /// @return A tensor of boolean values.
-  tensor<bool> not_equal(const tensor& __other) const;
+  tensor<bool> not_equal(const tensor& other) const;
 
   /// @brief Checks if each element is not equal to a scalar value.
-  /// @param __val The scalar value to compare with.
+  /// @param val The scalar value to compare with.
   /// @return A tensor of boolean values.
-  tensor<bool> not_equal(const value_type __val) const;
+  tensor<bool> not_equal(const value_type val) const;
 
   /// @brief Checks if each element is less than the corresponding element in
   /// another tensor.
-  /// @param __other The tensor to compare with.
+  /// @param other The tensor to compare with.
   /// @return A tensor of boolean values.
-  tensor<bool> less(const tensor& __other) const;
+  tensor<bool> less(const tensor& other) const;
 
   /// @brief Checks if each element is less than a scalar value.
-  /// @param __val The scalar value to compare with.
+  /// @param val The scalar value to compare with.
   /// @return A tensor of boolean values.
-  tensor<bool> less(const value_type __val) const;
+  tensor<bool> less(const value_type val) const;
 
   /// @brief Checks if each element is greater than the corresponding element in
   /// another tensor.
-  /// @param __other The tensor to compare with.
+  /// @param other The tensor to compare with.
   /// @return A tensor of boolean values.
-  tensor<bool> greater(const tensor& __other) const;
+  tensor<bool> greater(const tensor& other) const;
 
   /// @brief Checks if each element is greater than a scalar value.
-  /// @param __val The scalar value to compare with.
+  /// @param val The scalar value to compare with.
   /// @return A tensor of boolean values.
-  tensor<bool> greater(const value_type __val) const;
+  tensor<bool> greater(const value_type val) const;
 
   /// @brief Compares this tensor with another tensor for equality.
-  /// @param __other The tensor to compare with.
+  /// @param other The tensor to compare with.
   /// @return True if the tensors are equal, false otherwise.
-  bool operator==(const tensor& __other) const;
+  bool operator==(const tensor& other) const;
 
   /// @brief Compares this tensor with another tensor for inequality.
-  /// @param __other The tensor to compare with.
+  /// @param other The tensor to compare with.
   /// @return True if the tensors are not equal, false otherwise.
-  bool operator!=(const tensor& __other) const;
+  bool operator!=(const tensor& other) const;
 
   /// @brief Adds the elements of another tensor to this tensor.
-  /// @param __other The tensor to add.
+  /// @param other The tensor to add.
   /// @return A new tensor containing the result of the addition.
-  tensor operator+(const tensor& __other) const;
+  tensor operator+(const tensor& other) const;
 
   /// @brief Subtracts the elements of another tensor from this tensor.
-  /// @param __other The tensor to subtract.
+  /// @param other The tensor to subtract.
   /// @return A new tensor containing the result of the subtraction.
-  tensor operator-(const tensor& __other) const;
+  tensor operator-(const tensor& other) const;
 
   /// @brief Adds a scalar value to each element of the tensor.
-  /// @param __val The scalar value to add.
+  /// @param val The scalar value to add.
   /// @return A new tensor containing the result of the addition.
-  tensor operator+(const value_type __val) const;
+  tensor operator+(const value_type val) const;
 
   /// @brief Subtracts a scalar value from each element of the tensor.
-  /// @param __val The scalar value to subtract.
+  /// @param val The scalar value to subtract.
   /// @return A new tensor containing the result of the subtraction.
-  tensor operator-(const value_type __val) const;
+  tensor operator-(const value_type val) const;
 
   /// @brief Multiply a scalar value with each element of the tensor.
-  /// @param __val The scalar value to multiply with.
+  /// @param val The scalar value to multiply with.
   /// @return A new tensor containing the result of the multiplication.
-  tensor operator*(const value_type __val) const;
+  tensor operator*(const value_type val) const;
 
   /// @brief Multiply each element of the input tensor with each element of the
   /// tensor.
-  /// @param __other The tensor to multiply with.
+  /// @param other The tensor to multiply with.
   /// @return A new tensor containing the result of the multiplication.
-  tensor operator*(const tensor& __other) const;
+  tensor operator*(const tensor& other) const;
 
   /// @brief Subtracts the elements of another tensor from this tensor and
   /// updates the current tensor.
-  /// @param __other The tensor to subtract.
+  /// @param other The tensor to subtract.
   /// @return A reference to the current tensor after the subtraction.
-  tensor& operator-=(const tensor& __other) const;
+  tensor& operator-=(const tensor& other) const;
 
   /// @brief Adds the elements of another tensor to this tensor and updates the
   /// current tensor.
-  /// @param __other The tensor to add.
+  /// @param other The tensor to add.
   /// @return A reference to the current tensor after the addition.
-  tensor& operator+=(const tensor& __other) const;
+  tensor& operator+=(const tensor& other) const;
 
   /// @brief Multiplies the elements of this tensor by the elements of another
   /// tensor and updates the current tensor.
-  /// @param __other The tensor to multiply with.
+  /// @param other The tensor to multiply with.
   /// @return A reference to the current tensor after the multiplication.
-  tensor& operator*=(const tensor& __other) const;
+  tensor& operator*=(const tensor& other) const;
 
   /// @brief Divides the elements of this tensor by the elements of another
   /// tensor and updates the current tensor.
-  /// @param __other The tensor to divide by.
+  /// @param other The tensor to divide by.
   /// @return A reference to the current tensor after the division.
-  tensor& operator/=(const tensor& __other) const;
+  tensor& operator/=(const tensor& other) const;
 
   /// @brief Adds a scalar value to each element of the tensor and updates the
   /// current tensor.
-  /// @param __val The scalar value to add.
+  /// @param val The scalar value to add.
   /// @return A reference to the current tensor after the addition.
-  tensor& operator+=(const_reference __val) const;
+  tensor& operator+=(const_reference val) const;
 
   /// @brief Subtracts a scalar value from each element of the tensor and
   /// updates the current tensor.
-  /// @param __val The scalar value to subtract.
+  /// @param val The scalar value to subtract.
   /// @return A reference to the current tensor after the subtraction.
-  tensor& operator-=(const_reference __val) const;
+  tensor& operator-=(const_reference val) const;
 
   /// @brief Divides each element of the tensor by a scalar value and updates
   /// the current tensor.
-  /// @param __val The scalar value to divide by.
+  /// @param val The scalar value to divide by.
   /// @return A reference to the current tensor after the division.
-  tensor& operator/=(const_reference __val) const;
+  tensor& operator/=(const_reference val) const;
 
   /// @brief Divides each element of the tensor by the corresponding element of
   /// the other tensor
-  /// @param __other The other tensor to divide by (should not contain a zero)
+  /// @param other The other tensor to divide by (should not contain a zero)
   /// @return A tensor the contains the result of the division
-  tensor operator/(const tensor& __other) const;
+  tensor operator/(const tensor& other) const;
 
   /// @brief Divides each element of the tensor by a scalar value
-  /// @param __val The scalar value to divide by (non zero)
+  /// @param val The scalar value to divide by (non zero)
   /// @return A tensor the contains the result of the division
-  tensor operator/(const_reference __val) const;
+  tensor operator/(const_reference val) const;
 
   /// @brief Multiplies each element of the tensor by a scalar value and updates
   /// the current tensor.
-  /// @param __val The scalar value to multiply with.
+  /// @param val The scalar value to multiply with.
   /// @return A reference to the current tensor after the multiplication.
-  tensor& operator*=(const_reference __val) const;
+  tensor& operator*=(const_reference val) const;
 
   /// @brief Assigns the values of another tensor to this tensor.
-  /// @param __other The tensor to assign from.
+  /// @param other The tensor to assign from.
   /// @return A reference to the current tensor after the assignment.
-  tensor& operator=(const tensor& __other) const;
+  tensor& operator=(const tensor& other) const;
 
   /// @brief Moves the values of another tensor to this tensor.
-  /// @param __other The tensor to move from.
+  /// @param other The tensor to move from.
   /// @return A reference to the current tensor after the move.
-  tensor& operator=(tensor&& __other) const noexcept;
+  tensor& operator=(tensor&& other) const noexcept;
 
   /// @brief Assigns the values of another tensor to this tensor (default
   /// implementation).
-  /// @param __other The tensor to assign from.
+  /// @param other The tensor to assign from.
   /// @return A reference to the current tensor after the assignment.
   tensor& operator=(const tensor&) = default;
 
@@ -370,37 +369,37 @@ class tensor {
   const tensor<bool>& operator!() const;
 
   /// @brief Extracts a slice of the tensor along the specified dimension.
-  /// @param __dim The dimension along which to slice.
-  /// @param __start The starting index of the slice (optional).
-  /// @param __end The ending index of the slice (optional).
-  /// @param __step The step size for the slice.
+  /// @param dim The dimension along which to slice.
+  /// @param start The starting index of the slice (optional).
+  /// @param end The ending index of the slice (optional).
+  /// @param step The step size for the slice.
   /// @return A new tensor containing the sliced data.
-  tensor slice(index_type __dim, std::optional<index_type> __start, std::optional<index_type> __end,
-               int64_t __step) const;
+  tensor slice(index_type dim, std::optional<index_type> start, std::optional<index_type> end,
+               int64_t step) const;
 
   /// @brief Computes the element-wise maximum between this tensor and another
   /// tensor.
-  /// @param __other The tensor to compare with.
+  /// @param other The tensor to compare with.
   /// @return A new tensor containing the element-wise maximum values.
-  tensor fmax(const tensor& __other) const;
+  tensor fmax(const tensor& other) const;
 
   /// @brief Computes the element-wise maximum between this tensor and a scalar
   /// value.
-  /// @param __val The scalar value to compare with.
+  /// @param val The scalar value to compare with.
   /// @return A new tensor containing the element-wise maximum values.
-  tensor fmax(const value_type __val) const;
+  tensor fmax(const value_type val) const;
 
   /// @brief Computes the element-wise floating-point remainder of division with
   /// another tensor.
-  /// @param __other The tensor to divide by.
+  /// @param other The tensor to divide by.
   /// @return A new tensor containing the element-wise remainders.
-  tensor fmod(const tensor& __other) const;
+  tensor fmod(const tensor& other) const;
 
   /// @brief Computes the element-wise floating-point remainder of division with
   /// a scalar value.
-  /// @param __val The scalar value to divide by.
+  /// @param val The scalar value to divide by.
   /// @return A new tensor containing the element-wise remainders.
-  tensor fmod(const value_type __val) const;
+  tensor fmod(const value_type val) const;
 
   /// @brief Computes the fractional part of each element in the tensor.
   /// @return A new tensor containing the fractional parts.
@@ -428,19 +427,19 @@ class tensor {
   tensor sqrt() const;
 
   /// @brief Computes the sum of the elements along a specified axis.
-  /// @param __axis The axis along which to compute the sum.
+  /// @param axis The axis along which to compute the sum.
   /// @return A new tensor containing the sums along the specified axis.
-  tensor sum(const index_type __axis) const;
+  tensor sum(const index_type axis) const;
 
   /// @brief Extracts a specific row from the tensor.
-  /// @param __index The index of the row to extract.
+  /// @param index The index of the row to extract.
   /// @return A new tensor containing the specified row.
-  tensor row(const index_type __index) const;
+  tensor row(const index_type index) const;
 
   /// @brief Extracts a specific column from the tensor.
-  /// @param __index The index of the column to extract.
+  /// @param index The index of the column to extract.
   /// @return A new tensor containing the specified column.
-  tensor col(const index_type __index) const;
+  tensor col(const index_type index) const;
 
   /// @brief Computes the ceiling of each element in the tensor (rounds up to
   /// the nearest integer).
@@ -458,11 +457,11 @@ class tensor {
 
   /// @brief Clamps the values of the tensor to the specified minimum and
   /// maximum range.
-  /// @param __min_val A pointer to the minimum value (optional).
-  /// @param __max_val A pointer to the maximum value (optional).
+  /// @param min_val A pointer to the minimum value (optional).
+  /// @param max_val A pointer to the maximum value (optional).
   /// @return A new tensor with values clamped to the specified range.
-  tensor clamp(const_reference __min_val = std::numeric_limits<value_type>::lowest(),
-               const_reference __max_val = std::numeric_limits<value_type>::max()) const;
+  tensor clamp(const_reference min_val = std::numeric_limits<value_type>::lowest(),
+               const_reference max_val = std::numeric_limits<value_type>::max()) const;
 
   /// @brief Computes the cosine of each element in the tensor.
   /// @return A new tensor containing the cosine of each element.
@@ -533,27 +532,27 @@ class tensor {
 
   /// @brief Performs a logical XOR operation between the tensor and another
   /// tensor.
-  /// @param __other The tensor to apply the logical XOR operation with.
+  /// @param other The tensor to apply the logical XOR operation with.
   /// @return A new tensor containing the result of the logical XOR operation.
-  tensor logical_xor(const tensor& __other) const;
+  tensor logical_xor(const tensor& other) const;
 
   /// @brief Performs a logical XOR operation between the tensor and a scalar
   /// value.
-  /// @param __val The scalar value to apply the logical XOR operation with.
+  /// @param val The scalar value to apply the logical XOR operation with.
   /// @return A new tensor containing the result of the logical XOR operation.
-  tensor logical_xor(const value_type __val) const;
+  tensor logical_xor(const value_type val) const;
 
   /// @brief Performs a logical AND operation between the tensor and another
   /// tensor.
-  /// @param __other The tensor to apply the logical AND operation with.
+  /// @param other The tensor to apply the logical AND operation with.
   /// @return A new tensor containing the result of the logical AND operation.
-  tensor logical_and(const tensor& __other) const;
+  tensor logical_and(const tensor& other) const;
 
   /// @brief Performs a logical AND operation between the tensor and a scalar
   /// value.
-  /// @param __val The scalar value to apply the logical AND operation with.
+  /// @param val The scalar value to apply the logical AND operation with.
   /// @return A new tensor containing the result of the logical AND operation.
-  tensor logical_and(const value_type __val) const;
+  tensor logical_and(const value_type val) const;
 
   /// @brief Performs a bitwise NOT operation on each element of the tensor.
   /// @return A new tensor containing the result of the bitwise NOT operation.
@@ -561,84 +560,84 @@ class tensor {
 
   /// @brief Performs a bitwise AND operation between the tensor and a scalar
   /// value.
-  /// @param __val The scalar value to apply the bitwise AND operation with.
+  /// @param val The scalar value to apply the bitwise AND operation with.
   /// @return A new tensor containing the result of the bitwise AND operation.
-  tensor bitwise_and(const value_type __val) const;
+  tensor bitwise_and(const value_type val) const;
 
   /// @brief Performs a bitwise AND operation between the tensor and another
   /// tensor.
-  /// @param __other The tensor to apply the bitwise AND operation with.
+  /// @param other The tensor to apply the bitwise AND operation with.
   /// @return A new tensor containing the result of the bitwise AND operation.
-  tensor bitwise_and(const tensor& __other) const;
+  tensor bitwise_and(const tensor& other) const;
 
   /// @brief Performs a bitwise OR operation between the tensor and a scalar
   /// value.
-  /// @param __val The scalar value to apply the bitwise OR operation with.
+  /// @param val The scalar value to apply the bitwise OR operation with.
   /// @return A new tensor containing the result of the bitwise OR operation.
-  tensor bitwise_or(const value_type __val) const;
+  tensor bitwise_or(const value_type val) const;
 
   /// @brief Performs a bitwise OR operation between the tensor and another
   /// tensor.
-  /// @param __other The tensor to apply the bitwise OR operation with.
+  /// @param other The tensor to apply the bitwise OR operation with.
   /// @return A new tensor containing the result of the bitwise OR operation.
-  tensor bitwise_or(const tensor& __other) const;
+  tensor bitwise_or(const tensor& other) const;
 
   /// @brief Performs a bitwise XOR operation between the tensor and a scalar
   /// value.
-  /// @param __val The scalar value to apply the bitwise XOR operation with.
+  /// @param val The scalar value to apply the bitwise XOR operation with.
   /// @return A new tensor containing the result of the bitwise XOR operation.
-  tensor bitwise_xor(const value_type __val) const;
+  tensor bitwise_xor(const value_type val) const;
 
   /// @brief Performs a bitwise XOR operation between the tensor and another
   /// tensor.
-  /// @param __other The tensor to apply the bitwise XOR operation with.
+  /// @param other The tensor to apply the bitwise XOR operation with.
   /// @return A new tensor containing the result of the bitwise XOR operation.
-  tensor bitwise_xor(const tensor& __other) const;
+  tensor bitwise_xor(const tensor& other) const;
 
   /// @brief Performs a bitwise left shift operation on each element of the
   /// tensor by a specified amount.
-  /// @param __amount The number of bits to shift left.
+  /// @param amount The number of bits to shift left.
   /// @return A new tensor containing the result of the bitwise left shift
   /// operation.
-  tensor bitwise_left_shift(const int __amount) const;
+  tensor bitwise_left_shift(const int amount) const;
 
   /// @brief Performs a bitwise right shift operation on each element of the
   /// tensor by a specified amount.
-  /// @param __amount The number of bits to shift right.
+  /// @param amount The number of bits to shift right.
   /// @return A new tensor containing the result of the bitwise right shift
   /// operation.
-  tensor bitwise_right_shift(const int __amount) const;
+  tensor bitwise_right_shift(const int amount) const;
 
   /// @brief Performs matrix multiplication between the tensor and another
   /// tensor.
-  /// @param __other The tensor to multiply with.
+  /// @param other The tensor to multiply with.
   /// @return A new tensor containing the result of the matrix multiplication.
-  tensor matmul(const tensor& __other) const;
+  tensor matmul(const tensor& other) const;
 
   /// @brief Reshapes the tensor to a specified shape.
-  /// @param __shape The desired shape for the tensor.
+  /// @param shape The desired shape for the tensor.
   /// @return A new tensor with the specified shape.
-  tensor reshape(const shape_type __shape) const;
+  tensor reshape(const shape_type shape) const;
 
   /// @brief Reshapes the tensor to match the shape of another tensor.
-  /// @param __other The tensor whose shape is to be matched.
+  /// @param other The tensor whose shape is to be matched.
   /// @return A new tensor reshaped to match the shape of the given tensor.
-  tensor reshape_as(const tensor& __other) const;
+  tensor reshape_as(const tensor& other) const;
 
   /// @brief Computes the cross product between the tensor and another tensor.
-  /// @param __other The tensor to compute the cross product with.
+  /// @param other The tensor to compute the cross product with.
   /// @return A new tensor containing the cross product.
-  tensor cross_product(const tensor& __other) const;
+  tensor cross_product(const tensor& other) const;
 
   /// @brief Computes the absolute value of each element in a given tensor.
-  /// @param __tensor The tensor to compute the absolute values of.
+  /// @param tensor The tensor to compute the absolute values of.
   /// @return A new tensor containing the absolute values of the input tensor.
-  tensor absolute(const tensor& __tensor) const;
+  tensor absolute(const tensor& tensor) const;
 
   /// @brief Computes the dot product between the tensor and another tensor.
-  /// @param __other The tensor to compute the dot product with.
+  /// @param other The tensor to compute the dot product with.
   /// @return A scalar tensor containing the result of the dot product.
-  tensor dot(const tensor& __other) const;
+  tensor dot(const tensor& other) const;
 
   /// @brief Applies the ReLU activation function to the tensor.
   /// @return A new tensor where negative values are replaced with zero.
@@ -649,20 +648,20 @@ class tensor {
   tensor transpose() const;
 
   /// @brief Fills the tensor with a specified scalar value.
-  /// @param __val The scalar value to fill the tensor with.
+  /// @param val The scalar value to fill the tensor with.
   /// @return A new tensor filled with the specified value.
-  tensor fill(const value_type __val) const;
+  tensor fill(const value_type val) const;
 
   /// @brief Fills the tensor with the values from another tensor.
-  /// @param __other The tensor whose values are to be used for filling.
+  /// @param other The tensor whose values are to be used for filling.
   /// @return A new tensor filled with the values from the specified tensor.
-  tensor fill(const tensor& __other) const;
+  tensor fill(const tensor& other) const;
 
   /// @brief Resizes the tensor to a specified shape, keeping its data
   /// consistent.
-  /// @param __sh The desired shape for the tensor.
+  /// @param sh The desired shape for the tensor.
   /// @return A new tensor resized to the specified shape.
-  tensor resize_as(const shape_type __sh) const;
+  tensor resize_as(const shape_type sh) const;
 
   /// @brief Checks if all elements in the tensor are non-zero.
   /// @return A scalar tensor containing true if all elements are non-zero,
@@ -693,104 +692,104 @@ class tensor {
   tensor clipped_relu() const;
 
   /// @brief Sorts the elements of the tensor along a specified dimension.
-  /// @param __dim The dimension along which to sort the tensor.
-  /// @param __descending Whether to sort in descending order (default is
+  /// @param dim The dimension along which to sort the tensor.
+  /// @param descending Whether to sort in descending order (default is
   /// false).
   /// @return A new tensor with the sorted elements.
-  tensor sort(index_type __dim, bool __descending = false) const;
+  tensor sort(index_type dim, bool descending = false) const;
 
   /// @brief Computes the remainder of division between each element and a
   /// scalar value.
-  /// @param __val The scalar value to divide by.
+  /// @param val The scalar value to divide by.
   /// @return A new tensor containing the remainders.
-  tensor remainder(const value_type __val) const;
+  tensor remainder(const value_type val) const;
 
   /// @brief Computes the remainder of division between each element of the
   /// tensor and another tensor.
-  /// @param __other The tensor to divide by.
+  /// @param other The tensor to divide by.
   /// @return A new tensor containing the remainders.
-  tensor remainder(const tensor& __other) const;
+  tensor remainder(const tensor& other) const;
 
   /// @brief Computes the element-wise maximum between the tensor and another
   /// tensor.
-  /// @param __other The tensor to compare with.
+  /// @param other The tensor to compare with.
   /// @return A new tensor containing the element-wise maximum values.
-  tensor maximum(const tensor& __other) const;
+  tensor maximum(const tensor& other) const;
 
   /// @brief Computes the element-wise maximum between the tensor and a scalar
   /// value.
-  /// @param __val The scalar value to compare with.
+  /// @param val The scalar value to compare with.
   /// @return A new tensor containing the element-wise maximum values.
-  tensor maximum(const_reference __val) const;
+  tensor maximum(const_reference val) const;
 
   /// @brief Computes the distance between the tensor and another tensor.
-  /// @param __other The tensor to compute the distance from.
+  /// @param other The tensor to compute the distance from.
   /// @return A scalar tensor containing the computed distance.
-  tensor dist(const tensor& __other) const;
+  tensor dist(const tensor& other) const;
 
   /// @brief Computes the distance between the tensor and a scalar value.
-  /// @param __val The scalar value to compute the distance from.
+  /// @param val The scalar value to compute the distance from.
   /// @return A scalar tensor containing the computed distance.
-  tensor dist(const value_type __val) const;
+  tensor dist(const value_type val) const;
 
   /// @brief Removes dimensions of size 1 from the specified axis of the tensor.
-  /// @param __dim The dimension to squeeze.
+  /// @param dim The dimension to squeeze.
   /// @return A new tensor with the specified dimension removed if its size
   /// is 1.
-  tensor squeeze(index_type __dim) const;
+  tensor squeeze(index_type dim) const;
 
   /// @brief Computes the element-wise negation of the tensor.
   /// @return A new tensor with all elements negated.
   tensor negative() const;
 
   /// @brief Repeats the tensor along specified dimensions.
-  /// @param __d A data structure specifying the number of repetitions along
+  /// @param d A data structure specifying the number of repetitions along
   /// each dimension.
   /// @return A new tensor with repeated elements along the specified
   /// dimensions.
-  tensor repeat(const data_t& __d, int __dim = 0) const;
+  tensor repeat(const data_t& d, int dim = 0) const;
 
   /// @brief Permutes the dimensions of the tensor.
-  /// @param __dim The order of dimensions for permutation.
+  /// @param dim The order of dimensions for permutation.
   /// @return A new tensor with permuted dimensions.
-  tensor permute(const index_type __dim) const;
+  tensor permute(const index_type dim) const;
 
   /// @brief Computes the log softmax along a specified dimension of the tensor.
-  /// @param __dim The dimension along which to compute the log softmax.
+  /// @param dim The dimension along which to compute the log softmax.
   /// @return A new tensor containing the log softmax values.
-  tensor log_softmax(const index_type __dim) const;
+  tensor log_softmax(const index_type dim) const;
 
   /// @brief Computes the element-wise greatest common divisor (GCD) between the
   /// tensor and another tensor.
-  /// @param __other The tensor to compute the GCD with.
+  /// @param other The tensor to compute the GCD with.
   /// @return A new tensor containing the element-wise GCD values.
-  tensor gcd(const tensor& __other) const;
+  tensor gcd(const tensor& other) const;
 
   /// @brief Computes the element-wise greatest common divisor (GCD) between the
   /// tensor and a scalar value.
-  /// @param __val The scalar value to compute the GCD with.
+  /// @param val The scalar value to compute the GCD with.
   /// @return A new tensor containing the element-wise GCD values.
-  tensor gcd(const value_type __val) const;
+  tensor gcd(const value_type val) const;
 
   /// @brief Computes the element-wise power of the tensor, raising each element
   /// to the power of the corresponding element in another tensor.
-  /// @param __other The tensor representing the exponents.
+  /// @param other The tensor representing the exponents.
   /// @return A new tensor containing the element-wise power values.
-  tensor pow(const tensor& __other) const;
+  tensor pow(const tensor& other) const;
 
   /// @brief Computes the element-wise power of the tensor, raising each element
   /// to the power of a scalar value.
-  /// @param __val The scalar exponent value.
+  /// @param val The scalar exponent value.
   /// @return A new tensor containing the element-wise power values.
-  tensor pow(const value_type __val) const;
+  tensor pow(const value_type val) const;
 
   /// @brief Computes the cumulative product of elements along a specified
   /// dimension.
-  /// @param __dim The dimension along which to compute the cumulative product.
+  /// @param dim The dimension along which to compute the cumulative product.
   /// Default is -1 (last dimension).
   /// @return A new tensor containing the cumulative product along the specified
   /// dimension.
-  tensor cumprod(index_type __dim = -1) const;
+  tensor cumprod(index_type dim = -1) const;
 
   /// @brief Concatenates the tensor with a list of other tensors along a
   /// specified dimension.
@@ -801,73 +800,73 @@ class tensor {
 
   /// @brief Finds the indices of the maximum values along a specified
   /// dimension.
-  /// @param __dim The dimension along which to compute the indices of the
+  /// @param dim The dimension along which to compute the indices of the
   /// maximum values.
   /// @return A new tensor containing the indices of the maximum values along
   /// the specified dimension.
-  tensor argmax(index_type __dim) const;
+  tensor argmax(index_type dim) const;
 
   /// @brief Adds a dimension of size 1 at the specified axis.
-  /// @param __dim The dimension where the new axis will be added.
+  /// @param dim The dimension where the new axis will be added.
   /// @return A new tensor with the added dimension.
-  tensor unsqueeze(index_type __dim) const;
+  tensor unsqueeze(index_type dim) const;
 
   /// @brief Creates a tensor filled with zeros, with the specified shape.
-  /// @param __sh The shape of the tensor to be created.
+  /// @param sh The shape of the tensor to be created.
   /// @return A new tensor filled with zeros.
-  tensor zeros(const shape_type& __sh);
+  tensor zeros(const shape_type& sh);
 
   /// @brief Creates a tensor filled with ones, with the specified shape.
-  /// @param __sh The shape of the tensor to be created.
+  /// @param sh The shape of the tensor to be created.
   /// @return A new tensor filled with ones.
-  tensor ones(const shape_type& __sh);
+  tensor ones(const shape_type& sh);
 
   /// @brief Creates a tensor filled with random values, with the specified
   /// shape.
-  /// @param __sh The shape of the tensor to be created.
-  /// @param __bounded Whether the random values should be bounded (default is
+  /// @param sh The shape of the tensor to be created.
+  /// @param bounded Whether the random values should be bounded (default is
   /// false).
   /// @return A new tensor filled with random values.
-  tensor randomize(const shape_type& __sh, bool __bounded = false);
+  tensor randomize(const shape_type& sh, bool bounded = false);
 
   /// @brief Extracts the minor matrix by removing the specified row and column.
-  /// @param __a The row index to remove.
-  /// @param __b The column index to remove.
+  /// @param a The row index to remove.
+  /// @param b The column index to remove.
   /// @return A new tensor representing the minor matrix.
-  tensor get_minor(index_type __a, index_type __b) const;
+  tensor get_minor(index_type a, index_type b) const;
 
   /// @brief Expands the tensor to match the shape of another tensor along a
   /// specified dimension.
-  /// @param __sh The target shape for expansion.
-  /// @param __dim The dimension along which the tensor will be expanded.
+  /// @param sh The target shape for expansion.
+  /// @param dim The dimension along which the tensor will be expanded.
   /// @return A new tensor expanded to the specified shape.
-  tensor expand_as(shape_type __sh, index_type __dim) const;
+  tensor expand_as(shape_type sh, index_type dim) const;
 
   /// @brief Computes the element-wise least common multiple (LCM) with another
   /// tensor.
-  /// @param __other The tensor to compute the LCM with.
+  /// @param other The tensor to compute the LCM with.
   /// @return A new tensor containing the element-wise LCM values.
-  tensor lcm(const tensor& __other) const;
+  tensor lcm(const tensor& other) const;
 
   /// @brief Computes the mean (average) of all elements in the tensor.
   /// @return The mean value of all elements in the tensor.
   double mean() const;
 
   /// @brief Computes the median of the elements along a specified dimension.
-  /// @param __dim The dimension along which to compute the median.
+  /// @param dim The dimension along which to compute the median.
   /// @return The median value of the elements along the specified dimension.
-  double median(const index_type __dim) const;
+  double median(const index_type dim) const;
 
   /// @brief Computes the mode (most frequent value) of the elements along a
   /// specified dimension.
-  /// @param __dim The dimension along which to compute the mode.
+  /// @param dim The dimension along which to compute the mode.
   /// @return The mode value of the elements along the specified dimension.
-  double mode(const index_type __dim) const;
+  double mode(const index_type dim) const;
 
   /// @brief Appends a value to the end of the tensor.
-  /// @param __v The value to be appended to the tensor.
+  /// @param v The value to be appended to the tensor.
   /// @return A reference to the tensor after the value has been appended.
-  tensor& push_back(value_type __v) const;
+  tensor& push_back(value_type v) const;
 
   /// @brief Removes the last element from the tensor.
   /// @return A reference to the tensor after the last element has been removed.
@@ -915,19 +914,19 @@ class tensor {
 
   /// @brief Computes the element-wise modulus (remainder) of each element in
   /// the tensor with another tensor, modifying the tensor in place.
-  /// @param __other The tensor to compute the modulus with.
+  /// @param other The tensor to compute the modulus with.
   /// @return A reference to the tensor after the modulus operation has been
   /// applied.
-  tensor&       fmod_(const tensor& __other);
-  const tensor& fmod_(const tensor& __other) const;
+  tensor&       fmod_(const tensor& other);
+  const tensor& fmod_(const tensor& other) const;
 
   /// @brief Computes the element-wise modulus (remainder) of each element in
   /// the tensor with a scalar value, modifying the tensor in place.
-  /// @param __val The scalar value to compute the modulus with.
+  /// @param val The scalar value to compute the modulus with.
   /// @return A reference to the tensor after the modulus operation has been
   /// applied.
-  tensor&       fmod_(const value_type __val);
-  const tensor& fmod_(const value_type __val) const;
+  tensor&       fmod_(const value_type val);
+  const tensor& fmod_(const value_type val) const;
 
   /// @brief Computes the cosine of each element in the tensor, modifying the
   /// tensor in place.
@@ -1033,23 +1032,23 @@ class tensor {
 
   /// @brief Clamps each element of the tensor to the given range [min_val,
   /// max_val], modifying the tensor in place.
-  /// @param __min_val The minimum value for clamping, or nullptr to skip the
+  /// @param min_val The minimum value for clamping, or nullptr to skip the
   /// minimum bound.
-  /// @param __max_val The maximum value for clamping, or nullptr to skip the
+  /// @param max_val The maximum value for clamping, or nullptr to skip the
   /// maximum bound.
   /// @return A reference to the tensor after the clamping has been applied.
-  tensor&       clamp_(const_reference __min_val = std::numeric_limits<value_type>::lowest(),
-                       const_reference __max_val = std::numeric_limits<value_type>::max());
-  const tensor& clamp_(const_reference __min_val = std::numeric_limits<value_type>::lowest(),
-                       const_reference __max_val = std::numeric_limits<value_type>::max()) const;
+  tensor&       clamp_(const_reference min_val = std::numeric_limits<value_type>::lowest(),
+                       const_reference max_val = std::numeric_limits<value_type>::max());
+  const tensor& clamp_(const_reference min_val = std::numeric_limits<value_type>::lowest(),
+                       const_reference max_val = std::numeric_limits<value_type>::max()) const;
 
-  tensor        clamp_min(const_reference __min_val) const;
-  tensor&       clamp_min_(const_reference __min_val);
-  const tensor& clamp_min_(const_reference __min_val) const;
+  tensor        clamp_min(const_reference min_val) const;
+  tensor&       clamp_min_(const_reference min_val);
+  const tensor& clamp_min_(const_reference min_val) const;
 
-  tensor        clamp_max(const_reference __max_val) const;
-  tensor&       clamp_max_(const_reference __max_val);
-  const tensor& clamp_max_(const_reference __max_val) const;
+  tensor        clamp_max(const_reference max_val) const;
+  tensor&       clamp_max_(const_reference max_val);
+  const tensor& clamp_max_(const_reference max_val) const;
 
   /// @brief Applies bitwise NOT operation to each element in the tensor,
   /// modifying the tensor in place.
@@ -1060,51 +1059,51 @@ class tensor {
 
   /// @brief Performs logical OR between the tensor and another tensor,
   /// modifying the tensor in place.
-  /// @param __other The tensor to perform logical OR with.
+  /// @param other The tensor to perform logical OR with.
   /// @return A reference to the tensor after the logical OR operation has been
   /// applied.
-  tensor&       logical_or_(const tensor& __other);
-  const tensor& logical_or_(const tensor& __other) const;
+  tensor&       logical_or_(const tensor& other);
+  const tensor& logical_or_(const tensor& other) const;
 
   /// @brief Performs logical OR between the tensor and a scalar value,
   /// modifying the tensor in place.
-  /// @param __val The scalar value to perform logical OR with.
+  /// @param val The scalar value to perform logical OR with.
   /// @return A reference to the tensor after the logical OR operation has been
   /// applied.
-  tensor&       logical_or_(const value_type __val);
-  const tensor& logical_or_(const value_type __val) const;
+  tensor&       logical_or_(const value_type val);
+  const tensor& logical_or_(const value_type val) const;
 
   /// @brief Performs logical XOR between the tensor and another tensor,
   /// modifying the tensor in place.
-  /// @param __other The tensor to perform logical XOR with.
+  /// @param other The tensor to perform logical XOR with.
   /// @return A reference to the tensor after the logical XOR operation has been
   /// applied.
-  tensor&       logical_xor_(const tensor& __other);
-  const tensor& logical_xor_(const tensor& __other) const;
+  tensor&       logical_xor_(const tensor& other);
+  const tensor& logical_xor_(const tensor& other) const;
 
   /// @brief Performs logical XOR between the tensor and a scalar value,
   /// modifying the tensor in place.
-  /// @param __val The scalar value to perform logical XOR with.
+  /// @param val The scalar value to perform logical XOR with.
   /// @return A reference to the tensor after the logical XOR operation has been
   /// applied.
-  tensor&       logical_xor_(const value_type __val);
-  const tensor& logical_xor_(const value_type __val) const;
+  tensor&       logical_xor_(const value_type val);
+  const tensor& logical_xor_(const value_type val) const;
 
   /// @brief Performs logical AND between the tensor and another tensor,
   /// modifying the tensor in place.
-  /// @param __other The tensor to perform logical AND with.
+  /// @param other The tensor to perform logical AND with.
   /// @return A reference to the tensor after the logical AND operation has been
   /// applied.
-  tensor&       logical_and_(const tensor& __other);
-  const tensor& logical_and_(const tensor& __other) const;
+  tensor&       logical_and_(const tensor& other);
+  const tensor& logical_and_(const tensor& other) const;
 
   /// @brief Performs logical AND between the tensor and a scalar value,
   /// modifying the tensor in place.
-  /// @param __val The scalar value to perform logical AND with.
+  /// @param val The scalar value to perform logical AND with.
   /// @return A reference to the tensor after the logical AND operation has been
   /// applied.
-  tensor&       logical_and_(const value_type __val);
-  const tensor& logical_and_(const value_type __val) const;
+  tensor&       logical_and_(const value_type val);
+  const tensor& logical_and_(const value_type val) const;
 
   /// @brief Computes the absolute value of each element in the tensor,
   /// modifying the tensor in place.
@@ -1115,26 +1114,26 @@ class tensor {
 
   /// @brief Applies the log softmax function along the specified dimension,
   /// modifying the tensor in place.
-  /// @param __dim The dimension along which the log softmax is applied.
+  /// @param dim The dimension along which the log softmax is applied.
   /// @return A reference to the tensor after the log softmax operation has been
   /// applied.
-  tensor&       log_softmax_(const index_type __dim);
-  const tensor& log_softmax_(const index_type __dim) const;
+  tensor&       log_softmax_(const index_type dim);
+  const tensor& log_softmax_(const index_type dim) const;
 
   /// @brief Permutes the dimensions of the tensor according to the specified
   /// dimension, modifying the tensor in place.
-  /// @param __dim The dimension along which the permutation is applied.
+  /// @param dim The dimension along which the permutation is applied.
   /// @return A reference to the tensor after the permutation has been applied.
-  tensor&       permute_(const index_type __dim);
-  const tensor& permute_(const index_type __dim) const;
+  tensor&       permute_(const index_type dim);
+  const tensor& permute_(const index_type dim) const;
 
   /// @brief Repeats the tensor according to the specified dimensions, modifying
   /// the tensor in place.
-  /// @param __d The dimensions to repeat the tensor along.
+  /// @param d The dimensions to repeat the tensor along.
   /// @return A reference to the tensor after the repeat operation has been
   /// applied.
-  tensor&       repeat_(const data_t& __d, int __dim = 0);
-  const tensor& repeat_(const data_t& __d, int __dim = 0) const;
+  tensor&       repeat_(const data_t& d, int dim = 0);
+  const tensor& repeat_(const data_t& d, int dim = 0) const;
 
   /// @brief Negates each element in the tensor, modifying the tensor in place.
   /// @return A reference to the tensor after the negation has been applied.
@@ -1149,91 +1148,91 @@ class tensor {
 
   /// @brief Adds an extra dimension at the specified index, modifying the
   /// tensor in place.
-  /// @param __dim The index at which to insert the new dimension.
+  /// @param dim The index at which to insert the new dimension.
   /// @return A reference to the tensor after the unsqueeze operation has been
   /// applied.
-  tensor&       unsqueeze_(index_type __dim);
-  const tensor& unsqueeze_(index_type __dim) const;
+  tensor&       unsqueeze_(index_type dim);
+  const tensor& unsqueeze_(index_type dim) const;
 
   /// @brief Removes the dimension at the specified index, modifying the tensor
   /// in place.
-  /// @param __dim The index of the dimension to squeeze.
+  /// @param dim The index of the dimension to squeeze.
   /// @return A reference to the tensor after the squeeze operation has been
   /// applied.
-  tensor&       squeeze_(index_type __dim);
-  const tensor& squeeze_(index_type __dim) const;
+  tensor&       squeeze_(index_type dim);
+  const tensor& squeeze_(index_type dim) const;
 
   /// @brief Resizes the tensor to the specified shape, modifying the tensor in
   /// place.
-  /// @param __sh The new shape to resize the tensor to.
+  /// @param sh The new shape to resize the tensor to.
   /// @return A reference to the tensor after the resize operation has been
   /// applied.
-  tensor&       resize_as_(const shape_type __sh);
-  const tensor& resize_as_(const shape_type __sh) const;
+  tensor&       resize_as_(const shape_type sh);
+  const tensor& resize_as_(const shape_type sh) const;
 
   /// @brief Computes the distance between the tensor and another tensor,
   /// modifying the tensor in place.
-  /// @param __other The tensor to compute the distance with.
+  /// @param other The tensor to compute the distance with.
   /// @return A reference to the tensor after the distance operation has been
   /// applied.
-  tensor&       dist_(const tensor& __other);
-  const tensor& dist_(const tensor& __other) const;
+  tensor&       dist_(const tensor& other);
+  const tensor& dist_(const tensor& other) const;
 
   /// @brief Computes the distance between the tensor and a scalar value,
   /// modifying the tensor in place.
-  /// @param __val The scalar value to compute the distance with.
+  /// @param val The scalar value to compute the distance with.
   /// @return A reference to the tensor after the distance operation has been
   /// applied.
-  tensor&       dist_(const value_type __val);
-  const tensor& dist_(const value_type __val) const;
+  tensor&       dist_(const value_type val);
+  const tensor& dist_(const value_type val) const;
 
   /// @brief Computes the element-wise maximum of the tensor and another tensor,
   /// modifying the tensor in place.
-  /// @param __other The tensor to compare with.
+  /// @param other The tensor to compare with.
   /// @return A reference to the tensor after the element-wise maximum operation
   /// has been applied.
-  tensor&       maximum_(const tensor& __other);
-  const tensor& maximum_(const tensor& __other) const;
+  tensor&       maximum_(const tensor& other);
+  const tensor& maximum_(const tensor& other) const;
 
   /// @brief Computes the element-wise maximum of the tensor and a scalar value,
   /// modifying the tensor in place.
-  /// @param __val The scalar value to compare with.
+  /// @param val The scalar value to compare with.
   /// @return A reference to the tensor after the element-wise maximum operation
   /// has been applied.
-  tensor&       maximum_(const value_type __val);
-  const tensor& maximum_(const value_type __val) const;
+  tensor&       maximum_(const value_type val);
+  const tensor& maximum_(const value_type val) const;
 
   /// @brief Computes the element-wise remainder of the tensor and a scalar
   /// value, modifying the tensor in place.
-  /// @param __val The scalar value to compute the remainder with.
+  /// @param val The scalar value to compute the remainder with.
   /// @return A reference to the tensor after the element-wise remainder
   /// operation has been applied.
-  tensor&       remainder_(const value_type __val);
-  const tensor& remainder_(const value_type __val) const;
+  tensor&       remainder_(const value_type val);
+  const tensor& remainder_(const value_type val) const;
 
   /// @brief Computes the element-wise remainder of the tensor and another
   /// tensor, modifying the tensor in place.
-  /// @param __other The tensor to compute the remainder with.
+  /// @param other The tensor to compute the remainder with.
   /// @return A reference to the tensor after the element-wise remainder
   /// operation has been applied.
-  tensor&       remainder_(const tensor& __other);
-  const tensor& remainder_(const tensor& __other) const;
+  tensor&       remainder_(const tensor& other);
+  const tensor& remainder_(const tensor& other) const;
 
   /// @brief Fills the tensor with the specified scalar value, modifying the
   /// tensor in place.
-  /// @param __val The scalar value to fill the tensor with.
+  /// @param val The scalar value to fill the tensor with.
   /// @return A reference to the tensor after the fill operation has been
   /// applied.
-  tensor&       fill_(const value_type __val);
-  const tensor& fill_(const value_type __val) const;
+  tensor&       fill_(const value_type val);
+  const tensor& fill_(const value_type val) const;
 
   /// @brief Fills the tensor with the values from another tensor, modifying the
   /// tensor in place.
-  /// @param __other The tensor whose values are used to fill this tensor.
+  /// @param other The tensor whose values are used to fill this tensor.
   /// @return A reference to the tensor after the fill operation has been
   /// applied.
-  tensor&       fill_(const tensor& __other);
-  const tensor& fill_(const tensor& __other) const;
+  tensor&       fill_(const tensor& other);
+  const tensor& fill_(const tensor& other) const;
 
   /// @brief Applies the element-wise sigmoid function to the tensor, modifying
   /// the tensor in place.
@@ -1245,11 +1244,11 @@ class tensor {
   /// @brief Applies the element-wise clipped ReLU function to the tensor,
   /// modifying the tensor in place.
   ///        Values exceeding the specified clip limit are clipped.
-  /// @param __clip_limit The limit to which values in the tensor are clipped.
+  /// @param clip_limit The limit to which values in the tensor are clipped.
   /// @return A reference to the tensor after the clipped ReLU operation has
   /// been applied.
-  tensor&       clipped_relu_(const value_type __clip_limit);
-  const tensor& clipped_relu_(const value_type __clip_limit) const;
+  tensor&       clipped_relu_(const value_type clip_limit);
+  const tensor& clipped_relu_(const value_type clip_limit) const;
 
   /// @brief Applies the element-wise square function to the tensor, modifying
   /// the tensor in place.
@@ -1260,19 +1259,19 @@ class tensor {
 
   /// @brief Raises the tensor elements to the power of the elements of another
   /// tensor, modifying the tensor in place.
-  /// @param __other The tensor whose elements are used as exponents.
+  /// @param other The tensor whose elements are used as exponents.
   /// @return A reference to the tensor after the element-wise power operation
   /// has been applied.
-  tensor&       pow_(const tensor& __other);
-  const tensor& pow_(const tensor& __other) const;
+  tensor&       pow_(const tensor& other);
+  const tensor& pow_(const tensor& other) const;
 
   /// @brief Raises the tensor elements to the power of a scalar value,
   /// modifying the tensor in place.
-  /// @param __val The scalar value to which tensor elements are raised.
+  /// @param val The scalar value to which tensor elements are raised.
   /// @return A reference to the tensor after the element-wise power operation
   /// has been applied.
-  tensor&       pow_(const value_type __val);
-  const tensor& pow_(const value_type __val) const;
+  tensor&       pow_(const value_type val);
+  const tensor& pow_(const value_type val) const;
 
   /// @brief Applies the element-wise sinc function to the tensor, modifying the
   /// tensor in place.
@@ -1283,67 +1282,67 @@ class tensor {
 
   /// @brief Performs a bitwise left shift operation on the tensor elements,
   /// modifying the tensor in place.
-  /// @param __amount The number of positions to shift the bits.
+  /// @param amount The number of positions to shift the bits.
   /// @return A reference to the tensor after the bitwise left shift operation
   /// has been applied.
-  tensor&       bitwise_left_shift_(const int __amount);
-  const tensor& bitwise_left_shift_(const int __amount) const;
+  tensor&       bitwise_left_shift_(const int amount);
+  const tensor& bitwise_left_shift_(const int amount) const;
 
   /// @brief Performs a bitwise right shift operation on the tensor elements,
   /// modifying the tensor in place.
-  /// @param __amount The number of positions to shift the bits.
+  /// @param amount The number of positions to shift the bits.
   /// @return A reference to the tensor after the bitwise right shift operation
   /// has been applied.
-  tensor&       bitwise_right_shift_(const int __amount);
-  const tensor& bitwise_right_shift_(const int __amount) const;
+  tensor&       bitwise_right_shift_(const int amount);
+  const tensor& bitwise_right_shift_(const int amount) const;
 
   /// @brief Performs a bitwise AND operation between the tensor and a scalar
   /// value, modifying the tensor in place.
-  /// @param __val The scalar value to apply the bitwise AND operation with.
+  /// @param val The scalar value to apply the bitwise AND operation with.
   /// @return A reference to the tensor after the bitwise AND operation has been
   /// applied.
-  tensor&       bitwise_and_(const value_type __val);
-  const tensor& bitwise_and_(const value_type __val) const;
+  tensor&       bitwise_and_(const value_type val);
+  const tensor& bitwise_and_(const value_type val) const;
 
   /// @brief Performs a bitwise AND operation between the tensor and another
   /// tensor, modifying the tensor in place.
-  /// @param __other The tensor to apply the bitwise AND operation with.
+  /// @param other The tensor to apply the bitwise AND operation with.
   /// @return A reference to the tensor after the bitwise AND operation has been
   /// applied.
-  tensor&       bitwise_and_(const tensor& __other);
-  const tensor& bitwise_and_(const tensor& __other) const;
+  tensor&       bitwise_and_(const tensor& other);
+  const tensor& bitwise_and_(const tensor& other) const;
 
   /// @brief Performs a bitwise OR operation between the tensor and a scalar
   /// value, modifying the tensor in place.
-  /// @param __val The scalar value to apply the bitwise OR operation with.
+  /// @param val The scalar value to apply the bitwise OR operation with.
   /// @return A reference to the tensor after the bitwise OR operation has been
   /// applied.
-  tensor&       bitwise_or_(const value_type __val);
-  const tensor& bitwise_or_(const value_type __val) const;
+  tensor&       bitwise_or_(const value_type val);
+  const tensor& bitwise_or_(const value_type val) const;
 
   /// @brief Performs a bitwise OR operation between the tensor and another
   /// tensor, modifying the tensor in place.
-  /// @param __other The tensor to apply the bitwise OR operation with.
+  /// @param other The tensor to apply the bitwise OR operation with.
   /// @return A reference to the tensor after the bitwise OR operation has been
   /// applied.
-  tensor&       bitwise_or_(const tensor& __other);
-  const tensor& bitwise_or_(const tensor& __other) const;
+  tensor&       bitwise_or_(const tensor& other);
+  const tensor& bitwise_or_(const tensor& other) const;
 
   /// @brief Performs a bitwise XOR operation between the tensor and a scalar
   /// value, modifying the tensor in place.
-  /// @param __val The scalar value to apply the bitwise XOR operation with.
+  /// @param val The scalar value to apply the bitwise XOR operation with.
   /// @return A reference to the tensor after the bitwise XOR operation has been
   /// applied.
-  tensor&       bitwise_xor_(const value_type __val);
-  const tensor& bitwise_xor_(const value_type __val) const;
+  tensor&       bitwise_xor_(const value_type val);
+  const tensor& bitwise_xor_(const value_type val) const;
 
   /// @brief Performs a bitwise XOR operation between the tensor and another
   /// tensor, modifying the tensor in place.
-  /// @param __other The tensor to apply the bitwise XOR operation with.
+  /// @param other The tensor to apply the bitwise XOR operation with.
   /// @return A reference to the tensor after the bitwise XOR operation has been
   /// applied.
-  tensor&       bitwise_xor_(const tensor& __other);
-  const tensor& bitwise_xor_(const tensor& __other) const;
+  tensor&       bitwise_xor_(const tensor& other);
+  const tensor& bitwise_xor_(const tensor& other) const;
 
   /// @brief Performs a bitwise NOT operation on the tensor elements, modifying
   /// the tensor in place.
@@ -1354,288 +1353,287 @@ class tensor {
 
   /// @brief Reshapes the tensor to a new shape specified by an initializer list
   /// of dimensions, modifying the tensor in place.
-  /// @param __new_sh The new shape of the tensor.
+  /// @param new_sh The new shape of the tensor.
   /// @return A reference to the tensor after the reshape operation has been
   /// applied.
-  tensor&       view(std::initializer_list<index_type> __new_sh);
-  const tensor& view(std::initializer_list<index_type> __new_sh) const;
+  tensor&       view(std::initializer_list<index_type> new_sh);
+  const tensor& view(std::initializer_list<index_type> new_sh) const;
 
   /// @brief Applies the element-wise maximum function between the tensor and
   /// another tensor, modifying the tensor in place.
-  /// @param __other The tensor to apply the element-wise maximum operation
+  /// @param other The tensor to apply the element-wise maximum operation
   /// with.
   /// @return A reference to the tensor after the element-wise maximum operation
   /// has been applied.
-  tensor&       fmax_(const tensor& __other);
-  const tensor& fmax_(const tensor& __other) const;
+  tensor&       fmax_(const tensor& other);
+  const tensor& fmax_(const tensor& other) const;
 
   /// @brief Applies the element-wise maximum function between the tensor and a
   /// scalar value, modifying the tensor in place.
-  /// @param __val The scalar value to apply the element-wise maximum operation
+  /// @param val The scalar value to apply the element-wise maximum operation
   /// with.
   /// @return A reference to the tensor after the element-wise maximum operation
   /// has been applied.
-  tensor&       fmax_(const value_type __val);
-  const tensor& fmax_(const value_type __val) const;
+  tensor&       fmax_(const value_type val);
+  const tensor& fmax_(const value_type val) const;
 
   /// @brief Randomizes the values in the tensor with the specified shape,
   /// modifying the tensor in place.
-  /// @param __sh The shape to which the tensor will be randomized.
-  /// @param __bounded If true, the random values will be bounded; otherwise,
+  /// @param sh The shape to which the tensor will be randomized.
+  /// @param bounded If true, the random values will be bounded; otherwise,
   /// they will not.
   /// @return A reference to the tensor after the randomization operation has
   /// been applied.
-  tensor&       randomize_(const shape_type& __sh, bool __bounded = false);
-  const tensor& randomize_(const shape_type& __sh, bool __bounded = false) const;
+  tensor&       randomize_(const shape_type& sh, bool bounded = false);
+  const tensor& randomize_(const shape_type& sh, bool bounded = false) const;
 
   /// @brief Fills the tensor with zeros, modifying the tensor in place.
-  /// @param __sh The shape to which the tensor will be resized before being
+  /// @param sh The shape to which the tensor will be resized before being
   /// filled with zeros.
   /// @return A reference to the tensor after the zero-fill operation has been
   /// applied.
-  tensor&       zeros_(shape_type __sh = {});
-  const tensor& zeros_(shape_type __sh = {}) const;
+  tensor&       zeros_(shape_type sh = {});
+  const tensor& zeros_(shape_type sh = {}) const;
 
   /// @brief Fills the tensor with ones, modifying the tensor in place.
-  /// @param __sh The shape to which the tensor will be resized before being
+  /// @param sh The shape to which the tensor will be resized before being
   /// filled with ones.
   /// @return A reference to the tensor after the one-fill operation has been
   /// applied.
-  tensor&       ones_(shape_type __sh = {});
-  const tensor& ones_(shape_type __sh = {}) const;
+  tensor&       ones_(shape_type sh = {});
+  const tensor& ones_(shape_type sh = {}) const;
 
   void print() const {
-    this->printRecursive(0, 0, __shape_);
+    this->printRecursive(0, 0, shape_);
     std::cout << std::endl;
   }
 
-  tensor<index_type> argmax_(index_type __dim) const;
-  tensor<index_type> argsort(index_type __dim = -1, bool __ascending = true) const;
+  tensor<index_type> argmax_(index_type dim) const;
+  tensor<index_type> argsort(index_type dim = -1, bool ascending = true) const;
 
 #if defined(__ARM_NEON)
  private:
-  tensor&      neon_fmax_(const value_type __v);
-  tensor&      neon_fmax_(const tensor& __other);
-  tensor&      neon_fmod_(const value_type __val);
-  tensor&      neon_fmod_(const tensor& __other);
-  tensor&      neon_frac_();
-  tensor&      neon_log_();
-  tensor&      neon_log10_();
-  tensor&      neon_log2_();
-  tensor&      neon_exp_();
-  tensor&      neon_sqrt_();
-  tensor&      neon_cos_();
-  tensor&      neon_acos_();
-  tensor&      neon_sin_();
-  tensor&      neon_tan_();
-  tensor&      neon_tanh_();
-  tensor&      neon_sinc_();
-  tensor&      neon_atan_();
-  tensor&      neon_atanh_();
-  tensor&      neon_sinh_();
-  tensor&      neon_asinh_();
-  tensor&      neon_asin_();
-  tensor&      neon_cosh_();
-  tensor&      neon_acosh_();
-  tensor&      neon_pow_(const value_type __val);
-  tensor&      neon_pow_(const tensor& __other);
-  tensor&      neon_abs_();
-  tensor&      neon_dist_(const tensor& __other);
-  tensor&      neon_dist_(const value_type __val);
-  tensor&      neon_maximum_(const tensor& __other);
-  tensor&      neon_maximum_(const value_type __val);
-  tensor&      neon_bitwise_right_shift_(const int __amount);
-  tensor&      neon_bitwise_left_shift_(const int __amount);
-  tensor&      neon_bitwise_or_(const value_type __val);
-  tensor&      neon_bitwise_xor_(const value_type __val);
-  tensor&      neon_bitwise_not_();
-  tensor&      neon_bitwise_and_(const value_type __val);
-  tensor&      neon_bitwise_and_(const tensor& __other);
-  tensor&      neon_bitwise_or_(const tensor& __other);
-  tensor&      neon_bitwise_xor_(const tensor& __other);
-  tensor&      neon_zeros_(shape_type __sh = {});
-  tensor&      neon_ones_(shape_type __sh);
-  tensor&      neon_randomize_(const shape_type& __sh, bool __bounded);
-  tensor&      neon_negative_();
-  tensor&      neon_relu_();
-  tensor&      neon_sigmoid_();
-  tensor&      neon_clipped_relu_(const value_type __clip_limit);
-  tensor&      neon_clamp_(const_reference __min_val = std::numeric_limits<value_type>::lowest(),
-                           const_reference __max_val = std::numeric_limits<value_type>::max());
-  tensor&      neon_floor_();
-  tensor&      neon_ceil_();
-  tensor&      neon_logical_or_(const value_type __val);
-  tensor&      neon_logical_xor_(const value_type __val);
-  tensor&      neon_logical_and_(const value_type __val);
-  tensor&      neon_logical_or_(const tensor& __other);
-  tensor&      neon_logical_xor_(const tensor& __other);
-  tensor&      neon_logical_and_(const tensor& __other);
-  tensor&      neon_operator_plus_eq(const_reference __val) const;
-  tensor&      neon_operator_minus_eq(const tensor& __other) const;
-  tensor&      neon_operator_times_eq(const tensor& __other) const;
-  tensor&      neon_operator_minus_eq(const_reference __val) const;
-  tensor<_s32> neon_int32_() const;
-  tensor<_u32> neon_uint32_() const;
-  tensor<_f32> neon_float32_() const;
-  tensor<_f64> neon_double_() const;
-  tensor<uint64_t>   neon_unsigned_long_() const;
-  tensor<int64_t>    neon_long_() const;
-  tensor             neon_operator_plus(const tensor& __other) const;
-  tensor             neon_operator_plus(const value_type __val) const;
-  tensor             neon_operator_minus(const tensor& __other) const;
-  tensor             neon_operator_minus(const value_type __val) const;
-  tensor             neon_transpose() const;
-  tensor             neon_matmul(const tensor& __other) const;
-  tensor             neon_absolute(const tensor& __tensor) const;
-  tensor             neon_cross_product(const tensor& __other) const;
-  tensor             neon_dot(const tensor& __other) const;
-  tensor             neon_argmax(index_type __dim) const;
-  tensor             neon_sum(const index_type __axis) const;
-  tensor             neon_slice(index_type __dim, std::optional<index_type> __start,
-                                std::optional<index_type> __end, index_type __step) const;
-  tensor<bool>       neon_equal(const tensor& __other) const;
-  tensor<bool>       neon_equal(const value_type __val) const;
-  tensor<bool>       neon_less_equal(const tensor& __other) const;
-  tensor<bool>       neon_less_equal(const value_type __val) const;
-  tensor<bool>       neon_less(const value_type __val) const;
-  tensor<bool>       neon_less(const tensor& __other) const;
-  tensor<bool>       neon_greater(const value_type __val) const;
-  tensor<bool>       neon_greater(const tensor& __other) const;
-  tensor<bool>       neon_greater_equal(const value_type __val) const;
-  tensor<bool>       neon_greater_equal(const tensor& __other) const;
-  tensor<index_type> neon_argsort(index_type __d, bool __ascending) const;
-  tensor<index_type> neon_argmax_(index_type __dim) const;
-  index_type         neon_count_nonzero(index_type __dim) const;
+  tensor&          neon_fmax_(const value_type v);
+  tensor&          neon_fmax_(const tensor& other);
+  tensor&          neon_fmod_(const value_type val);
+  tensor&          neon_fmod_(const tensor& other);
+  tensor&          neon_frac_();
+  tensor&          neon_log_();
+  tensor&          neon_log10_();
+  tensor&          neon_log2_();
+  tensor&          neon_exp_();
+  tensor&          neon_sqrt_();
+  tensor&          neon_cos_();
+  tensor&          neon_acos_();
+  tensor&          neon_sin_();
+  tensor&          neon_tan_();
+  tensor&          neon_tanh_();
+  tensor&          neon_sinc_();
+  tensor&          neon_atan_();
+  tensor&          neon_atanh_();
+  tensor&          neon_sinh_();
+  tensor&          neon_asinh_();
+  tensor&          neon_asin_();
+  tensor&          neon_cosh_();
+  tensor&          neon_acosh_();
+  tensor&          neon_pow_(const value_type val);
+  tensor&          neon_pow_(const tensor& other);
+  tensor&          neon_abs_();
+  tensor&          neon_dist_(const tensor& other);
+  tensor&          neon_dist_(const value_type val);
+  tensor&          neon_maximum_(const tensor& other);
+  tensor&          neon_maximum_(const value_type val);
+  tensor&          neon_bitwise_right_shift_(const int amount);
+  tensor&          neon_bitwise_left_shift_(const int amount);
+  tensor&          neon_bitwise_or_(const value_type val);
+  tensor&          neon_bitwise_xor_(const value_type val);
+  tensor&          neon_bitwise_not_();
+  tensor&          neon_bitwise_and_(const value_type val);
+  tensor&          neon_bitwise_and_(const tensor& other);
+  tensor&          neon_bitwise_or_(const tensor& other);
+  tensor&          neon_bitwise_xor_(const tensor& other);
+  tensor&          neon_zeros_(shape_type sh = {});
+  tensor&          neon_ones_(shape_type sh);
+  tensor&          neon_randomize_(const shape_type& sh, bool bounded);
+  tensor&          neon_negative_();
+  tensor&          neon_relu_();
+  tensor&          neon_sigmoid_();
+  tensor&          neon_clipped_relu_(const value_type clip_limit);
+  tensor&          neon_clamp_(const_reference min_val = std::numeric_limits<value_type>::lowest(),
+                               const_reference max_val = std::numeric_limits<value_type>::max());
+  tensor&          neon_floor_();
+  tensor&          neon_ceil_();
+  tensor&          neon_logical_or_(const value_type val);
+  tensor&          neon_logical_xor_(const value_type val);
+  tensor&          neon_logical_and_(const value_type val);
+  tensor&          neon_logical_or_(const tensor& other);
+  tensor&          neon_logical_xor_(const tensor& other);
+  tensor&          neon_logical_and_(const tensor& other);
+  tensor&          neon_operator_plus_eq(const_reference val) const;
+  tensor&          neon_operator_minus_eq(const tensor& other) const;
+  tensor&          neon_operator_times_eq(const tensor& other) const;
+  tensor&          neon_operator_minus_eq(const_reference val) const;
+  tensor<_s32>     neon_int32_() const;
+  tensor<_u32>     neon_uint32_() const;
+  tensor<_f32>     neon_float32_() const;
+  tensor<_f64>     neon_double_() const;
+  tensor<uint64_t> neon_unsigned_long_() const;
+  tensor<int64_t>  neon_long_() const;
+  tensor           neon_operator_plus(const tensor& other) const;
+  tensor           neon_operator_plus(const value_type val) const;
+  tensor           neon_operator_minus(const tensor& other) const;
+  tensor           neon_operator_minus(const value_type val) const;
+  tensor           neon_transpose() const;
+  tensor           neon_matmul(const tensor& other) const;
+  tensor           neon_absolute(const tensor& tensor) const;
+  tensor           neon_cross_product(const tensor& other) const;
+  tensor           neon_dot(const tensor& other) const;
+  tensor           neon_argmax(index_type dim) const;
+  tensor           neon_sum(const index_type axis) const;
+  tensor neon_slice(index_type dim, std::optional<index_type> start, std::optional<index_type> end,
+                    index_type step) const;
+  tensor<bool>       neon_equal(const tensor& other) const;
+  tensor<bool>       neon_equal(const value_type val) const;
+  tensor<bool>       neon_less_equal(const tensor& other) const;
+  tensor<bool>       neon_less_equal(const value_type val) const;
+  tensor<bool>       neon_less(const value_type val) const;
+  tensor<bool>       neon_less(const tensor& other) const;
+  tensor<bool>       neon_greater(const value_type val) const;
+  tensor<bool>       neon_greater(const tensor& other) const;
+  tensor<bool>       neon_greater_equal(const value_type val) const;
+  tensor<bool>       neon_greater_equal(const tensor& other) const;
+  tensor<index_type> neon_argsort(index_type d, bool ascending) const;
+  tensor<index_type> neon_argmax_(index_type dim) const;
+  index_type         neon_count_nonzero(index_type dim) const;
   double             neon_mean() const;
 #endif
 
  private:
   [[nodiscard]] size_t computeStride(size_t dim, const shape_type& shape) const noexcept;
   void                 printRecursive(size_t index, size_t depth, const shape_type& shape) const;
-  void                 __compute_strides();
-  [[nodiscard]] index_type        __compute_index(const std::vector<index_type>& __idx) const;
-  [[nodiscard]] static index_type __computeSize(const shape_type& __dims) noexcept;
-  index_type                      __compute_outer_size(const index_type __dim) const;
-  [[nodiscard]] static _f32       __frac(const_reference __val) noexcept;
+  void                 compute_strides();
+  [[nodiscard]] index_type        compute_index(const std::vector<index_type>& idx) const;
+  [[nodiscard]] static index_type computeSize(const shape_type& dims) noexcept;
+  index_type                      compute_outer_size(const index_type dim) const;
+  [[nodiscard]] static _f32       frac(const_reference val) noexcept;
   // where the tensor is stored
-  bool __is_cuda_device() const;
-  bool __equal_shape(const shape_type& __x, const shape_type& __y) const;
+  bool is_cuda_device() const;
+  bool equal_shape(const shape_type& x, const shape_type& y) const;
 
 };  // tensor class
 
 template <class _Tp>
-bool tensor<_Tp>::__equal_shape(const shape_type& __x, const shape_type& __y) const {
-  size_t __size_x = __x.size();
-  size_t __size_y = __y.size();
+bool tensor<_Tp>::equal_shape(const shape_type& x, const shape_type& y) const {
+  size_t size_x = x.size();
+  size_t size_y = y.size();
 
-  if (__size_x == __size_y) return __x == __y;
+  if (size_x == size_y) return x == y;
 
-  if (__size_x < __size_y) return __equal_shape(__y, __x);
+  if (size_x < size_y) return equal_shape(y, x);
 
-  int __diff = __size_x - __size_y;
-  for (size_t __i = 0; __i < __size_y; ++__i)
-    if (__x[__i + __diff] != __y[__i] && __x[__i + __diff] != 1 && __y[__i] != 1) return false;
+  int diff = size_x - size_y;
+  for (size_t i = 0; i < size_y; ++i)
+    if (x[i + diff] != y[i] and x[i + diff] != 1 and y[i] != 1) return false;
 
   return true;
 }
 
 template <class _Tp>
-inline bool tensor<_Tp>::__is_cuda_device() const {
-  return (this->__device_ == Device::CUDA);
+inline bool tensor<_Tp>::is_cuda_device() const {
+  return (this->device_ == Device::CUDA);
 }
 
 template <class _Tp>
 [[nodiscard]]
-inline _f32 tensor<_Tp>::__frac(const_reference __val) noexcept {
-  return std::fmod(static_cast<float32_t>(__val), 1.0f);
+inline _f32 tensor<_Tp>::frac(const_reference val) noexcept {
+  return std::fmod(static_cast<float32_t>(val), 1.0f);
 }
 
 template <class _Tp>
-inline typename tensor<_Tp>::index_type tensor<_Tp>::__compute_outer_size(
-    const index_type __dim) const {
+inline typename tensor<_Tp>::index_type tensor<_Tp>::compute_outer_size(
+    const index_type dim) const {
   // just a placeholder for now
   return 0;
 }
 
 template <class _Tp>
 [[nodiscard]]
-inline
-    typename tensor<_Tp>::index_type tensor<_Tp>::__computeSize(const shape_type& __dims) noexcept {
-  index_type __ret = 1;
-  for (const index_type& __d : __dims) __ret *= __d;
-  return __ret;
+inline typename tensor<_Tp>::index_type tensor<_Tp>::computeSize(const shape_type& dims) noexcept {
+  index_type ret = 1;
+  for (const index_type& d : dims) ret *= d;
+  return ret;
 }
 
 template <class _Tp>
 [[nodiscard]]
-inline typename tensor<_Tp>::index_type tensor<_Tp>::__compute_index(
-    const std::vector<index_type>& __idx) const {
-  if (__idx.size() != this->__shape_.size())
-    throw __index_error__("__compute_index : input indices does not match the tensor shape");
+inline typename tensor<_Tp>::index_type tensor<_Tp>::compute_index(
+    const std::vector<index_type>& idx) const {
+  if (idx.size() != this->shape_.size())
+    throw index_error("compute_index : input indices does not match the tensor shape");
 
-  index_type __index = 0;
-  index_type __i     = 0;
+  index_type index = 0;
+  index_type i     = 0;
 
-  for (; __i < this->__shape_.size(); ++__i) __index += __idx[__i] * this->__strides_[__i];
+  for (; i < this->shape_.size(); ++i) index += idx[i] * this->strides_[i];
 
-  return __index;
+  return index;
 }
 
 template <class _Tp>
-void tensor<_Tp>::__compute_strides() {
-  if (this->__shape_.empty()) {
+void tensor<_Tp>::compute_strides() {
+  if (this->shape_.empty()) {
     std::cerr << "Shape must be initialized before computing strides" << std::endl;
     std::exit(EXIT_FAILURE);
   }
 
-  this->__strides_ = shape_type(this->__shape_.size(), 1);
-  int __st = 1, __i = static_cast<int>(this->__shape_.size() - 1);
+  this->strides_ = shape_type(this->shape_.size(), 1);
+  int st = 1, i = static_cast<int>(this->shape_.size() - 1);
 
-  for (; __i >= 0; __i--) {
-    this->__strides_[__i] = __st;
-    __st *= this->__shape_[__i];
+  for (; i >= 0; i--) {
+    this->strides_[i] = st;
+    st *= this->shape_[i];
   }
 }
 
 template <class _Tp>
-void tensor<_Tp>::printRecursive(size_t __index, size_t __depth, const shape_type& __shape) const {
-  if (__depth == __shape.size() - 1) {
+void tensor<_Tp>::printRecursive(size_t index, size_t depth, const shape_type& shape) const {
+  if (depth == shape.size() - 1) {
     std::cout << "[";
 
-    for (size_t __i = 0; __i < __shape[__depth]; ++__i) {
+    for (size_t i = 0; i < shape[depth]; ++i) {
       if constexpr (std::is_floating_point_v<_Tp>)
-        std::cout << std::fixed << std::setprecision(4) << __data_[__index + __i];
+        std::cout << std::fixed << std::setprecision(4) << data_[index + i];
       else
-        std::cout << __data_[__index + __i];
+        std::cout << data_[index + i];
 
-      if (__i < __shape[__depth] - 1) std::cout << ", ";
+      if (i < shape[depth] - 1) std::cout << ", ";
     }
     std::cout << "]";
   } else {
     std::cout << "[\n";
-    size_t __stride = computeStride(__depth + 1, __shape);
+    size_t stride = computeStride(depth + 1, shape);
 
-    for (size_t __i = 0; __i < __shape[__depth]; ++__i) {
-      if (__i > 0) std::cout << "\n";
+    for (size_t i = 0; i < shape[depth]; ++i) {
+      if (i > 0) std::cout << "\n";
 
-      for (size_t __j = 0; __j < __depth + 1; ++__j) std::cout << " ";
+      for (size_t j = 0; j < depth + 1; ++j) std::cout << " ";
 
-      printRecursive(__index + __i * __stride, __depth + 1, __shape);
+      printRecursive(index + i * stride, depth + 1, shape);
 
-      if (__i < __shape[__depth] - 1) std::cout << ",";
+      if (i < shape[depth] - 1) std::cout << ",";
     }
     std::cout << "\n";
-    for (size_t __j = 0; __j < __depth; ++__j) std::cout << " ";
+    for (size_t j = 0; j < depth; ++j) std::cout << " ";
     std::cout << "]";
   }
 }
 
 template <class _Tp>
 [[nodiscard]]
-inline size_t tensor<_Tp>::computeStride(size_t __dim, const shape_type& __shape) const noexcept {
-  size_t __stride = 1;
-  for (size_t __i = __dim; __i < __shape.size(); ++__i) __stride *= __shape[__i];
-  return __stride;
+inline size_t tensor<_Tp>::computeStride(size_t dim, const shape_type& shape) const noexcept {
+  size_t stride = 1;
+  for (size_t i = dim; i < shape.size(); ++i) stride *= shape[i];
+  return stride;
 }
 
 template <>
@@ -1644,7 +1642,7 @@ class tensor<bool>;  // explicit instantiation
 template <>
 class tensor<bool> {
  public:
-  using __self                 = tensor;
+  using self                   = tensor;
   using value_type             = bool;
   using data_t                 = std::vector<bool>;
   using index_type             = uint64_t;
@@ -1659,639 +1657,617 @@ class tensor<bool> {
   enum class Device { CPU, CUDA };
 
  private:
-  mutable data_t     __data_;
-  mutable shape_type __shape_;
-  mutable shape_type __strides_;
-  Device             __device_;
-  bool               __is_cuda_tensor_ = false;
+  mutable data_t     data_;
+  mutable shape_type shape_;
+  mutable shape_type strides_;
+  Device             device_;
+  bool               is_cuda_tensor_ = false;
 
  public:
   tensor() = default;
 
-  explicit tensor(const shape_type& __sh, value_type __v, Device __d = Device::CPU)
-      : __shape_(__sh), __data_(this->__computeSize(__sh), __v), __device_(__d) {
-    this->__compute_strides();
+  explicit tensor(const shape_type& sh, value_type v, Device d = Device::CPU)
+      : shape_(sh), data_(this->computeSize(sh), v), device_(d) {
+    this->compute_strides();
   }
 
-  explicit tensor(const shape_type& __sh, Device __d = Device::CPU)
-      : __shape_(__sh), __device_(__d) {
-    index_type __s = this->__computeSize(__sh);
-    this->__data_  = data_t(__s);
-    this->__compute_strides();
+  explicit tensor(const shape_type& sh, Device d = Device::CPU) : shape_(sh), device_(d) {
+    index_type s = this->computeSize(sh);
+    this->data_  = data_t(s);
+    this->compute_strides();
   }
 
-  explicit tensor(const shape_type& __sh, const data_t& __d, Device __dev = Device::CPU)
-      : __shape_(__sh), __device_(__dev) {
-    index_type __s = this->__computeSize(__sh);
-    assert(__d.size() == static_cast<size_t>(__s) &&
-           "Initial data vector must match the tensor size");
-    this->__data_ = __d;
-    this->__compute_strides();
+  explicit tensor(const shape_type& sh, const data_t& d, Device dev = Device::CPU)
+      : shape_(sh), device_(dev) {
+    index_type s = this->computeSize(sh);
+    assert(d.size() == static_cast<size_t>(s) and "Initial data vector must match the tensor size");
+    this->data_ = d;
+    this->compute_strides();
   }
 
-  tensor(const tensor& __t)
-      : __data_(__t.storage()),
-        __shape_(__t.shape()),
-        __strides_(__t.strides()),
-        __device_(__t.device()) {}
+  tensor(const tensor& t)
+      : data_(t.storage()), shape_(t.shape()), strides_(t.strides()), device_(t.device()) {}
 
-  tensor(tensor&& __t) noexcept
-      : __data_(std::move(__t.storage())),
-        __shape_(std::move(__t.shape())),
-        __strides_(std::move(__t.strides())),
-        __device_(std::move(__t.device())) {}
+  tensor(tensor&& t) noexcept
+      : data_(std::move(t.storage())),
+        shape_(std::move(t.shape())),
+        strides_(std::move(t.strides())),
+        device_(std::move(t.device())) {}
 
-  tensor(const shape_type& __sh, std::initializer_list<value_type> init_list,
-         Device __d = Device::CPU)
-      : __shape_(__sh), __device_(__d) {
-    index_type __s = this->__computeSize(__sh);
-    assert(init_list.size() == static_cast<size_t>(__s) &&
+  tensor(const shape_type& sh, std::initializer_list<value_type> init_list, Device d = Device::CPU)
+      : shape_(sh), device_(d) {
+    index_type s = this->computeSize(sh);
+    assert(init_list.size() == static_cast<size_t>(s) and
            "Initializer list size must match tensor size");
-    this->__data_ = data_t(init_list);
-    this->__compute_strides();
+    this->data_ = data_t(init_list);
+    this->compute_strides();
   }
 
-  tensor(const shape_type& __sh, const tensor& __other)
-      : __data_(__other.storage()), __shape_(__sh), __device_(__other.device()) {
-    this->__compute_strides();
+  tensor(const shape_type& sh, const tensor& other)
+      : data_(other.storage()), shape_(sh), device_(other.device()) {
+    this->compute_strides();
   }
 
-  data_t storage() const noexcept { return this->__data_; }
+  data_t storage() const noexcept { return this->data_; }
 
-  shape_type shape() const noexcept { return this->__shape_; }
+  shape_type shape() const noexcept { return this->shape_; }
 
-  shape_type strides() const noexcept { return this->__strides_; }
+  shape_type strides() const noexcept { return this->strides_; }
 
-  Device device() const noexcept { return this->__device_; }
+  Device device() const noexcept { return this->device_; }
 
-  bool operator==(const tensor& __other) const {
-    return __equal_shape(this->shape(), __other.shape()) && this->__data_ == __other.storage();
+  bool operator==(const tensor& other) const {
+    return equal_shape(this->shape(), other.shape()) and this->data_ == other.storage();
   }
 
-  bool operator!=(const tensor& __other) const { return !(*this == __other); }
+  bool operator!=(const tensor& other) const { return !(*this == other); }
 
-  tensor<bool>& operator=(const tensor<bool>& __other) const noexcept;
+  tensor<bool>& operator=(const tensor<bool>& other) const noexcept;
 
-  reference at(shape_type __idx) {
-    if (__idx.empty()) throw __index_error__("Passing an empty vector as indices for a tensor");
+  reference at(shape_type idx) {
+    if (idx.empty()) throw index_error("Passing an empty vector as indices for a tensor");
 
-    index_type __i = this->__compute_index(__idx);
-    if (__i < 0 || __i >= this->__data_.size())
-      throw __index_error__("input indices are out of bounds");
+    index_type i = this->compute_index(idx);
+    if (i < 0 or i >= this->data_.size()) throw index_error("input indices are out of bounds");
 
-    return this->__data_[__i];
+    return this->data_[i];
   }
 
-  reference operator[](const index_type __idx) {
-    if (__idx < 0 || __idx >= this->__data_.size())
-      throw __index_error__("input index is out of bounds");
+  reference operator[](const index_type idx) {
+    if (idx < 0 or idx >= this->data_.size()) throw index_error("input index is out of bounds");
 
-    return this->__data_[__idx];
+    return this->data_[idx];
   }
 
-  const_reference at(const shape_type __idx) const { return this->at(__idx); }
+  const_reference at(const shape_type idx) const { return this->at(idx); }
 
-  const_reference operator[](const index_type __idx) const { return (*this)[__idx]; }
+  const_reference operator[](const index_type idx) const { return (*this)[idx]; }
 
-  reference operator()(std::initializer_list<index_type> __index_list) {
-    return this->at(shape_type(__index_list));
+  reference operator()(std::initializer_list<index_type> index_list) {
+    return this->at(shape_type(index_list));
   }
 
-  const_reference operator()(std::initializer_list<index_type> __index_list) const {
-    return this->at(shape_type(__index_list));
+  const_reference operator()(std::initializer_list<index_type> index_list) const {
+    return this->at(shape_type(index_list));
   }
 
-  bool empty() const { return this->__data_.empty(); }
+  bool empty() const { return this->data_.empty(); }
 
-  size_t n_dims() const noexcept { return this->__shape_.size(); }
+  size_t n_dims() const noexcept { return this->shape_.size(); }
 
-  index_type size(const index_type __dim) const {
-    if (__dim < 0 || __dim > static_cast<index_type>(this->__shape_.size()))
+  index_type size(const index_type dim) const {
+    if (dim < 0 or dim > static_cast<index_type>(this->shape_.size()))
       throw std::invalid_argument("dimension input is out of range");
 
-    if (__dim == 0) return this->__data_.size();
+    if (dim == 0) return this->data_.size();
 
-    return this->__shape_[__dim - 1];
+    return this->shape_[dim - 1];
   }
 
-  index_type capacity() const noexcept { return this->__data_.capacity(); }
+  index_type capacity() const noexcept { return this->data_.capacity(); }
 
   tensor<bool> logical_not() const { return tensor<bool>(this->logical_not_()); }
 
-  tensor<bool> logical_or(const value_type __val) const {
-    return tensor<bool>(this->logical_or_(__val));
+  tensor<bool> logical_or(const value_type val) const {
+    return tensor<bool>(this->logical_or_(val));
   }
 
-  tensor<bool> logical_or(const tensor& __other) const {
-    return tensor<bool>(this->logical_or_(__other));
+  tensor<bool> logical_or(const tensor& other) const {
+    return tensor<bool>(this->logical_or_(other));
   }
 
-  tensor<bool> logical_and(const value_type __val) const {
-    return tensor<bool>(this->logical_and_(__val));
+  tensor<bool> logical_and(const value_type val) const {
+    return tensor<bool>(this->logical_and_(val));
   }
 
-  tensor<bool> logical_and(const tensor& __other) const {
-    return tensor<bool>(this->logical_and_(__other));
+  tensor<bool> logical_and(const tensor& other) const {
+    return tensor<bool>(this->logical_and_(other));
   }
 
-  tensor<bool> logical_xor(const value_type __val) const {
-    return tensor<bool>(this->logical_xor_(__val));
+  tensor<bool> logical_xor(const value_type val) const {
+    return tensor<bool>(this->logical_xor_(val));
   }
 
-  tensor<bool> logical_xor(const tensor& __other) const {
-    return tensor<bool>(this->logical_xor_(__other));
+  tensor<bool> logical_xor(const tensor& other) const {
+    return tensor<bool>(this->logical_xor_(other));
   }
 
   tensor<bool>& logical_not_() {
-    index_type __i = 0;
+    index_type i = 0;
 #pragma omp parallel
-    for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = ~(this->__data_[__i]);
+    for (; i < this->data_.size(); ++i) this->data_[i] = ~(this->data_[i]);
     return *this;
   }
 
-  tensor<bool>& logical_or_(const value_type __val) {
-    index_type __i = 0;
+  tensor<bool>& logical_or_(const value_type val) {
+    index_type i = 0;
 #pragma omp parallel
-    for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = this->__data_[__i] || __val;
+    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] or val;
     return *this;
   }
 
-  tensor<bool>& logical_or_(const tensor& __other) {
-    index_type __i = 0;
+  tensor<bool>& logical_or_(const tensor& other) {
+    index_type i = 0;
 #pragma omp parallel
-    for (; __i < this->__data_.size(); ++__i)
-      this->__data_[__i] = this->__data_[__i] || __other[__i];
+    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] or other[i];
     return *this;
   }
 
-  tensor<bool>& logical_and_(const value_type __val) {
-    index_type __i = 0;
+  tensor<bool>& logical_and_(const value_type val) {
+    index_type i = 0;
 #pragma omp parallel
-    for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = this->__data_[__i] && __val;
+    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] and val;
     return *this;
   }
 
-  tensor<bool>& logical_and_(const tensor& __other) {
-    index_type __i = 0;
-    for (; __i < this->__data_.size(); ++__i)
-      this->__data_[__i] = this->__data_[__i] && __other[__i];
+  tensor<bool>& logical_and_(const tensor& other) {
+    index_type i = 0;
+    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] and other[i];
     return *this;
   }
 
-  tensor<bool>& logical_xor_(const value_type __val) {
-    index_type __i = 0;
+  tensor<bool>& logical_xor_(const value_type val) {
+    index_type i = 0;
 #pragma omp parallel
-    for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = this->__data_[__i] ^ __val;
+    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] xor val;
     return *this;
   }
 
-  tensor<bool>& logical_xor_(const tensor& __other) {
-    index_type __i = 0;
+  tensor<bool>& logical_xor_(const tensor& other) {
+    index_type i = 0;
 #pragma omp parallel
-    for (; __i < this->__data_.size(); ++__i)
-      this->__data_[__i] = this->__data_[__i] ^ __other[__i];
+    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] xor other[i];
     return *this;
   }
 
   const tensor<bool>& logical_not_() const {
-    index_type __i = 0;
+    index_type i = 0;
 #pragma omp parallel
-    for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = ~(this->__data_[__i]);
+    for (; i < this->data_.size(); ++i) this->data_[i] = ~(this->data_[i]);
     return *this;
   }
 
-  const tensor<bool>& logical_or_(const value_type __val) const {
-    index_type __i = 0;
+  const tensor<bool>& logical_or_(const value_type val) const {
+    index_type i = 0;
 #pragma omp parallel
-    for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = this->__data_[__i] || __val;
+    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] or val;
     return *this;
   }
 
-  const tensor<bool>& logical_or_(const tensor& __other) const {
-    index_type __i = 0;
+  const tensor<bool>& logical_or_(const tensor& other) const {
+    index_type i = 0;
 #pragma omp parallel
-    for (; __i < this->__data_.size(); ++__i)
-      this->__data_[__i] = this->__data_[__i] || __other[__i];
+    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] or other[i];
     return *this;
   }
 
-  const tensor<bool>& logical_and_(const value_type __val) const {
-    index_type __i = 0;
+  const tensor<bool>& logical_and_(const value_type val) const {
+    index_type i = 0;
 #pragma omp parallel
-    for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = this->__data_[__i] && __val;
+    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] and val;
     return *this;
   }
 
-  const tensor<bool>& logical_and_(const tensor& __other) const {
-    index_type __i = 0;
+  const tensor<bool>& logical_and_(const tensor& other) const {
+    index_type i = 0;
 #pragma omp parallel
-    for (; __i < this->__data_.size(); ++__i)
-      this->__data_[__i] = this->__data_[__i] && __other[__i];
+    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] and other[i];
     return *this;
   }
 
-  const tensor<bool>& logical_xor_(const value_type __val) const {
-    index_type __i = 0;
+  const tensor<bool>& logical_xor_(const value_type val) const {
+    index_type i = 0;
 #pragma omp parallel
-    for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = this->__data_[__i] ^ __val;
+    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] xor val;
     return *this;
   }
 
-  const tensor<bool>& logical_xor_(const tensor& __other) const {
-    index_type __i = 0;
+  const tensor<bool>& logical_xor_(const tensor& other) const {
+    index_type i = 0;
 #pragma omp parallel
-    for (; __i < this->__data_.size(); ++__i)
-      this->__data_[__i] = this->__data_[__i] ^ __other[__i];
+    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] xor other[i];
     return *this;
   }
 
   tensor<bool>& operator!() {
-    index_type __i = 0;
+    index_type i = 0;
 #pragma omp parallel
-    for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = !(this->__data_[__i]);
+    for (; i < this->data_.size(); ++i) this->data_[i] = !(this->data_[i]);
     return *this;
   }
 
   const tensor<bool>& operator!() const {
-    index_type __i = 0;
+    index_type i = 0;
 #pragma omp parallel
-    for (; __i < this->__data_.size(); ++__i) this->__data_[__i] = !(this->__data_[__i]);
+    for (; i < this->data_.size(); ++i) this->data_[i] = !(this->data_[i]);
     return *this;
   }
 
-  tensor<bool> slice(index_type __dim, std::optional<index_type> __start,
-                     std::optional<index_type> __end, index_type __step) const {
-    if (__dim < 0 || __dim >= static_cast<index_type>(this->__data_.size()))
-      throw __shape_error__("Dimension out of range");
+  tensor<bool> slice(index_type dim, std::optional<index_type> start, std::optional<index_type> end,
+                     index_type step) const {
+    if (dim < 0 or dim >= static_cast<index_type>(this->data_.size()))
+      throw shape_error("Dimension out of range");
 
-    tensor<bool> __ret;
-    index_type   __s       = this->__shape_[__dim];
-    index_type   __start_i = __start.value_or(0);
-    index_type   __end_i   = __end.value_or(0);
+    tensor<bool> ret;
+    index_type   s       = this->shape_[dim];
+    index_type   start_i = start.value_or(0);
+    index_type   end_i   = end.value_or(0);
 
-    if (__start_i < 0) __start_i += __s;
-    if (__end_i < 0) __end_i += __s;
+    if (start_i < 0) start_i += s;
+    if (end_i < 0) end_i += s;
 
-    __start_i = std::max(index_type(0), std::min(__start_i, __s));
-    __end_i   = std::max(index_type(0), std::min(__end_i, __s));
+    start_i = std::max(index_type(0), std::min(start_i, s));
+    end_i   = std::max(index_type(0), std::min(end_i, s));
 
-    index_type __slice_size = (__end_i - __start_i + __step - 1) / __step;
-    shape_type __ret_dims   = this->__shape_;
+    index_type slice_size = (end_i - start_i + step - 1) / step;
+    shape_type ret_dims   = this->shape_;
 
-    __ret_dims[-__dim] = __slice_size;
-    __ret              = __self(__ret_dims);
+    ret_dims[-dim] = slice_size;
+    ret            = self(ret_dims);
 
-    index_type __i = __start_i, __j = 0;
+    index_type i = start_i, j = 0;
 #pragma omp parallel
-    for (; __i < __end_i; __i += __step, ++__j) __ret[__j] = this->__data_[__j];
+    for (; i < end_i; i += step, ++j) ret[j] = this->data_[j];
 
-    return __ret;
+    return ret;
   }
 
-  tensor<bool> row(const index_type __index) const {
-    if (this->__shape_.size() != 2)
-      throw __shape_error__("Cannot get a row from a non two dimensional tensor");
+  tensor<bool> row(const index_type index) const {
+    if (this->shape_.size() != 2)
+      throw shape_error("Cannot get a row from a non two dimensional tensor");
 
-    if (this->__shape_[0] <= __index || __index < 0)
-      throw __index_error__("Index input is out of range");
+    if (this->shape_[0] <= index or index < 0) throw index_error("Index input is out of range");
 
-    index_type __start = this->__shape_[1] * __index;
-    index_type __end   = this->__shape_[1] * __index + this->__shape_[1];
-    index_type __i     = __start;
-    data_t     __r(__end);
+    index_type start = this->shape_[1] * index;
+    index_type end   = this->shape_[1] * index + this->shape_[1];
+    index_type i     = start;
+    data_t     r(end);
 #pragma omp parallel
-    for (; __i < __end; ++__i) __r[__i] = this->__data_[__i];
+    for (; i < end; ++i) r[i] = this->data_[i];
 
-    return __self({this->__shape_[1]}, __r);
+    return self({this->shape_[1]}, r);
   }
 
-  tensor<bool> col(const index_type __index) const {
-    if (this->__shape_.size() != 2)
-      throw __index_error__("Cannot get a column from a non two dimensional tensor");
+  tensor<bool> col(const index_type index) const {
+    if (this->shape_.size() != 2)
+      throw index_error("Cannot get a column from a non two dimensional tensor");
 
-    if (this->__shape_[1] <= __index || __index < 0)
-      throw __index_error__("Index input out of range");
+    if (this->shape_[1] <= index or index < 0) throw index_error("Index input out of range");
 
-    data_t     __c(this->__shape_[0]);
-    index_type __i = 0;
-    for (; __i < this->__shape_[0]; ++__i)
-      __c[__i] = this->__data_[this->__compute_index({__i, __index})];
+    data_t     c(this->shape_[0]);
+    index_type i = 0;
+    for (; i < this->shape_[0]; ++i) c[i] = this->data_[this->compute_index({i, index})];
 
-    return __self({this->__shape_[0]}, __c);
+    return self({this->shape_[0]}, c);
   }
 
   tensor<bool> clone() const {
-    data_t     __d = this->__data_;
-    shape_type __s = this->__shape_;
-    return __self(__s, __d);
+    data_t     d = this->data_;
+    shape_type s = this->shape_;
+    return self(s, d);
   }
 
-  tensor<bool> reshape(const shape_type __sh) const {
-    data_t     __d = this->__data_;
-    index_type __s = this->__computeSize(__sh);
+  tensor<bool> reshape(const shape_type sh) const {
+    data_t     d = this->data_;
+    index_type s = this->computeSize(sh);
 
-    if (__s != this->__data_.size())
-      throw __shape_error__(
+    if (s != this->data_.size())
+      throw shape_error(
           "input shape must have size of element equal to the current number of elements in the"
           "tensor data");
 
-    return __self(__sh, __d);
+    return self(sh, d);
   }
 
-  tensor<bool> reshape_as(const tensor& __other) const { return this->reshape(__other.shape()); }
+  tensor<bool> reshape_as(const tensor& other) const { return this->reshape(other.shape()); }
 
   tensor<bool> transpose() const {
-    if (__equal_shape(this->__shape_, shape_type({this->__shape_[0], this->__shape_[1], 1})) ||
-        __equal_shape(this->__shape_, shape_type({1, this->__shape_[0], this->__shape_[1]})))
-      throw __shape_error__("Matrix transposition can only be done on 2D tensors");
+    if (equal_shape(this->shape_, shape_type({this->shape_[0], this->shape_[1], 1})) or
+        equal_shape(this->shape_, shape_type({1, this->shape_[0], this->shape_[1]})))
+      throw shape_error("Matrix transposition can only be done on 2D tensors");
 
-    tensor           __ret({this->__shape_[1], this->__shape_[0]});
-    const index_type __rows = this->__shape_[0];
-    const index_type __cols = this->__shape_[1];
+    tensor           ret({this->shape_[1], this->shape_[0]});
+    const index_type rows = this->shape_[0];
+    const index_type cols = this->shape_[1];
 
-    index_type __i = 0;
-    for (; __i < __rows; ++__i) {
-      index_type __j = 0;
-      for (; __j < __cols; ++__j) __ret.at({__j, __i}) = this->at({__i, __j});
+    index_type i = 0;
+    for (; i < rows; ++i) {
+      index_type j = 0;
+      for (; j < cols; ++j) ret.at({j, i}) = this->at({i, j});
     }
 
-    return __ret;
+    return ret;
   }
 
   tensor<bool>& transpose_() {
-    if (this->__shape_.size() != 2)
-      throw __shape_error__("Transpose operation is only valid for 2D tensors");
+    if (this->shape_.size() != 2)
+      throw shape_error("Transpose operation is only valid for 2D tensors");
 
-    const index_type __r = this->__shape_[0];
-    const index_type __c = this->__shape_[1];
+    const index_type r = this->shape_[0];
+    const index_type c = this->shape_[1];
 
-    if (__r != __c)
-      throw __shape_error__("In-place transpose is only supported for square tensors");
+    if (r != c) throw shape_error("In-place transpose is only supported for square tensors");
 
-    for (index_type __i = 0; __i < __r; ++__i)
-      for (index_type __j = __i + 1; __j < __c; ++__j)
-        std::swap(this->__data_[__i * __c + __j], this->__data_[__j * __c + __i]);
+    for (index_type i = 0; i < r; ++i)
+      for (index_type j = i + 1; j < c; ++j)
+        std::swap(this->data_[i * c + j], this->data_[j * c + i]);
 
     return *this;
   }
 
   const tensor<bool>& transpose_() const {
-    if (this->__shape_.size() != 2)
-      throw __shape_error__("Transpose operation is only valid for 2D tensors");
+    if (this->shape_.size() != 2)
+      throw shape_error("Transpose operation is only valid for 2D tensors");
 
-    const index_type __r = this->__shape_[0];
-    const index_type __c = this->__shape_[1];
+    const index_type r = this->shape_[0];
+    const index_type c = this->shape_[1];
 
-    if (__r != __c)
-      throw __shape_error__("In-place transpose is only supported for square tensors");
+    if (r != c) throw shape_error("In-place transpose is only supported for square tensors");
 
-    for (index_type __i = 0; __i < __r; ++__i)
-      for (index_type __j = __i + 1; __j < __c; ++__j)
-        std::swap(this->__data_[__i * __c + __j], this->__data_[__j * __c + __i]);
+    for (index_type i = 0; i < r; ++i)
+      for (index_type j = i + 1; j < c; ++j)
+        std::swap(this->data_[i * c + j], this->data_[j * c + i]);
 
     return *this;
   }
 
-  tensor<bool> resize_as(const shape_type __sh) const {
-    __self __ret = this->clone();
-    __ret.resize_as_(__sh);
-    return __ret;
+  tensor<bool> resize_as(const shape_type sh) const {
+    self ret = this->clone();
+    ret.resize_as_(sh);
+    return ret;
   }
 
-  tensor<bool>& resize_as_(const shape_type __sh) { return *this; }
+  tensor<bool>& resize_as_(const shape_type sh) { return *this; }
 
-  tensor<bool> squeeze(const index_type __dim) const {
-    __self __ret = this->clone();
-    __ret.squeeze_(__dim);
-    return __ret;
+  tensor<bool> squeeze(const index_type dim) const {
+    self ret = this->clone();
+    ret.squeeze_(dim);
+    return ret;
   }
 
-  tensor<bool>& squeeze_(const index_type __dim) { return *this; }
+  tensor<bool>& squeeze_(const index_type dim) { return *this; }
 
-  tensor<bool> repeat(const data_t& __d, int __dim) const {
-    __self __ret = this->clone();
-    __ret.repeat_(__d, __dim);
-    return __ret;
+  tensor<bool> repeat(const data_t& d, int dim) const {
+    self ret = this->clone();
+    ret.repeat_(d, dim);
+    return ret;
   }
 
-  tensor<bool>& repeat_(const data_t& __d, int __dim) {
-    if (__d.empty()) throw std::invalid_argument("Cannot repeat an empty tensor");
+  tensor<bool>& repeat_(const data_t& d, int dim) {
+    if (d.empty()) throw std::invalid_argument("Cannot repeat an empty tensor");
 
-    if (this->size(0) < __d.size()) this->__data_ = data_t(__d.begin(), __d.end());
+    if (this->size(0) < d.size()) this->data_ = data_t(d.begin(), d.end());
 
-    size_t __start      = 0;
-    size_t __end        = __d.size();
-    size_t __total_size = this->size(0);
+    size_t start      = 0;
+    size_t end        = d.size();
+    size_t total_size = this->size(0);
 
-    if (__total_size < __d.size()) return *this;
+    if (total_size < d.size()) return *this;
 
-    unsigned int __nbatches  = __total_size / __d.size();
-    size_t       __remainder = __total_size % __d.size();
+    unsigned int nbatches  = total_size / d.size();
+    size_t       remainder = total_size % d.size();
 
-    for (unsigned int __i = 0; __i < __nbatches; ++__i) {
-      for (size_t __j = __start, __k = 0; __k < __d.size(); ++__j, ++__k)
-        this->__data_[__j] = __d[__k];
+    for (unsigned int i = 0; i < nbatches; ++i) {
+      for (size_t j = start, k = 0; k < d.size(); ++j, ++k) this->data_[j] = d[k];
 
-      __start += __d.size();
+      start += d.size();
     }
 #pragma omp parallel
-    for (size_t __j = __start, __k = 0; __j < __total_size && __k < __remainder; ++__j, ++__k)
-      this->__data_[__j] = __d[__k];
+    for (size_t j = start, k = 0; j < total_size and k < remainder; ++j, ++k) this->data_[j] = d[k];
 
     return *this;
   }
 
-  tensor<bool> permute(const index_type __dim) const {
+  tensor<bool> permute(const index_type dim) const {
     // TODO : implement permute here
-    data_t __d;
-    return __self(this->__shape_, __d);
+    data_t d;
+    return self(this->shape_, d);
   }
 
-  tensor<bool> cat(const std::vector<tensor<value_type>>& __others, index_type __dim) const {
-    for (const tensor& __t : __others) {
-      index_type __i = 0;
-      for (; __i < this->__shape_.size(); ++__i)
-        if (__i != __dim && this->__shape_[__i] != __t.__shape_[__i])
-          throw __shape_error__(
+  tensor<bool> cat(const std::vector<tensor<value_type>>& others, index_type dim) const {
+    for (const tensor& t : others) {
+      index_type i = 0;
+      for (; i < this->shape_.size(); ++i)
+        if (i != dim and this->shape_[i] != t.shape_[i])
+          throw shape_error(
               "Cannot concatenate tensors with different shapes along non-concatenation "
               "dimensions");
     }
 
-    shape_type __ret_sh = this->__shape_;
-    for (const tensor& __t : __others) __ret_sh[__dim] += __t.__shape_[__dim];
+    shape_type ret_sh = this->shape_;
+    for (const tensor& t : others) ret_sh[dim] += t.shape_[dim];
 
-    data_t __c;
-    __c.reserve(this->__data_.size());
-    __c.insert(__c.end(), this->__data_.begin(), this->__data_.end());
+    data_t c;
+    c.reserve(this->data_.size());
+    c.insert(c.end(), this->data_.begin(), this->data_.end());
 
-    for (const tensor& __t : __others)
-      __c.insert(__c.end(), __t.__data_.begin(), __t.__data_.end());
+    for (const tensor& t : others) c.insert(c.end(), t.data_.begin(), t.data_.end());
 
-    return __self(__ret_sh, __c);
+    return self(ret_sh, c);
   }
 
-  tensor<bool> unsqueeze(const index_type __dim) const {
-    if (__dim < 0 || __dim > static_cast<index_type>(this->__shape_.size()))
-      throw __index_error__("Dimension out of range in unsqueeze");
+  tensor<bool> unsqueeze(const index_type dim) const {
+    if (dim < 0 or dim > static_cast<index_type>(this->shape_.size()))
+      throw index_error("Dimension out of range in unsqueeze");
 
-    shape_type __s = this->__shape_;
-    __s.insert(__s.begin() + __dim, 1);
+    shape_type s = this->shape_;
+    s.insert(s.begin() + dim, 1);
 
-    tensor __ret;
-    __ret.__shape_ = __s;
-    __ret.__data_  = this->__data_;
+    tensor ret;
+    ret.shape_ = s;
+    ret.data_  = this->data_;
 
-    return __ret;
+    return ret;
   }
 
-  tensor<bool>& randomize_(const shape_type& __sh = {}) {
-    if (__sh.empty() && this->__shape_.empty()) throw __shape_error__("Shape must be initialized");
+  tensor<bool>& randomize_(const shape_type& sh = {}) {
+    if (sh.empty() and this->shape_.empty()) throw shape_error("Shape must be initialized");
 
-    if (this->__shape_.empty() || this->__shape_ != __sh) this->__shape_ = __sh;
+    if (this->shape_.empty() or this->shape_ != sh) this->shape_ = sh;
 
-    index_type __s = this->__computeSize(this->__shape_);
-    this->__data_.resize(__s);
-    this->__compute_strides();
+    index_type s = this->computeSize(this->shape_);
+    this->data_.resize(s);
+    this->compute_strides();
 
-    std::random_device                 __rd;
-    std::mt19937                       __gen(__rd());
-    std::uniform_int_distribution<int> __dist(0, 1);
+    std::random_device                 rd;
+    std::mt19937                       gen(rd());
+    std::uniform_int_distribution<int> dist(0, 1);
 
-    index_type __i = 0;
+    index_type i = 0;
 #pragma omp parallel
-    for (; __i < static_cast<index_type>(__s); ++__i) this->__data_[__i] = (__dist(__gen) == 0);
+    for (; i < static_cast<index_type>(s); ++i) this->data_[i] = (dist(gen) == 0);
 
     return *this;
   }
 
-  tensor<bool>& push_back(value_type __v) {
-    if (this->__shape_.size() != 1)
-      throw __shape_error__("push_back is only supported for one dimensional tensors");
+  tensor<bool>& push_back(value_type v) {
+    if (this->shape_.size() != 1)
+      throw shape_error("push_back is only supported for one dimensional tensors");
 
-    this->__data_.push_back(__v);
-    ++(this->__shape_[0]);
-    this->__compute_strides();
+    this->data_.push_back(v);
+    ++(this->shape_[0]);
+    this->compute_strides();
     return *this;
   }
 
-  tensor<bool>& pop_back(value_type __v) {
-    if (this->__shape_.size() != 1)
-      throw __shape_error__("push_back is only supported for one dimensional tensors");
+  tensor<bool>& pop_back(value_type v) {
+    if (this->shape_.size() != 1)
+      throw shape_error("push_back is only supported for one dimensional tensors");
 
-    this->__data_.pop_back();
-    --(this->__shape_[0]);
-    this->__compute_strides();
+    this->data_.pop_back();
+    --(this->shape_[0]);
+    this->compute_strides();
     return *this;
   }
 
-  tensor<bool>& view(std::initializer_list<index_type> __sh) {
-    index_type __s = this->__computeSize(__sh);
+  tensor<bool>& view(std::initializer_list<index_type> sh) {
+    index_type s = this->computeSize(sh);
 
-    if (__s != this->__data_.size())
+    if (s != this->data_.size())
       throw std::invalid_argument("Total elements do not match for new shape");
 
-    this->__shape_ = __sh;
-    this->__compute_strides();
+    this->shape_ = sh;
+    this->compute_strides();
     return *this;
   }
 
   void print() const {
-    this->printRecursive(0, 0, __shape_);
+    this->printRecursive(0, 0, shape_);
     std::cout << std::endl;
   }
 
  private:
-  bool __equal_shape(const shape_type& __x, const shape_type& __y) const {
-    size_t __size_x = __x.size();
-    size_t __size_y = __y.size();
+  bool equal_shape(const shape_type& x, const shape_type& y) const {
+    size_t size_x = x.size();
+    size_t size_y = y.size();
 
-    if (__size_x == __size_y) return __x == __y;
+    if (size_x == size_y) return x == y;
 
-    if (__size_x < __size_y) return __equal_shape(__y, __x);
+    if (size_x < size_y) return equal_shape(y, x);
 
-    int __diff = __size_x - __size_y;
-    for (size_t __i = 0; __i < __size_y; ++__i)
-      if (__x[__i + __diff] != __y[__i] && __x[__i + __diff] != 1 && __y[__i] != 1) return false;
+    int diff = size_x - size_y;
+    for (size_t i = 0; i < size_y; ++i)
+      if (x[i + diff] != y[i] and x[i + diff] != 1 and y[i] != 1) return false;
 
     return true;
   }
 
   [[nodiscard]]
-  inline size_t computeStride(size_t __dim, const shape_type& __shape) const noexcept {
-    size_t __stride = 1;
-    for (size_t __i = __dim; __i < __shape.size(); __i++) __stride *= __shape[__i];
-    return __stride;
+  inline size_t computeStride(size_t dim, const shape_type& shape) const noexcept {
+    size_t stride = 1;
+    for (size_t i = dim; i < shape.size(); i++) stride *= shape[i];
+    return stride;
   }
 
-  void printRecursive(size_t __index, size_t __depth, const shape_type& __shape) const {
-    if (__depth == __shape.size() - 1) {
+  void printRecursive(size_t index, size_t depth, const shape_type& shape) const {
+    if (depth == shape.size() - 1) {
       std::cout << "[";
 
-      for (size_t __i = 0; __i < __shape[__depth]; ++__i) {
-        std::cout << (this->__data_[__index + __i] ? "true" : "false");
+      for (size_t i = 0; i < shape[depth]; ++i) {
+        std::cout << (this->data_[index + i] ? "true" : "false");
 
-        if (__i < __shape[__depth] - 1) std::cout << ", ";
+        if (i < shape[depth] - 1) std::cout << ", ";
       }
       std::cout << "]";
     } else {
       std::cout << "[\n";
-      size_t __stride = computeStride(__depth + 1, __shape);
+      size_t stride = computeStride(depth + 1, shape);
 
-      for (size_t __i = 0; __i < __shape[__depth]; ++__i) {
-        if (__i > 0) std::cout << "\n";
+      for (size_t i = 0; i < shape[depth]; ++i) {
+        if (i > 0) std::cout << "\n";
 
-        for (size_t __j = 0; __j < __depth + 1; __j++) std::cout << " ";
+        for (size_t j = 0; j < depth + 1; j++) std::cout << " ";
 
-        printRecursive(__index + __i * __stride, __depth + 1, __shape);
+        printRecursive(index + i * stride, depth + 1, shape);
 
-        if (__i < __shape[__depth] - 1) std::cout << ",";
+        if (i < shape[depth] - 1) std::cout << ",";
       }
       std::cout << "\n";
-      for (size_t __j = 0; __j < __depth; __j++) std::cout << " ";
+      for (size_t j = 0; j < depth; j++) std::cout << " ";
       std::cout << "]";
     }
   }
 
-  void __compute_strides() {
-    if (this->__shape_.empty())
-      throw __shape_error__("Shape must be initialized before computing strides");
+  void compute_strides() {
+    if (this->shape_.empty())
+      throw shape_error("Shape must be initialized before computing strides");
 
-    this->__strides_ = shape_type(this->__shape_.size(), 1);
-    int __st = 1, __i = static_cast<int>(this->__shape_.size() - 1);
-    for (; __i >= 0; __i--) {
-      this->__strides_[__i] = __st;
-      __st *= this->__shape_[__i];
+    this->strides_ = shape_type(this->shape_.size(), 1);
+    int st = 1, i = static_cast<int>(this->shape_.size() - 1);
+    for (; i >= 0; i--) {
+      this->strides_[i] = st;
+      st *= this->shape_[i];
     }
   }
 
   [[nodiscard]]
-  index_type __compute_index(const std::vector<index_type>& __idx) const {
-    if (__idx.size() != this->__shape_.size())
-      throw __index_error__("__compute_index : input indices does not match the tensor shape");
+  index_type compute_index(const std::vector<index_type>& idx) const {
+    if (idx.size() != this->shape_.size())
+      throw index_error("compute_index : input indices does not match the tensor shape");
 
-    index_type __index = 0;
-    index_type __i     = 0;
-    for (; __i < this->__shape_.size(); ++__i) __index += __idx[__i] * this->__strides_[__i];
+    index_type index = 0;
+    index_type i     = 0;
+    for (; i < this->shape_.size(); ++i) index += idx[i] * this->strides_[i];
 
-    return __index;
+    return index;
   }
 
   [[nodiscard]]
-  static index_type __computeSize(const shape_type& __dims) noexcept {
-    uint64_t __ret = 1;
-    for (const index_type& __d : __dims) __ret *= __d;
-    return __ret;
+  static index_type computeSize(const shape_type& dims) noexcept {
+    uint64_t ret = 1;
+    for (const index_type& d : dims) ret *= d;
+    return ret;
   }
 
-  index_type __compute_outer_size(const index_type __dim) const {
+  index_type compute_outer_size(const index_type dim) const {
     // just a placeholder for now
     return 0;
   }
 
   [[nodiscard]]
-  static _f32 __frac(const_reference __val) noexcept {
-    return std::fmod(static_cast<float32_t>(__val), 1.0f);
+  static _f32 frac(const_reference val) noexcept {
+    return std::fmod(static_cast<float32_t>(val), 1.0f);
   }
 
-  bool __is_cuda_device() const { return (this->__device_ == Device::CUDA); }
+  bool is_cuda_device() const { return (this->device_ == Device::CUDA); }
 };  // tensor<bool>
