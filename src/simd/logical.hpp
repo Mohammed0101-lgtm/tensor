@@ -3,208 +3,202 @@
 #include "tensorbase.hpp"
 
 template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type __val) {
+tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type val) {
   if (!std::is_integral_v<value_type>)
-    throw __type_error__("Cannot perform logical OR on non-integral values");
+    throw type_error("Cannot perform logical OR on non-integral values");
 
-  const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-  index_type       __i        = 0;
+  const index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
+  index_type       i        = 0;
 
-  if constexpr (std::is_signed_v<value_type> || std::is_same_v<value_type, bool>) {
-    neon_s32 __val_vec = vdupq_n_s32(static_cast<_s32>(__val));
+  if constexpr (std::is_signed_v<value_type> or std::is_same_v<value_type, bool>) {
+    neon_s32 val_vec = vdupq_n_s32(static_cast<_s32>(val));
 
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_s32 __data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-      neon_s32 __or       = vorrq_s32(__data_vec, __val_vec);
+    for (; i < simd_end; i += _ARM64_REG_WIDTH) {
+      neon_s32 data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->data_[i]));
+      neon_s32 or_vec   = vorrq_s32(data_vec, val_vec);
 
-      vst1q_s32(&this->__data_[__i], __or);
+      vst1q_s32(&this->data_[i], or_vec);
     }
   } else if constexpr (std::is_unsigned_v<value_type>) {
-    neon_u32 __val_vec = vdupq_n_u32(static_cast<_u32>(__val));
+    neon_u32 val_vec = vdupq_n_u32(static_cast<_u32>(val));
 
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_u32 __data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
-      neon_u32 __or       = vorrq_u32(__data_vec, __val_vec);
+    for (; i < simd_end; i += _ARM64_REG_WIDTH) {
+      neon_u32 data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->data_[i]));
+      neon_u32 or_vec   = vorrq_u32(data_vec, val_vec);
 
-      vst1q_u32(&this->__data_[__i], __or);
+      vst1q_u32(&this->data_[i], or_vec);
     }
   }
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(this->__data_[__i] || __val);
+  for (; i < this->data_.size(); ++i)
+    this->data_[i] = static_cast<value_type>(this->data_[i] or val);
 
   return *this;
 }
 
 template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const value_type __val) {
+tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const value_type val) {
   if (!std::is_integral_v<value_type>)
-    throw __type_error__("Cannot get the element wise xor of non-integral value");
+    throw type_error("Cannot get the element wise xor of non-integral value");
 
-  const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-  index_type       __i        = 0;
+  const index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
+  index_type       i        = 0;
 
-  if constexpr (std::is_signed_v<value_type> || std::is_same_v<value_type, bool>) {
-    neon_s32 __val_vec = vdupq_n_s32(static_cast<_s32>(__val));
+  if constexpr (std::is_signed_v<value_type> or std::is_same_v<value_type, bool>) {
+    neon_s32 val_vec = vdupq_n_s32(static_cast<_s32>(val));
 
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_s32 __data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-      neon_s32 __xor      = veorq_s32(__data_vec, __val_vec);
+    for (; i < simd_end; i += _ARM64_REG_WIDTH) {
+      neon_s32 data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->data_[i]));
+      neon_s32 xor_vec  = veorq_s32(data_vec, val_vec);
 
-      vst1q_s32(&this->__data_[__i], __xor);
+      vst1q_s32(&this->data_[i], xor_vec);
     }
   } else if constexpr (std::is_unsigned_v<value_type>) {
-    neon_u32 __val_vec = vdupq_n_u32(static_cast<_u32>(__val));
+    neon_u32 val_vec = vdupq_n_u32(static_cast<_u32>(val));
 
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_u32 __data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
-      neon_u32 __xor      = veorq_u32(__data_vec, __val_vec);
+    for (; i < simd_end; i += _ARM64_REG_WIDTH) {
+      neon_u32 data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->data_[i]));
+      neon_u32 xor_vec  = veorq_u32(data_vec, val_vec);
 
-      vst1q_u32(&this->__data_[__i], __xor);
+      vst1q_u32(&this->data_[i], xor_vec);
     }
   }
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(this->__data_[__i] ^ __val);
+  for (; i < this->data_.size(); ++i)
+    this->data_[i] = static_cast<value_type>(this->data_[i] xor val);
 
   return *this;
 }
 
 template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type __val) {
+tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type val) {
   if (!std::is_integral_v<value_type>)
-    throw __type_error__("Cannot get the element wise and of non-integral value");
+    throw type_error("Cannot get the element wise and of non-integral value");
 
-  const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-  index_type       __i        = 0;
+  const index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
+  index_type       i        = 0;
 
   if constexpr (std::is_signed_v<value_type>) {
-    neon_s32 __vals = vdupq_n_s32(reinterpret_cast<_s32>(&__val));
+    neon_s32 vals = vdupq_n_s32(reinterpret_cast<_s32>(&val));
 
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_s32 __vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-      neon_s32 __and = vandq_s32(__vec, __vals);
+    for (; i < simd_end; i += _ARM64_REG_WIDTH) {
+      neon_s32 vec     = vld1q_s32(reinterpret_cast<const _s32*>(&this->data_[i]));
+      neon_s32 and_vec = vandq_s32(vec, vals);
 
-      vst1q_s32(&this->__data_[__i], __and);
+      vst1q_s32(&this->data_[i], and_vec);
     }
   } else if constexpr (std::is_unsigned_v<value_type>) {
-    neon_u32 __vals = vdupq_n_u32(reinterpret_cast<_u32>(&__val));
+    neon_u32 vals = vdupq_n_u32(reinterpret_cast<_u32>(&val));
 
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_u32 __vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
-      neon_u32 __and = vandq_u32(__vec, __vals);
+    for (; i < simd_end; i += _ARM64_REG_WIDTH) {
+      neon_u32 vec     = vld1q_u32(reinterpret_cast<const _u32*>(&this->data_[i]));
+      neon_u32 and_vec = vandq_u32(vec, vals);
 
-      vst1q_u32(&this->__data_[__i], __and);
+      vst1q_u32(&this->data_[i], and_vec);
     }
   }
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(this->__data_[__i] && __val);
+  for (; i < this->data_.size(); ++i)
+    this->data_[i] = static_cast<value_type>(this->data_[i] and val);
 
   return *this;
 }
 
 template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const tensor& __other) {
+tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const tensor& other) {
   if (!std::is_integral_v<value_type>)
-    throw __type_error__("Cannot get the element wise not of non-integral values");
+    throw type_error("Cannot get the element wise not of non-integral values");
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+  if (!equal_shape(this->shape(), other.shape())) throw shape_error("Tensors shapes must be equal");
 
-  const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-  index_type       __i        = 0;
+  const index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
+  index_type       i        = 0;
 
   if constexpr (std::is_unsigned_v<value_type>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_u32 __data_vec  = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
-      neon_u32 __other_vec = vld1q_u32(reinterpret_cast<const _u32*>(&__other[__i]));
-      neon_u32 __or_vec    = vornq_u32(__data_vec, __other_vec);
+    for (; i < simd_end; i += _ARM64_REG_WIDTH) {
+      neon_u32 data_vec  = vld1q_u32(reinterpret_cast<const _u32*>(&this->data_[i]));
+      neon_u32 other_vec = vld1q_u32(reinterpret_cast<const _u32*>(&other[i]));
+      neon_u32 or_vec    = vornq_u32(data_vec, other_vec);
 
-      vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __or_vec);
+      vst1q_u32(reinterpret_cast<_u32*>(&this->data_[i]), or_vec);
     }
   } else if constexpr (std::is_signed_v<value_type>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_s32 __data_vec  = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-      neon_s32 __other_vec = vld1q_s32(reinterpret_cast<const _s32*>(&__other[__i]));
-      neon_s32 __or_vec    = vornq_s32(__data_vec, __other_vec);
+    for (; i < simd_end; i += _ARM64_REG_WIDTH) {
+      neon_s32 data_vec  = vld1q_s32(reinterpret_cast<const _s32*>(&this->data_[i]));
+      neon_s32 other_vec = vld1q_s32(reinterpret_cast<const _s32*>(&other[i]));
+      neon_s32 or_vec    = vornq_s32(data_vec, other_vec);
 
-      vst1q_s32(reinterpret_cast<_s32*>(&this->__data_[__i]), __or_vec);
+      vst1q_s32(reinterpret_cast<_s32*>(&this->data_[i]), or_vec);
     }
   }
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = (this->__data_[__i] || __other[__i]);
+  for (; i < this->data_.size(); ++i) this->data_[i] = (this->data_[i] or other[i]);
 
   return *this;
 }
 
 template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const tensor& __other) {
+tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const tensor& other) {
   if (!std::is_integral_v<value_type>)
-    throw __type_error__("Cannot get the element wise xor of non-integral value");
+    throw type_error("Cannot get the element wise xor of non-integral value");
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+  if (!equal_shape(this->shape(), other.shape())) throw shape_error("Tensors shapes must be equal");
 
-  const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-  index_type       __i        = 0;
+  const index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
+  index_type       i        = 0;
 
   if constexpr (std::is_unsigned_v<value_type>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_u32 __data_vec  = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
-      neon_u32 __other_vec = vld1q_u32(reinterpret_cast<const _u32*>(&__other[__i]));
-      neon_u32 __xor_vec   = veorq_u32(__data_vec, __other_vec);
+    for (; i < simd_end; i += _ARM64_REG_WIDTH) {
+      neon_u32 data_vec  = vld1q_u32(reinterpret_cast<const _u32*>(&this->data_[i]));
+      neon_u32 other_vec = vld1q_u32(reinterpret_cast<const _u32*>(&other[i]));
+      neon_u32 xor_vec   = veorq_u32(data_vec, other_vec);
 
-      vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __xor_vec);
+      vst1q_u32(reinterpret_cast<_u32*>(&this->data_[i]), xor_vec);
     }
   } else if constexpr (std::is_signed_v<value_type>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_s32 __data_vec  = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-      neon_s32 __other_vec = vld1q_s32(reinterpret_cast<const _s32*>(&__other[__i]));
-      neon_s32 __xor_vec   = veorq_s32(__data_vec, __other_vec);
+    for (; i < simd_end; i += _ARM64_REG_WIDTH) {
+      neon_s32 data_vec  = vld1q_s32(reinterpret_cast<const _s32*>(&this->data_[i]));
+      neon_s32 other_vec = vld1q_s32(reinterpret_cast<const _s32*>(&other[i]));
+      neon_s32 xor_vec   = veorq_s32(data_vec, other_vec);
 
-      vst1q_s32(reinterpret_cast<_s32*>(&this->__data_[__i]), __xor_vec);
+      vst1q_s32(reinterpret_cast<_s32*>(&this->data_[i]), xor_vec);
     }
   }
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = (this->__data_[__i] ^ __other[__i]);
+  for (; i < this->data_.size(); ++i) this->data_[i] = (this->data_[i] xor other[i]);
 
   return *this;
 }
 
 template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const tensor& __other) {
+tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const tensor& other) {
   if (!std::is_integral_v<value_type>)
-    throw __type_error__("Cannot get the element-wise and of non-integral value");
+    throw type_error("Cannot get the element-wise and of non-integral value");
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+  if (!equal_shape(this->shape(), other.shape())) throw shape_error("Tensors shapes must be equal");
 
-  const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-  index_type       __i        = 0;
+  const index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
+  index_type       i        = 0;
 
   if constexpr (std::is_unsigned_v<value_type>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_u32 __data_vec  = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
-      neon_u32 __other_vec = vld1q_u32(reinterpret_cast<const _u32*>(&__other[__i]));
-      neon_u32 __and_vec   = vandq_u32(__data_vec, __other_vec);
+    for (; i < simd_end; i += _ARM64_REG_WIDTH) {
+      neon_u32 data_vec  = vld1q_u32(reinterpret_cast<const _u32*>(&this->data_[i]));
+      neon_u32 other_vec = vld1q_u32(reinterpret_cast<const _u32*>(&other[i]));
+      neon_u32 and_vec   = vandq_u32(data_vec, other_vec);
 
-      vst1q_u32(reinterpret_cast<_u32*>(&this->__data_[__i]), __and_vec);
+      vst1q_u32(reinterpret_cast<_u32*>(&this->data_[i]), and_vec);
     }
   } else if constexpr (std::is_signed_v<value_type>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_s32 __data_vec  = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-      neon_s32 __other_vec = vld1q_s32(reinterpret_cast<const _s32*>(&__other[__i]));
-      neon_s32 __and_vec   = vandq_s32(__data_vec, __other_vec);
+    for (; i < simd_end; i += _ARM64_REG_WIDTH) {
+      neon_s32 data_vec  = vld1q_s32(reinterpret_cast<const _s32*>(&this->data_[i]));
+      neon_s32 other_vec = vld1q_s32(reinterpret_cast<const _s32*>(&other[i]));
+      neon_s32 and_vec   = vandq_s32(data_vec, other_vec);
 
-      vst1q_s32(reinterpret_cast<_s32*>(&this->__data_[__i]), __and_vec);
+      vst1q_s32(reinterpret_cast<_s32*>(&this->data_[i]), and_vec);
     }
   }
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = (this->__data_[__i] && __other[__i]);
+  for (; i < this->data_.size(); ++i) this->data_[i] = (this->data_[i] and other[i]);
 
   return *this;
 }
