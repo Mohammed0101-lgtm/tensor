@@ -51,20 +51,37 @@
 
 #if defined(__ARM_NEON)
 
+using _s8  = int8_t;
+using _s16 = int16_t;
 using _s32 = int32_t;
+using _s64 = int64_t;
+
+using _u8  = uint8_t;
+using _u16 = uint16_t;
 using _u32 = uint32_t;
+using _u64 = uint64_t;
+
+using _f16 = float16_t;
 using _f32 = float32_t;
 using _f64 = float64_t;
 
+using neon_s8  = int8x16_t;
+using neon_s16 = int16x8_t;
 using neon_s32 = int32x4_t;
+using neon_s64 = int64x2_t;
+
+using neon_u8  = uint8x16_t;
+using neon_u16 = uint16x8_t;
 using neon_u32 = uint32x4_t;
+using neon_u64 = uint64x2_t;
+
+using neon_f16 = float16x8_t;
 using neon_f32 = float32x4_t;
 using neon_f64 = float64x2_t;
-using neon_u8  = uint8x16_t;
 
 #endif
 
-const int _ARM64_REG_WIDTH = 4;
+const int _ARM64_REG_WIDTH = 128;  // 128 bit wide register
 
 template <class _Tp>
 class tensor {
@@ -1485,7 +1502,7 @@ class tensor {
   tensor           neon_operator_minus(const value_type val) const;
   tensor           neon_transpose() const;
   tensor           neon_matmul(const tensor& other) const;
-  tensor           neon_absolute(const tensor& tensor) const;
+  tensor           neon_absolute_(const tensor& tensor) const;
   tensor           neon_cross_product(const tensor& other) const;
   tensor           neon_dot(const tensor& other) const;
   tensor           neon_argmax(index_type dim) const;
