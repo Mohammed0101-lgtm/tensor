@@ -4,29 +4,28 @@
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_sigmoid_() {
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+  if (!std::is_arithmetic_v<value_type>) throw type_error("Type must be arithmetic");
 
-  index_type __i = 0;
+  index_type i = 0;
 
   using neon_type =
       typename std::conditional<std::is_same_v<value_type, _f32>, neon_f32, void>::type;
 
   if constexpr (std::is_same_v<value_type, _f32>) {
-    const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
+    const index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
 
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_type __v         = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
-      neon_type __exp_neg_v = vexpq_f32(vnegq_f32(__v));  // e^(-x)
-      neon_type __sigmoid =
-          vrecpeq_f32(vaddq_f32(vdupq_n_f32(1.0f), __exp_neg_v));  // 1 / (1 + e^(-x))
+    for (; i < simd_end; i += _ARM64_REG_WIDTH) {
+      neon_type v         = vld1q_f32(reinterpret_cast<const _f32*>(&this->data_[i]));
+      neon_type exp_neg_v = vexpq_f32(vnegq_f32(v));                             // e^(-x)
+      neon_type sigmoid = vrecpeq_f32(vaddq_f32(vdupq_n_f32(1.0f), exp_neg_v));  // 1 / (1 + e^(-x))
 
-      vst1q_f32(reinterpret_cast<_f32*>(&this->__data_[__i]), __sigmoid);
+      vst1q_f32(reinterpret_cast<_f32*>(&this->data_[i]), sigmoid);
     }
   }
 #pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] =
-        static_cast<value_type>(1.0 / (1.0 + std::exp(-static_cast<double>(this->__data_[__i]))));
+  for (; i < this->data_.size(); ++i)
+    this->data_[i] =
+        static_cast<value_type>(1.0 / (1.0 + std::exp(-static_cast<double>(this->data_[i]))));
 
   return *this;
 }
