@@ -4,8 +4,9 @@
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type val) {
-  if (!std::is_integral_v<value_type>)
+  if (!std::is_integral_v<value_type>) {
     throw type_error("Cannot perform logical OR on non-integral values");
+  }
 
   const index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
   index_type       i        = 0;
@@ -38,8 +39,9 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type val) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const value_type val) {
-  if (!std::is_integral_v<value_type>)
+  if (!std::is_integral_v<value_type>) {
     throw type_error("Cannot get the element wise xor of non-integral value");
+  }
 
   const index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
   index_type       i        = 0;
@@ -72,8 +74,9 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const value_type val) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type val) {
-  if (!std::is_integral_v<value_type>)
+  if (!std::is_integral_v<value_type>) {
     throw type_error("Cannot get the element wise and of non-integral value");
+  }
 
   const index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
   index_type       i        = 0;
@@ -106,10 +109,13 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type val) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const tensor& other) {
-  if (!std::is_integral_v<value_type>)
+  if (!std::is_integral_v<value_type>) {
     throw type_error("Cannot get the element wise not of non-integral values");
+  }
 
-  if (!equal_shape(this->shape(), other.shape())) throw shape_error("Tensors shapes must be equal");
+  if (!equal_shape(this->shape(), other.shape())) {
+    throw shape_error("Tensors shapes must be equal");
+  }
 
   const index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
   index_type       i        = 0;
@@ -139,10 +145,13 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const tensor& other) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const tensor& other) {
-  if (!std::is_integral_v<value_type>)
+  if (!std::is_integral_v<value_type>) {
     throw type_error("Cannot get the element wise xor of non-integral value");
+  }
 
-  if (!equal_shape(this->shape(), other.shape())) throw shape_error("Tensors shapes must be equal");
+  if (!equal_shape(this->shape(), other.shape())) {
+    throw shape_error("Tensors shapes must be equal");
+  }
 
   const index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
   index_type       i        = 0;
@@ -172,10 +181,13 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const tensor& other) {
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const tensor& other) {
-  if (!std::is_integral_v<value_type>)
+  if (!std::is_integral_v<value_type>) {
     throw type_error("Cannot get the element-wise and of non-integral value");
+  }
 
-  if (!equal_shape(this->shape(), other.shape())) throw shape_error("Tensors shapes must be equal");
+  if (!equal_shape(this->shape(), other.shape())) {
+    throw shape_error("Tensors shapes must be equal");
+  }
 
   const index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
   index_type       i        = 0;
