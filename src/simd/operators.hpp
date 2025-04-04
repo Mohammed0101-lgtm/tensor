@@ -6,8 +6,9 @@ template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_operator_plus(const tensor& other) const {
   static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
 
-  if (!equal_shape(this->shape(), other.shape()))
+  if (!equal_shape(this->shape(), other.shape())) {
     throw shape_error("Cannot add two tensors with different shapes");
+  }
 
   constexpr size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
   static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
@@ -80,8 +81,9 @@ template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_operator_minus(const tensor& other) const {
   static_assert(has_minus_operator_v<value_type>, "Value type must have a minus operator");
 
-  if (!equal_shape(this->shape(), other.shape()))
+  if (!equal_shape(this->shape(), other.shape())) {
     throw shape_error("Cannot add two tensors with different shapes");
+  }
 
   data_t           d(this->data_.size());
   constexpr size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
@@ -130,7 +132,9 @@ template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const tensor& other) const {
   static_assert(has_minus_operator_v<value_type>, "Value type must have a minus operator");
 
-  if (!equal_shape(this->shape(), other.shape())) throw shape_error("Tensors shapes must be equal");
+  if (!equal_shape(this->shape(), other.shape())) {
+    throw shape_error("Tensors shapes must be equal");
+  }
 
   constexpr size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
   static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
@@ -155,7 +159,9 @@ template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_operator_times_eq(const tensor& other) const {
   static_assert(has_times_operator_v<value_type>, "Value type must have a times operator");
 
-  if (!equal_shape(this->shape(), other.shape())) throw shape_error("Tensors shapes must be equal");
+  if (!equal_shape(this->shape(), other.shape())) {
+    throw shape_error("Tensors shapes must be equal");
+  }
 
   constexpr size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
   static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
