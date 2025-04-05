@@ -25,7 +25,9 @@ tensor<_Tp> tensor<_Tp>::neon_operator_plus(const tensor& other) const {
   }
 
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i) d[i] = this->data_[i] + other[i];
+  for (; i < this->data_.size(); ++i) {
+    d[i] = this->data_[i] + other[i];
+  }
 
   return self(this->shape_, d);
 }
@@ -49,7 +51,9 @@ tensor<_Tp> tensor<_Tp>::neon_operator_plus(const value_type val) const {
   }
 
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i) d[i] = this->data_[i] + val;
+  for (; i < this->data_.size(); ++i) {
+    d[i] = this->data_[i] + val;
+  }
 
   return self(d, this->shape_);
 }
@@ -72,7 +76,9 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_plus_eq(const_reference val) const {
   }
 
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] + val;
+  for (; i < this->data_.size(); ++i) {
+    this->data_[i] = this->data_[i] + val;
+  }
 
   return *this;
 }
@@ -99,7 +105,9 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const tensor& other) const {
     neon_store<value_type>(&d[i], result);
   }
 #pragma omp parallel
-  for (; i < this->data_[i]; ++i) d[i] = this->data_[i] - other[i];
+  for (; i < this->data_[i]; ++i) {
+    d[i] = this->data_[i] - other[i];
+  }
 
   return self(this->shape_, d);
 }
@@ -123,7 +131,9 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const value_type val) const {
   }
 
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i) d[i] = this->data_[i] - val;
+  for (; i < this->data_.size(); ++i) {
+    d[i] = this->data_[i] - val;
+  }
 
   return self(*this);
 }
@@ -150,7 +160,9 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const tensor& other) const {
   }
 
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i) this->data_[i] -= other[i];
+  for (; i < this->data_.size(); ++i) {
+    this->data_[i] -= other[i];
+  }
 
   return *this;
 }
@@ -177,7 +189,9 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_times_eq(const tensor& other) const {
   }
 
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i) this->data_[i] *= other[i];
+  for (; i < this->data_.size(); ++i) {
+    this->data_[i] *= other[i];
+  }
 
   return *this;
 }
@@ -200,7 +214,9 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const_reference val) const {
   }
 
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i) this->data_[i] -= val;
+  for (; i < this->data_.size(); ++i) {
+    this->data_[i] -= val;
+  }
 
   return *this;
 }
