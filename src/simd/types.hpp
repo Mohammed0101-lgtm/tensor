@@ -4,12 +4,15 @@
 
 template <class _Tp>
 tensor<_s32> tensor<_Tp>::neon_int32_() const {
-  if (!std::is_convertible_v<value_type, _s32>)
+  if (!std::is_convertible_v<value_type, _s32>) {
     throw type_error("Type must be convertible to 32 bit signed int");
+  }
 
-  if (this->empty()) return tensor<_s32>(this->shape_);
+  if (this->empty()) {
+    return tensor<_s32>(this->shape_);
+  }
 
-  std::vector<_s32> d;
+  std::vector<_s32> d(this->data_.size());
   const index_type  simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
   index_type        i        = 0;
 
@@ -28,17 +31,23 @@ tensor<_s32> tensor<_Tp>::neon_int32_() const {
       vst1q_s32(reinterpret_cast<_s32*>(&d[i]), int_vec);
     }
   }
-  for (; i < this->data_.size(); ++i) d.push_back(static_cast<_s32>(this->data_[i]));
+
+  for (; i < this->data_.size(); ++i) {
+    d[i] = static_cast<_s32>(this->data_[i]);
+  }
 
   return tensor<_s32>(this->shape_, d);
 }
 
 template <class _Tp>
 tensor<_u32> tensor<_Tp>::neon_uint32_() const {
-  if (!std::is_convertible_v<value_type, _u32>)
+  if (!std::is_convertible_v<value_type, _u32>) {
     throw type_error("Type must be convertible to unsigned 32 bit int");
+  }
 
-  if (this->empty()) return tensor<_u32>(this->shape_);
+  if (this->empty()) {
+    return tensor<_u32>(this->shape_);
+  }
 
   std::vector<_u32> d(this->data_.size());
   index_type        i = 0;
@@ -61,17 +70,22 @@ tensor<_u32> tensor<_Tp>::neon_uint32_() const {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i) d[i] = static_cast<_u32>(this->data_[i]);
+  for (; i < this->data_.size(); ++i) {
+    d[i] = static_cast<_u32>(this->data_[i]);
+  }
 
   return tensor<_u32>(this->shape_, d);
 }
 
 template <class _Tp>
 tensor<_f32> tensor<_Tp>::neon_float32_() const {
-  if (!std::is_convertible_v<value_type, _f32>)
+  if (!std::is_convertible_v<value_type, _f32>) {
     throw type_error("Type must be convertible to 32 bit float");
+  }
 
-  if (this->empty()) return tensor<_f32>(this->shape_);
+  if (this->empty()) {
+    return tensor<_f32>(this->shape_);
+  }
 
   std::vector<_f32> d(this->data_.size());
   index_type        i = 0;
@@ -99,17 +113,22 @@ tensor<_f32> tensor<_Tp>::neon_float32_() const {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i) d[i] = static_cast<_f32>(this->data_[i]);
+  for (; i < this->data_.size(); ++i) {
+    d[i] = static_cast<_f32>(this->data_[i]);
+  }
 
   return tensor<_f32>(this->shape_, d);
 }
 
 template <class _Tp>
 tensor<_f64> tensor<_Tp>::neon_double_() const {
-  if (!std::is_convertible_v<value_type, _f64>)
+  if (!std::is_convertible_v<value_type, _f64>) {
     throw type_error("Type must be convertible to 64 bit float");
+  }
 
-  if (this->empty()) return tensor<_f64>(this->shape_);
+  if (this->empty()) {
+    return tensor<_f64>(this->shape_);
+  }
 
   std::vector<_f64> d(this->data_.size());
   const index_type  simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
@@ -120,17 +139,22 @@ tensor<_f64> tensor<_Tp>::neon_double_() const {
     vst1q_f64(reinterpret_cast<_f64*>(&d[i]), data_vec);
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i) d[i] = static_cast<_f64>(this->data_[i]);
+  for (; i < this->data_.size(); ++i) {
+    d[i] = static_cast<_f64>(this->data_[i]);
+  }
 
   return tensor<_f64>(this->shape_, d);
 }
 
 template <class _Tp>
 tensor<uint64_t> tensor<_Tp>::neon_unsigned_long_() const {
-  if (!std::is_convertible_v<value_type, uint64_t>)
+  if (!std::is_convertible_v<value_type, uint64_t>) {
     throw type_error("Type must be convertible to unsigned 64 bit int");
+  }
 
-  if (this->empty()) return tensor<uint64_t>(this->shape_);
+  if (this->empty()) {
+    return tensor<uint64_t>(this->shape_);
+  }
 
   std::vector<uint64_t> d(this->data_.size());
   const index_type      simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
@@ -154,17 +178,22 @@ tensor<uint64_t> tensor<_Tp>::neon_unsigned_long_() const {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i) d[i] = static_cast<uint64_t>(this->data_[i]);
+  for (; i < this->data_.size(); ++i) {
+    d[i] = static_cast<uint64_t>(this->data_[i]);
+  }
 
   return tensor<uint64_t>(this->shape_, d);
 }
 
 template <class _Tp>
 tensor<int64_t> tensor<_Tp>::neon_long_() const {
-  if (!std::is_convertible_v<value_type, int64_t>)
+  if (!std::is_convertible_v<value_type, int64_t>) {
     throw type_error("Type must be convertible to 64 bit int");
+  }
 
-  if (this->empty()) return tensor<int64_t>(this->shape_);
+  if (this->empty()) {
+    return tensor<int64_t>(this->shape_);
+  }
 
   std::vector<int64_t> d(this->data_.size());
   const index_type     simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
@@ -200,7 +229,9 @@ tensor<int64_t> tensor<_Tp>::neon_long_() const {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i) d[i] = static_cast<int64_t>(this->data_[i]);
+  for (; i < this->data_.size(); ++i) {
+    d[i] = static_cast<int64_t>(this->data_[i]);
+  }
 
   return tensor<int64_t>(this->shape_, d);
 }
