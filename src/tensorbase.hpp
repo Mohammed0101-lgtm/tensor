@@ -649,7 +649,7 @@ class tensor {
   /// @brief Computes the absolute value of each element in a given tensor.
   /// @param tensor The tensor to compute the absolute values of.
   /// @return A new tensor containing the absolute values of the input tensor.
-  tensor absolute(const tensor& tensor) const;
+  tensor absolute(const tensor& other) const;
 
   /// @brief Computes the dot product between the tensor and another tensor.
   /// @param other The tensor to compute the dot product with.
@@ -1553,10 +1553,11 @@ bool tensor<_Tp>::equal_shape(const shape_type& x, const shape_type& y) const {
   }
 
   int diff = size_x - size_y;
-  for (size_t i = 0; i < size_y; ++i)
+  for (size_t i = 0; i < size_y; ++i) {
     if (x[i + diff] != y[i] and x[i + diff] != 1 and y[i] != 1) {
       return false;
     }
+  }
 
   return true;
 }
@@ -1583,7 +1584,10 @@ template <class _Tp>
 [[nodiscard]]
 inline typename tensor<_Tp>::index_type tensor<_Tp>::computeSize(const shape_type& dims) noexcept {
   index_type ret = 1;
-  for (const index_type& d : dims) ret *= d;
+  for (const index_type& d : dims) {
+    ret *= d;
+  }
+
   return ret;
 }
 
@@ -1597,7 +1601,9 @@ inline typename tensor<_Tp>::index_type tensor<_Tp>::compute_index(
   index_type index = 0;
   index_type i     = 0;
 
-  for (; i < this->shape_.size(); ++i) index += idx[i] * this->strides_[i];
+  for (; i < this->shape_.size(); ++i) {
+    index += idx[i] * this->strides_[i];
+  }
 
   return index;
 }
@@ -1629,6 +1635,7 @@ void tensor<_Tp>::printRecursive(size_t index, size_t depth, const shape_type& s
       } else {
         std::cout << data_[index + i];
       }
+
       if (i < shape[depth] - 1) {
         std::cout << ", ";
       }
@@ -1643,7 +1650,9 @@ void tensor<_Tp>::printRecursive(size_t index, size_t depth, const shape_type& s
         std::cout << "\n";
       }
 
-      for (size_t j = 0; j < depth + 1; ++j) std::cout << " ";
+      for (size_t j = 0; j < depth + 1; ++j) {
+        std::cout << " ";
+      }
 
       printRecursive(index + i * stride, depth + 1, shape);
 
@@ -1651,10 +1660,12 @@ void tensor<_Tp>::printRecursive(size_t index, size_t depth, const shape_type& s
         std::cout << ",";
       }
     }
+
     std::cout << "\n";
     for (size_t j = 0; j < depth; ++j) {
       std::cout << " ";
     }
+
     std::cout << "]";
   }
 }
@@ -1666,6 +1677,7 @@ inline size_t tensor<_Tp>::computeStride(size_t dim, const shape_type& shape) co
   for (size_t i = dim; i < shape.size(); ++i) {
     stride *= shape[i];
   }
+
   return stride;
 }
 
@@ -1837,111 +1849,159 @@ class tensor<bool> {
   tensor<bool>& logical_not_() {
     index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) this->data_[i] = ~(this->data_[i]);
+    for (; i < this->data_.size(); ++i) {
+      this->data_[i] = ~(this->data_[i]);
+    }
+
     return *this;
   }
 
   tensor<bool>& logical_or_(const value_type val) {
     index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] or val;
+    for (; i < this->data_.size(); ++i) {
+      this->data_[i] = this->data_[i] or val;
+    }
+
     return *this;
   }
 
   tensor<bool>& logical_or_(const tensor& other) {
     index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] or other[i];
+    for (; i < this->data_.size(); ++i) {
+      this->data_[i] = this->data_[i] or other[i];
+    }
+
     return *this;
   }
 
   tensor<bool>& logical_and_(const value_type val) {
     index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] and val;
+    for (; i < this->data_.size(); ++i) {
+      this->data_[i] = this->data_[i] and val;
+    }
+
     return *this;
   }
 
   tensor<bool>& logical_and_(const tensor& other) {
     index_type i = 0;
-    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] and other[i];
+    for (; i < this->data_.size(); ++i) {
+      this->data_[i] = this->data_[i] and other[i];
+    }
+
     return *this;
   }
 
   tensor<bool>& logical_xor_(const value_type val) {
     index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] xor val;
+    for (; i < this->data_.size(); ++i) {
+      this->data_[i] = this->data_[i] xor val;
+    }
+
     return *this;
   }
 
   tensor<bool>& logical_xor_(const tensor& other) {
     index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] xor other[i];
+    for (; i < this->data_.size(); ++i) {
+      this->data_[i] = this->data_[i] xor other[i];
+    }
+
     return *this;
   }
 
   const tensor<bool>& logical_not_() const {
     index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) this->data_[i] = ~(this->data_[i]);
+    for (; i < this->data_.size(); ++i) {
+      this->data_[i] = ~(this->data_[i]);
+    }
+
     return *this;
   }
 
   const tensor<bool>& logical_or_(const value_type val) const {
     index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] or val;
+    for (; i < this->data_.size(); ++i) {
+      this->data_[i] = this->data_[i] or val;
+    }
+
     return *this;
   }
 
   const tensor<bool>& logical_or_(const tensor& other) const {
     index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] or other[i];
+    for (; i < this->data_.size(); ++i) {
+      this->data_[i] = this->data_[i] or other[i];
+    }
+
     return *this;
   }
 
   const tensor<bool>& logical_and_(const value_type val) const {
     index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] and val;
+    for (; i < this->data_.size(); ++i) {
+      this->data_[i] = this->data_[i] and val;
+    }
+
     return *this;
   }
 
   const tensor<bool>& logical_and_(const tensor& other) const {
     index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] and other[i];
+    for (; i < this->data_.size(); ++i) {
+      this->data_[i] = this->data_[i] and other[i];
+    }
+
     return *this;
   }
 
   const tensor<bool>& logical_xor_(const value_type val) const {
     index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] xor val;
+    for (; i < this->data_.size(); ++i) {
+      this->data_[i] = this->data_[i] xor val;
+    }
+
     return *this;
   }
 
   const tensor<bool>& logical_xor_(const tensor& other) const {
     index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) this->data_[i] = this->data_[i] xor other[i];
+    for (; i < this->data_.size(); ++i) {
+      this->data_[i] = this->data_[i] xor other[i];
+    }
+
     return *this;
   }
 
   tensor<bool>& operator!() {
     index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) this->data_[i] = !(this->data_[i]);
+    for (; i < this->data_.size(); ++i) {
+      this->data_[i] = !(this->data_[i]);
+    }
+
     return *this;
   }
 
   const tensor<bool>& operator!() const {
     index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) this->data_[i] = !(this->data_[i]);
+    for (; i < this->data_.size(); ++i) {
+      this->data_[i] = !(this->data_[i]);
+    }
+
     return *this;
   }
 
@@ -1973,7 +2033,9 @@ class tensor<bool> {
 
     index_type i = start_i, j = 0;
 #pragma omp parallel
-    for (; i < end_i; i += step, ++j) ret[j] = this->data_[j];
+    for (; i < end_i; i += step, ++j) {
+      ret[j] = this->data_[j];
+    }
 
     return ret;
   }
@@ -1982,6 +2044,7 @@ class tensor<bool> {
     if (this->shape_.size() != 2) {
       throw shape_error("Cannot get a row from a non two dimensional tensor");
     }
+
     if (this->shape_[0] <= index or index < 0) {
       throw index_error("Index input is out of range");
     }
@@ -1991,7 +2054,9 @@ class tensor<bool> {
     index_type i     = start;
     data_t     r(end);
 #pragma omp parallel
-    for (; i < end; ++i) r[i] = this->data_[i];
+    for (; i < end; ++i) {
+      r[i] = this->data_[i];
+    }
 
     return self({this->shape_[1]}, r);
   }
@@ -2007,7 +2072,9 @@ class tensor<bool> {
 
     data_t     c(this->shape_[0]);
     index_type i = 0;
-    for (; i < this->shape_[0]; ++i) c[i] = this->data_[this->compute_index({i, index})];
+    for (; i < this->shape_[0]; ++i) {
+      c[i] = this->data_[this->compute_index({i, index})];
+    }
 
     return self({this->shape_[0]}, c);
   }
@@ -2046,7 +2113,9 @@ class tensor<bool> {
     index_type i = 0;
     for (; i < rows; ++i) {
       index_type j = 0;
-      for (; j < cols; ++j) ret.at({j, i}) = this->at({i, j});
+      for (; j < cols; ++j) {
+        ret.at({j, i}) = this->at({i, j});
+      }
     }
 
     return ret;
@@ -2064,9 +2133,11 @@ class tensor<bool> {
       throw shape_error("In-place transpose is only supported for square tensors");
     }
 
-    for (index_type i = 0; i < r; ++i)
-      for (index_type j = i + 1; j < c; ++j)
+    for (index_type i = 0; i < r; ++i) {
+      for (index_type j = i + 1; j < c; ++j) {
         std::swap(this->data_[i * c + j], this->data_[j * c + i]);
+      }
+    }
 
     return *this;
   }
@@ -2083,9 +2154,11 @@ class tensor<bool> {
       throw shape_error("In-place transpose is only supported for square tensors");
     }
 
-    for (index_type i = 0; i < r; ++i)
-      for (index_type j = i + 1; j < c; ++j)
+    for (index_type i = 0; i < r; ++i) {
+      for (index_type j = i + 1; j < c; ++j) {
         std::swap(this->data_[i * c + j], this->data_[j * c + i]);
+      }
+    }
 
     return *this;
   }
@@ -2133,12 +2206,16 @@ class tensor<bool> {
     size_t       remainder = total_size % d.size();
 
     for (unsigned int i = 0; i < nbatches; ++i) {
-      for (size_t j = start, k = 0; k < d.size(); ++j, ++k) this->data_[j] = d[k];
+      for (size_t j = start, k = 0; k < d.size(); ++j, ++k) {
+        this->data_[j] = d[k];
+      }
 
       start += d.size();
     }
 #pragma omp parallel
-    for (size_t j = start, k = 0; j < total_size and k < remainder; ++j, ++k) this->data_[j] = d[k];
+    for (size_t j = start, k = 0; j < total_size and k < remainder; ++j, ++k) {
+      this->data_[j] = d[k];
+    }
 
     return *this;
   }
@@ -2152,22 +2229,27 @@ class tensor<bool> {
   tensor<bool> cat(const std::vector<tensor<value_type>>& others, index_type dim) const {
     for (const tensor& t : others) {
       index_type i = 0;
-      for (; i < this->shape_.size(); ++i)
+      for (; i < this->shape_.size(); ++i) {
         if (i != dim and this->shape_[i] != t.shape_[i]) {
           throw shape_error(
               "Cannot concatenate tensors with different shapes along non-concatenation "
               "dimensions");
         }
+      }
     }
 
     shape_type ret_sh = this->shape_;
-    for (const tensor& t : others) ret_sh[dim] += t.shape_[dim];
+    for (const tensor& t : others) {
+      ret_sh[dim] += t.shape_[dim];
+    }
 
     data_t c;
     c.reserve(this->data_.size());
     c.insert(c.end(), this->data_.begin(), this->data_.end());
 
-    for (const tensor& t : others) c.insert(c.end(), t.data_.begin(), t.data_.end());
+    for (const tensor& t : others) {
+      c.insert(c.end(), t.data_.begin(), t.data_.end());
+    }
 
     return self(ret_sh, c);
   }
@@ -2206,7 +2288,9 @@ class tensor<bool> {
 
     index_type i = 0;
 #pragma omp parallel
-    for (; i < static_cast<index_type>(s); ++i) this->data_[i] = (dist(gen) == 0);
+    for (; i < static_cast<index_type>(s); ++i) {
+      this->data_[i] = (dist(gen) == 0);
+    }
 
     return *this;
   }
@@ -2261,10 +2345,11 @@ class tensor<bool> {
     }
 
     int diff = size_x - size_y;
-    for (size_t i = 0; i < size_y; ++i)
+    for (size_t i = 0; i < size_y; ++i) {
       if (x[i + diff] != y[i] and x[i + diff] != 1 and y[i] != 1) {
         return false;
       }
+    }
 
     return true;
   }
@@ -2272,7 +2357,10 @@ class tensor<bool> {
   [[nodiscard]]
   inline size_t computeStride(size_t dim, const shape_type& shape) const noexcept {
     size_t stride = 1;
-    for (size_t i = dim; i < shape.size(); i++) stride *= shape[i];
+    for (size_t i = dim; i < shape.size(); i++) {
+      stride *= shape[i];
+    }
+
     return stride;
   }
 
@@ -2297,7 +2385,9 @@ class tensor<bool> {
           std::cout << "\n";
         }
 
-        for (size_t j = 0; j < depth + 1; j++) std::cout << " ";
+        for (size_t j = 0; j < depth + 1; j++) {
+          std::cout << " ";
+        }
 
         printRecursive(index + i * stride, depth + 1, shape);
 
@@ -2305,15 +2395,20 @@ class tensor<bool> {
           std::cout << ",";
         }
       }
+
       std::cout << "\n";
-      for (size_t j = 0; j < depth; j++) std::cout << " ";
+      for (size_t j = 0; j < depth; j++) {
+        std::cout << " ";
+      }
+
       std::cout << "]";
     }
   }
 
   void compute_strides() {
-    if (this->shape_.empty())
+    if (this->shape_.empty()) {
       throw shape_error("Shape must be initialized before computing strides");
+    }
 
     this->strides_ = shape_type(this->shape_.size(), 1);
     int st = 1, i = static_cast<int>(this->shape_.size() - 1);
@@ -2328,9 +2423,12 @@ class tensor<bool> {
     if (idx.size() != this->shape_.size()) {
       throw index_error("compute_index : input indices does not match the tensor shape");
     }
+
     index_type index = 0;
     index_type i     = 0;
-    for (; i < this->shape_.size(); ++i) index += idx[i] * this->strides_[i];
+    for (; i < this->shape_.size(); ++i) {
+      index += idx[i] * this->strides_[i];
+    }
 
     return index;
   }
@@ -2338,7 +2436,10 @@ class tensor<bool> {
   [[nodiscard]]
   static index_type computeSize(const shape_type& dims) noexcept {
     uint64_t ret = 1;
-    for (const index_type& d : dims) ret *= d;
+    for (const index_type& d : dims) {
+      ret *= d;
+    }
+
     return ret;
   }
 
