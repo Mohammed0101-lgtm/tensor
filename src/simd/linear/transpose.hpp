@@ -17,14 +17,16 @@ tensor<_Tp> tensor<_Tp>::neon_transpose() const {
         if (i + _ARM64_REG_WIDTH <= rows and j + _ARM64_REG_WIDTH <= cols) {
           float32x4x4_t input;
 
-          for (index_type k = 0; k < _ARM64_REG_WIDTH; ++k)
+          for (index_type k = 0; k < _ARM64_REG_WIDTH; ++k) {
             input.val[k] =
                 vld1q_f32(reinterpret_cast<const _f32*>(&this->data_[(i + k) * cols + j]));
+          }
 
           float32x4x4_t output = vld4q_f32(reinterpret_cast<const _f32*>(&input));
 
-          for (index_type k = 0; k < _ARM64_REG_WIDTH; ++k)
+          for (index_type k = 0; k < _ARM64_REG_WIDTH; ++k) {
             vst1q_f32(&ret.data_[(j + k) * rows + i], output.val[k]);
+          }
         } else {
           for (index_type ii = i;
                ii < std::min(static_cast<index_type>(i + _ARM64_REG_WIDTH), rows); ++ii) {
@@ -91,7 +93,9 @@ tensor<_Tp> tensor<_Tp>::neon_transpose() const {
 #pragma omp parallel
     for (; i < rows; ++i) {
       index_type j = 0;
-      for (; j < cols; ++j) ret.at({j, i}) = this->at({i, j});
+      for (; j < cols; ++j) {
+        ret.at({j, i}) = this->at({i, j});
+      }
     }
   }
 
