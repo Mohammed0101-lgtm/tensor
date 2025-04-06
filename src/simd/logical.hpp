@@ -31,8 +31,9 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type val) {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i)
+  for (; i < this->data_.size(); ++i) {
     this->data_[i] = static_cast<value_type>(this->data_[i] or val);
+  }
 
   return *this;
 }
@@ -66,8 +67,9 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const value_type val) {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i)
+  for (; i < this->data_.size(); ++i) {
     this->data_[i] = static_cast<value_type>(this->data_[i] xor val);
+  }
 
   return *this;
 }
@@ -101,8 +103,9 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type val) {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i)
+  for (; i < this->data_.size(); ++i) {
     this->data_[i] = static_cast<value_type>(this->data_[i] and val);
+  }
 
   return *this;
 }
@@ -138,7 +141,9 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const tensor& other) {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i) this->data_[i] = (this->data_[i] or other[i]);
+  for (; i < this->data_.size(); ++i) {
+    this->data_[i] = (this->data_[i] or other[i]);
+  }
 
   return *this;
 }
@@ -174,7 +179,9 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const tensor& other) {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i) this->data_[i] = (this->data_[i] xor other[i]);
+  for (; i < this->data_.size(); ++i) {
+    this->data_[i] = (this->data_[i] xor other[i]);
+  }
 
   return *this;
 }
@@ -210,7 +217,9 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const tensor& other) {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i) this->data_[i] = (this->data_[i] and other[i]);
+  for (; i < this->data_.size(); ++i) {
+    this->data_[i] = (this->data_[i] and other[i]);
+  }
 
   return *this;
 }
