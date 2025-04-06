@@ -48,14 +48,19 @@ tensor<_Tp> tensor<_Tp>::neon_cross_product(const tensor& other) const {
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_dot(const tensor& other) const {
-  if (!std::is_arithmetic_v<value_type>) throw type_error("Type must be arithmetic");
+  if (!std::is_arithmetic_v<value_type>) {
+    throw type_error("Type must be arithmetic");
+  }
 
-  if (this->empty() or other.empty())
+  if (this->empty() or other.empty()) {
     throw std::invalid_argument("Cannot dot product an empty vector");
+  }
 
-  if (equal_shape(this->shape_, shape_type({1})) and equal_shape(other.shape(), shape_type({1})))
-    if (this->shape_[0] != other.shape()[0])
+  if (equal_shape(this->shape_, shape_type({1})) and equal_shape(other.shape(), shape_type({1}))) {
+    if (this->shape_[0] != other.shape()[0]) {
       throw shape_error("Vectors must have the same size for dot product");
+    }
+  }
 
   const_pointer this_data  = this->data_.data();
   const_pointer other_data = other.storage().data();
@@ -75,8 +80,9 @@ tensor<_Tp> tensor<_Tp>::neon_dot(const tensor& other) const {
     float32x2_t sum_half = vadd_f32(vget_high_f32(sum_vec), vget_low_f32(sum_vec));
     ret                  = vget_lane_f32(vpadd_f32(sum_half, sum_half), 0);
 
-    for (; i < size; ++i)
+    for (; i < size; ++i) {
       ret += static_cast<value_type>(this_data[i]) * static_cast<value_type>(other_data[i]);
+    }
   } else if constexpr (std::is_unsigned_v<value_type>) {
     size_t   i       = 0;
     neon_u32 sum_vec = vdupq_n_u32(0.0f);
@@ -90,8 +96,9 @@ tensor<_Tp> tensor<_Tp>::neon_dot(const tensor& other) const {
     uint32x2_t sum_half = vadd_u32(vget_high_u32(sum_vec), vget_low_u32(sum_vec));
     ret                 = vget_lane_u32(vpadd_u32(sum_half, sum_half), 0);
 
-    for (; i < size; ++i)
+    for (; i < size; ++i) {
       ret += static_cast<value_type>(this_data[i]) * static_cast<value_type>(other_data[i]);
+    }
   } else if constexpr (std::is_signed_v<value_type>) {
     size_t   i       = 0;
     neon_s32 sum_vec = vdupq_n_f32(0.0f);
@@ -105,8 +112,9 @@ tensor<_Tp> tensor<_Tp>::neon_dot(const tensor& other) const {
     int32x2_t sum_half = vadd_s32(vget_high_s32(sum_vec), vget_low_s32(sum_vec));
     ret                = vget_lane_s32(vpadd_s32(sum_half, sum_half), 0);
 
-    for (; i < size; ++i)
+    for (; i < size; ++i) {
       ret += static_cast<value_type>(this_data[i]) * static_cast<value_type>(other_data[i]);
+    }
   }
 
   return self({ret}, {1});
