@@ -44,7 +44,9 @@ tensor<_Tp>& tensor<_Tp>::neon_clipped_relu_(const value_type clip_limit) {
 */
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_clipped_relu_(const value_type clip_limit) {
-  if constexpr (std::is_unsigned_v<value_type>) return *this;
+  if constexpr (std::is_unsigned_v<value_type>) {
+    return *this;
+  }
 
   this->neon_clamp_(value_type(0), std::numeric_limits<value_type>::max());
   this->neon_clamp_(std::numeric_limits<value_type>::lowest(), clip_limit);
