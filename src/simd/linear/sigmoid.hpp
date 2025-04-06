@@ -4,7 +4,9 @@
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_sigmoid_() {
-  if (!std::is_arithmetic_v<value_type>) throw type_error("Type must be arithmetic");
+  if (!std::is_arithmetic_v<value_type>) {
+    throw type_error("Type must be arithmetic");
+  }
 
   index_type i = 0;
 
@@ -23,9 +25,10 @@ tensor<_Tp>& tensor<_Tp>::neon_sigmoid_() {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i)
+  for (; i < this->data_.size(); ++i) {
     this->data_[i] =
         static_cast<value_type>(1.0 / (1.0 + std::exp(-static_cast<double>(this->data_[i]))));
+  }
 
   return *this;
 }
