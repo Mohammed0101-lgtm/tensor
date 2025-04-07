@@ -4,20 +4,26 @@
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_matmul(const tensor& other) const {
-  if (!std::is_arithmetic_v<value_type>) throw type_error("Type must be arithmetic");
+  if (!std::is_arithmetic_v<value_type>) {
+    throw type_error("Type must be arithmetic");
+  }
 
   static_assert(has_times_operator_v<value_type>, "Value type must have a times operator");
   static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
 
-  if (this->shape_.size() < 2 or other.shape().size() < 2)
+  if (this->shape_.size() < 2 or other.shape().size() < 2) {
     throw shape_error("matmul is only supported for 2D tensors");
+  }
 
   if (!equal_shape(this->shape_, shape_type({this->shape_[0], this->shape_[1]})) or
-      !equal_shape(other.shape(), shape_type({other.shape()[0], other.shape()[1]})))
+      !equal_shape(other.shape(), shape_type({other.shape()[0], other.shape()[1]}))) {
     throw shape_error("matmul is only supported for 2D tensors");
+  }
 
   if (this->shape_[1] != other.shape()[0]) {
-    if (this->shape_[0] == other.shape()[1]) return other.matmul(*this);
+    if (this->shape_[0] == other.shape()[1]) {
+      return other.matmul(*this);
+    }
 
     throw shape_error(
         "Shape mismatch for matrix multiplication: "
@@ -127,8 +133,9 @@ tensor<_Tp> tensor<_Tp>::neon_matmul(const tensor& other) const {
   for (int64_t i = 0; i < ret_sh[0]; ++i) {
     for (int64_t j = 0; j < ret_sh[1]; ++j) {
       value_type sum = value_type(0);
-      for (int64_t k = 0; k < this->shape_[1]; ++k)
+      for (int64_t k = 0; k < this->shape_[1]; ++k) {
         sum = sum + (this->data_[i * this->shape_[1] + k] * other[k * other.shape()[1] + j]);
+      }
 
       ret_d[i * ret_sh[1] + j] = sum;
     }
