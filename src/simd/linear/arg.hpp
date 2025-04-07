@@ -4,7 +4,9 @@
 
 template <class _Tp>
 tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argmax_(index_type dim) const {
-  if (dim < 0 or dim >= this->shape_.size()) throw index_error("Dimension out of range in argmax");
+  if (dim < 0 or dim >= this->shape_.size()) {
+    throw index_error("Dimension out of range in argmax");
+  }
 
   tensor<index_type> ret;
   shape_type         ret_sh = this->shape_;
@@ -16,8 +18,12 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argmax_(index_type di
   index_type inner_size = 1;
   index_type i          = 0;
 
-  for (; i < dim; ++i) outer_size *= this->shape_[i];
-  for (i = dim + 1; i < this->shape_.size(); ++i) inner_size *= this->shape_[i];
+  for (; i < dim; ++i) {
+    outer_size *= this->shape_[i];
+  }
+  for (i = dim + 1; i < this->shape_.size(); ++i) {
+    inner_size *= this->shape_[i];
+  }
 
   if constexpr (std::is_floating_point_v<value_type>) {
     for (i = 0; i < outer_size; ++i) {
@@ -182,7 +188,9 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argmax_(index_type di
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_argmax(index_type dim) const {
-  if (dim < 0 or dim >= this->shape_.size()) throw index_error("Dimension out of range in argmax");
+  if (dim < 0 or dim >= this->shape_.size()) {
+    throw index_error("Dimension out of range in argmax");
+  }
 
   tensor     ret;
   shape_type ret_sh = this->shape_;
@@ -195,9 +203,12 @@ tensor<_Tp> tensor<_Tp>::neon_argmax(index_type dim) const {
   index_type inner_size = 1;
   index_type i          = 0;
 
-  for (; i < dim; ++i) outer_size *= this->shape_[i];
-  for (i = dim + 1; i < static_cast<index_type>(this->shape_.size()); ++i)
+  for (; i < dim; ++i) {
+    outer_size *= this->shape_[i];
+  }
+  for (i = dim + 1; i < static_cast<index_type>(this->shape_.size()); ++i) {
     inner_size *= this->shape_[i];
+  }
 
   if constexpr (std::is_floating_point_v<value_type>) {
     for (i = 0; i < outer_size; ++i) {
@@ -271,7 +282,9 @@ tensor<_Tp> tensor<_Tp>::neon_argmax(index_type dim) const {
         for (; k < this->shape_[dim]; ++k) {
           value_type v = this->data_[(i * this->shape_[dim] + k) * inner_size + j];
 
-          if (v > max_value) max_value = v;
+          if (v > max_value) {
+            max_value = v;
+          }
         }
         ret.data_[i * inner_size + j] = max_value;
       }
@@ -286,8 +299,9 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argsort(index_type d,
                                                                    bool       ascending) const {
   index_type adjusted = (d < 0) ? d + this->data_.size() : d;
 
-  if (adjusted != 0)
+  if (adjusted != 0) {
     throw index_error("Invalid dimension for argsort: only 1D tensors are supported");
+  }
 
   index_type size = static_cast<index_type>(this->data_.size());
   shape_type indices(size);
@@ -330,7 +344,9 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argsort(index_type d,
     }
   }
 #pragma omp parallel
-  for (; i < size; ++i) indices[i] = i;
+  for (; i < size; ++i) {
+    indices[i] = i;
+  }
 
   std::sort(indices.begin(), indices.end(), [&](index_type a, index_type b) {
     return ascending ? this->data_[a] < this->data_[b] : this->data_[a] > this->data_[b];
