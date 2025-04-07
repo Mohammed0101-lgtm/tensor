@@ -4,7 +4,9 @@
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_clamp_(const_reference min_val, const_reference max_val) {
-  if (!std::is_arithmetic_v<value_type>) throw type_error("Type must be arithmetic");
+  if (!std::is_arithmetic_v<value_type>) {
+    throw type_error("Type must be arithmetic");
+  }
 
   const index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
   index_type       i        = 0;
@@ -51,7 +53,9 @@ tensor<_Tp>& tensor<_Tp>::neon_clamp_(const_reference min_val, const_reference m
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_ceil_() {
-  if (!std::is_floating_point_v<value_type>) throw type_error("Type must be floating point");
+  if (!std::is_floating_point_v<value_type>) {
+    throw type_error("Type must be floating point");
+  }
 
   index_type i = 0;
 
@@ -64,15 +68,18 @@ tensor<_Tp>& tensor<_Tp>::neon_ceil_() {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i)
+  for (; i < this->data_.size(); ++i) {
     this->data_[i] = static_cast<value_type>(std::ceil(static_cast<_f32>(this->data_[i])));
+  }
 
   return *this;
 }
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_floor_() {
-  if (!std::is_floating_point_v<value_type>) throw type_error("Type must be floating point");
+  if (!std::is_floating_point_v<value_type>) {
+    throw type_error("Type must be floating point");
+  }
 
   index_type i = 0;
 
@@ -85,8 +92,9 @@ tensor<_Tp>& tensor<_Tp>::neon_floor_() {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i)
+  for (; i < this->data_.size(); ++i) {
     this->data_[i] = static_cast<value_type>(std::floor(static_cast<_f32>(this->data_[i])));
+  }
 
   return *this;
 }
