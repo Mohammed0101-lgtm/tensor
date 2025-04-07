@@ -5,9 +5,13 @@
 
 template <class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_absolute_(const tensor& tensor) const {
-  if (!std::is_arithmetic_v<value_type>) throw type_error("Type must be arithmetic");
+  if (!std::is_arithmetic_v<value_type>) {
+    throw type_error("Type must be arithmetic");
+  }
 
-  if (std::is_unsigned_v<value_type>) return *this;
+  if (std::is_unsigned_v<value_type>) {
+    return *this;
+  }
 
   index_type s = tensor.storage().size();
   data_t     a(s);
@@ -28,7 +32,9 @@ tensor<_Tp> tensor<_Tp>::neon_absolute_(const tensor& tensor) const {
   }
 
 #pragma omp parallel
-  for (; i < s; ++i) this->data_[i] = static_cast<value_type>(std::abs(this->data_[i]));
+  for (; i < s; ++i) {
+    this->data_[i] = static_cast<value_type>(std::abs(this->data_[i]));
+  }
 
   return self(a, tensor.shape_);
 }
