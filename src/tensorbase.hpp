@@ -32,7 +32,6 @@
 #include <random>
 #include <stack>
 #include <stdexcept>
-#include <tuple>
 #include <type_traits>
 #include <typeinfo>
 #include <valarray>
@@ -1823,33 +1822,44 @@ class tensor<bool> {
   tensor<bool> logical_not() const { return tensor<bool>(this->logical_not_()); }
 
   tensor<bool> logical_or(const value_type val) const {
-    return tensor<bool>(this->logical_or_(val));
+    self t = this->clone();
+    t.logical_or_(val);
+    return t;
   }
 
   tensor<bool> logical_or(const tensor& other) const {
-    return tensor<bool>(this->logical_or_(other));
+    self t = this->clone();
+    t.logical_or_(other);
+    return t;
   }
 
   tensor<bool> logical_and(const value_type val) const {
-    return tensor<bool>(this->logical_and_(val));
+    self t = this->clone();
+    t.logical_and_(val);
+    return t;
   }
 
   tensor<bool> logical_and(const tensor& other) const {
-    return tensor<bool>(this->logical_and_(other));
+    self t = this->clone();
+    t.logical_and_(other);
+    return t;
   }
 
   tensor<bool> logical_xor(const value_type val) const {
-    return tensor<bool>(this->logical_xor_(val));
+    self t = this->clone();
+    t.logical_and_(val);
+    return t;
   }
 
   tensor<bool> logical_xor(const tensor& other) const {
-    return tensor<bool>(this->logical_xor_(other));
+    self t = this->clone();
+    t.logical_xor_(other);
+    return t;
   }
 
   tensor<bool>& logical_not_() {
-    index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) {
+    for (index_type i = 0; i < this->data_.size(); ++i) {
       this->data_[i] = ~(this->data_[i]);
     }
 
@@ -1857,9 +1867,8 @@ class tensor<bool> {
   }
 
   tensor<bool>& logical_or_(const value_type val) {
-    index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) {
+    for (index_type i = 0; i < this->data_.size(); ++i) {
       this->data_[i] = this->data_[i] or val;
     }
 
@@ -1867,9 +1876,8 @@ class tensor<bool> {
   }
 
   tensor<bool>& logical_or_(const tensor& other) {
-    index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) {
+    for (index_type i = 0; i < this->data_.size(); ++i) {
       this->data_[i] = this->data_[i] or other[i];
     }
 
@@ -1877,9 +1885,8 @@ class tensor<bool> {
   }
 
   tensor<bool>& logical_and_(const value_type val) {
-    index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) {
+    for (index_type i = 0; i < this->data_.size(); ++i) {
       this->data_[i] = this->data_[i] and val;
     }
 
@@ -1887,8 +1894,8 @@ class tensor<bool> {
   }
 
   tensor<bool>& logical_and_(const tensor& other) {
-    index_type i = 0;
-    for (; i < this->data_.size(); ++i) {
+#pragma omp parallel
+    for (index_type i = 0; i < this->data_.size(); ++i) {
       this->data_[i] = this->data_[i] and other[i];
     }
 
@@ -1896,9 +1903,8 @@ class tensor<bool> {
   }
 
   tensor<bool>& logical_xor_(const value_type val) {
-    index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) {
+    for (index_type i = 0; i < this->data_.size(); ++i) {
       this->data_[i] = this->data_[i] xor val;
     }
 
@@ -1906,9 +1912,8 @@ class tensor<bool> {
   }
 
   tensor<bool>& logical_xor_(const tensor& other) {
-    index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) {
+    for (index_type i = 0; i < this->data_.size(); ++i) {
       this->data_[i] = this->data_[i] xor other[i];
     }
 
@@ -1916,9 +1921,8 @@ class tensor<bool> {
   }
 
   const tensor<bool>& logical_not_() const {
-    index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) {
+    for (index_type i = 0; i < this->data_.size(); ++i) {
       this->data_[i] = ~(this->data_[i]);
     }
 
@@ -1926,9 +1930,8 @@ class tensor<bool> {
   }
 
   const tensor<bool>& logical_or_(const value_type val) const {
-    index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) {
+    for (index_type i = 0; i < this->data_.size(); ++i) {
       this->data_[i] = this->data_[i] or val;
     }
 
@@ -1936,9 +1939,8 @@ class tensor<bool> {
   }
 
   const tensor<bool>& logical_or_(const tensor& other) const {
-    index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) {
+    for (index_type i = 0; i < this->data_.size(); ++i) {
       this->data_[i] = this->data_[i] or other[i];
     }
 
@@ -1946,9 +1948,8 @@ class tensor<bool> {
   }
 
   const tensor<bool>& logical_and_(const value_type val) const {
-    index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) {
+    for (index_type i = 0; i < this->data_.size(); ++i) {
       this->data_[i] = this->data_[i] and val;
     }
 
@@ -1956,9 +1957,8 @@ class tensor<bool> {
   }
 
   const tensor<bool>& logical_and_(const tensor& other) const {
-    index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) {
+    for (index_type i = 0; i < this->data_.size(); ++i) {
       this->data_[i] = this->data_[i] and other[i];
     }
 
@@ -1966,9 +1966,8 @@ class tensor<bool> {
   }
 
   const tensor<bool>& logical_xor_(const value_type val) const {
-    index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) {
+    for (index_type i = 0; i < this->data_.size(); ++i) {
       this->data_[i] = this->data_[i] xor val;
     }
 
@@ -1976,9 +1975,8 @@ class tensor<bool> {
   }
 
   const tensor<bool>& logical_xor_(const tensor& other) const {
-    index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) {
+    for (index_type i = 0; i < this->data_.size(); ++i) {
       this->data_[i] = this->data_[i] xor other[i];
     }
 
@@ -1986,9 +1984,8 @@ class tensor<bool> {
   }
 
   tensor<bool>& operator!() {
-    index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) {
+    for (index_type i = 0; i < this->data_.size(); ++i) {
       this->data_[i] = !(this->data_[i]);
     }
 
@@ -1996,9 +1993,8 @@ class tensor<bool> {
   }
 
   const tensor<bool>& operator!() const {
-    index_type i = 0;
 #pragma omp parallel
-    for (; i < this->data_.size(); ++i) {
+    for (index_type i = 0; i < this->data_.size(); ++i) {
       this->data_[i] = !(this->data_[i]);
     }
 
@@ -2010,6 +2006,7 @@ class tensor<bool> {
     if (dim < 0 or dim >= static_cast<index_type>(this->data_.size())) {
       throw shape_error("Dimension out of range");
     }
+
     tensor<bool> ret;
     index_type   s       = this->shape_[dim];
     index_type   start_i = start.value_or(0);
@@ -2018,6 +2015,7 @@ class tensor<bool> {
     if (start_i < 0) {
       start_i += s;
     }
+
     if (end_i < 0) {
       end_i += s;
     }
@@ -2357,7 +2355,7 @@ class tensor<bool> {
   [[nodiscard]]
   inline size_t computeStride(size_t dim, const shape_type& shape) const noexcept {
     size_t stride = 1;
-    for (size_t i = dim; i < shape.size(); i++) {
+    for (size_t i = dim; i < shape.size(); ++i) {
       stride *= shape[i];
     }
 
