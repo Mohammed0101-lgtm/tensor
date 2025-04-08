@@ -4,7 +4,9 @@
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_tan_() {
-  if (!std::is_arithmetic_v<value_type>) throw type_error("Type must be arithmetic");
+  if (!std::is_arithmetic_v<value_type>) {
+    throw type_error("Type must be arithmetic");
+  }
 
   index_type i        = 0;
   index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
@@ -53,15 +55,18 @@ tensor<_Tp>& tensor<_Tp>::neon_tan_() {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i)
+  for (; i < this->data_.size(); ++i) {
     this->data_[i] = static_cast<value_type>(std::tan(this->data_[i]));
+  }
 
   return *this;
 }
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_tanh_() {
-  if (!std::is_arithmetic_v<value_type>) throw type_error("Type must be arithmetic");
+  if (!std::is_arithmetic_v<value_type>) {
+    throw type_error("Type must be arithmetic");
+  }
 
   index_type i = 0;
 
@@ -111,15 +116,18 @@ tensor<_Tp>& tensor<_Tp>::neon_tanh_() {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i)
+  for (; i < this->data_.size(); ++i) {
     this->data_[i] = static_cast<value_type>(std::tanh(static_cast<_f32>(this->data_[i])));
+  }
 
   return *this;
 }
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_atan_() {
-  if (!std::is_arithmetic_v<value_type>) throw type_error("Type must be arithmetic");
+  if (!std::is_arithmetic_v<value_type>) {
+    throw type_error("Type must be arithmetic");
+  }
 
   index_type i        = 0;
   index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
@@ -168,15 +176,18 @@ tensor<_Tp>& tensor<_Tp>::neon_atan_() {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i)
+  for (; i < this->data_.size(); ++i) {
     this->data_[i] = static_cast<value_type>(std::atan(this->data_[i]));
+  }
 
   return *this;
 }
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_atanh_() {
-  if (!std::is_arithmetic_v<value_type>) throw type_error("Type must be arithmetic");
+  if (!std::is_arithmetic_v<value_type>) {
+    throw type_error("Type must be arithmetic");
+  }
 
   index_type i        = 0;
   index_type simd_end = this->data_.size() - (this->data_.size() % _ARM64_REG_WIDTH);
@@ -225,8 +236,9 @@ tensor<_Tp>& tensor<_Tp>::neon_atanh_() {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i)
+  for (; i < this->data_.size(); ++i) {
     this->data_[i] = static_cast<value_type>(std::atan(this->data_[i]));
+  }
 
   return *this;
 }
