@@ -4,7 +4,9 @@
 
 template <class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_sqrt_() {
-  if (!std::is_arithmetic_v<value_type>) throw type_error("Type must be arithmetic");
+  if (!std::is_arithmetic_v<value_type>) {
+    throw type_error("Type must be arithmetic");
+  }
 
   index_type i = 0;
 
@@ -54,8 +56,9 @@ tensor<_Tp>& tensor<_Tp>::neon_sqrt_() {
     }
   }
 #pragma omp parallel
-  for (; i < this->data_.size(); ++i)
+  for (; i < this->data_.size(); ++i) {
     this->data_[i] = static_cast<value_type>(std::sqrt(this->data_[i]));
+  }
 
   return *this;
 }
