@@ -176,7 +176,7 @@ class tensor {
   tensor reshape(const shape_type __shape) const;
   tensor reshape_as(const tensor& __other) const;
   tensor cross_product(const tensor& __other) const;
-  tensor absolute(const tensor& __tensor) const;
+  tensor absolute(const tensor& __other) const;
   tensor dot(const tensor& __other) const;
   tensor relu() const;
   tensor transpose() const;
