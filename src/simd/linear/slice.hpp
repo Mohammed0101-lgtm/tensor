@@ -2,6 +2,7 @@
 
 #include "tensorbase.hpp"
 
+/*
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_slice(index_type                dim,
                                     std::optional<index_type> start,
@@ -75,12 +76,12 @@ tensor<_Tp> tensor<_Tp>::neon_slice(index_type                dim,
         }
     }
 
- for
-     for (index_type i = start_i; i < end_i; i += step)
-     {
-         index_type j = (i - start_i) / step;
-         ret[j]       = data_[i];
-     }
+    for (index_type i = start_i; i < end_i; i += step)
+    {
+        index_type j = (i - start_i) / step;
+        ret[j]       = data_[i];
+    }
 
- return ret;
+    return ret;
 }
+*/
