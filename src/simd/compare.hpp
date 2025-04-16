@@ -4,7 +4,7 @@
 
 template<class _Tp>
 tensor<bool> tensor<_Tp>::neon_equal(const tensor& other) const {
-    if constexpr (!has_equal_operator<value_type>)
+    if constexpr (!has_equal_operator_v<value_type>)
     {
         throw operator_error("Value type must have equal to operator");
     }
