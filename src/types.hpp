@@ -134,141 +134,189 @@ template<typename _Tp>
 constexpr bool has_greater_equal_operator_v = has_greater_equal_operator<_Tp>::value;
 
 template<class _Tp>
-tensor<_s32> tensor<_Tp>::int32_() const {
-    if (!std::is_convertible_v<value_type, _s32>)
+tensor<int> tensor<_Tp>::int_() const {
+    if (!std::is_convertible_v<value_type, int>)
     {
         throw type_error("Type must be convertible to 32 bit signed int");
     }
 
     if (empty())
     {
-        return tensor<_s32>(shape_);
+        return tensor<int>(shape_);
     }
 
-    std::vector<_s32> d(data_.size());
+    std::vector<int> d(data_.size());
 
     index_type i = 0;
     for (const auto& elem : data_)
     {
-        d[++i] = static_cast<_s32>(elem);
+        d[i++] = int(elem);
     }
 
-    return tensor<_s32>(shape_, d);
+    return tensor<int>(shape_, d);
 }
 
 template<class _Tp>
-tensor<_u32> tensor<_Tp>::uint32_() const {
-    if (!std::is_convertible_v<value_type, _u32>)
+tensor<unsigned int> tensor<_Tp>::unsigned_int_() const {
+    if (!std::is_convertible_v<value_type, unsigned int>)
     {
         throw type_error("Type must be convertible to 32 bit unsigned int");
     }
 
     if (empty())
     {
-        return tensor<_u32>(shape_);
+        return tensor<unsigned int>(shape_);
     }
 
-    std::vector<_u32> d(data_.size());
+    std::vector<unsigned int> d(data_.size());
 
-    for (index_type i = 0; i < data_.size(); ++i)
+    index_type i = 0;
+    for (const auto& elem : data_)
     {
-        d[i] = static_cast<_u32>(data_[i]);
+        d[i++] = (unsigned int) (elem);
     }
 
-    return tensor<_u32>(shape_, d);
+    return tensor<unsigned int>(shape_, d);
 }
 
 template<class _Tp>
-tensor<_f32> tensor<_Tp>::float32_() const {
-    if (!std::is_convertible_v<value_type, _f32>)
+tensor<float> tensor<_Tp>::float_() const {
+    if (!std::is_convertible_v<value_type, float>)
     {
         throw type_error("Type must be convertible to 32 bit float");
     }
 
     if (empty())
     {
-        return tensor<_f32>(shape_);
+        return tensor<float>(shape_);
     }
 
-    std::vector<_f32> d(data_.size());
+    std::vector<float> d(data_.size());
 
     index_type i = 0;
     for (const auto& elem : data_)
     {
-        d[++i] = static_cast<_f32>(elem);
+        d[i++] = float(elem);
     }
 
-    return tensor<_f32>(shape_, d);
+    return tensor<float>(shape_, d);
 }
 
 template<class _Tp>
-tensor<_f64> tensor<_Tp>::double_() const {
-    if (!std::is_convertible_v<value_type, _f64>)
+tensor<double> tensor<_Tp>::double_() const {
+    if (!std::is_convertible_v<value_type, double>)
     {
         throw type_error("Type must be convertible to 64 bit float");
     }
 
     if (empty())
     {
-        return tensor<_f64>(shape_);
+        return tensor<double>(shape_);
     }
 
-    std::vector<_f64> d(data_.size());
+    std::vector<double> d(data_.size());
 
     index_type i = 0;
     for (const auto& elem : data_)
     {
-        d[++i] = static_cast<_f64>(elem);
+        d[i++] = double(elem);
     }
 
-    return tensor<_f64>(shape_, d);
+    return tensor<double>(shape_, d);
 }
 
 template<class _Tp>
-tensor<uint64_t> tensor<_Tp>::unsigned_long_() const {
-    if (!std::is_convertible_v<value_type, uint64_t>)
+tensor<unsigned long> tensor<_Tp>::unsigned_long_() const {
+    if (!std::is_convertible_v<value_type, unsigned long>)
     {
         throw type_error("Type must be convertible to unsigned 64 bit int");
     }
 
     if (empty())
     {
-        return tensor<uint64_t>(shape_);
+        return tensor<unsigned long>(shape_);
     }
 
-    std::vector<uint64_t> d(data_.size());
+    std::vector<unsigned long> d(data_.size());
 
     index_type i = 0;
     for (const auto& elem : data_)
     {
-        d[++i] = static_cast<uint64_t>(elem);
+        d[i++] = (unsigned long) (elem);
     }
 
-    return tensor<uint64_t>(shape_, d);
+    return tensor<unsigned long>(shape_, d);
 }
 
 template<class _Tp>
-tensor<int64_t> tensor<_Tp>::long_() const {
-    if (!std::is_convertible_v<value_type, int64_t>)
+inline tensor<short> tensor<_Tp>::short_() const {
+    if (!std::is_convertible_v<value_type, short>)
+    {
+        throw type_error("Type must be convertible to short (aka 16 bit int)");
+    }
+
+    if (empty())
+    {
+        return tensor<short>(shape_);
+    }
+
+    std::vector<short> d(data_.size());
+
+    index_type i = 0;
+    for (const auto& elem : data_)
+    {
+        d[i++] = short(elem);
+    }
+
+    return tensor<short>(shape_, d);
+}
+
+template<class _Tp>
+inline tensor<long long> tensor<_Tp>::long_long_() const {
+    if (!std::is_convertible_v<value_type, long long>)
+    {
+        throw type_error("Type must be convertible to 64 bit int (aka long long)");
+    }
+
+    if (empty())
+    {
+        return tensor<long long>(shape_);
+    }
+
+    std::vector<long long> d(data_.size());
+
+    index_type i = 0;
+    for (const auto& elem : data_)
+    {
+        d[i++] = (long long) (elem);
+    }
+
+    return tensor<long long>(shape_, d);
+}
+
+template<class _Tp>
+tensor<long> tensor<_Tp>::long_() const {
+    if (!std::is_convertible_v<value_type, long>)
     {
         throw type_error("Type must be convertible to 64 bit signed int");
     }
 
     if (empty())
     {
-        return tensor<int64_t>(shape_);
+        return tensor<long>(shape_);
     }
 
-    std::vector<int64_t> d(data_.size());
+    std::vector<long> d(data_.size());
 
     index_type i = 0;
     for (const auto& elem : data_)
     {
-        d[++i] = static_cast<int64_t>(elem);
+        d[i++] = long(elem);
     }
 
-    return tensor<int64_t>(shape_, d);
+    return tensor<long>(shape_, d);
 }
+
 
 template<class _Tp>
 tensor<bool> tensor<_Tp>::bool_() const {
@@ -281,7 +329,7 @@ tensor<bool> tensor<_Tp>::bool_() const {
     index_type i = 0;
     for (const auto& elem : data_)
     {
-        d[++i] = static_cast<bool>(elem);
+        d[i++] = bool(elem);
     }
 
     return tensor<bool>(shape_, d);
