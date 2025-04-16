@@ -41,10 +41,13 @@ typename tensor<_Tp>::index_type tensor<_Tp>::neon_count_nonzero(index_type dim)
                 local_count += vaddvq_u32(vandq_u32(nonzero_mask, vdupq_n_u32(1)));
             }
         }
- for
-     reduction(+ : local_count) for (index_type j = i; j < data_.size(); ++j) if (data_[j] != 0) { ++local_count; }
+        for (index_type j = i; j < data_.size(); ++j)
+            if (data_[j] != 0)
+            {
+                ++local_count;
+            }
 
- c += local_count;
+        c += local_count;
     }
     else
     {
