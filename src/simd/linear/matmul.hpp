@@ -157,19 +157,19 @@ tensor<_Tp> tensor<_Tp>::neon_matmul(const tensor& other) const {
         }
     }
 
- for
-     collapse(2) for (int64_t i = 0; i < ret_sh[0]; ++i) {
-         for (int64_t j = 0; j < ret_sh[1]; ++j)
-         {
-             value_type sum = value_type(0);
-             for (int64_t k = 0; k < shape_[1]; ++k)
-             {
-                 sum = sum + (data_[i * shape_[1] + k] * other[k * other.shape()[1] + j]);
-             }
+    for (int64_t i = 0; i < ret_sh[0]; ++i)
+    {
+        for (int64_t j = 0; j < ret_sh[1]; ++j)
+        {
+            value_type sum = value_type(0);
+            for (int64_t k = 0; k < shape_[1]; ++k)
+            {
+                sum = sum + (data_[i * shape_[1] + k] * other[k * other.shape()[1] + j]);
+            }
 
-             ret_d[i * ret_sh[1] + j] = sum;
-         }
-     }
+            ret_d[i * ret_sh[1] + j] = sum;
+        }
+    }
 
- return self(ret_sh, ret_d);
+    return self(ret_sh, ret_d);
 }
