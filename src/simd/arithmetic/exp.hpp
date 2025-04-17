@@ -2,60 +2,38 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_exp_() {
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
-
-  index_type __i = 0;
-
-  const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-
-  if constexpr (std::is_same_v<value_type, _f32>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_f32 __data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
-      _f32     __vals[_ARM64_REG_WIDTH];
-      vst1q_f32(__vals, __data_vec);
-
-      __vals[0] = static_cast<_f32>(std::exp(__vals[0]));
-      __vals[1] = static_cast<_f32>(std::exp(__vals[1]));
-      __vals[2] = static_cast<_f32>(std::exp(__vals[2]));
-      __vals[3] = static_cast<_f32>(std::exp(__vals[3]));
-
-      neon_f32 __exp_vec = vld1q_f32(__vals);
-      vst1q_f32(&this->__data_[__i], __exp_vec);
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
     }
-  } else if constexpr (std::is_same_v<value_type, _u32>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_u32 __data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
-      _u32     __vals[_ARM64_REG_WIDTH];
-      vst1q_u32(__vals, __data_vec);
 
-      __vals[0] = static_cast<_u32>(std::exp(__vals[0]));
-      __vals[1] = static_cast<_u32>(std::exp(__vals[1]));
-      __vals[2] = static_cast<_u32>(std::exp(__vals[2]));
-      __vals[3] = static_cast<_u32>(std::exp(__vals[3]));
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
-      neon_u32 __exp_vec = vld1q_u32(__vals);
-      vst1q_u32(&this->__data_[__i], __exp_vec);
+    index_type simd_end = data_.size() - (data_.size() % simd_width);
+    index_type i        = 0;
+
+    for (; i < simd_end; i += simd_width)
+    {
+        neon_type<value_type> vec = neon_load<value_type>(&data_[i]);
+        value_type            vals[simd_width];
+        neon_store<value_type>(vals, vec);
+
+        for (int j = 0; j < simd_width; ++j)
+        {
+            vals[j] = static_cast<value_type>(std::exp(vals[0]));
+        }
+
+        neon_type<value_type> exp_vec = neon_load<value_type>(vals);
+        neon_store<value_type>(&data_[i], exp_vec);
     }
-  } else if constexpr (std::is_same_v<value_type, _s32>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_s32 __data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-      _s32     __vals[_ARM64_REG_WIDTH];
-      vst1q_s32(__vals, __data_vec);
 
-      __vals[0] = static_cast<_s32>(std::exp(__vals[0]));
-      __vals[1] = static_cast<_s32>(std::exp(__vals[1]));
-      __vals[2] = static_cast<_s32>(std::exp(__vals[2]));
-      __vals[3] = static_cast<_s32>(std::exp(__vals[3]));
-
-      neon_s32 __exp_vec = vld1q_s32(__vals);
-      vst1q_s32(&this->__data_[__i], __exp_vec);
+    for (; i < data_.size(); ++i)
+    {
+        data_[i] = static_cast<value_type>(std::exp(data_[i]));
     }
-  }
-#pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::exp(this->__data_[__i]));
 
-  return *this;
+    return *this;
 }
