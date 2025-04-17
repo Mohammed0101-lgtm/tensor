@@ -1,219 +1,153 @@
 #pragma once
 
+
+#include "../alias.hpp"
 #include "tensorbase.hpp"
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_cos_() {
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
-
-  index_type __i = 0;
-
-  const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-
-  if constexpr (std::is_same_v<value_type, _f32>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_f32 __data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
-      _f32     __vals[_ARM64_REG_WIDTH];
-      vst1q_f32(__vals, __data_vec);
-
-      __vals[0] = static_cast<_f32>(std::cos(__vals[0]));
-      __vals[1] = static_cast<_f32>(std::cos(__vals[1]));
-      __vals[2] = static_cast<_f32>(std::cos(__vals[2]));
-      __vals[3] = static_cast<_f32>(std::cos(__vals[3]));
-
-      neon_f32 __cos_vec = vld1q_f32(__vals);
-      vst1q_f32(&this->__data_[__i], __cos_vec);
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
     }
-  } else if constexpr (std::is_same_v<value_type, _s32>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_s32 __data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-      _s32     __vals[_ARM64_REG_WIDTH];
-      vst1q_s32(__vals, __data_vec);
 
-      __vals[0] = static_cast<_s32>(std::cos(__vals[0]));
-      __vals[1] = static_cast<_s32>(std::cos(__vals[1]));
-      __vals[2] = static_cast<_s32>(std::cos(__vals[2]));
-      __vals[3] = static_cast<_s32>(std::cos(__vals[3]));
+    index_type i = 0;
 
-      neon_s32 __cos_vec = vld1q_s32(__vals);
-      vst1q_s32(&this->__data_[__i], __cos_vec);
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+
+    index_type simd_end = data_.size() - (data_.size() % simd_width);
+
+    for (; i < simd_end; i += simd_width)
+    {
+        neon_type<value_type> vec = neon_load<value_type>(&data_[i]);
+        value_type            vals[simd_width];
+        neon_store<value_type>(&vals, vec);
+
+        for (std::size_t j = 0; j < simd_width; j++)
+        {
+            vals[j] = static_cast<value_type>(std::cos(vals[j]));
+        }
+
+        neon_type<value_type> cos_vec = neon_load(&vals);
+        neon_store<value_type>(&data_[i], cos_vec);
     }
-  } else if constexpr (std::is_same_v<value_type, _u32>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_u32 __data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
-      _u32     __vals[_ARM64_REG_WIDTH];
-      vst1q_u32(__vals, __data_vec);
 
-      __vals[0] = static_cast<_u32>(std::cos(__vals[0]));
-      __vals[1] = static_cast<_u32>(std::cos(__vals[1]));
-      __vals[2] = static_cast<_u32>(std::cos(__vals[2]));
-      __vals[3] = static_cast<_u32>(std::cos(__vals[3]));
-
-      neon_u32 __cos_vec = vld1q_u32(__vals);
-      vst1q_u32(&this->__data_[__i], __cos_vec);
+    for (; i < data_.size(); ++i)
+    {
+        data_[i] = static_cast<value_type>(std::cos(data_[i]));
     }
-  }
-#pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::cos(this->__data_[__i]));
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_acos_() {
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
-
-  index_type __i = 0;
-
-  const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-
-  if constexpr (std::is_same_v<value_type, _f32>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_f32 __data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
-      _f32     __vals[_ARM64_REG_WIDTH];
-      vst1q_f32(__vals, __data_vec);
-
-      __vals[0] = static_cast<_f32>(std::acos(__vals[0]));
-      __vals[1] = static_cast<_f32>(std::acos(__vals[1]));
-      __vals[2] = static_cast<_f32>(std::acos(__vals[2]));
-      __vals[3] = static_cast<_f32>(std::acos(__vals[3]));
-
-      neon_f32 __cos_vec = vld1q_f32(__vals);
-      vst1q_f32(&this->__data_[__i], __cos_vec);
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
     }
-  } else if constexpr (std::is_same_v<value_type, _s32>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_s32 __data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-      _s32     __vals[_ARM64_REG_WIDTH];
-      vst1q_s32(__vals, __data_vec);
 
-      __vals[0] = static_cast<_s32>(std::acos(__vals[0]));
-      __vals[1] = static_cast<_s32>(std::acos(__vals[1]));
-      __vals[2] = static_cast<_s32>(std::acos(__vals[2]));
-      __vals[3] = static_cast<_s32>(std::acos(__vals[3]));
+    index_type i = 0;
 
-      neon_s32 __cos_vec = vld1q_s32(__vals);
-      vst1q_s32(&this->__data_[__i], __cos_vec);
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+
+    index_type simd_end = data_.size() - (data_.size() % simd_width);
+
+    for (; i < simd_end; i += simd_width)
+    {
+        neon_type<value_type> vec = neon_load<value_type>(&data_[i]);
+        value_type            vals[simd_width];
+        neon_store<value_type>(&vals, vec);
+
+        for (std::size_t j = 0; j < simd_width; j++)
+        {
+            vals[j] = static_cast<value_type>(std::acos(vals[j]));
+        }
+
+        neon_type<value_type> acos_vec = neon_load(&vals);
+        neon_store<value_type>(&data_[i], acos_vec);
     }
-  }
-#pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::acos(this->__data_[__i]));
 
-  return *this;
+    for (; i < data_.size(); ++i)
+    {
+        data_[i] = static_cast<value_type>(std::acos(data_[i]));
+    }
+
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_cosh_() {
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
-
-  index_type       __i        = 0;
-  const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-
-  if constexpr (std::is_same_v<value_type, _f32>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_f32 __data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
-      _f32     __vals[_ARM64_REG_WIDTH];
-      vst1q_f32(__vals, __data_vec);
-
-      __vals[0] = static_cast<_f32>(std::cosh(__vals[0]));
-      __vals[1] = static_cast<_f32>(std::cosh(__vals[1]));
-      __vals[2] = static_cast<_f32>(std::cosh(__vals[2]));
-      __vals[3] = static_cast<_f32>(std::cosh(__vals[3]));
-
-      neon_f32 __cosh_vec = vld1q_f32(__vals);
-      vst1q_f32(&this->__data_[__i], __cosh_vec);
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
     }
-  } else if constexpr (std::is_same_v<value_type, _s32>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_s32 __data_vec = vld1q_s32(reinterpret_cast<const _s32>(&this->__data_[__i]));
-      _s32     __vals[_ARM64_REG_WIDTH];
-      vst1q_s32(__vals, __data_vec);
 
-      __vals[0] = static_cast<_s32>(std::cosh(__vals[0]));
-      __vals[1] = static_cast<_s32>(std::cosh(__vals[1]));
-      __vals[2] = static_cast<_s32>(std::cosh(__vals[2]));
-      __vals[3] = static_cast<_s32>(std::cosh(__vals[3]));
+    index_type i = 0;
 
-      neon_s32 __cosh_vec = vld1q_s32(__vals);
-      vst1q_s32(&this->__data_[__i], __cosh_vec);
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+
+    index_type simd_end = data_.size() - (data_.size() % simd_width);
+
+    for (; i < simd_end; i += simd_width)
+    {
+        neon_type<value_type> vec = neon_load<value_type>(&data_[i]);
+        value_type            vals[simd_width];
+        neon_store<value_type>(&vals, vec);
+
+        for (std::size_t j = 0; j < simd_width; j++)
+        {
+            vals[j] = static_cast<value_type>(std::cosh(vals[j]));
+        }
+
+        neon_type<value_type> cosh_vec = neon_load(&vals);
+        neon_store<value_type>(&data_[i], cosh_vec);
     }
-  } else if constexpr (std::is_same_v<value_type, _u32>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_u32 __data_vec = vld1q_u32(reinterpret_cast<const _u32>(&this->__data_[__i]));
-      _u32     __vals[_ARM64_REG_WIDTH];
-      vst1q_u32(__vals, __data_vec);
 
-      __vals[0] = static_cast<_u32>(std::cosh(__vals[0]));
-      __vals[1] = static_cast<_u32>(std::cosh(__vals[1]));
-      __vals[2] = static_cast<_u32>(std::cosh(__vals[2]));
-      __vals[3] = static_cast<_u32>(std::cosh(__vals[3]));
-
-      neon_u32 __cosh_vec = vld1q_u32(__vals);
-      vst1q_u32(&this->__data_[__i], __cosh_vec);
+    for (; i < data_.size(); ++i)
+    {
+        data_[i] = static_cast<value_type>(std::cosh(data_[i]));
     }
-  }
-#pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::cosh(this->__data_[__i]));
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_acosh_() {
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
-
-  index_type       __i        = 0;
-  const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-
-  if constexpr (std::is_same_v<value_type, _f32>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_f32 __data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&this->__data_[__i]));
-      _f32     __vals[_ARM64_REG_WIDTH];
-      vst1q_f32(__vals, __data_vec);
-
-      __vals[0] = static_cast<_f32>(std::acosh(__vals[0]));
-      __vals[1] = static_cast<_f32>(std::acosh(__vals[1]));
-      __vals[2] = static_cast<_f32>(std::acosh(__vals[2]));
-      __vals[3] = static_cast<_f32>(std::acosh(__vals[3]));
-
-      neon_f32 __acosh_vec = vld1q_f32(__vals);
-      vst1q_f32(&this->__data_[__i], __acosh_vec);
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
     }
-  } else if constexpr (std::is_same_v<value_type, _s32>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_s32 __data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-      _s32     __vals[_ARM64_REG_WIDTH];
-      vst1q_s32(__vals, __data_vec);
 
-      __vals[0] = static_cast<_s32>(std::acosh(__vals[0]));
-      __vals[1] = static_cast<_s32>(std::acosh(__vals[1]));
-      __vals[2] = static_cast<_s32>(std::acosh(__vals[2]));
-      __vals[3] = static_cast<_s32>(std::acosh(__vals[3]));
+    index_type i = 0;
 
-      neon_s32 __acosh_vec = vld1q_s32(__vals);
-      vst1q_s32(&this->__data_[__i], __acosh_vec);
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+
+    index_type simd_end = data_.size() - (data_.size() % simd_width);
+
+    for (; i < simd_end; i += simd_width)
+    {
+        neon_type<value_type> vec = neon_load<value_type>(&data_[i]);
+        value_type            vals[simd_width];
+        neon_store<value_type>(&vals, vec);
+
+        for (std::size_t j = 0; j < simd_width; j++)
+        {
+            vals[j] = static_cast<value_type>(std::acosh(vals[j]));
+        }
+
+        neon_type<value_type> acosh_vec = neon_load(&vals);
+        neon_store<value_type>(&data_[i], acosh_vec);
     }
-  } else if constexpr (std::is_same_v<value_type, _u32>) {
-    for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-      neon_u32 __data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&this->__data_[__i]));
-      _u32     __vals[_ARM64_REG_WIDTH];
-      vst1q_u32(__vals, __data_vec);
 
-      __vals[0] = static_cast<_u32>(std::acosh(__vals[0]));
-      __vals[1] = static_cast<_u32>(std::acosh(__vals[1]));
-      __vals[2] = static_cast<_u32>(std::acosh(__vals[2]));
-      __vals[3] = static_cast<_u32>(std::acosh(__vals[3]));
-
-      neon_u32 __acosh_vec = vld1q_u32(__vals);
-      vst1q_u32(&this->__data_[__i], __acosh_vec);
+    for (; i < data_.size(); ++i)
+    {
+        data_[i] = static_cast<value_type>(std::acosh(data_[i]));
     }
-  }
-#pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::acosh(this->__data_[__i]));
 
-  return *this;
+    return *this;
 }
