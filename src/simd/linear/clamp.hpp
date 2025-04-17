@@ -12,6 +12,11 @@ tensor<_Tp>& tensor<_Tp>::neon_clamp_(const_reference min_val, const_reference m
     const index_type simd_end = data_.size() - (data_.size() % _ARM64_REG_WIDTH);
     index_type       i        = 0;
 
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+
+    index_type simd_end = data_.size() - (data_.size() % simd_width);
+
     if constexpr (std::is_floating_point_v<value_type>)
     {
         neon_f32 min_vec = vdupq_n_f32(min_val);
