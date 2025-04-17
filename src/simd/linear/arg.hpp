@@ -28,191 +28,63 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argmax_(index_type di
         inner_size *= shape_[i];
     }
 
-    if constexpr (std::is_floating_point_v<value_type>)
-    {
-        for (i = 0; i < outer_size; ++i)
-        {
-            index_type j = 0;
-            for (; j < inner_size; ++j)
-            {
-                neon_f32   max_vec       = vdupq_n_f32(-std::numeric_limits<_f32>::infinity());
-                neon_u32   index_vec     = vdupq_n_u32(0);
-                neon_u32   increment     = vdupq_n_u32(1);
-                neon_u32   current_index = {0, 1, 2, 3};
-                index_type k             = 0;
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
-                for (; k + _ARM64_REG_WIDTH <= shape_[dim]; k += _ARM64_REG_WIDTH)
-                {
-                    neon_f32 data_vec =
-                      vld1q_f32(reinterpret_cast<const _f32*>(&data_[(i * shape_[dim] + k) * inner_size + j]));
-                    neon_u32 mask = vcgtq_f32(data_vec, max_vec);
-                    max_vec       = vbslq_f32(mask, data_vec, max_vec);
-                    index_vec     = vbslq_u32(mask, current_index, index_vec);
-                    current_index = vaddq_u32(current_index, increment);
-                }
-
-                _f32 max_values[_ARM64_REG_WIDTH];
-                _u32 indices[_ARM64_REG_WIDTH];
-
-                vst1q_f32(max_values, max_vec);
-                vst1q_u32(indices, index_vec);
-
-                _f32       max_value = max_values[0];
-                index_type max_index = indices[0];
-
-                for (int k = 1; k < _ARM64_REG_WIDTH; ++k)
-                {
-                    if (max_values[k] > max_value)
-                    {
-                        max_value = max_values[k];
-                        max_index = indices[k];
-                    }
-                }
-
-                for (; k < shape_[dim]; ++k)
-                {
-                    _f32 v = data_[(i * shape_[dim] + k) * inner_size + j];
-                    if (v > max_value)
-                    {
-                        max_value = v;
-                        max_index = k;
-                    }
-                }
-                ret.data_[i * inner_size + j] = max_index;
-            }
-        }
-    }
-    else if constexpr (std::is_signed_v<value_type>)
-    {
-        for (i = 0; i < outer_size; ++i)
-        {
-            index_type j = 0;
-            for (; j < inner_size; ++j)
-            {
-                neon_s32   max_vec       = vdupq_n_s32(-std::numeric_limits<_s32>::infinity());
-                neon_u32   index_vec     = vdupq_n_u32(0);
-                neon_u32   increment     = vdupq_n_u32(1);
-                neon_u32   current_index = {0, 1, 2, 3};
-                index_type k             = 0;
-
-                for (; k + _ARM64_REG_WIDTH <= shape_[dim]; k += _ARM64_REG_WIDTH)
-                {
-                    neon_s32 data_vec =
-                      vld1q_s32(reinterpret_cast<const _s32*>(&data_[(i * shape_[dim] + k) * inner_size + j]));
-                    neon_u32 mask = vcgtq_s32(data_vec, max_vec);
-                    max_vec       = vbslq_s32(mask, data_vec, max_vec);
-                    index_vec     = vbslq_u32(mask, current_index, index_vec);
-                    current_index = vaddq_u32(current_index, increment);
-                }
-
-                _s32 max_values[_ARM64_REG_WIDTH];
-                _u32 indices[_ARM64_REG_WIDTH];
-
-                vst1q_s32(max_values, max_vec);
-                vst1q_u32(indices, index_vec);
-
-                _s32       max_value = max_values[0];
-                index_type max_index = indices[0];
-
-                for (int k = 1; k < _ARM64_REG_WIDTH; ++k)
-                {
-                    if (max_values[k] > max_value)
-                    {
-                        max_value = max_values[k];
-                        max_index = indices[k];
-                    }
-                }
-
-                for (; k < shape_[dim]; ++k)
-                {
-                    _s32 v = data_[(i * shape_[dim] + k) * inner_size + j];
-
-                    if (v > max_value)
-                    {
-                        max_value = v;
-                        max_index = k;
-                    }
-                }
-
-                ret.data_[i * inner_size + j] = max_index;
-            }
-        }
-    }
-    else if constexpr (std::is_unsigned_v<value_type>)
-    {
-        for (i = 0; i < outer_size; ++i)
-        {
-            index_type j = 0;
-            for (; j < inner_size; ++j)
-            {
-                neon_u32   max_vec       = vdupq_n_u32(-std::numeric_limits<_u32>::infinity());
-                neon_u32   index_vec     = vdupq_n_u32(0);
-                neon_u32   increment     = vdupq_n_u32(1);
-                neon_u32   current_index = {0, 1, 2, 3};
-                index_type k             = 0;
-
-                for (; k + _ARM64_REG_WIDTH <= shape_[dim]; k += _ARM64_REG_WIDTH)
-                {
-                    neon_u32 data_vec =
-                      vld1q_u32(reinterpret_cast<const _u32*>(&data_[(i * shape_[dim] + k) * inner_size + j]));
-                    neon_u32 mask = vcgtq_u32(data_vec, max_vec);
-                    max_vec       = vbslq_u32(mask, data_vec, max_vec);
-                    index_vec     = vbslq_u32(mask, current_index, index_vec);
-                    current_index = vaddq_u32(current_index, increment);
-                }
-
-                _u32 max_values[_ARM64_REG_WIDTH];
-                _u32 indices[_ARM64_REG_WIDTH];
-
-                vst1q_u32(max_values, max_vec);
-                vst1q_u32(indices, index_vec);
-
-                _u32       max_value = max_values[0];
-                index_type max_index = indices[0];
-
-                for (int k = 1; k < _ARM64_REG_WIDTH; ++k)
-                {
-                    if (max_values[k] > max_value)
-                    {
-                        max_value = max_values[k];
-                        max_index = indices[k];
-                    }
-                }
-
-                for (; k < shape_[dim]; ++k)
-                {
-                    _u32 v = data_[(i * shape_[dim] + k) * inner_size + j];
-
-                    if (v > max_value)
-                    {
-                        max_value = v;
-                        max_index = k;
-                    }
-                }
-                ret.data_[i * inner_size + j] = max_index;
-            }
-        }
-    }
+    index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     for (i = 0; i < outer_size; ++i)
     {
         index_type j = 0;
         for (; j < inner_size; ++j)
         {
-            index_type max_index = 0;
-            value_type max_value = data_[i * shape_[dim] * inner_size + j];
-            index_type k         = 1;
-            for (; k < shape_[dim]; ++k)
-            {
-                value_type v = data_[(i * shape_[dim] + k) * inner_size + j];
+            value_type zero(0);
+            value_type one(1);
+            value_type inf = -std::numeric_limits<value_type>::infinity();
 
-                if (v > max_value)
-                {
-                    max_value = v;
-                    max_index = k;
-                }
+            neon_type<value_type> max_vec       = neon_dup<value_type>(&inf);
+            neon_type<value_type> index_vec     = neon_dup<value_type>(&zero);
+            neon_type<value_type> increment     = neon_dup<value_type>(&one);
+            neon_type<value_type> current_index = {value_type(0), value_type(1), value_type(2), value_type(3)};
+
+            index_type k = 0;
+            for (; k + simd_width <= shape_[dim]; k += simd_width)
+            {
+                neon_type<value_type> data_vec = neon_load<value_type>(&data_[(i * shape_[dim] + k) * inner_size + j]);
+                neon_type<value_type> mask     = neon_vcgtq<value_type>(data_vec, max_vec);
+                max_vec                        = neon_vbslq<value_type>(mask, data_vec, max_vec);
+                index_vec                      = neon_vbslq<value_type>(mask, current_index, index_vec);
+                current_index                  = neon_add<value_type>(current_index, increment);
             }
-            ret.data_[i * inner_size + j] = max_index;
+
+            value_type max_vals[simd_width];
+            _u32       indices[simd_width];
+
+            neon_store<value_type>(max_vals, max_vec);
+            neon_store<value_type>(indices, index_vec);
+
+            value_type max_val   = max_vals[0];
+            _u32       max_index = indices[0];
+
+            for (int k = 1; k < simd_width; ++k)
+            {
+                if (max_vals[k] > max_val)
+                {
+                    max_val   = max_vals[k];
+                    max_index = indices[k];
+                }
+
+                for (; k < shape_[dim]; ++k)
+                {
+                    value_type v = data_[(i * shape_[dim] + k) * inner_size + j];
+                    if (v > max_val)
+                    {
+                        max_val   = v;
+                        max_index = k;
+                    }
+                }
+                ret[i * inner_size + j] = max_index;
+            }
         }
     }
 
@@ -241,112 +113,34 @@ tensor<_Tp> tensor<_Tp>::neon_argmax(index_type dim) const {
     {
         outer_size *= shape_[i];
     }
+
     for (i = dim + 1; i < static_cast<index_type>(shape_.size()); ++i)
     {
         inner_size *= shape_[i];
     }
 
-    if constexpr (std::is_floating_point_v<value_type>)
+    for (i = 0; i < outer_size; ++i)
     {
-        for (i = 0; i < outer_size; ++i)
+        for (index_type j = 0; j < inner_size; ++j)
         {
-            for (index_type j = 0; j < inner_size; ++j)
+            value_type            inf     = -std::numeric_limits<value_type>::infinity();
+            neon_type<value_type> max_vec = neon_dup<value_type>(&inf);
+            index_type            k       = 0;
+
+            for (; k + simd_width <= shape_[dim]; k += simd_width)
             {
-                neon_f32   max_vec = vdupq_n_f32(-std::numeric_limits<_f32>::infinity());
-                index_type k       = 0;
-
-                for (; k + _ARM64_REG_WIDTH <= shape_[dim]; k += _ARM64_REG_WIDTH)
-                {
-                    neon_f32 data_vec =
-                      vld1q_f32(reinterpret_cast<const _f32*>(&data_[(i * shape_[dim] + k) * inner_size + j]));
-                    max_vec = vmaxq_f32(max_vec, data_vec);
-                }
-
-                _f32 max_value = vmaxvq_f32(max_vec);
-                for (; k < shape_[dim]; ++k)
-                {
-                    _f32 v    = data_[(i * shape_[dim] + k) * inner_size + j];
-                    max_value = std::max(max_value, v);
-                }
-
-                ret.data_[i * inner_size + j] = max_value;
+                neon_type<value_type> data_vec = neon_load<value_type>(&data_[(i * shape_[dim] + k) * inner_size + j]);
+                max_vec                        = neon_max<value_type>(max_vec, data_vec);
             }
-        }
-    }
-    else if constexpr (std::is_signed_v<value_type>)
-    {
-        for (i = 0; i < outer_size; ++i)
-        {
-            for (index_type j = 0; j < inner_size; ++j)
+
+            value_type max_value = neon_maxv<value_type>(max_vec);
+            for (; k < shape_[dim]; ++k)
             {
-                neon_s32   max_vec = vdupq_n_s32(-std::numeric_limits<_s32>::infinity());
-                index_type k       = 0;
-
-                for (; k + _ARM64_REG_WIDTH <= shape_[dim]; k += _ARM64_REG_WIDTH)
-                {
-                    neon_s32 data_vec =
-                      vld1q_s32(reinterpret_cast<const _s32*>(&data_[(i * shape_[dim] + k) * inner_size + j]));
-                    max_vec = vmaxq_s32(max_vec, data_vec);
-                }
-
-                _s32 max_value = vmaxvq_s32(max_vec);
-                for (; k < shape_[dim]; ++k)
-                {
-                    _s32 v    = data_[(i * shape_[dim] + k) * inner_size + j];
-                    max_value = std::max(max_value, v);
-                }
-
-                ret.data_[i * inner_size + j] = max_value;
+                value_type v = data_[(i * shape_[dim] + k) * inner_size + j];
+                max_value    = std::max(max_value, v);
             }
-        }
-    }
-    else if constexpr (std::is_unsigned_v<value_type>)
-    {
-        for (i = 0; i < outer_size; ++i)
-        {
-            for (index_type j = 0; j < inner_size; ++j)
-            {
-                neon_u32   max_vec = vdupq_n_u32(-std::numeric_limits<_u32>::infinity());
-                index_type k       = 0;
 
-                for (; k + _ARM64_REG_WIDTH <= shape_[dim]; k += _ARM64_REG_WIDTH)
-                {
-                    neon_u32 data_vec =
-                      vld1q_u32(reinterpret_cast<const _u32*>(&data_[(i * shape_[dim] + k) * inner_size + j]));
-                    max_vec = vmaxq_u32(max_vec, data_vec);
-                }
-
-                _u32 max_value = vmaxvq_u32(max_vec);
-                for (; k < shape_[dim]; ++k)
-                {
-                    _u32 v    = data_[(i * shape_[dim] + k) * inner_size + j];
-                    max_value = std::max(max_value, v);
-                }
-
-                ret.data_[i * inner_size + j] = max_value;
-            }
-        }
-    }
-    else
-    {
-        for (i = 0; i < outer_size; ++i)
-        {
-            index_type j = 0;
-            for (; j < inner_size; ++j)
-            {
-                value_type max_value = data_[i * shape_[dim] * inner_size + j];
-                index_type k         = 1;
-                for (; k < shape_[dim]; ++k)
-                {
-                    value_type v = data_[(i * shape_[dim] + k) * inner_size + j];
-
-                    if (v > max_value)
-                    {
-                        max_value = v;
-                    }
-                }
-                ret.data_[i * inner_size + j] = max_value;
-            }
+            ret[i * inner_size + j] = max_value;
         }
     }
 
@@ -366,11 +160,16 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argsort(index_type d,
     shape_type indices(size);
     std::iota(indices.begin(), indices.end(), 0);
 
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+
+    index_type simd_end = data_.size() - (data_.size() % simd_width);
+
     index_type i = 0;
 
     if constexpr (std::is_floating_point_v<value_type>)
     {
-        for (; i + _ARM64_REG_WIDTH <= size; i += _ARM64_REG_WIDTH)
+        for (; i + simd_width <= size; i += simd_width)
         {
             neon_f32    data_vec   = vld1q_f32(reinterpret_cast<const _f32*>(&data_[i]));
             float32x2_t min1       = vpmin_f32(vget_low_f32(data_vec), vget_high_f32(data_vec));
@@ -378,13 +177,15 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argsort(index_type d,
             neon_f32    cmp_vec    = vdupq_lane_f32(min2, 0);
             neon_u32    cmp_result = ascending ? vcltq_f32(data_vec, cmp_vec) : vcgtq_f32(data_vec, cmp_vec);
 
-            for (int j = 0; j < _ARM64_REG_WIDTH; ++j)
+            for (int j = 0; j < simd_width; ++j)
+            {
                 indices[i + j] = (cmp_result[j] ? i + j : i + j + 1);
+            }
         }
     }
     else if constexpr (std::is_signed_v<value_type>)
     {
-        for (; i + _ARM64_REG_WIDTH <= size; i += _ARM64_REG_WIDTH)
+        for (; i + simd_width <= size; i += simd_width)
         {
             neon_s32  data_vec   = vld1q_s32(reinterpret_cast<const _s32*>(&data_[i]));
             int32x2_t min1       = vpmin_s32(vget_low_s32(data_vec), vget_high_s32(data_vec));
@@ -392,13 +193,15 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argsort(index_type d,
             neon_s32  cmp_vec    = vdupq_lane_s32(min2, 0);
             neon_u32  cmp_result = ascending ? vcltq_s32(data_vec, cmp_vec) : vcgtq_s32(data_vec, cmp_vec);
 
-            for (int j = 0; j < _ARM64_REG_WIDTH; ++j)
+            for (int j = 0; j < simd_width; ++j)
+            {
                 indices[i + j] = (cmp_result[j] ? i + j : i + j + 1);
+            }
         }
     }
     else if constexpr (std::is_unsigned_v<value_type>)
     {
-        for (; i + _ARM64_REG_WIDTH <= size; i += _ARM64_REG_WIDTH)
+        for (; i + simd_width <= size; i += simd_width)
         {
             neon_u32   data_vec   = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
             uint32x2_t min1       = vpmin_u32(vget_low_u32(data_vec), vget_high_u32(data_vec));
@@ -406,8 +209,10 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argsort(index_type d,
             neon_u32   cmp_vec    = vdupq_lane_u32(min2, 0);
             neon_u32   cmp_result = ascending ? vcltq_u32(data_vec, cmp_vec) : vcgtq_u32(data_vec, cmp_vec);
 
-            for (int j = 0; j < _ARM64_REG_WIDTH; ++j)
+            for (int j = 0; j < simd_width; ++j)
+            {
                 indices[i + j] = (cmp_result[j] ? i + j : i + j + 1);
+            }
         }
     }
 
