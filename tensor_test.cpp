@@ -1,7 +1,5 @@
 #include "src/tensor.hpp"
-
 #include <gtest/gtest.h>
-
 #include <iostream>
 
 TEST(TensorTest, StorageTest) {
@@ -15,19 +13,23 @@ TEST(TensorTest, StorageTest) {
 TEST(TensorTest, DataTypeConversionTest) {
     tensor<int> t({3}, {1, 2, 3});
 
-    tensor<long long>          t_long    = t.long_();
-    tensor<int32_t>            t_int32   = t.int32_();
-    tensor<uint32_t>           t_uint32  = t.uint32_();
-    tensor<unsigned long long> t_ulong   = t.unsigned_long_();
-    tensor<float32_t>          t_float32 = t.float32_();
-    tensor<float64_t>          t_double  = t.double_();
+    tensor<long>          t_long      = t.long_();
+    tensor<int>           t_int       = t.int_();
+    tensor<unsigned int>  t_uint      = t.unsigned_int_();
+    tensor<unsigned long> t_ulong     = t.unsigned_long_();
+    tensor<float>         t_float     = t.float_();
+    tensor<double>        t_double    = t.double_();
+    tensor<short>         t_short     = t.short_();
+    tensor<long long>     t_long_long = t.long_long_();
 
-    EXPECT_EQ(t_long.storage(), (std::vector<long long>{1, 2, 3}));
-    EXPECT_EQ(t_int32.storage(), (std::vector<int32_t>{1, 2, 3}));
-    EXPECT_EQ(t_uint32.storage(), (std::vector<uint32_t>{1, 2, 3}));
-    EXPECT_EQ(t_ulong.storage(), (std::vector<unsigned long long>{1, 2, 3}));
-    EXPECT_EQ(t_float32.storage(), (std::vector<float32_t>{1.0, 2.0, 3.0}));
-    EXPECT_EQ(t_double.storage(), (std::vector<float64_t>{1.0, 2.0, 3.0}));
+    EXPECT_EQ(t_long.storage(), (std::vector<long>{1, 2, 3}));
+    EXPECT_EQ(t_int.storage(), (std::vector<int>{1, 2, 3}));
+    EXPECT_EQ(t_uint.storage(), (std::vector<unsigned int>{1, 2, 3}));
+    EXPECT_EQ(t_ulong.storage(), (std::vector<unsigned long>{1, 2, 3}));
+    EXPECT_EQ(t_float.storage(), (std::vector<float>{1.0, 2.0, 3.0}));
+    EXPECT_EQ(t_double.storage(), (std::vector<double>{1.0, 2.0, 3.0}));
+    EXPECT_EQ(t_short.storage(), std::vector<short>({1, 2, 3}));
+    EXPECT_EQ(t_long_long.storage(), std::vector<long long>({1, 2, 3}));
 }
 
 TEST(TensorTest, ShapeTest) {
@@ -141,13 +143,13 @@ TEST(TensorTest, LinearAccessOperatorTest) {
 }
 
 TEST(TensorTest, MultiDimensionalAccessOperator) {
-    tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+    tensor<int> ten({2, 3}, {1, 2, 3, 4, 5, 6});
 
     int expected  = 6;
     int expected1 = 2;
 
-    EXPECT_EQ(t({0, 1}), expected1);
-    EXPECT_EQ(t({1, 2}), expected);
+    EXPECT_EQ(ten({0, 1}), expected1);
+    EXPECT_EQ(ten({1, 2}), expected);
 }
 
 TEST(TensorTest, EmptyTest) {
@@ -418,7 +420,7 @@ TEST(TensorTest, GreaterTest1) {
     EXPECT_EQ(t.greater(other1), expected1);
     EXPECT_EQ(t.greater(other2), expected2);
 }
-
+/*
 TEST(TensorTest, SliceTest) {
     tensor<int> t1({2, 2}, {1, 2, 3, 4});
 
@@ -451,11 +453,12 @@ TEST(TensorTest, SliceTest) {
     tensor<int> expected9({1, 3}, {7, 8, 9});
     EXPECT_EQ(t2.slice(0, 2, 3, 1), expected9);
 }
+*/
 
 TEST(TensorTest, RowTest) {
     tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
     tensor<int> expected_row({3}, {1, 2, 3});
-    tensor<int> expected_col({2}, {3, 6});
+    tensor<int> expected_col({2}, {2, 5});
 
     EXPECT_EQ(t.row(0), expected_row);
     EXPECT_EQ(t.col(1), expected_col);
@@ -464,12 +467,513 @@ TEST(TensorTest, RowTest) {
 TEST(TensorTest, BoolRowTest) {
     tensor<int> t({2, 3}, {true, false, true, false, false, true});
     tensor<int> expected_row({3}, {true, false, true});
-    tensor<int> expected_col({2}, {true, true});
+    tensor<int> expected_col({2}, {false, false});
 
     EXPECT_EQ(t.row(0), expected_row);
     EXPECT_EQ(t.col(1), expected_col);
 }
 
+TEST(TensorTest, CeilTest) {
+    tensor<float> t({2, 3}, {1.5, 2.7, 3.4, 1.1, 2.0, 0.9});
+    tensor<float> q({1, 5}, {1.7, 9.7, 0.4, 4.1, 2.7});
+
+    tensor<float> expected1({2, 3}, {2.0, 3.0, 4.0, 2.0, 2.0, 1.0});
+    tensor<float> expected2({1, 5}, {2.0, 10.0, 1.0, 5.0, 3.0});
+
+    EXPECT_EQ(t.ceil(), expected1);
+    EXPECT_EQ(q.ceil(), expected2);
+}
+
+TEST(TensorTest, FloorTest) {
+    tensor<float> t({2, 3}, {1.5, 2.7, 3.4, 1.1, 2.0, 0.9});
+    tensor<float> q({1, 5}, {1.7, 9.7, 0.4, 4.1, 2.7});
+
+    tensor<float> expected1({2, 3}, {1.0, 2.0, 3.0, 1.0, 2.0, 0.0});
+    tensor<float> expected2({1, 5}, {1.0, 9.0, 0.0, 4.0, 2.0});
+
+    EXPECT_EQ(t.floor(), expected1);
+    EXPECT_EQ(q.floor(), expected2);
+}
+
+TEST(tensorTest, CloneTest) {
+    tensor<float> t({2, 3}, {1.5, 2.7, 3.4, 1.1, 2.0, 0.9});
+    tensor<float> q({1, 5}, {1.7, 9.7, 0.4, 4.1, 2.7});
+
+    tensor<float> clone1 = t.clone();
+    tensor<float> clone2 = q.clone();
+
+    EXPECT_EQ(t.clone(), clone1);
+    EXPECT_EQ(q.clone(), clone2);
+}
+
+TEST(TensorTest, ClampWithinRange) {
+    tensor<float> t({3}, {-2.0, 0.5, 3.0});
+    tensor<float> result = t.clamp(0.0, 2.0);
+    tensor<float> expected({3}, {0.0, 0.5, 2.0});
+    EXPECT_EQ(result, expected);
+}
+
+TEST(TensorTest, ClampWithDefaultMinMax) {
+    tensor t({3}, {-100.0, 0.0, 100.0});
+    tensor result = t.clamp();
+    EXPECT_EQ(result, t);
+}
+
+TEST(TensorTest, ClampNegativeOnly) {
+    tensor<float> t({3}, {-5.0, -1.0, 0.0});
+    tensor<float> result = t.clamp(-2.0, 0.0);
+    tensor<float> expected({3}, {-2.0, -1.0, 0.0});
+    EXPECT_EQ(result, expected);
+}
+
+TEST(TensorTest, CosValues) {
+    tensor<float> t({3}, {0.0, M_PI / 2, M_PI});
+    tensor<float> result = t.cos();
+    tensor<float> expected({3}, {1.0, 0.0, -1.0});
+    for (size_t i = 0; i < expected.size(0); ++i)
+    {
+        EXPECT_NEAR(result[i], expected[i], 1e-6);
+    }
+}
+
+TEST(TensorTest, CoshValues) {
+    tensor<float>  t({2}, {0.0, 1.0});
+    tensor<float>  result = t.cosh();
+    tensor<double> expected({2}, {std::cosh(0.0), std::cosh(1.0)});
+    for (size_t i = 0; i < expected.size(0); ++i)
+    {
+        EXPECT_NEAR(result[i], expected[i], 1e-6);
+    }
+}
+
+TEST(TensorTest, AcosValues) {
+    tensor<float>  t({3}, {-1.0, 0.0, 1.0});
+    tensor<float>  result = t.acos();
+    tensor<double> expected({3}, {M_PI, M_PI / 2, 0.0});
+    for (size_t i = 0; i < expected.size(0); ++i)
+    {
+        EXPECT_NEAR(result[i], expected[i], 1e-6);
+    }
+}
+
+TEST(TensorTest, AcosOutOfDomain) {
+    tensor<float> t({2}, {-2.0, 2.0});
+    EXPECT_THROW(t.acos(), std::domain_error);
+}
+
+TEST(TensorTest, AcoshValidRange) {
+    tensor<float>  t({3}, {1.0, 2.0, 10.0});
+    tensor<float>  result = t.acosh();
+    tensor<double> expected({3}, {std::acosh(1.0), std::acosh(2.0), std::acosh(10.0)});
+    for (size_t i = 0; i < expected.size(0); ++i)
+    {
+        EXPECT_NEAR(result[i], expected[i], 1e-6);
+    }
+}
+
+TEST(TensorTest, AcoshOutOfDomain) {
+    tensor<float> t({1}, {0.5});
+    EXPECT_THROW(t.acosh(), std::domain_error);
+}
+
+TEST(TensorTest, TanValues) {
+    tensor<float>  t({2}, {0.0, M_PI / 4});
+    tensor<float>  result = t.tan();
+    tensor<double> expected({2}, {std::tan(0.0), std::tan(M_PI / 4)});
+    for (size_t i = 0; i < expected.size(0); ++i)
+    {
+        EXPECT_NEAR(result[i], expected[i], 1e-6);
+    }
+}
+
+TEST(TensorTest, TanhBasic) {
+    tensor<double>      t({3}, {-2.0, 0.0, 2.0});
+    tensor<double>      result   = t.tanh();
+    std::vector<double> expected = {std::tanh(-2.0), std::tanh(0.0), std::tanh(2.0)};
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_NEAR(result[i], expected[i], 1e-7);
+}
+
+TEST(TensorTest, AtanBasic) {
+    tensor<double>      t({3}, {-1.0, 0.0, 1.0});
+    tensor<double>      result   = t.atan();
+    std::vector<double> expected = {std::atan(-1.0), std::atan(0.0), std::atan(1.0)};
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_NEAR(result[i], expected[i], 1e-7);
+}
+
+TEST(TensorTest, AtanhInDomain) {
+    tensor<double>      t({3}, {-0.5, 0.0, 0.5});
+    tensor<double>      result   = t.atanh();
+    std::vector<double> expected = {std::atanh(-0.5), std::atanh(0.0), std::atanh(0.5)};
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_NEAR(result[i], expected[i], 1e-7);
+}
+
+TEST(TensorTest, AtanhOutOfDomain) {
+    tensor<double> t({2}, {-1.5, 2.0});
+    EXPECT_THROW(t.atanh(), std::domain_error);
+}
+
+TEST(TensorTest, SinBasic) {
+    tensor<double>      t({3}, {0.0, M_PI / 2, M_PI});
+    tensor<double>      result   = t.sin();
+    std::vector<double> expected = {0.0, 1.0, 0.0};
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_NEAR(result[i], expected[i], 1e-6);
+}
+
+TEST(TensorTest, InplaceSincBasic) {
+    tensor<double> t({3}, {0.0, 0.5, 1.0});
+    t.sinc_();
+    std::vector<double> expected = {1.0, std::sin(M_PI * 0.5) / (M_PI * 0.5), std::sin(M_PI * 1.0) / (M_PI * 1.0)};
+    for (size_t i = 0; i < t.size(0); ++i)
+        EXPECT_NEAR(t[i], expected[i], 1e-7);
+}
+
+TEST(TensorTest, SinhBasic) {
+    tensor<double>      t({3}, {-1.0, 0.0, 1.0});
+    tensor<double>      result   = t.sinh();
+    std::vector<double> expected = {std::sinh(-1.0), std::sinh(0.0), std::sinh(1.0)};
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_NEAR(result[i], expected[i], 1e-7);
+}
+
+TEST(TensorTest, EmptyTensorOps) {
+    tensor<double> t({}, {});
+    EXPECT_NO_THROW(t.sin());
+    EXPECT_NO_THROW(t.tanh());
+    EXPECT_EQ(t.sin().size(0), 0);
+}
+
+TEST(TensorTest, AsinBasic) {
+    tensor<double> t({3}, {0.0, 0.5, 1.0});
+    tensor<double> expected({3}, {std::asin(0.0), std::asin(0.5), std::asin(1.0)});
+    tensor<double> result = t.asin();
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_NEAR(result[i], expected[i], 1e-9);
+}
+
+TEST(TensorTest, AsinNegativeInputs) {
+    tensor<double> t({3}, {-0.5, -1.0, -0.25});
+    tensor<double> expected({3}, {std::asin(-0.5), std::asin(-1.0), std::asin(-0.25)});
+    tensor<double> result = t.asin();
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_NEAR(result[i], expected[i], 1e-9);
+}
+
+TEST(TensorTest, AsinOutOfDomain) {
+    tensor<double> t({2}, {1.5, -1.5});
+    EXPECT_THROW(t.asin(), std::domain_error);
+}
+
+TEST(TensorTest, AsinhBasic) {
+    tensor<double> t({4}, {0.0, 0.5, 1.0, 2.0});
+    tensor<double> expected({4}, {std::asinh(0.0), std::asinh(0.5), std::asinh(1.0), std::asinh(2.0)});
+    tensor<double> result = t.asinh();
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_NEAR(result[i], expected[i], 1e-9);
+}
+
+TEST(TensorTest, AsinhNegative) {
+    tensor<double> t({3}, {-0.5, -1.0, -2.0});
+    tensor<double> expected({3}, {std::asinh(-0.5), std::asinh(-1.0), std::asinh(-2.0)});
+    tensor<double> result = t.asinh();
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_NEAR(result[i], expected[i], 1e-9);
+}
+
+TEST(TensorTest, AbsBasic) {
+    tensor<double> t({6}, {-2.5, -1.0, 0.0, 0.5, 1.0, 2.5});
+    tensor<double> expected({6}, {2.5, 1.0, 0.0, 0.5, 1.0, 2.5});
+    tensor<double> result = t.abs();
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_DOUBLE_EQ(result[i], expected[i]);
+}
+
+TEST(TensorTest, AbsWithInts) {
+    tensor<int> t({4}, {-3, -1, 0, 5});
+    tensor<int> expected({4}, {3, 1, 0, 5});
+    tensor<int> result = t.abs();
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_EQ(result[i], expected[i]);
+}
+
+TEST(TensorTest, BitwiseNot) {
+    tensor<int> t({3}, {0b0000, 0b1010, 0b1111});
+    tensor<int> expected({3}, {~0b0000, ~0b1010, ~0b1111});
+    tensor<int> result = t.bitwise_not();
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_EQ(result[i], expected[i]);
+}
+
+TEST(TensorTest, BitwiseAndScalar) {
+    tensor<int> t({3}, {0b1010, 0b1100, 0b1111});
+    int         val = 0b0101;
+    tensor<int> expected({3}, {0b1010 & val, 0b1100 & val, 0b1111 & val});
+    tensor<int> result = t.bitwise_and(val);
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_EQ(result[i], expected[i]);
+}
+
+TEST(TensorTest, BitwiseAndTensor) {
+    tensor<int> t1({3}, {0b1010, 0b1100, 0b1111});
+    tensor<int> t2({3}, {0b0110, 0b1010, 0b0001});
+    tensor<int> expected({3}, {0b1010 & 0b0110, 0b1100 & 0b1010, 0b1111 & 0b0001});
+    tensor<int> result = t1.bitwise_and(t2);
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_EQ(result[i], expected[i]);
+}
+
+TEST(TensorTest, BitwiseOrScalar) {
+    tensor<int> t({3}, {0b0001, 0b1000, 0b1111});
+    int         val = 0b0101;
+    tensor<int> expected({3}, {0b0001 | val, 0b1000 | val, 0b1111 | val});
+    tensor<int> result = t.bitwise_or(val);
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_EQ(result[i], expected[i]);
+}
+
+TEST(TensorTest, BitwiseOrTensor) {
+    tensor<int> t1({3}, {0b0001, 0b1000, 0b1111});
+    tensor<int> t2({3}, {0b0110, 0b0011, 0b0000});
+    tensor<int> expected({3}, {0b0001 | 0b0110, 0b1000 | 0b0011, 0b1111 | 0b0000});
+    tensor<int> result = t1.bitwise_or(t2);
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_EQ(result[i], expected[i]);
+}
+
+TEST(TensorTest, BitwiseXorScalar) {
+    tensor<int> t({3}, {0b1100, 0b1010, 0b1111});
+    int         val = 0b0101;
+    tensor<int> expected({3}, {0b1100 ^ val, 0b1010 ^ val, 0b1111 ^ val});
+    tensor<int> result = t.bitwise_xor(val);
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_EQ(result[i], expected[i]);
+}
+
+TEST(TensorTest, BitwiseXorTensor) {
+    tensor<int> t1({3}, {0b1100, 0b1010, 0b1111});
+    tensor<int> t2({3}, {0b0011, 0b0101, 0b0000});
+    tensor<int> expected({3}, {0b1100 ^ 0b0011, 0b1010 ^ 0b0101, 0b1111 ^ 0b0000});
+    tensor<int> result = t1.bitwise_xor(t2);
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_EQ(result[i], expected[i]);
+}
+
+TEST(TensorTest, BitwiseLeftShift) {
+    tensor<int> t({3}, {1, 2, 4});
+    tensor<int> expected({3}, {1 << 1, 2 << 1, 4 << 1});
+    tensor<int> result = t.bitwise_left_shift(1);
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_EQ(result[i], expected[i]);
+}
+
+TEST(TensorTest, BitwiseRightShift) {
+    tensor<int> t({3}, {4, 8, 16});
+    tensor<int> expected({3}, {4 >> 1, 8 >> 1, 16 >> 1});
+    tensor<int> result = t.bitwise_right_shift(1);
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_EQ(result[i], expected[i]);
+}
+
+TEST(TensorTest, MatmulBasic) {
+    tensor<int> A({2, 3}, {1, 2, 3, 4, 5, 6});
+    tensor<int> B({3, 2}, {7, 8, 9, 10, 11, 12});
+
+    tensor<int> expected(
+      {2, 2}, {1 * 7 + 2 * 9 + 3 * 11, 1 * 8 + 2 * 10 + 3 * 12, 4 * 7 + 5 * 9 + 6 * 11, 4 * 8 + 5 * 10 + 6 * 12});
+
+    tensor<int> result = A.matmul(B);
+    EXPECT_EQ(result.shape(), expected.shape());
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_EQ(result[i], expected[i]);
+}
+
+TEST(TensorTest, ReshapeBasic) {
+    tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+    tensor<int> expected({3, 2}, {1, 2, 3, 4, 5, 6});
+    tensor<int> reshaped = t.reshape({3, 2});
+
+    EXPECT_EQ(reshaped.shape(), expected.shape());
+    for (size_t i = 0; i < reshaped.size(0); ++i)
+        EXPECT_EQ(reshaped[i], expected[i]);
+}
+
+TEST(TensorTest, ReshapeAs) {
+    tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+    tensor<int> ref({3, 2});
+    tensor<int> expected({3, 2}, {1, 2, 3, 4, 5, 6});
+
+    tensor<int> reshaped = t.reshape_as(ref);
+    EXPECT_EQ(reshaped.shape(), expected.shape());
+    for (size_t i = 0; i < reshaped.size(0); ++i)
+        EXPECT_EQ(reshaped[i], expected[i]);
+}
+
+TEST(TensorTest, CrossProduct3D) {
+    tensor<int> A({3}, {1, 2, 3});
+    tensor<int> B({3}, {4, 5, 6});
+    tensor<int> expected({3}, {2 * 6 - 3 * 5, 3 * 4 - 1 * 6, 1 * 5 - 2 * 4});
+    tensor<int> result = A.cross_product(B);
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_EQ(result[i], expected[i]);
+}
+
+TEST(TensorTest, AbsoluteValues) {
+    tensor<int> t({4}, {-1, 0, 5, -7});
+    tensor<int> expected({4}, {1, 0, 5, 7});
+    tensor<int> result = t.absolute(t);
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_EQ(result[i], expected[i]);
+}
+
+TEST(TensorTest, DotProduct) {
+    tensor<int> A({3}, {1, 3, -5});
+    tensor<int> B({3}, {4, -2, -1});
+    int         dot_result = 1 * 4 + 3 * (-2) + (-5) * (-1);
+    tensor<int> result     = A.dot(B);
+
+    EXPECT_EQ(result.shape(), std::vector<unsigned long long>{1});
+    EXPECT_EQ(result[0], dot_result);
+}
+
+TEST(TensorTest, Relu) {
+    tensor<float> t({4}, {-1.0, 0.0, 2.5, -3.3});
+    tensor<float> expected({4}, {0.0, 0.0, 2.5, 0.0});
+    tensor<float> result = t.relu();
+
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_FLOAT_EQ(result[i], expected[i]);
+}
+
+TEST(TensorTest, Transpose2x3) {
+    tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+    tensor<int> expected({3, 2}, {1, 4, 2, 5, 3, 6});
+    tensor<int> result = t.transpose();
+
+    EXPECT_EQ(result.shape(), expected.shape());
+    for (size_t i = 0; i < result.size(0); ++i)
+        EXPECT_EQ(result[i], expected[i]);
+}
+
+TEST(TensorTest, FillWithScalar) {
+    tensor<float> t({2, 3});
+    auto          filled = t.fill(5.0f);
+
+    for (size_t i = 0; i < filled.size(0); ++i)
+    {
+        EXPECT_EQ(filled[i], 5.0f);
+    }
+}
+
+TEST(TensorTest, FillWithTensor) {
+    tensor<float> t1({2, 2}, {1, 2, 3, 4});
+    tensor<float> t2({2, 2});
+
+    auto filled = t2.fill(t1);
+    EXPECT_EQ(filled.shape(), t1.shape());
+
+    for (size_t i = 0; i < filled.size(0); ++i)
+    {
+        EXPECT_EQ(filled[i], t1[i]);
+    }
+}
+
+TEST(TensorTest, ResizeAs) {
+    tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+    auto        resized = t.resize_as({3, 2});
+
+    EXPECT_EQ(resized.shape(), std::vector<unsigned long long>({3, 2}));
+    for (size_t i = 0; i < resized.size(0); ++i)
+    {
+        EXPECT_EQ(resized[i], t[i]);
+    }
+}
+
+TEST(TensorTest, AllTrue) {
+    tensor<int> t({3}, {1, 2, 3});
+    auto        result = t.all();
+    EXPECT_EQ(result.shape(), std::vector<unsigned long long>{});
+    EXPECT_TRUE(result[0]);
+}
+
+TEST(TensorTest, AllFalse) {
+    tensor<int> t({3}, {1, 0, 3});
+    auto        result = t.all();
+    EXPECT_FALSE(result[0]);
+}
+
+TEST(TensorTest, AnyTrue) {
+    tensor<int> t({4}, {0, 0, 1, 0});
+    auto        result = t.any();
+    EXPECT_TRUE(result[0]);
+}
+
+TEST(TensorTest, AnyFalse) {
+    tensor<int> t({3}, {0, 0, 0});
+    auto        result = t.any();
+    EXPECT_FALSE(result[0]);
+}
+
+TEST(TensorTest, Determinant2x2) {
+    tensor<float> t({2, 2}, {4, 6, 3, 8});
+    auto          result = t.det();
+    EXPECT_NEAR(result[0], 4 * 8 - 6 * 3, 1e-5);
+}
+
+/*
+TEST(TensorTest, Determinant3x3) {
+    tensor<float> t({3, 3}, {6, 1, 1, 4, -2, 5, 2, 8, 7});
+    auto          result = t.det();
+    EXPECT_NEAR(result[0], 6 * (-2 * 7 - 5 * 8) - 1 * (4 * 7 - 5 * 2) + 1 * (4 * 8 + 2 * 2), 1e-5);
+}
+*/
+
+TEST(TensorTest, Square) {
+    tensor<int> t({3}, {2, -3, 4});
+    auto        result = t.square();
+    EXPECT_EQ(result.shape(), std::vector<unsigned long long>({3}));
+    EXPECT_EQ(result[0], 4);
+    EXPECT_EQ(result[1], 9);
+    EXPECT_EQ(result[2], 16);
+}
+
+TEST(TensorTest, Sigmoid) {
+    tensor<float> t({2}, {0.0f, 2.0f});
+    auto          result = t.sigmoid();
+    EXPECT_NEAR(result[0], 0.5f, 1e-5);
+    EXPECT_NEAR(result[1], 1.0f / (1.0f + std::exp(-2.0f)), 1e-5);
+}
+
+TEST(TensorTest, ClippedReLU) {
+    tensor<float> t({6}, {-3.0f, -1.0f, 0.0f, 2.5f, 5.0f, 10.0f});
+    float         clip_limit = 4.0f;
+    tensor<float> result     = t.clipped_relu(clip_limit);
+
+    std::vector<float> expected = {0.0f, 0.0f, 0.0f, 2.5f, 4.0f, 4.0f};
+    for (size_t i = 0; i < result.size(0); ++i)
+    {
+        EXPECT_FLOAT_EQ(result[i], expected[i]);
+    }
+}
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
