@@ -2,25 +2,43 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
+template<class _Tp>
 double tensor<_Tp>::neon_mean() const {
-  double __m = 0.0;
+    double m = 0.0;
 
-  if (this->empty()) return __m;
+    if (empty())
+    {
+        return m;
+    }
 
-  const index_type __simd_end = this->__data_.size() - (this->__data_.size() % _ARM64_REG_WIDTH);
-  neon_s32         __sum_vec  = vdupq_n_s32(0);
-  index_type       __i        = 0;
-  for (; __i < __simd_end; __i += _ARM64_REG_WIDTH) {
-    neon_s32 __data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&this->__data_[__i]));
-    __sum_vec           = vaddq_s32(__sum_vec, __data_vec);
-  }
+    index_type i = 0;
 
-  _s32 __partial_sum[4];
-  vst1q_s32(__partial_sum, __sum_vec);
-  __m += __partial_sum[0] + __partial_sum[1] + __partial_sum[2] + __partial_sum[3];
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
-  for (; __i < this->__data_.size(); ++__i) __m += this->__data_[__i];
+    index_type simd_end = data_.size() - (data_.size() % simd_width);
 
-  return static_cast<double>(__m) / static_cast<double>(this->__data_.size());
+    value_type            zero    = value_type(0);
+    neon_type<value_type> sum_vec = neon_dup<value_type>(&zero);
+
+    for (; i < simd_end; i += simd_width)
+    {
+        neon_type<value_type> data_vec = neon_load<value_type>(&data_[i]);
+        sum_vec                        = neon_add<value_type>(sum_vec, data_vec);
+    }
+
+    alignas(16) value_type partial_sum[simd_width];
+    neon_store<value_type>(partial_sum, sum_vec);
+
+    for (std::size_t j = 0; j < simd_width; ++j)
+    {
+        m += partial_sum[j];
+    }
+
+    for (; i < data_.size(); ++i)
+    {
+        m += data_[i];
+    }
+
+    return m / static_cast<double>(data_.size());
 }
