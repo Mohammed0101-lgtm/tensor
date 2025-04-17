@@ -686,7 +686,7 @@ class tensor
     /// @brief Applies a clipped ReLU activation function to the tensor.
     /// @return A new tensor where negative values are replaced with zero, and
     /// positive values are clipped to a maximum value.
-    tensor clipped_relu() const;
+    tensor clipped_relu(const value_type clip_limit) const;
 
     /// @brief Sorts the elements of the tensor along a specified dimension.
     /// @param dim The dimension along which to sort the tensor.
@@ -867,15 +867,15 @@ class tensor
 
     /// @brief Removes the last element from the tensor.
     /// @return A \ref to the tensor after the last element has been removed.
-    
+
     tensor& pop_back() const;
 
     /// @brief Computes the square root of each element in the tensor, modifying
     /// the tensor in place.
     /// @return A \ref to the tensor after the square root has been computed.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       sqrt_();
     const tensor& sqrt_() const;
 
@@ -883,8 +883,8 @@ class tensor
     /// the tensor in place.
     /// @return A \ref to the tensor after the exponential has been computed.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       exp_();
     const tensor& exp_() const;
 
@@ -893,8 +893,8 @@ class tensor
     /// @return A \ref to the tensor after the base-2 logarithm has been
     /// computed.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       log2_();
     const tensor& log2_() const;
 
@@ -903,8 +903,8 @@ class tensor
     /// @return A \ref to the tensor after the base-10 logarithm has been
     /// computed.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       log10_();
     const tensor& log10_() const;
 
@@ -913,8 +913,8 @@ class tensor
     /// @return A \ref to the tensor after the natural logarithm has been
     /// computed.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       log_();
     const tensor& log_() const;
 
@@ -923,8 +923,8 @@ class tensor
     /// @return A \ref to the tensor after the fractional part has been
     /// computed.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       frac_();
     const tensor& frac_() const;
 
@@ -934,8 +934,8 @@ class tensor
     /// @return A \ref to the tensor after the modulus operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       fmod_(const tensor& other);
     const tensor& fmod_(const tensor& other) const;
 
@@ -945,8 +945,8 @@ class tensor
     /// @return A \ref to the tensor after the modulus operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       fmod_(const value_type val);
     const tensor& fmod_(const value_type val) const;
 
@@ -954,8 +954,8 @@ class tensor
     /// tensor in place.
     /// @return A \ref to the tensor after the cosine has been computed.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       cos_();
     const tensor& cos_() const;
 
@@ -964,8 +964,8 @@ class tensor
     /// @return A \ref to the tensor after the hyperbolic cosine has been
     /// computed.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       cosh_();
     const tensor& cosh_() const;
 
@@ -974,8 +974,8 @@ class tensor
     /// @return A \ref to the tensor after the inverse cosine has been
     /// computed.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       acos_();
     const tensor& acos_() const;
 
@@ -984,8 +984,8 @@ class tensor
     /// @return A \ref to the tensor after the inverse hyperbolic cosine has
     /// been computed.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       acosh_();
     const tensor& acosh_() const;
 
@@ -993,8 +993,8 @@ class tensor
     /// tensor in place.
     /// @return A \ref to the tensor after the tangent has been computed.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.tan_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.tan_();`
+    /// The tensor is still modified in place.
     tensor&       tan_();
     const tensor& tan_() const;
 
@@ -1003,8 +1003,8 @@ class tensor
     /// @return A \ref to the tensor after the hyperbolic tangent has been
     /// computed.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       tanh_();
     const tensor& tanh_() const;
 
@@ -1013,8 +1013,8 @@ class tensor
     /// @return A \ref to the tensor after the inverse tangent has been
     /// computed.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       atan_();
     const tensor& atan_() const;
 
@@ -1023,8 +1023,8 @@ class tensor
     /// @return A \ref to the tensor after the inverse hyperbolic tangent has
     /// been computed.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       atanh_();
     const tensor& atanh_() const;
 
@@ -1042,7 +1042,7 @@ class tensor
     /// @return A \ref to the tensor after the hyperbolic sine has been
     /// computed.
     /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`  
+    /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
     tensor&       sinh_();
     const tensor& sinh_() const;
@@ -1062,8 +1062,8 @@ class tensor
     /// @return A \ref to the tensor after the inverse hyperbolic sine has
     /// been computed.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       asinh_();
     const tensor& asinh_() const;
 
@@ -1072,8 +1072,8 @@ class tensor
     /// @return A \ref to the tensor after the ceiling function has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       ceil_();
     const tensor& ceil_() const;
 
@@ -1082,8 +1082,8 @@ class tensor
     /// @return A \ref to the tensor after the floor function has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       floor_();
     const tensor& floor_() const;
 
@@ -1092,8 +1092,8 @@ class tensor
     /// @return A \ref to the tensor after the ReLU function has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       relu_();
     const tensor& relu_() const;
 
@@ -1105,8 +1105,8 @@ class tensor
     /// maximum bound.
     /// @return A \ref to the tensor after the clamping has been applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       clamp_(const_reference min_val = std::numeric_limits<value_type>::lowest(),
                          const_reference max_val = std::numeric_limits<value_type>::max());
     const tensor& clamp_(const_reference min_val = std::numeric_limits<value_type>::lowest(),
@@ -1125,8 +1125,8 @@ class tensor
     /// @return A \ref to the tensor after the bitwise NOT operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       logical_not_();
     const tensor& logical_not_() const;
 
@@ -1136,8 +1136,8 @@ class tensor
     /// @return A \ref to the tensor after the logical OR operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       logical_or_(const tensor& other);
     const tensor& logical_or_(const tensor& other) const;
 
@@ -1147,8 +1147,8 @@ class tensor
     /// @return A \ref to the tensor after the logical OR operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       logical_or_(const value_type val);
     const tensor& logical_or_(const value_type val) const;
 
@@ -1158,8 +1158,8 @@ class tensor
     /// @return A \ref to the tensor after the logical XOR operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       logical_xor_(const tensor& other);
     const tensor& logical_xor_(const tensor& other) const;
 
@@ -1169,8 +1169,8 @@ class tensor
     /// @return A \ref to the tensor after the logical XOR operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       logical_xor_(const value_type val);
     const tensor& logical_xor_(const value_type val) const;
 
@@ -1180,8 +1180,8 @@ class tensor
     /// @return A \ref to the tensor after the logical AND operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       logical_and_(const tensor& other);
     const tensor& logical_and_(const tensor& other) const;
 
@@ -1191,8 +1191,8 @@ class tensor
     /// @return A \ref to the tensor after the logical AND operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       logical_and_(const value_type val);
     const tensor& logical_and_(const value_type val) const;
 
@@ -1201,8 +1201,8 @@ class tensor
     /// @return A \ref to the tensor after the absolute value has been
     /// computed.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       abs_();
     const tensor& abs_() const;
 
@@ -1212,8 +1212,8 @@ class tensor
     /// @return A \ref to the tensor after the log softmax operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       log_softmax_(const index_type dim);
     const tensor& log_softmax_(const index_type dim) const;
 
@@ -1222,8 +1222,8 @@ class tensor
     /// @param dim The dimension along which the permutation is applied.
     /// @return A \ref to the tensor after the permutation has been applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       permute_(const index_type dim);
     const tensor& permute_(const index_type dim) const;
 
@@ -1233,16 +1233,16 @@ class tensor
     /// @return A \ref to the tensor after the repeat operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       repeat_(const data_t& d, int dim = 0);
     const tensor& repeat_(const data_t& d, int dim = 0) const;
 
     /// @brief Negates each element in the tensor, modifying the tensor in place.
     /// @return A \ref to the tensor after the negation has been applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       negative_();
     const tensor& negative_() const;
 
@@ -1250,8 +1250,8 @@ class tensor
     /// @return A \ref to the tensor after the transposition has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       transpose_();
     const tensor& transpose_() const;
 
@@ -1261,8 +1261,8 @@ class tensor
     /// @return A \ref to the tensor after the unsqueeze operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       unsqueeze_(index_type dim);
     const tensor& unsqueeze_(index_type dim) const;
 
@@ -1272,8 +1272,8 @@ class tensor
     /// @return A \ref to the tensor after the squeeze operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       squeeze_(index_type dim);
     const tensor& squeeze_(index_type dim) const;
 
@@ -1283,8 +1283,8 @@ class tensor
     /// @return A \ref to the tensor after the resize operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       resize_as_(const shape_type sh);
     const tensor& resize_as_(const shape_type sh) const;
 
@@ -1294,8 +1294,8 @@ class tensor
     /// @return A \ref to the tensor after the distance operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       dist_(const tensor& other);
     const tensor& dist_(const tensor& other) const;
 
@@ -1305,8 +1305,8 @@ class tensor
     /// @return A \ref to the tensor after the distance operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       dist_(const value_type val);
     const tensor& dist_(const value_type val) const;
 
@@ -1316,8 +1316,8 @@ class tensor
     /// @return A \ref to the tensor after the element-wise maximum operation
     /// has been applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       maximum_(const tensor& other);
     const tensor& maximum_(const tensor& other) const;
 
@@ -1327,8 +1327,8 @@ class tensor
     /// @return A \ref to the tensor after the element-wise maximum operation
     /// has been applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       maximum_(const value_type val);
     const tensor& maximum_(const value_type val) const;
 
@@ -1338,8 +1338,8 @@ class tensor
     /// @return A \ref to the tensor after the element-wise remainder
     /// operation has been applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       remainder_(const value_type val);
     const tensor& remainder_(const value_type val) const;
 
@@ -1349,8 +1349,8 @@ class tensor
     /// @return A \ref to the tensor after the element-wise remainder
     /// operation has been applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       remainder_(const tensor& other);
     const tensor& remainder_(const tensor& other) const;
 
@@ -1360,8 +1360,8 @@ class tensor
     /// @return A \ref to the tensor after the fill operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       fill_(const value_type val);
     const tensor& fill_(const value_type val) const;
 
@@ -1371,8 +1371,8 @@ class tensor
     /// @return A \ref to the tensor after the fill operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       fill_(const tensor& other);
     const tensor& fill_(const tensor& other) const;
 
@@ -1381,8 +1381,8 @@ class tensor
     /// @return A \ref to the tensor after the sigmoid operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       sigmoid_();
     const tensor& sigmoid_() const;
 
@@ -1393,8 +1393,8 @@ class tensor
     /// @return A \ref to the tensor after the clipped ReLU operation has
     /// been applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       clipped_relu_(const value_type clip_limit);
     const tensor& clipped_relu_(const value_type clip_limit) const;
 
@@ -1403,8 +1403,8 @@ class tensor
     /// @return A \ref to the tensor after the square operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       square_();
     const tensor& square_() const;
 
@@ -1414,8 +1414,8 @@ class tensor
     /// @return A \ref to the tensor after the element-wise power operation
     /// has been applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       pow_(const tensor& other);
     const tensor& pow_(const tensor& other) const;
 
@@ -1425,8 +1425,8 @@ class tensor
     /// @return A \ref to the tensor after the element-wise power operation
     /// has been applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       pow_(const value_type val);
     const tensor& pow_(const value_type val) const;
 
@@ -1435,8 +1435,8 @@ class tensor
     /// @return A \ref to the tensor after the sinc operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       sinc_();
     const tensor& sinc_() const;
 
@@ -1446,8 +1446,8 @@ class tensor
     /// @return A \ref to the tensor after the bitwise left shift operation
     /// has been applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       bitwise_left_shift_(const int amount);
     const tensor& bitwise_left_shift_(const int amount) const;
 
@@ -1457,8 +1457,8 @@ class tensor
     /// @return A \ref to the tensor after the bitwise right shift operation
     /// has been applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       bitwise_right_shift_(const int amount);
     const tensor& bitwise_right_shift_(const int amount) const;
 
@@ -1468,8 +1468,8 @@ class tensor
     /// @return A \ref to the tensor after the bitwise AND operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       bitwise_and_(const value_type val);
     const tensor& bitwise_and_(const value_type val) const;
 
@@ -1479,8 +1479,8 @@ class tensor
     /// @return A \ref to the tensor after the bitwise AND operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       bitwise_and_(const tensor& other);
     const tensor& bitwise_and_(const tensor& other) const;
 
@@ -1490,8 +1490,8 @@ class tensor
     /// @return A \ref to the tensor after the bitwise OR operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       bitwise_or_(const value_type val);
     const tensor& bitwise_or_(const value_type val) const;
 
@@ -1501,8 +1501,8 @@ class tensor
     /// @return A \ref to the tensor after the bitwise OR operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       bitwise_or_(const tensor& other);
     const tensor& bitwise_or_(const tensor& other) const;
 
@@ -1512,8 +1512,8 @@ class tensor
     /// @return A \ref to the tensor after the bitwise XOR operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       bitwise_xor_(const value_type val);
     const tensor& bitwise_xor_(const value_type val) const;
 
@@ -1523,8 +1523,8 @@ class tensor
     /// @return A \ref to the tensor after the bitwise XOR operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       bitwise_xor_(const tensor& other);
     const tensor& bitwise_xor_(const tensor& other) const;
 
@@ -1533,8 +1533,8 @@ class tensor
     /// @return A \ref to the tensor after the bitwise NOT operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       bitwise_not_();
     const tensor& bitwise_not_() const;
 
@@ -1544,8 +1544,8 @@ class tensor
     /// @return A \ref to the tensor after the reshape operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       view(std::initializer_list<index_type> new_sh);
     const tensor& view(std::initializer_list<index_type> new_sh) const;
 
@@ -1556,8 +1556,8 @@ class tensor
     /// @return A \ref to the tensor after the element-wise maximum operation
     /// has been applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       fmax_(const tensor& other);
     const tensor& fmax_(const tensor& other) const;
 
@@ -1568,8 +1568,8 @@ class tensor
     /// @return A \ref to the tensor after the element-wise maximum operation
     /// has been applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       fmax_(const value_type val);
     const tensor& fmax_(const value_type val) const;
 
@@ -1581,8 +1581,8 @@ class tensor
     /// @return A \ref to the tensor after the randomization operation has
     /// been applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       randomize_(const shape_type& sh, bool bounded = false);
     const tensor& randomize_(const shape_type& sh, bool bounded = false) const;
 
@@ -1592,8 +1592,8 @@ class tensor
     /// @return A \ref to the tensor after the zero-fill operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       zeros_(shape_type sh = {});
     const tensor& zeros_(shape_type sh = {}) const;
 
@@ -1603,8 +1603,8 @@ class tensor
     /// @return A \ref to the tensor after the one-fill operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
-/// `const auto& result = tensor.asin_();`
-/// The tensor is still modified in place.
+    /// `const auto& result = tensor.asin_();`
+    /// The tensor is still modified in place.
     tensor&       ones_(shape_type sh = {});
     const tensor& ones_(shape_type sh = {}) const;
 
