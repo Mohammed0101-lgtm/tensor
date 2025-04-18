@@ -75,7 +75,7 @@ class tensor {
   shape_type strides() const noexcept;
 
   Device device() const noexcept { return this->__device_; }
-  size_t n_dims() const noexcept;
+  std::size_t n_dims() const noexcept;
 
   index_type size(const index_type __dim) const;
   index_type capacity() const noexcept;
@@ -305,8 +305,8 @@ class tensor {
   static void      __check_is_scalar_type(const std::string __msg);
   static void      __check_is_integral_type(const std::string __msg);
   template <typename __t>
-  size_t   computeStride(size_t dim, const shape_t& shape) const;
-  void     printRecursive(size_t index, size_t depth, const shape_t& shape) const;
+  std::size_t   computeStride(std::size_t dim, const shape_t& shape) const;
+  void     printRecursive(std::size_t index, std::size_t depth, const shape_t& shape) const;
   void     __compute_strides();
   index_t  __compute_index(const std::vector<index_t>& __idx) const;
   uint64_t __compute_outer_size(const index_t __dim) const;
