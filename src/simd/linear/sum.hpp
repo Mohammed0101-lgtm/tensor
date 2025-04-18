@@ -18,6 +18,10 @@ tensor<_Tp> tensor<_Tp>::neon_sum(const index_type axis) const {
     const index_type outer_size = compute_outer_size(axis);
     const index_type inner_size = size(0) / (outer_size * axis_size);
 
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
+
     if constexpr (std::is_floating_point_v<value_type>)
     {
         for (index_type outer = 0; outer < outer_size; ++outer)
@@ -28,11 +32,11 @@ tensor<_Tp> tensor<_Tp>::neon_sum(const index_type axis) const {
                 index_type i       = outer * axis_size * inner_size + inner;
                 index_type j       = 0;
 
-                for (; j + _ARM64_REG_WIDTH <= axis_size; j += _ARM64_REG_WIDTH)
+                for (; j + simd_width <= axis_size; j += simd_width)
                 {
                     neon_f32 data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&data_[i]));
                     sum_vec           = vaddq_f32(sum_vec, data_vec);
-                    i += inner_size * _ARM64_REG_WIDTH;
+                    i += inner_size * simd_width;
                 }
 
                 _f32 sum = vaddvq_f32(sum_vec);
@@ -57,11 +61,11 @@ tensor<_Tp> tensor<_Tp>::neon_sum(const index_type axis) const {
                 index_type i       = outer * axis_size * inner_size + inner;
                 index_type j       = 0;
 
-                for (; j + _ARM64_REG_WIDTH <= axis_size; j += _ARM64_REG_WIDTH)
+                for (; j + simd_width <= axis_size; j += simd_width)
                 {
                     neon_s32 data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&data_[i]));
                     sum_vec           = vaddq_s32(sum_vec, data_vec);
-                    i += inner_size * _ARM64_REG_WIDTH;
+                    i += inner_size * simd_width;
                 }
 
                 _s32 sum = vaddvq_s32(sum_vec);
@@ -86,11 +90,11 @@ tensor<_Tp> tensor<_Tp>::neon_sum(const index_type axis) const {
                 index_type i       = outer * axis_size * inner_size + inner;
                 index_type j       = 0;
 
-                for (; j + _ARM64_REG_WIDTH <= axis_size; j += _ARM64_REG_WIDTH)
+                for (; j + simd_width <= axis_size; j += simd_width)
                 {
                     neon_u32 data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
                     sum_vec           = vaddq_u32(sum_vec, data_vec);
-                    i += inner_size * _ARM64_REG_WIDTH;
+                    i += inner_size * simd_width;
                 }
 
                 _u32 sum = vaddvq_u32(sum_vec);
