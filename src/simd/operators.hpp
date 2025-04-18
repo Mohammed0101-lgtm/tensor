@@ -17,7 +17,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_plus(const tensor& other) const {
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
     data_t     d(data_.size());
 
     index_type i = 0;
@@ -48,7 +48,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_plus(const value_type val) const {
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     index_type            i       = 0;
     neon_type<value_type> val_vec = neon_dup<value_type>(&val);
@@ -77,7 +77,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_plus_eq(const_reference val) const {
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     index_type            i       = 0;
     neon_type<value_type> val_vec = neon_dup<value_type>(&val);
@@ -112,7 +112,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const tensor& other) const {
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
@@ -143,7 +143,7 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const value_type val) const {
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     index_type            i       = 0;
     neon_type<value_type> val_vec = neon_dup<value_type>(&val);
@@ -177,7 +177,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const tensor& other) const {
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
@@ -211,7 +211,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_times_eq(const tensor& other) const {
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
@@ -240,7 +240,7 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const_reference val) const {
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     index_type            i       = 0;
     neon_type<value_type> val_vec = neon_dup<value_type>(&val);
