@@ -10,51 +10,21 @@ tensor<_Tp>& tensor<_Tp>::neon_clamp_(const_reference min_val, const_reference m
     }
 
     const index_type simd_end = data_.size() - (data_.size() % _ARM64_REG_WIDTH);
-    index_type       i        = 0;
 
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
+    neon_type<value_type> min_vec = neon_dup<value_type>(min_val);
+    neon_type<value_type> max_vec = neon_dup<value_type>(max_val);
 
-    if constexpr (std::is_floating_point_v<value_type>)
+    index_type       i        = 0;
+    for (; i < simd_end; i += simd_width)
     {
-        neon_f32 min_vec = vdupq_n_f32(min_val);
-        neon_f32 max_vec = vdupq_n_f32(max_val);
+        neon_type<value_type> data_vec = neon_load<value_type>(&data_[i]);
+        neon_type<value_type> clamped  = neon_min<value_type>(neon_max<value_type>(data_vec, min_vec), max_vec);
 
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_f32 data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&data_[i]));
-            neon_f32 clamped  = vminq_f32(vmaxq_f32(data_vec, min_vec), max_vec);
-
-            vst1q_f32(&data_[i], clamped);
-        }
-    }
-    else if constexpr (std::is_signed_v<value_type>)
-    {
-        neon_s32 min_vec = vdupq_n_s32(min_val);
-        neon_s32 max_vec = vdupq_n_s32(max_val);
-
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_s32 data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&data_[i]));
-            neon_s32 clamped  = vminq_s32(vmaxq_s32(data_vec, min_vec), max_vec);
-
-            vst1q_s32(&data_[i], clamped);
-        }
-    }
-    else if constexpr (std::is_unsigned_v<value_type>)
-    {
-        neon_u32 min_vec = vdupq_n_u32(min_val);
-        neon_u32 max_vec = vdupq_n_u32(max_val);
-
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_u32 data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
-            neon_u32 clamped  = vminq_u32(vmaxq_u32(data_vec, min_vec), max_vec);
-
-            vst1q_u32(&data_[i], clamped);
-        }
+        neon_store<value_type>(&data_[i], clamped);
     }
 
     for (; i < data_.size(); ++i)
