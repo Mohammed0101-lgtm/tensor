@@ -77,12 +77,16 @@ tensor<_Tp> tensor<_Tp>::neon_dot(const tensor& other) const {
     const std::size_t size       = data_.size();
     value_type        ret        = 0;
 
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
+
     if constexpr (std::is_floating_point_v<value_type>)
     {
         std::size_t i       = 0;
         neon_f32    sum_vec = vdupq_n_f32(0.0f);
 
-        for (; i + _ARM64_REG_WIDTH <= size; i += _ARM64_REG_WIDTH)
+        for (; i + simd_width <= size; i += simd_width)
         {
             neon_f32 a_vec = vld1q_f32(reinterpret_cast<const _f32*>(&this_data[i]));
             neon_f32 b_vec = vld1q_f32(reinterpret_cast<const _f32*>(&other_data[i]));
@@ -102,7 +106,7 @@ tensor<_Tp> tensor<_Tp>::neon_dot(const tensor& other) const {
         std::size_t i       = 0;
         neon_u32    sum_vec = vdupq_n_u32(0.0f);
 
-        for (; i + _ARM64_REG_WIDTH <= size; i += _ARM64_REG_WIDTH)
+        for (; i + simd_width <= size; i += simd_width)
         {
             neon_u32 a_vec = vld1q_u32(reinterpret_cast<const _u32*>(&this_data[i]));
             neon_u32 b_vec = vld1q_u32(reinterpret_cast<const _u32*>(&other_data[i]));
@@ -122,7 +126,7 @@ tensor<_Tp> tensor<_Tp>::neon_dot(const tensor& other) const {
         std::size_t i       = 0;
         neon_s32    sum_vec = vdupq_n_f32(0.0f);
 
-        for (; i + _ARM64_REG_WIDTH <= size; i += _ARM64_REG_WIDTH)
+        for (; i + simd_width <= size; i += simd_width)
         {
             neon_s32 a_vec = vld1q_s32(reinterpret_cast<const _s32*>(&this_data[i]));
             neon_s32 b_vec = vld1q_s32(reinterpret_cast<const _s32*>(&other_data[i]));
