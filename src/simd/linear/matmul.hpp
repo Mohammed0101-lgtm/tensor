@@ -48,24 +48,26 @@ tensor<_Tp> tensor<_Tp>::neon_matmul(const tensor& other) const {
     shape_type ret_sh = {shape_[0], other.shape()[1]};
     data_t     ret_d(ret_sh[0] * ret_sh[1], value_type(0));
 
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
+
     if constexpr (std::is_same_v<value_type, _f32>)
     {
-        for (int64_t i = 0; i < ret_sh[0]; i += _ARM64_REG_WIDTH)
+        for (index_type i = 0; i < ret_sh[0]; i += simd_width)
         {
-            for (int64_t j = 0; j < ret_sh[1]; j += _ARM64_REG_WIDTH)
+            for (index_type j = 0; j < ret_sh[1]; j += simd_width)
             {
-                for (int64_t k = 0; k < shape_[1]; k += _ARM64_REG_WIDTH)
+                for (index_type k = 0; k < shape_[1]; k += simd_width)
                 {
-                    for (int64_t ii = i; ii < std::min(static_cast<index_type>(i + _ARM64_REG_WIDTH), ret_sh[0]); ++ii)
+                    for (index_type ii = i; ii < std::min(static_cast<index_type>(i + simd_width), ret_sh[0]); ++ii)
                     {
-                        for (int64_t jj = j; jj < std::min(static_cast<index_type>(j + _ARM64_REG_WIDTH), ret_sh[1]);
-                             ++jj)
+                        for (index_type jj = j; jj < std::min(static_cast<index_type>(j + simd_width), ret_sh[1]); ++jj)
                         {
                             neon_f32 sum_vec = vdupq_n_f32(0);
 
-                            for (int64_t kk = k;
-                                 kk < std::min(static_cast<index_type>(k + _ARM64_REG_WIDTH), shape_[1]);
-                                 kk += _ARM64_REG_WIDTH)
+                            for (index_type kk = k; kk < std::min(static_cast<index_type>(k + simd_width), shape_[1]);
+                                 kk += simd_width)
                             {
                                 neon_f32 a_vec = vld1q_f32(reinterpret_cast<const _f32*>(&data_[ii * shape_[1] + kk]));
                                 neon_f32 b_vec =
@@ -86,22 +88,20 @@ tensor<_Tp> tensor<_Tp>::neon_matmul(const tensor& other) const {
     }
     else if constexpr (std::is_same_v<value_type, _s32>)
     {
-        for (int64_t i = 0; i < ret_sh[0]; i += _ARM64_REG_WIDTH)
+        for (index_type i = 0; i < ret_sh[0]; i += simd_width)
         {
-            for (int64_t j = 0; j < ret_sh[1]; j += _ARM64_REG_WIDTH)
+            for (index_type j = 0; j < ret_sh[1]; j += simd_width)
             {
-                for (int64_t k = 0; k < shape_[1]; k += _ARM64_REG_WIDTH)
+                for (index_type k = 0; k < shape_[1]; k += simd_width)
                 {
-                    for (int64_t ii = i; ii < std::min(static_cast<index_type>(i + _ARM64_REG_WIDTH), ret_sh[0]); ++ii)
+                    for (index_type ii = i; ii < std::min(static_cast<index_type>(i + simd_width), ret_sh[0]); ++ii)
                     {
-                        for (int64_t jj = j; jj < std::min(static_cast<index_type>(j + _ARM64_REG_WIDTH), ret_sh[1]);
-                             ++jj)
+                        for (index_type jj = j; jj < std::min(static_cast<index_type>(j + simd_width), ret_sh[1]); ++jj)
                         {
                             neon_s32 sum_vec = vdupq_n_s32(0);
 
-                            for (int64_t kk = k;
-                                 kk < std::min(static_cast<index_type>(k + _ARM64_REG_WIDTH), shape_[1]);
-                                 kk += _ARM64_REG_WIDTH)
+                            for (index_type kk = k; kk < std::min(static_cast<index_type>(k + simd_width), shape_[1]);
+                                 kk += simd_width)
                             {
                                 neon_s32 a_vec = vld1q_s32(reinterpret_cast<const _s32*>(&data_[ii * shape_[1] + kk]));
                                 neon_s32 b_vec =
@@ -122,22 +122,20 @@ tensor<_Tp> tensor<_Tp>::neon_matmul(const tensor& other) const {
     }
     else if constexpr (std::is_unsigned_v<value_type>)
     {
-        for (int64_t i = 0; i < ret_sh[0]; i += _ARM64_REG_WIDTH)
+        for (index_type i = 0; i < ret_sh[0]; i += simd_width)
         {
-            for (int64_t j = 0; j < ret_sh[1]; j += _ARM64_REG_WIDTH)
+            for (index_type j = 0; j < ret_sh[1]; j += simd_width)
             {
-                for (int64_t k = 0; k < shape_[1]; k += _ARM64_REG_WIDTH)
+                for (index_type k = 0; k < shape_[1]; k += simd_width)
                 {
-                    for (int64_t ii = i; ii < std::min(static_cast<index_type>(i + _ARM64_REG_WIDTH), ret_sh[0]); ++ii)
+                    for (index_type ii = i; ii < std::min(static_cast<index_type>(i + simd_width), ret_sh[0]); ++ii)
                     {
-                        for (int64_t jj = j; jj < std::min(static_cast<index_type>(j + _ARM64_REG_WIDTH), ret_sh[1]);
-                             ++jj)
+                        for (index_type jj = j; jj < std::min(static_cast<index_type>(j + simd_width), ret_sh[1]); ++jj)
                         {
                             neon_u32 sum_vec = vdupq_n_u32(0);
 
-                            for (int64_t kk = k;
-                                 kk < std::min(static_cast<index_type>(k + _ARM64_REG_WIDTH), shape_[1]);
-                                 kk += _ARM64_REG_WIDTH)
+                            for (int64_t kk = k; kk < std::min(static_cast<index_type>(k + simd_width), shape_[1]);
+                                 kk += simd_width)
                             {
                                 neon_u32 a_vec = vld1q_u32(reinterpret_cast<const _u32*>(&data_[ii * shape_[1] + kk]));
                                 neon_u32 b_vec =
@@ -157,12 +155,12 @@ tensor<_Tp> tensor<_Tp>::neon_matmul(const tensor& other) const {
         }
     }
 
-    for (int64_t i = 0; i < ret_sh[0]; ++i)
+    for (index_type i = 0; i < ret_sh[0]; ++i)
     {
-        for (int64_t j = 0; j < ret_sh[1]; ++j)
+        for (index_type j = 0; j < ret_sh[1]; ++j)
         {
             value_type sum = value_type(0);
-            for (int64_t k = 0; k < shape_[1]; ++k)
+            for (index_type k = 0; k < shape_[1]; ++k)
             {
                 sum = sum + (data_[i * shape_[1] + k] * other[k * other.shape()[1] + j]);
             }
