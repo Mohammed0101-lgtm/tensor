@@ -9,60 +9,24 @@ tensor<_Tp>& tensor<_Tp>::neon_sin_() {
         throw type_error("Type must be arithmetic");
     }
 
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
+
     index_type i = 0;
-
-    const index_type simd_end = data_.size() - (data_.size() % _ARM64_REG_WIDTH);
-
-    if constexpr (std::is_same_v<value_type, _f32>)
+    for (; i < simd_end; i += simd_width)
     {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
+        neon_type<value_type> data_vec = neon_load<value_type>(&data_[i]);
+        value_type            vals[simd_width];
+        neon_load<value_type>(vals, data_vec);
+
+        for (int j = 0; j < simd_width; ++j)
         {
-            neon_f32 data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&data_[i]));
-            _f32     vals[_ARM64_REG_WIDTH];
-            vst1q_f32(vals, data_vec);
-
-            vals[0] = static_cast<_f32>(std::sin(vals[0]));
-            vals[1] = static_cast<_f32>(std::sin(vals[1]));
-            vals[2] = static_cast<_f32>(std::sin(vals[2]));
-            vals[3] = static_cast<_f32>(std::sin(vals[3]));
-
-            neon_f32 sin_vec = vld1q_f32(vals);
-            vst1q_f32(&data_[i], sin_vec);
+            vals[j] = static_cast<value_type>(std::sin(vals[j]));
         }
-    }
-    else if constexpr (std::is_same_v<value_type, _s32>)
-    {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_s32 data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&data_[i]));
-            _s32     vals[_ARM64_REG_WIDTH];
-            vst1q_s32(vals, data_vec);
 
-            vals[0] = static_cast<_s32>(std::sin(vals[0]));
-            vals[1] = static_cast<_s32>(std::sin(vals[1]));
-            vals[2] = static_cast<_s32>(std::sin(vals[2]));
-            vals[3] = static_cast<_s32>(std::sin(vals[3]));
-
-            neon_s32 sin_vec = vld1q_s32(vals);
-            vst1q_s32(&data_[i], sin_vec);
-        }
-    }
-    else if constexpr (std::is_same_v<value_type, _u32>)
-    {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_u32 data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
-            _u32     vals[_ARM64_REG_WIDTH];
-            vst1q_u32(vals, data_vec);
-
-            vals[0] = static_cast<_u32>(std::sin(vals[0]));
-            vals[1] = static_cast<_u32>(std::sin(vals[1]));
-            vals[2] = static_cast<_u32>(std::sin(vals[2]));
-            vals[3] = static_cast<_u32>(std::sin(vals[3]));
-
-            neon_u32 sin_vec = vld1q_u32(vals);
-            vst1q_u32(&data_[i], sin_vec);
-        }
+        neon_type<value_type> sin_vec = neon_load<value_type>(vals);
+        neon_store(&data_[i], sin_vec);
     }
 
     for (; i < data_.size(); ++i)
@@ -119,60 +83,24 @@ tensor<_Tp>& tensor<_Tp>::neon_sinh_() {
         throw type_error("Type must be arithmetic");
     }
 
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
+
     index_type i = 0;
-
-    const index_type simd_end = data_.size() - (data_.size() % _ARM64_REG_WIDTH);
-
-    if constexpr (std::is_same_v<value_type, _f32>)
+    for (; i < simd_end; i += simd_width)
     {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
+        neon_type<value_type> data_vec = neon_load<value_type>(&data_[i]);
+        value_type            vals[simd_width];
+        neon_load<value_type>(vals, data_vec);
+
+        for (int j = 0; j < simd_width; ++j)
         {
-            neon_f32 data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&data_[i]));
-            _f32     vals[_ARM64_REG_WIDTH];
-            vst1q_f32(vals, data_vec);
-
-            vals[0] = static_cast<_f32>(std::sinh(vals[0]));
-            vals[1] = static_cast<_f32>(std::sinh(vals[1]));
-            vals[2] = static_cast<_f32>(std::sinh(vals[2]));
-            vals[3] = static_cast<_f32>(std::sinh(vals[3]));
-
-            neon_f32 sinh_vec = vld1q_f32(vals);
-            vst1q_f32(&data_[i], sinh_vec);
+            vals[j] = static_cast<value_type>(std::sinh(vals[j]));
         }
-    }
-    else if constexpr (std::is_same_v<value_type, _s32>)
-    {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_s32 data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&data_[i]));
-            _s32     vals[_ARM64_REG_WIDTH];
-            vst1q_s32(vals, data_vec);
 
-            vals[0] = static_cast<_s32>(std::sinh(vals[0]));
-            vals[1] = static_cast<_s32>(std::sinh(vals[1]));
-            vals[2] = static_cast<_s32>(std::sinh(vals[2]));
-            vals[3] = static_cast<_s32>(std::sinh(vals[3]));
-
-            neon_s32 sinh_vec = vld1q_s32(vals);
-            vst1q_s32(&data_[i], sinh_vec);
-        }
-    }
-    else if constexpr (std::is_same_v<value_type, _u32>)
-    {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_u32 data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
-            _u32     vals[_ARM64_REG_WIDTH];
-            vst1q_u32(vals, data_vec);
-
-            vals[0] = static_cast<_u32>(std::sinh(vals[0]));
-            vals[1] = static_cast<_u32>(std::sinh(vals[1]));
-            vals[2] = static_cast<_u32>(std::sinh(vals[2]));
-            vals[3] = static_cast<_u32>(std::sinh(vals[3]));
-
-            neon_u32 sinh_vec = vld1q_u32(vals);
-            vst1q_u32(&data_[i], sinh_vec);
-        }
+        neon_type<value_type> sinh_vec = neon_load<value_type>(vals);
+        neon_store(&data_[i], sinh_vec);
     }
 
     for (; i < data_.size(); ++i)
@@ -190,59 +118,29 @@ tensor<_Tp>& tensor<_Tp>::neon_asinh_() {
         throw type_error("Type must be arithmetic");
     }
 
-    index_type i        = 0;
-    index_type simd_end = data_.size() - (data_.size() % _ARM64_REG_WIDTH);
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
-    if constexpr (std::is_same_v<value_type, _f32>)
+    index_type i = 0;
+    for (; i < simd_end; i += simd_width)
     {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
+        neon_type<value_type> data_vec = neon_load<value_type>(&data_[i]);
+        value_type            vals[simd_width];
+        neon_load<value_type>(vals, data_vec);
+
+        for (int j = 0; j < simd_width; ++j)
         {
-            neon_f32 data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&data_[i]));
-            _f32     vals[_ARM64_REG_WIDTH];
-            vst1q_f32(vals, data_vec);
+            if (vals[j] < -1 or vals[j] > 1)
+            {
+                throw std::domain_error("Input value is out of domain dor asinh()");
+            }
 
-            vals[0] = static_cast<_f32>(std::asinh(vals[0]));
-            vals[1] = static_cast<_f32>(std::asinh(vals[1]));
-            vals[2] = static_cast<_f32>(std::asinh(vals[2]));
-            vals[3] = static_cast<_f32>(std::asinh(vals[3]));
-
-            neon_f32 asinh_vec = vld1q_f32(vals);
-            vst1q_f32(reinterpret_cast<_f32*>(&data_[i]), asinh_vec);
+            vals[j] = static_cast<value_type>(std::asinh(vals[j]));
         }
-    }
-    else if constexpr (std::is_same_v<value_type, _s32>)
-    {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_s32 data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&data_[i]));
-            _s32     vals[_ARM64_REG_WIDTH];
-            vst1q_s32(vals, data_vec);
 
-            vals[0] = static_cast<_s32>(std::asinh(vals[0]));
-            vals[1] = static_cast<_s32>(std::asinh(vals[1]));
-            vals[2] = static_cast<_s32>(std::asinh(vals[2]));
-            vals[3] = static_cast<_s32>(std::asinh(vals[3]));
-
-            neon_s32 asinh_vec = vld1q_s32(vals);
-            vst1q_s32(reinterpret_cast<_s32*>(&data_[i]), asinh_vec);
-        }
-    }
-    else if constexpr (std::is_same_v<value_type, _u32>)
-    {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_u32 data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
-            _u32     vals[_ARM64_REG_WIDTH];
-            vst1q_u32(vals, data_vec);
-
-            vals[0] = static_cast<_u32>(std::asinh(vals[0]));
-            vals[1] = static_cast<_u32>(std::asinh(vals[1]));
-            vals[2] = static_cast<_u32>(std::asinh(vals[2]));
-            vals[3] = static_cast<_u32>(std::asinh(vals[3]));
-
-            neon_u32 asinh_vec = vld1q_u32(vals);
-            vst1q_u32(reinterpret_cast<_u32*>(&data_[i]), asinh_vec);
-        }
+        neon_type<value_type> asinh_vec = neon_load<value_type>(vals);
+        neon_store(&data_[i], asinh_vec);
     }
 
     for (; i < data_.size(); ++i)
@@ -260,59 +158,29 @@ tensor<_Tp>& tensor<_Tp>::neon_asin_() {
         throw type_error("Type must be arithmetic");
     }
 
-    index_type       i        = 0;
-    const index_type simd_end = data_.size() - (data_.size() % _ARM64_REG_WIDTH);
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
-    if constexpr (std::is_same_v<value_type, _f32>)
+    index_type i = 0;
+    for (; i < simd_end; i += simd_width)
     {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
+        neon_type<value_type> data_vec = neon_load<value_type>(&data_[i]);
+        value_type            vals[simd_width];
+        neon_load<value_type>(vals, data_vec);
+
+        for (int j = 0; j < simd_width; ++j)
         {
-            neon_f32 data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&data_[i]));
-            _f32     vals[_ARM64_REG_WIDTH];
-            vst1q_f32(vals, data_vec);
+            if (vals[j] < static_cast<value_type>(-1) or vals[j] > static_cast<value_type>(1))
+            {
+                throw std::domain_error("Input value is out of domain for asin()");
+            }
 
-            vals[0] = static_cast<_f32>(std::asin(vals[0]));
-            vals[1] = static_cast<_f32>(std::asin(vals[1]));
-            vals[2] = static_cast<_f32>(std::asin(vals[2]));
-            vals[3] = static_cast<_f32>(std::asin(vals[3]));
-
-            neon_f32 asin_vec = vld1q_f32(vals);
-            vst1q_f32(&data_[i], asin_vec);
+            vals[j] = static_cast<value_type>(std::asin(vals[j]));
         }
-    }
-    else if constexpr (std::is_same_v<value_type, _s32>)
-    {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_s32 data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&data_[i]));
-            _s32     vals[_ARM64_REG_WIDTH];
-            vst1q_s32(vals, data_vec);
 
-            vals[0] = static_cast<_s32>(std::asin(vals[0]));
-            vals[1] = static_cast<_s32>(std::asin(vals[1]));
-            vals[2] = static_cast<_s32>(std::asin(vals[2]));
-            vals[3] = static_cast<_s32>(std::asin(vals[3]));
-
-            neon_s32 asin_vec = vld1q_s32(vals);
-            vst1q_s32(&data_[i], asin_vec);
-        }
-    }
-    else if constexpr (std::is_same_v<value_type, _u32>)
-    {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_u32 data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
-            _u32     vals[_ARM64_REG_WIDTH];
-            vst1q_u32(vals, data_vec);
-
-            vals[0] = static_cast<_u32>(std::asin(vals[0]));
-            vals[1] = static_cast<_u32>(std::asin(vals[1]));
-            vals[2] = static_cast<_u32>(std::asin(vals[2]));
-            vals[3] = static_cast<_u32>(std::asin(vals[3]));
-
-            neon_u32 asin_vec = vld1q_u32(vals);
-            vst1q_u32(&data_[i], asin_vec);
-        }
+        neon_type<value_type> asin_vec = neon_load<value_type>(vals);
+        neon_store(&data_[i], asin_vec);
     }
 
     for (; i < data_.size(); ++i)
