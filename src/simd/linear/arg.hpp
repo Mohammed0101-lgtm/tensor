@@ -30,8 +30,7 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argmax_(index_type di
 
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
-
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     for (i = 0; i < outer_size; ++i)
     {
@@ -119,6 +118,10 @@ tensor<_Tp> tensor<_Tp>::neon_argmax(index_type dim) const {
         inner_size *= shape_[i];
     }
 
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
+
     for (i = 0; i < outer_size; ++i)
     {
         for (index_type j = 0; j < inner_size; ++j)
@@ -162,8 +165,7 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argsort(index_type d,
 
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
-
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     index_type i = 0;
 
