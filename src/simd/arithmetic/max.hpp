@@ -9,13 +9,14 @@ tensor<_Tp>& tensor<_Tp>::neon_fmax_(const value_type v) {
         throw type_error("Type must be floating point");
     }
 
-    index_type i = 0;
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
+    index_type i = 0;
     if constexpr (std::is_floating_point_v<value_type>)
     {
-        const index_type simd_end   = data_.size() - (data_.size() % _ARM64_REG_WIDTH);
-        neon_f32         scalar_val = vdupq_n_f32(v);
-
+        neon_f32 scalar_val = vdupq_n_f32(v);
         for (; i < simd_end; i += _ARM64_REG_WIDTH)
         {
             neon_f32 a       = vld1q_f32(reinterpret_cast<const _f32*>(&data_[i]));
@@ -45,12 +46,13 @@ tensor<_Tp>& tensor<_Tp>::neon_fmax_(const tensor& other) {
         throw shape_error("Tensors shapes must be equal");
     }
 
-    index_type i = 0;
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
+    index_type i = 0;
     if constexpr (std::is_floating_point_v<value_type>)
     {
-        const index_type simd_end = data_.size() - (data_.size() % _ARM64_REG_WIDTH);
-
         for (; i < simd_end; i += _ARM64_REG_WIDTH)
         {
             neon_f32 a       = vld1q_f32(reinterpret_cast<const _f32*>(&data_[i]));
@@ -76,38 +78,17 @@ tensor<_Tp>& tensor<_Tp>::neon_maximum_(const tensor& other) {
         throw shape_error("Tensors shapes must be equal");
     }
 
-    const index_type simd_end = data_.size() - (data_.size() % _ARM64_REG_WIDTH);
-    index_type       i        = 0;
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
-    if constexpr (std::is_same_v<value_type, _f32>)
+    index_type i = 0;
+    for (; i < simd_end; i += simd_width)
     {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_f32 a   = vld1q_f32(reinterpret_cast<const _f32*>(&data_[i]));
-            neon_f32 b   = vld1q_f32(reinterpret_cast<const _f32*>(&other[i]));
-            neon_f32 max = vmaxq_f32(a, b);
-            vst1q_f32(reinterpret_cast<_f32*>(&data_[i]), max);
-        }
-    }
-    else if constexpr (std::is_same_v<value_type, _s32>)
-    {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_s32 a   = vld1q_s32(reinterpret_cast<const _s32*>(&data_[i]));
-            neon_s32 b   = vld1q_s32(reinterpret_cast<const _s32*>(&other[i]));
-            neon_s32 max = vmaxq_s32(a, b);
-            vst1q_s32(reinterpret_cast<_s32*>(&data_[i]), max);
-        }
-    }
-    else if constexpr (std::is_same_v<value_type, _u32>)
-    {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_u32 a   = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
-            neon_u32 b   = vld1q_u32(reinterpret_cast<const _u32*>(&other[i]));
-            neon_u32 max = vmaxq_u32(a, b);
-            vst1q_u32(reinterpret_cast<_u32*>(&data_[i]), max);
-        }
+        neon_type<value_type> a   = neon_load<value_type>(&data_[i]);
+        neon_type<value_type> b   = neon_load<value_type>(&other[i]);
+        neon_type<value_type> max = neon_max<value_type>(a, b);
+        neon_store<value_type>(&data_[i], max);
     }
 
     for (; i < data_.size(); ++i)
@@ -120,38 +101,23 @@ tensor<_Tp>& tensor<_Tp>::neon_maximum_(const tensor& other) {
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_maximum_(const value_type val) {
-    const index_type simd_end = data_.size() - (data_.size() % _ARM64_REG_WIDTH);
-    index_type       i        = 0;
+    if constexpr (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Value type must be arithmetic");
+    }
 
-    if constexpr (std::is_same_v<value_type, _f32>)
+    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
+
+    neon_type<value_type> val_vec = neon_dup<value_type>(val);
+
+    index_type i = 0;
+    for (; i < simd_end; i += simd_width)
     {
-        neon_f32 val_vec = vdupq_n_f32(val);
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_f32 a   = vld1q_f32(reinterpret_cast<const _f32*>(&data_[i]));
-            neon_f32 max = vmaxq_f32(a, val_vec);
-            vst1q_f32(reinterpret_cast<_f32*>(&data_[i]), max);
-        }
-    }
-    else if constexpr (std::is_same_v<value_type, _s32>)
-    {
-        neon_s32 val_vec = vdupq_n_s32(val);
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_s32 a   = vld1q_s32(reinterpret_cast<const _s32*>(&data_[i]));
-            neon_s32 max = vmaxq_s32(a, val_vec);
-            vst1q_s32(reinterpret_cast<_s32*>(&data_[i]), max);
-        }
-    }
-    else if constexpr (std::is_same_v<value_type, _u32>)
-    {
-        neon_u32 val_vec = vdupq_n_u32(val);
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_u32 a   = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
-            neon_u32 max = vmaxq_u32(a, val_vec);
-            vst1q_u32(reinterpret_cast<_u32*>(&data_[i]), max);
-        }
+        neon_type<value_type> a   = neon_load<value_type>(&data_[i]);
+        neon_type<value_type> max = neon_max<value_type>(a, val_vec);
+        neon_store<value_type>(&data_[i], max);
     }
 
     for (; i < data_.size(); ++i)
