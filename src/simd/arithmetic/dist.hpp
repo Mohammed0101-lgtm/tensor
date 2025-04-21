@@ -17,10 +17,9 @@ tensor<_Tp>& tensor<_Tp>::neon_dist_(const tensor& other) {
 
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
     index_type i        = 0;
-
     for (; i < simd_end; i += simd_width)
     {
         value_type dummy;
@@ -52,10 +51,9 @@ tensor<_Tp>& tensor<_Tp>::neon_dist_(const value_type val) {
 
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
     index_type i        = 0;
-
     for (; i < simd_end; i += simd_width)
     {
         neon_type<value_type> a    = neon_load<value_type>(&data_[i]);
