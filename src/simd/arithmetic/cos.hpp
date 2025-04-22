@@ -11,13 +11,11 @@ tensor<_Tp>& tensor<_Tp>::neon_cos_() {
         throw type_error("Type must be arithmetic");
     }
 
-    index_type i = 0;
-
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
-
+    index_type i = 0;
     for (; i < simd_end; i += simd_width)
     {
         neon_type<value_type> vec = neon_load<value_type>(&data_[i]);
@@ -48,13 +46,11 @@ tensor<_Tp>& tensor<_Tp>::neon_acos_() {
         throw type_error("Type must be arithmetic");
     }
 
-    index_type i = 0;
-
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
-
+    index_type i = 0;
     for (; i < simd_end; i += simd_width)
     {
         neon_type<value_type> vec = neon_load<value_type>(&data_[i]);
@@ -85,13 +81,11 @@ tensor<_Tp>& tensor<_Tp>::neon_cosh_() {
         throw type_error("Type must be arithmetic");
     }
 
-    index_type i = 0;
-
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
-
+    index_type i = 0;
     for (; i < simd_end; i += simd_width)
     {
         neon_type<value_type> vec = neon_load<value_type>(&data_[i]);
@@ -127,7 +121,7 @@ tensor<_Tp>& tensor<_Tp>::neon_acosh_() {
     constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
-    index_type simd_end = data_.size() - (data_.size() % simd_width);
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     for (; i < simd_end; i += simd_width)
     {
