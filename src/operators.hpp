@@ -2,308 +2,401 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
-typename tensor<_Tp>::reference tensor<_Tp>::operator()(
-    std::initializer_list<index_type> __index_list) {
-  return this->__data_[this->__compute_index(shape_type(__index_list))];
+template<class _Tp>
+typename tensor<_Tp>::reference tensor<_Tp>::operator()(std::initializer_list<index_type> index_list) {
+    return data_[compute_index(shape_type(index_list))];
 }
 
-template <class _Tp>
-typename tensor<_Tp>::const_reference tensor<_Tp>::operator()(
-    std::initializer_list<index_type> __index_list) const {
-  return this->__data_[this->__compute_index(shape_type(__index_list))];
+template<class _Tp>
+typename tensor<_Tp>::const_reference tensor<_Tp>::operator()(std::initializer_list<index_type> index_list) const {
+    return data_[compute_index(shape_type(index_list))];
 }
 
-template <class _Tp>
-bool tensor<_Tp>::operator!=(const tensor& __other) const {
-  return !(*this == __other);
+template<class _Tp>
+bool tensor<_Tp>::operator!=(const tensor& other) const {
+    return !(*this == other);
 }
 
-template <class _Tp>
-typename tensor<_Tp>::reference tensor<_Tp>::operator[](const index_type __idx) {
-  if (__idx >= this->__data_.size() || __idx < 0)
-    throw __index_error__("Access index is out of range");
+template<class _Tp>
+typename tensor<_Tp>::reference tensor<_Tp>::operator[](const index_type idx) {
+    if (idx >= data_.size() or idx < 0)
+    {
+        throw index_error("Access index is out of range");
+    }
 
-  return this->__data_[__idx];
+    return data_[idx];
 }
 
-template <class _Tp>
-typename tensor<_Tp>::const_reference tensor<_Tp>::operator[](const index_type __idx) const {
-  if (__idx >= this->__data_.size() || __idx < 0)
-    throw __index_error__("Access index is out of range");
+template<class _Tp>
+typename tensor<_Tp>::const_reference tensor<_Tp>::operator[](const index_type idx) const {
+    if (idx >= data_.size() or idx < 0)
+    {
+        throw index_error("Access index is out of range");
+    }
 
-  return this->__data_[__idx];
+    return data_[idx];
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::operator+(const tensor& __other) const {
-#if defined(__ARM_NEON)
-  return this->neon_operator_plus(__other);
-#endif
-  static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator+(const tensor& other) const {
+    if constexpr (!has_plus_operator_v<value_type>)
+    {
+        throw operator_error("Value type must have a plus operator");
+    }
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+    if (!equal_shape(shape(), other.shape()))
+    {
+        throw shape_error("Tensors shapes must be equal");
+    }
 
-  data_t __d(this->__data_.size());
+    data_t d(data_.size());
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    __d[__i] = this->__data_[__i] + __other[__i];
+    for (index_type i = 0; i < data_.size(); ++i)
+    {
+        d[i] = data_[i] + other[i];
+    }
 
-  return __self(this->__shape_, __d);
+    return self(shape_, d);
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::operator+(const value_type __val) const {
-#if defined(__ARM_NEON)
-  return this->neon_operator_plus(__val);
-#endif
-  static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
-  data_t __d(this->__data_.size());
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator+(const value_type val) const {
+    if constexpr (!has_plus_operator_v<value_type>)
+    {
+        throw operator_error("Value type must have a plus operator");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i) __d[__i] = this->__data_[__i] + __val;
+    data_t d(data_.size());
 
-  return __self(__d, this->__shape_);
+    for (index_type i = 0; i < data_.size(); ++i)
+    {
+        d[i] = data_[i] + val;
+    }
+
+    return self(d, shape_);
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::operator*(const value_type __val) const {
-  static_assert(has_times_operator_v<value_type>, "Value type must have a times operator");
-  data_t __d(this->__data_.size());
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator*(const value_type val) const {
+    if constexpr (!has_times_operator_v<value_type>)
+    {
+        throw operator_error("Value type must have a times operator");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i) __d[__i] = this->__data_[__i] + __val;
+    data_t d(data_.size());
 
-  return __self(this->__shape_, __d);
+    for (index_type i = 0; i < data_.size(); ++i)
+    {
+        d[i] = data_[i] + val;
+    }
+
+    return self(shape_, d);
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::operator*(const tensor& __other) const {
-  static_assert(has_times_operator_v<value_type>, "Value type must have a times operator");
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator*(const tensor& other) const {
+    if constexpr (!has_times_operator_v<value_type>)
+    {
+        throw operator_error("Value type must have a times operator");
+    }
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+    if (!equal_shape(shape(), other.shape()))
+    {
+        throw shape_error("Tensors shapes must be equal");
+    }
 
-  data_t __d(this->__data_.size());
+    data_t d(data_.size());
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    __d[__i] = this->__data_[__i] * __other[__i];
+    for (index_type i = 0; i < data_.size(); ++i)
+    {
+        d[i] = data_[i] * other[i];
+    }
 
-  return __self(this->__shape_, __d);
+    return self(shape_, d);
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator+=(const tensor& __other) const {
-  static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::operator+=(const tensor& other) const {
+    if constexpr (!has_plus_operator_v<value_type>)
+    {
+        throw operator_error("Value type must have a plus equal to operator");
+    }
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+    if (!equal_shape(shape(), other.shape()))
+    {
+        throw shape_error("Tensors shapes must be equal");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] += __other[__i];
+    index_type i = 0;
+    for (auto& elem : data_)
+    {
+        elem = elem + other[i++];
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator+=(const_reference __val) const {
-#if defined(__ARM_NEON)
-  return this->neon_operator_plus_eq(__val);
-#endif
-  static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::operator+=(const_reference val) const {
+    if constexpr (!has_plus_operator_v<value_type>)
+    {
+        throw operator_error("Value type must have a plus operator");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = this->__data_[__i] + __val;
+    for (index_type i = 0; i < data_.size(); ++i)
+    {
+        data_[i] = data_[i] + val;
+    }
 
-  return *this;
+    for (auto& elem : data_)
+    {
+        elem = elem + val;
+    }
+
+    return *this;
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::operator-(const tensor& __other) const {
-#if defined(__ARM_NEON)
-  return this->neon_operator_minus(__other);
-#endif
-  static_assert(has_minus_operator_v<value_type>, "Value type must have a minus operator");
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator-(const tensor& other) const {
+    if constexpr (!has_minus_operator_v<value_type>)
+    {
+        throw operator_error("Value type must have a minus operator");
+    }
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+    if (!equal_shape(shape(), other.shape()))
+    {
+        throw shape_error("Tensors shapes must be equal");
+    }
 
-  data_t __d(this->__data_.size());
+    data_t d(data_.size());
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_[__i]; ++__i)
-    __d[__i] = this->__data_[__i] - __other[__i];
+    for (index_type i = 0; i < data_[i]; ++i)
+    {
+        d[i] = data_[i] - other[i];
+    }
 
-  return __self(this->__shape_, __d);
+    return self(shape_, d);
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::operator-(const value_type __val) const {
-#if defined(__ARM_NEON)
-  return this->neon_operator_minus(__val);
-#endif
-  static_assert(has_minus_operator_v<value_type>, "Value type must have a minus operator");
-  data_t __d(this->__data_.size());
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator-(const value_type val) const {
+    if constexpr (!has_minus_operator_v<value_type>)
+    {
+        throw operator_error("Value type must have a minus operator");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i) __d[__i] = this->__data_[__i] - __val;
+    data_t d(data_.size());
 
-  return __self(*this);
+    for (index_type i = 0; i < data_.size(); ++i)
+    {
+        d[i] = data_[i] - val;
+    }
+
+    return self(*this);
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator-=(const tensor& __other) const {
-#if defined(__ARM_NEON)
-  return this->neon_operator_minus_eq(__other);
-#endif
-  static_assert(has_minus_operator_v<value_type>, "Value type must have a minus operator");
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::operator-=(const tensor& other) const {
+    if constexpr (!has_minus_operator_v<value_type>)
+    {
+        throw operator_error("Value type must have a minus operator");
+    }
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+    if (!equal_shape(shape(), other.shape()))
+    {
+        throw shape_error("Tensors shapes must be equal");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] -= __other[__i];
+    index_type i = 0;
+    for (auto& elem : data_)
+    {
+        elem = elem - other[i++];
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator*=(const tensor& __other) const {
-#if defined(__ARM_NEON)
-  return this->neon_operator_times_eq(__other);
-#endif
-  static_assert(has_times_operator_v<value_type>, "Value type must have a times operator");
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::operator*=(const tensor& other) const {
+    if constexpr (!has_times_operator_v<value_type>)
+    {
+        throw operator_error("Value type must have a times operator");
+    }
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+    if (!equal_shape(shape(), other.shape()))
+    {
+        throw shape_error("Tensors shapes must be equal");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] *= __other[__i];
+    index_type i = 0;
+    for (auto& elem : data_)
+    {
+        elem = elem * other[i++];
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::operator/(const_reference __val) const {
-  static_assert(has_divide_operator_v<value_type>, "Value type must have a divide operator");
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator/(const_reference val) const {
+    if constexpr (!has_divide_operator_v<value_type>)
+    {
+        throw operator_error("Value type must have a divide operator");
+    }
 
-  if (__val == value_type(0)) throw std::logic_error("Cannot divide by zero : undefined operation");
+    if (val == value_type(0))
+    {
+        throw std::logic_error("Cannot divide by zero : undefined operation");
+    }
 
-  data_t __d(this->__data_.size());
+    data_t d(data_.size());
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i) __d[__i] = this->__data_[__i] / __val;
+    index_type i = 0;
+    for (auto& elem : data_)
+    {
+        d[i++] = elem / val;
+    }
 
-  return __self(this->__shape_, __d);
+    return self(shape_, d);
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator*=(const_reference __val) const {
-  static_assert(has_times_operator_v<value_type>, "Value type must have a times operator");
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::operator*=(const_reference val) const {
+    if constexpr (!has_times_operator_v<value_type>)
+    {
+        throw operator_error("Value type must have a times operator");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] *= __val;
+    for (auto& elem : data_)
+    {
+        elem = elem * val;
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::operator=(const tensor& __other) const {
-  this->__shape_ = __other.shape();
-  this->__data_  = __other.data();
-  this->__compute_strides();
-  return *this;
+template<class _Tp>
+inline tensor<_Tp>& tensor<_Tp>::operator=(const tensor& other) const {
+    shape_ = other.shape();
+    data_  = other.storage();
+    compute_strides();
+    return *this;
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator/=(const tensor& __other) const {
-  static_assert(has_divide_operator_v<value_type>, "Value type must have a divide operator");
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::operator/=(const tensor& other) const {
+    if constexpr (!has_divide_operator_v<value_type>)
+    {
+        throw operator_error("Value type must have a divide operator");
+    }
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+    if (!equal_shape(shape(), other.shape()))
+    {
+        throw shape_error("Tensors shapes must be equal");
+    }
 
-  if (__other.count_nonzero(0) != __other.size(0))
-    throw std::logic_error("Cannot divide by zero : undefined operation");
+    if (other.count_nonzero(0) != other.size(0))
+    {
+        throw std::logic_error("Cannot divide by zero : undefined operation");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] /= __other[__i];
+    index_type i = 0;
+    for (auto& elem : data_)
+    {
+        elem = elem / other[i++];
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator/=(const_reference __val) const {
-  static_assert(has_divide_operator_v<value_type>, "Value type must have a divide operator");
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::operator/=(const_reference val) const {
+    if constexpr (!has_divide_operator_v<value_type>)
+    {
+        throw operator_error("Value type must have a divide operator");
+    }
 
-  if (__val == value_type(0))
-    throw std::invalid_argument("Cannot divide by zero : undefined operation");
+    if (val == value_type(0))
+    {
+        throw std::invalid_argument("Cannot divide by zero : undefined operation");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] /= __val;
+    for (auto& elem : data_)
+    {
+        elem = elem / val;
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::operator/(const tensor& __other) const {
-  static_assert(has_divide_operator_v<value_type>, "Value type must have a divide operator");
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::operator/(const tensor& other) const {
+    if constexpr (!has_divide_operator_v<value_type>)
+    {
+        throw operator_error("Value type must have a divide operator");
+    }
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+    if (!equal_shape(shape(), other.shape()))
+    {
+        throw shape_error("Tensors shapes must be equal");
+    }
 
-  if (__other.count_nonzero(0) != __other.size(0))
-    throw std::logic_error("Cannot divide by zero : undefined operation");
+    if (other.count_nonzero(0) != other.size(0))
+    {
+        throw std::logic_error("Cannot divide by zero : undefined operation");
+    }
 
-  data_t __d(this->__data_.size());
+    data_t d(data_.size());
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    __d[__i] = this->__data_[__i] / __other[__i];
+    for (index_type i = 0; i < data_.size(); ++i)
+    {
+        d[i] = data_[i] / other[i];
+    }
 
-  return __self(this->__shape_, __d);
+    return self(shape_, d);
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator-=(const_reference __val) const {
-#if defined(__ARM_NEON)
-  return this->neon_operator_minus_eq(__val);
-#endif
-  static_assert(has_minus_operator_v<value_type>, "Value type must have a minus operator");
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::operator-=(const_reference val) const {
+    if constexpr (!has_minus_operator_v<value_type>)
+    {
+        throw operator_error("Value type must have a minus operator");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i) this->__data_[__i] -= __val;
+    for (auto& elem : data_)
+    {
+        elem = elem - val;
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-bool tensor<_Tp>::operator==(const tensor& __other) const {
-  if (this->__equal_shape(this->shape(), __other.shape()) &&
-      this->__strides_ == __other.strides() && this->__data_ == __other.storage())
-    return true;
-  return false;
+template<class _Tp>
+bool tensor<_Tp>::operator==(const tensor& other) const {
+    if (equal_shape(shape(), other.shape()) and strides_ == other.strides() and data_ == other.storage())
+    {
+        return true;
+    }
+    return false;
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator=(tensor&& __other) const noexcept {
-  if (this != &__other) {
-    this->__data_    = std::move(__other.storage());
-    this->__shape_   = std::move(__other.shape());
-    this->__strides_ = std::move(__other.strides());
-  }
-  return *this;
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::operator=(tensor&& other) const noexcept {
+    if (this != &other)
+    {
+        data_    = std::move(other.storage());
+        shape_   = std::move(other.shape());
+        strides_ = std::move(other.strides());
+    }
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 const tensor<bool>& tensor<_Tp>::operator!() const {
-  return this->logical_not_();
+    return logical_not_();
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<bool>& tensor<_Tp>::operator!() {
-  return this->logical_not_();
+    return logical_not_();
 }
