@@ -2,83 +2,88 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type __val) {
-#if defined(__ARM_NEON)
-  return this->neon_logical_and_(__val);
-#endif
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type val) {
+    if (!std::is_integral_v<value_type>)
+    {
+        throw type_error("Cannot get the element wise and of non-integral and non-boolean value");
+    }
 
-  if (!std::is_integral_v<value_type>)
-    throw __type_error__("Cannot get the element wise and of non-integral and non-boolean value");
+    for (auto& elem : data_)
+    {
+        elem = (elem and val);
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(this->__data_[__i] && __val);
-
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type __val) const {
-#if defined(__ARM_NEON)
-  return this->neon_logical_and_(__val);
-#endif
-  if (!std::is_integral_v<value_type>)
-    throw __type_error__("Cannot get the element wise and of non-integral and non-boolean value");
+template<class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type val) const {
+    if (!std::is_integral_v<value_type>)
+    {
+        throw type_error("Cannot get the element wise and of non-integral and non-boolean value");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(this->__data_[__i] && __val);
+    for (auto& elem : data_)
+    {
+        elem = (elem and val);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::logical_and(const tensor& __other) const {
-  __self __ret = this->clone();
-  __ret.logical_and_(__other);
-  return __ret;
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::logical_and(const tensor& other) const {
+    self ret = clone();
+    ret.logical_and_(other);
+    return ret;
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::logical_and(const value_type __val) const {
-  __self __ret = this->clone();
-  __ret.logical_and_(__val);
-  return __ret;
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::logical_and(const value_type val) const {
+    self ret = clone();
+    ret.logical_and_(val);
+    return ret;
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::logical_and_(const tensor& __other) {
-#if defined(__ARM_NEON)
-  return this->neon_logical_and_(__other);
-#endif
-  if (!std::is_integral_v<value_type>)
-    throw __type_error__("Cannot get the element-wise and of non-integral and non-boolean value");
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::logical_and_(const tensor& other) {
+    if (!std::is_integral_v<value_type>)
+    {
+        throw type_error("Cannot get the element-wise and of non-integral and non-boolean value");
+    }
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+    if (!equal_shape(shape(), other.shape()))
+    {
+        throw shape_error("Tensors shapes must be equal");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = (this->__data_[__i] && __other[__i]);
+    index_type i = 0;
+    for (auto& elem : data_)
+    {
+        elem = (elem and other[i++]);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::logical_and_(const tensor& __other) const {
-#if defined(__ARM_NEON)
-  return this->neon_logical_and_(__other);
-#endif
-  if (!std::is_integral_v<value_type>)
-    throw __type_error__("Cannot get the element-wise and of non-integral and non-boolean value");
+template<class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::logical_and_(const tensor& other) const {
+    if (!std::is_integral_v<value_type>)
+    {
+        throw type_error("Cannot get the element-wise and of non-integral and non-boolean value");
+    }
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+    if (!equal_shape(shape(), other.shape()))
+    {
+        throw shape_error("Tensors shapes must be equal");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = (this->__data_[__i] && __other[__i]);
+    index_type i = 0;
+    for (auto& elem : data_)
+    {
+        elem = (elem and other[i++]);
+    }
 
-  return *this;
+    return *this;
 }
