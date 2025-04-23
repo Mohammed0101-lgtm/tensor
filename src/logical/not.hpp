@@ -2,23 +2,23 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
+template<class _Tp>
 inline tensor<_Tp>& tensor<_Tp>::logical_not_() {
-  this->bitwise_not_();
-  this->bool_();
-  return *this;
+    bitwise_not_();
+    bool_();
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::logical_not_() const {
-  this->bitwise_not_();
-  this->bool_();
-  return *this;
+    bitwise_not_();
+    bool_();
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<bool> tensor<_Tp>::logical_not() const {
-  tensor<bool> __ret = this->bool_();
-  __ret.logical_not_();
-  return __ret;
+    tensor<bool> ret = bool_();
+    ret.logical_not_();
+    return ret;
 }
