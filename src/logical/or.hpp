@@ -2,82 +2,88 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type __val) {
-#if defined(__ARM_NEON)
-  return this->neon_logical_or_(__val);
-#endif
-  if (!std::is_integral_v<value_type>)
-    throw __type_error__("Cannot perform logical OR on non-integral and non-boolean values");
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type val) {
+    if constexpr (!std::is_integral_v<value_type>)
+    {
+        throw type_error("Cannot perform logical OR on non-integral and non-boolean values");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(this->__data_[__i] || __val);
+    for (auto& elem : data_)
+    {
+        elem = (elem or val);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type __val) const {
-#if defined(__ARM_NEON)
-  return this->neon_logical_or_(__val);
-#endif
-  if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
-    throw __type_error__("Cannot perform logical OR on non-integral and non-boolean values");
+template<class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type val) const {
+    if constexpr (!std::is_integral_v<value_type> and !std::is_same_v<value_type, bool>)
+    {
+        throw type_error("Cannot perform logical OR on non-integral and non-boolean values");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(this->__data_[__i] || __val);
+    for (auto& elem : data_)
+    {
+        elem = (elem or val);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-tensor<bool> tensor<_Tp>::logical_or(const value_type __val) const {
-  tensor<bool> __ret = this->clone().bool_();
-  __ret.logical_or_(__val);
-  return __ret;
+template<class _Tp>
+tensor<bool> tensor<_Tp>::logical_or(const value_type val) const {
+    tensor<bool> ret = clone().bool_();
+    ret.logical_or_(val);
+    return ret;
 }
 
-template <class _Tp>
-tensor<bool> tensor<_Tp>::logical_or(const tensor& __other) const {
-  tensor<bool> __ret = this->clone().bool_();
-  __ret.logical_or_(__other);
-  return __ret;
+template<class _Tp>
+tensor<bool> tensor<_Tp>::logical_or(const tensor& other) const {
+    tensor<bool> ret = clone().bool_();
+    ret.logical_or_(other);
+    return ret;
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& __other) {
-#if defined(__ARM_NEON)
-  return this->neon_logical_or_(__other);
-#endif
-  if (!std::is_integral_v<value_type>)
-    throw __type_error__("Cannot get the element wise not of non-integral and non-boolean value");
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& other) {
+    if constexpr (!std::is_integral_v<value_type>)
+    {
+        throw type_error("Cannot get the element wise not of non-integral and non-boolean value");
+    }
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+    if (!equal_shape(shape(), other.shape()))
+    {
+        throw shape_error("Tensors shapes must be equal");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = (this->__data_[__i] || __other[__i]);
+    index_type i = 0;
+    for (auto& elem : data_)
+    {
+        elem = (elem or other[i++]);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& __other) const {
-#if defined(__ARM_NEON)
-  return this->neon_logical_or_(__other);
-#endif
-  if (!std::is_integral_v<value_type>)
-    throw __type_error__("Cannot get the element wise not of non-integral and non-boolean value");
+template<class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& other) const {
+    if constexpr (!std::is_integral_v<value_type>)
+    {
+        throw type_error("Cannot get the element wise not of non-integral and non-boolean value");
+    }
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+    if (!equal_shape(shape(), other.shape()))
+    {
+        throw shape_error("Tensors shapes must be equal");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = (this->__data_[__i] || __other[__i]);
+    index_type i = 0;
+    for (auto& elem : data_)
+    {
+        elem = (elem or other[i++]);
+    }
 
-  return *this;
+    return *this;
 }
