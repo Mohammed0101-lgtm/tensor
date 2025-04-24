@@ -77,8 +77,6 @@ tensor<_Tp> tensor<_Tp>::neon_dot(const tensor& other) const {
     const std::size_t size       = data_.size();
     value_type        ret        = 0;
 
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     if constexpr (std::is_floating_point_v<value_type>)
