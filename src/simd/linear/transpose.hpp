@@ -11,8 +11,6 @@ tensor<_Tp> tensor<_Tp>::neon_transpose() const {
     const index_type rows = shape_[0];
     const index_type cols = shape_[1];
 
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     if constexpr (std::is_same_v<_Tp, _f32>)
