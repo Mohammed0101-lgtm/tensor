@@ -14,45 +14,26 @@ tensor<bool> tensor<_Tp>::neon_equal(const tensor& other) const {
         throw shape_error("Tensors shapes must be equal");
     }
 
+    const index_type  simd_end = data_.size() - (data_.size() % simd_width);
     std::vector<bool> ret(data_.size());
-    const index_type  simd_end = data_.size() - (data_.size() % _ARM64_REG_WIDTH);
-    index_type        i        = 0;
 
-    if constexpr (std::is_floating_point_v<value_type>)
+    index_type i = 0;
+    for (; i < simd_end; i += simd_width)
     {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
+        auto                 data_vec  = neon_load<value_type>(&data_[i]);
+        auto                 other_vec = neon_load<value_type>(&other.data_[i]);
+        auto                 res_vec   = neon_ceq<value_type>(data_vec, other_vec);
+        alignas(16) uint32_t buffer[simd_width];
+        vst1q_u32(buffer, res_vec);
+        for (int j = 0; j < simd_width; ++j)
         {
-            neon_f32 data_vec1  = vld1q_f32(reinterpret_cast<const float*>(&data_[i]));
-            neon_f32 data_vec2  = vld1q_f32(reinterpret_cast<const float*>(&other.data_[i]));
-            neon_u32 cmp_result = vceqq_f32(data_vec1, data_vec2);
-            neon_u8  mask       = vreinterpretq_u8_u32(cmp_result);
-
-            ret[i]     = vgetq_lane_u8(mask, 0);
-            ret[i + 1] = vgetq_lane_u8(mask, 4);
-            ret[i + 2] = vgetq_lane_u8(mask, 8);
-            ret[i + 3] = vgetq_lane_u8(mask, 12);
-        }
-    }
-    else
-    {  // Handles both signed and unsigned integers
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_u32 data_vec1  = vld1q_u32(reinterpret_cast<const uint32_t*>(&data_[i]));
-            neon_u32 data_vec2  = vld1q_u32(reinterpret_cast<const uint32_t*>(&other.data_[i]));
-            neon_u32 cmp_result = vceqq_u32(data_vec1, data_vec2);
-            neon_u8  mask       = vreinterpretq_u8_u32(cmp_result);
-
-            ret[i]     = vgetq_lane_u8(mask, 0);
-            ret[i + 1] = vgetq_lane_u8(mask, 4);
-            ret[i + 2] = vgetq_lane_u8(mask, 8);
-            ret[i + 3] = vgetq_lane_u8(mask, 12);
+            ret[i + j] = buffer[j] == 0xFFFFFFFF;
         }
     }
 
-    // Handle remaining elements
     for (; i < data_.size(); ++i)
     {
-        ret[i] = (data_[i] == other.data_[i]);
+        ret[i] = (data_[i] == other[i]);
     }
 
     return tensor<bool>(shape_, ret);
@@ -66,52 +47,19 @@ tensor<bool> tensor<_Tp>::neon_equal(const value_type val) const {
     }
 
     std::vector<bool> ret(data_.size());
-    index_type        i        = 0;
     const index_type  simd_end = data_.size() - (data_.size() % 4);
 
-    if constexpr (std::is_floating_point_v<value_type>)
+    index_type            i       = 0;
+    neon_type<value_type> val_vec = neon_dup<value_type>(val);
+    for (; i < simd_end; i += simd_width)
     {
-        float32x4_t val_vec = vdupq_n_f32(val);
-
-        for (; i < simd_end; i += 4)
+        neon_type<value_type> data_vec   = neon_load<value_type>(&data_[i]);
+        neon_u32              cmp_result = neon_ceq<value_type>(data_vec, val_vec);
+        alignas(16) _u32      results[simd_width];
+        neon_store<value_type>(results, cmp_result);
+        for (int j = 0; j < simd_width; ++j)
         {
-            float32x4_t data_vec   = vld1q_f32(reinterpret_cast<const float*>(&data_[i]));
-            uint32x4_t  cmp_result = vceqq_f32(data_vec, val_vec);
-
-            uint32_t results[4];
-            vst1q_u32(results, cmp_result);  // Store results into an array
-            for (int j = 0; j < 4; ++j)
-                ret[i + j] = results[j] != 0;
-        }
-    }
-    else if constexpr (std::is_signed_v<value_type>)
-    {
-        int32x4_t val_vec = vdupq_n_s32(val);
-
-        for (; i < simd_end; i += 4)
-        {
-            int32x4_t  data_vec   = vld1q_s32(reinterpret_cast<const int32_t*>(&data_[i]));
-            uint32x4_t cmp_result = vceqq_s32(data_vec, val_vec);
-
-            uint32_t results[4];
-            vst1q_u32(results, cmp_result);
-            for (int j = 0; j < 4; ++j)
-                ret[i + j] = results[j] != 0;
-        }
-    }
-    else if constexpr (std::is_unsigned_v<value_type>)
-    {
-        uint32x4_t val_vec = vdupq_n_u32(val);
-
-        for (; i < simd_end; i += 4)
-        {
-            uint32x4_t data_vec   = vld1q_u32(reinterpret_cast<const uint32_t*>(&data_[i]));
-            uint32x4_t cmp_result = vceqq_u32(data_vec, val_vec);
-
-            uint32_t results[4];
-            vst1q_u32(results, cmp_result);
-            for (int j = 0; j < 4; ++j)
-                ret[i + j] = results[j] != 0;
+            ret[i + j] = result[j] != 0;
         }
     }
 
@@ -255,9 +203,4 @@ inline tensor<bool> tensor<_Tp>::neon_less(const value_type val) const {
     {
         throw operator_error("Value type must have less than operator");
     }
-
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(_ARM64_REG_WIDTH % sizeof(value_type) == 0,
-                  "size of value_type must divide evenly into the register width. "
-                  "Ensure value_type fits into a whole number of registers without leaving unused bits.");
 }
