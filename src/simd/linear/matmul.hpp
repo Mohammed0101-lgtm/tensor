@@ -48,8 +48,6 @@ tensor<_Tp> tensor<_Tp>::neon_matmul(const tensor& other) const {
     shape_type ret_sh = {shape_[0], other.shape()[1]};
     data_t     ret_d(ret_sh[0] * ret_sh[1], value_type(0));
 
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     if constexpr (std::is_same_v<value_type, _f32>)
