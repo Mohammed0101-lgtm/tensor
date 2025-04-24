@@ -18,8 +18,6 @@ tensor<_Tp> tensor<_Tp>::neon_sum(const index_type axis) const {
     const index_type outer_size = compute_outer_size(axis);
     const index_type inner_size = size(0) / (outer_size * axis_size);
 
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     if constexpr (std::is_floating_point_v<value_type>)
