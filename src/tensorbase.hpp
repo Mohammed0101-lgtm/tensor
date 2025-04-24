@@ -73,7 +73,7 @@ using neon_f16 = float16x8_t;
 using neon_f32 = float32x4_t;
 using neon_f64 = float64x2_t;
 
-const int _ARM64_REG_WIDTH = 128;  // 128 bit wide register
+constexpr int _ARM64_REG_WIDTH = 128;  // 128 bit wide register
 
 template<class _Tp>
 class tensor
@@ -97,6 +97,10 @@ class tensor
         CPU,
         CUDA
     };
+
+   protected:
+    static const std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
+    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
    private:
     mutable data_t     data_;
