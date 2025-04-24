@@ -14,11 +14,8 @@ tensor<_Tp> tensor<_Tp>::neon_operator_plus(const tensor& other) const {
         throw shape_error("Cannot add two tensors with different shapes");
     }
 
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
-
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
-    data_t     d(data_.size());
+    data_t           d(data_.size());
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
@@ -44,14 +41,12 @@ tensor<_Tp> tensor<_Tp>::neon_operator_plus(const value_type val) const {
         throw operator_error("Value type must have a plus operator");
     }
 
-    data_t                d(data_.size());
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
-
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
-    index_type            i       = 0;
+    data_t                d(data_.size());
     neon_type<value_type> val_vec = neon_dup<value_type>(&val);
+
+    index_type i = 0;
     for (; i < simd_end; i += simd_width)
     {
         neon_type<value_type> vec1   = neon_load<value_type>(&data_[i]);
@@ -73,9 +68,6 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_plus_eq(const_reference val) const {
     {
         throw operator_error("Value type must have a plus operator");
     }
-
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
@@ -108,11 +100,9 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const tensor& other) const {
         throw shape_error("Cannot add two tensors with different shapes");
     }
 
-    data_t                d(data_.size());
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
-
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
+
+    data_t d(data_.size());
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
@@ -138,15 +128,12 @@ tensor<_Tp> tensor<_Tp>::neon_operator_minus(const value_type val) const {
         throw operator_error("Value type must have a minus operator");
     }
 
-    data_t d(data_.size());
-
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
-
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
-    index_type            i       = 0;
+    data_t                d(data_.size());
     neon_type<value_type> val_vec = neon_dup<value_type>(&val);
+
+    index_type i = 0;
     for (; i < simd_end; i += simd_width)
     {
         neon_type<value_type> vec1   = neon_load<value_type>(&data_[i]);
@@ -173,9 +160,6 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const tensor& other) const {
     {
         throw shape_error("Tensors shapes must be equal");
     }
-
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
@@ -208,9 +192,6 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_times_eq(const tensor& other) const {
         throw shape_error("Tensors shapes must be equal");
     }
 
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
-
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     index_type i = 0;
@@ -237,13 +218,10 @@ tensor<_Tp>& tensor<_Tp>::neon_operator_minus_eq(const_reference val) const {
         throw operator_error("Value type must have a minus operator");
     }
 
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+    const index_type      simd_end = data_.size() - (data_.size() % simd_width);
+    neon_type<value_type> val_vec  = neon_dup<value_type>(&val);
 
-    const index_type simd_end = data_.size() - (data_.size() % simd_width);
-
-    index_type            i       = 0;
-    neon_type<value_type> val_vec = neon_dup<value_type>(&val);
+    index_type i = 0;
     for (; i < simd_end; i += simd_width)
     {
         neon_type<value_type> vec1   = neon_load<value_type>(&data_[i]);
