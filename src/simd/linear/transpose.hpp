@@ -13,122 +13,46 @@ tensor<_Tp> tensor<_Tp>::neon_transpose() const {
 
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
-    if constexpr (std::is_same_v<_Tp, _f32>)
+    index_type i = 0;
+    for (; i < rows; i += simd_width)
     {
-        for (index_type i = 0; i < rows; i += simd_width)
+        for (index_type j = 0; j < cols; j += simd_width)
         {
-            for (index_type j = 0; j < cols; j += simd_width)
+            if (i + simd_width <= rows and j + simd_width <= cols)
             {
-                if (i + simd_width <= rows and j + simd_width <= cols)
+                wide_neon_type<value_type> input;
+
+                for (index_type k = 0; k < simd_width; ++k)
                 {
-                    float32x4x4_t input;
-
-                    for (index_type k = 0; k < simd_width; ++k)
-                    {
-                        input.val[k] = vld1q_f32(reinterpret_cast<const _f32*>(&data_[(i + k) * cols + j]));
-                    }
-
-                    float32x4x4_t output = vld4q_f32(reinterpret_cast<const _f32*>(&input));
-
-                    for (index_type k = 0; k < simd_width; ++k)
-                    {
-                        vst1q_f32(&ret.data_[(j + k) * rows + i], output.val[k]);
-                    }
+                    input[k] = neon_load<value_type>(&data_[(i + k) * cols + j]);
                 }
-                else
+
+                wide_neon_type<value_type> output = wide_neon_load<value_type>(&input);
+
+                for (index_type k = 0; k < simd_width; ++k)
                 {
-                    for (index_type ii = i; ii < std::min(static_cast<index_type>(i + simd_width), rows); ++ii)
+                    neon_store<value_type>(&ret[(j + k) * rows + i], output[k]);
+                }
+            }
+            else
+            {
+                for (index_type ii = i; ii < std::min(static_cast<index_type>(i + simd_width), rows); ++ii)
+                {
+                    for (index_type jj = j; jj < std::min(static_cast<index_type>(j + simd_width), cols); ++jj)
                     {
-                        for (index_type jj = j; jj < std::min(static_cast<index_type>(j + simd_width), cols); ++jj)
-                        {
-                            ret.at({jj, ii}) = at({ii, jj});
-                        }
+                        ret.at({jj, ii}) = at({ii, jj});
                     }
                 }
             }
         }
     }
-    else if constexpr (std::is_signed_v<value_type>)
+
+    for (; i < rows; ++i)
     {
-        for (index_type i = 0; i < rows; i += simd_width)
+        index_type j = 0;
+        for (; j < cols; ++j)
         {
-            for (index_type j = 0; j < cols; j += simd_width)
-            {
-                if (i + simd_width <= rows and j + simd_width <= cols)
-                {
-                    int32x4x4_t input;
-
-                    for (index_type k = 0; k < simd_width; ++k)
-                    {
-                        input.val[k] = vld1q_s32(reinterpret_cast<const _s32*>(&data_[(i + k) * cols + j]));
-                    }
-
-                    int32x4x4_t output = vld4q_s32(reinterpret_cast<const _s32*>(&input));
-
-                    for (index_type k = 0; k < simd_width; k++)
-                    {
-                        vst1q_s32(&ret.data_[(j + k) * rows + i], output.val[k]);
-                    }
-                }
-                else
-                {
-                    for (index_type ii = i; ii < std::min(static_cast<index_type>(i + simd_width), rows); ++ii)
-                    {
-                        for (index_type jj = j; jj < std::min(static_cast<index_type>(j + simd_width), cols); ++jj)
-                        {
-                            ret.at({jj, ii}) = at({ii, jj});
-                        }
-                    }
-                }
-            }
-        }
-    }
-    else if constexpr (std::is_unsigned_v<value_type>)
-    {
-        for (index_type i = 0; i < rows; i += simd_width)
-        {
-            for (index_type j = 0; j < cols; j += simd_width)
-            {
-                if (i + simd_width <= rows and j + simd_width <= cols)
-                {
-                    uint32x4x4_t input;
-
-                    for (index_type k = 0; k < simd_width; ++k)
-                    {
-                        input.val[k] = vld1q_u32(reinterpret_cast<const _u32*>(&data_[(i + k) * cols + j]));
-                    }
-
-                    uint32x4x4_t output = vld4q_u32(reinterpret_cast<const _u32*>(&input));
-
-                    for (index_type k = 0; k < simd_width; ++k)
-                    {
-                        vst1q_u32(&ret.data_[(j + k) * rows + i], output.val[k]);
-                    }
-                }
-                else
-                {
-                    for (index_type ii = i; ii < std::min(static_cast<index_type>(i + simd_width), rows); ++ii)
-                    {
-                        for (index_type jj = j; jj < std::min(static_cast<index_type>(j + simd_width), cols); ++jj)
-                        {
-                            ret.at({jj, ii}) = at({ii, jj});
-                        }
-                    }
-                }
-            }
-        }
-    }
-    else
-    {
-        index_type i = 0;
-
-        for (; i < rows; ++i)
-        {
-            index_type j = 0;
-            for (; j < cols; ++j)
-            {
-                ret.at({j, i}) = at({i, j});
-            }
+            ret.at({j, i}) = at({i, j});
         }
     }
 
