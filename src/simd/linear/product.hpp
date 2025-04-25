@@ -5,49 +5,32 @@
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_cross_product(const tensor& other) const {
     if (!std::is_arithmetic_v<value_type>)
+    {
         throw type_error("Type must be arithmetic");
+    }
 
     if (empty() or other.empty())
+    {
         throw std::invalid_argument("Cannot cross product an empty vector");
+    }
 
     if (!equal_shape(shape(), shape_type({3})) or !equal_shape(other.shape(), shape_type({3})))
+    {
         throw shape_error("Cross product can only be performed on 3-element vectors");
+    }
 
     tensor ret({3});
 
-    if constexpr (std::is_floating_point_v<value_type>)
-    {
-        neon_f32 a      = vld1q_f32(reinterpret_cast<const _f32*>(data_.data()));
-        neon_f32 b      = vld1q_f32(reinterpret_cast<const _f32*>(other.storage().data()));
-        neon_f32 a_yzx  = vextq_f32(a, a, 1);
-        neon_f32 b_yzx  = vextq_f32(b, b, 1);
-        neon_f32 result = vsubq_f32(vmulq_f32(a_yzx, b), vmulq_f32(a, b_yzx));
-        result          = vextq_f32(result, result, 3);
+    const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
-        vst1q_f32(reinterpret_cast<_f32*>(ret.storage().data()), result);
-    }
-    else if constexpr (std::is_signed_v<value_type>)
-    {
-        neon_s32 a      = vld1q_s32(reinterpret_cast<const _s32*>(data_.data()));
-        neon_s32 b      = vld1q_s32(reinterpret_cast<const _s32*>(other.storage().data()));
-        neon_s32 a_yzx  = vextq_s32(a, a, 1);
-        neon_s32 b_yzx  = vextq_s32(b, b, 1);
-        neon_s32 result = vsubq_s32(vmulq_s32(a_yzx, b), vmulq_s32(a, b_yzx));
-        result          = vextq_s32(result, result, 3);
+    neon_type<value_type> a      = neon_load<value_type>(data_.data());
+    neon_type<value_type> b      = neon_load<value_type>(other.storage().data());
+    neon_type<value_type> a_yzx  = neon_ext<value_type>(a, a, 1);
+    neon_type<value_type> b_yzx  = neon_ext<value_type>(b, b, 1);
+    neon_type<value_type> result = neon_sub<value_type>(neon_mul<value_type>(a_yzx, b), neon_mul<value_type>(a, b_yzx));
+    result                       = neon_ext(result, result, 3);
 
-        vst1q_s32(reinterpret_cast<_s32*>(ret.storage().data()), result);
-    }
-    else if constexpr (std::is_unsigned_v<value_type>)
-    {
-        neon_u32 a      = vld1q_u32(reinterpret_cast<const _u32*>(data_.data()));
-        neon_u32 b      = vld1q_u32(reinterpret_cast<const _u32*>(other.storage().data()));
-        neon_u32 a_yzx  = vextq_u32(a, a, 1);
-        neon_u32 b_yzx  = vextq_u32(b, b, 1);
-        neon_u32 result = vsubq_u32(vmulq_u32(a_yzx, b), vmulq_u32(a, b_yzx));
-        result          = vextq_u32(result, result, 3);
-
-        vst1q_u32(reinterpret_cast<_u32*>(ret.storage().data()), result);
-    }
+    neon_store<value_type>(ret.storage().data(), result);
 
     return ret;
 }
