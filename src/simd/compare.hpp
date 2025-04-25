@@ -63,7 +63,6 @@ tensor<bool> tensor<_Tp>::neon_equal(const value_type val) const {
         }
     }
 
-    // Handle the remaining elements that don't fit in a SIMD register
     for (; i < data_.size(); ++i)
     {
         ret[i] = (data_[i] == val);
