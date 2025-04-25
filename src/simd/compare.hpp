@@ -59,7 +59,7 @@ tensor<bool> tensor<_Tp>::neon_equal(const value_type val) const {
         neon_store<value_type>(results, cmp_result);
         for (int j = 0; j < simd_width; ++j)
         {
-            ret[i + j] = result[j] != 0;
+            ret[i + j] = results[j] != 0;
         }
     }
 
@@ -84,38 +84,15 @@ tensor<bool> tensor<_Tp>::neon_less_equal(const tensor& other) const {
     }
 
     std::vector<_u32> ret(data_.size());
-    std::size_t       vs = data_.size() / _ARM64_REG_WIDTH * _ARM64_REG_WIDTH;
-    index_type        i  = 0;
+    const index_type  simd_end = data_.size() - (data_.size() % simd_width);
 
-    if constexpr (std::is_same_v<value_type, _f32>)
+    index_type i = 0;
+    for (; i < simd_end; i += simd_width)
     {
-        for (; i < vs; i += _ARM64_REG_WIDTH)
-        {
-            neon_f32 va       = vld1q_f32(data_.data() + i);
-            neon_f32 vb       = vld1q_f32(other.data_.data() + i);
-            neon_u32 leq_mask = vcleq_f32(va, vb);
-            vst1q_u32(&ret[i], leq_mask);
-        }
-    }
-    else if constexpr (std::is_same_v<value_type, _s32>)
-    {
-        for (; i < vs; i += _ARM64_REG_WIDTH)
-        {
-            neon_s32 va       = vld1q_s32(data_.data() + i);
-            neon_s32 vb       = vld1q_s32(other.data_.data() + i);
-            neon_u32 leq_mask = vcleq_s32(va, vb);
-            vst1q_u32(&ret[i], leq_mask);
-        }
-    }
-    else if constexpr (std::is_same_v<value_type, _u32>)
-    {
-        for (; i < vs; i += _ARM64_REG_WIDTH)
-        {
-            neon_u32 va       = vld1q_u32(data_.data() + i);
-            neon_u32 vb       = vld1q_u32(other.data_.data() + i);
-            neon_u32 leq_mask = vcleq_u32(va, vb);
-            vst1q_u32(&ret[i], leq_mask);
-        }
+        neon_type<value_type> vec_a    = neon_load<value_type>(&data_[i]);
+        neon_type<value_type> vec_b    = neon_load<value_type>(&other[i]);
+        neon_type<value_type> leq_mask = neon_cleq(vec_a, vec_b);
+        neon_store<value_type>(&ret[i], leq_mask);
     }
 
     // Convert `ret` (integer masks) to boolean
@@ -142,42 +119,15 @@ tensor<bool> tensor<_Tp>::neon_less_equal(const value_type val) const {
     }
 
     std::vector<_u32> ret(data_.size());
-    index_type        i = 0;
+    const index_type  simd_end = data_.size() - (data_.size() % simd_width);
 
-    std::size_t vector_size = data_.size() / _ARM64_REG_WIDTH * _ARM64_REG_WIDTH;
-
-    if constexpr (std::is_same_v<value_type, _f32>)
+    index_type i = 0;
+    for (; i < simd_end; i += simd_width)
     {
-        for (; i < vector_size; i += _ARM64_REG_WIDTH)
-        {
-            neon_f32 vec_a    = vld1q_f32(data_.data() + i);
-            neon_f32 vec_b    = vdupq_n_f32(val);
-            neon_u32 leq_mask = vcleq_f32(vec_a, vec_b);
-
-            vst1q_u32(&ret[i], leq_mask);
-        }
-    }
-    else if constexpr (std::is_same_v<value_type, _s32>)
-    {
-        for (; i < vector_size; i += _ARM64_REG_WIDTH)
-        {
-            neon_s32 vec_a    = vld1q_s32(data_.data() + i);
-            neon_s32 vec_b    = vdupq_n_s32(val);
-            neon_u32 leq_mask = vcleq_s32(vec_a, vec_b);
-
-            vst1q_u32(&ret[i], leq_mask);
-        }
-    }
-    else if constexpr (std::is_same_v<value_type, _u32>)
-    {
-        for (; i < vector_size; i += _ARM64_REG_WIDTH)
-        {
-            neon_u32 vec_a    = vld1q_u32(data_.data() + i);
-            neon_u32 vec_b    = vdupq_n_u32(val);
-            neon_u32 leq_mask = vcleq_u32(vec_a, vec_b);
-
-            vst1q_u32(&ret[i], leq_mask);
-        }
+        neon_type<value_type> vec_a    = neon_load<value_type>(&data_[i]);
+        neon_type<value_type> vec_b    = neon_dup<value_type>(&val);
+        neon_type<value_type> leq_mask = neon_cleq<value_type>(vec_a, vec_b);
+        neon_store<value_type>(&ret[i], leq_mask);
     }
 
     for (; i < data_.size(); ++i)
