@@ -54,8 +54,8 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argmax_(index_type di
                 current_index                  = neon_add<value_type>(current_index, increment);
             }
 
-            value_type max_vals[simd_width];
-            _u32       indices[simd_width];
+            alignas(16) value_type max_vals[simd_width];
+            alignas(16) _u32       indices[simd_width];
 
             neon_store<value_type>(max_vals, max_vec);
             neon_store<value_type>(indices, index_vec);
