@@ -9,15 +9,13 @@ tensor<_Tp>& tensor<_Tp>::neon_sin_() {
         throw type_error("Type must be arithmetic");
     }
 
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
     {
-        neon_type<value_type> data_vec = neon_load<value_type>(&data_[i]);
-        value_type            vals[simd_width];
+        neon_type<value_type>  data_vec = neon_load<value_type>(&data_[i]);
+        alignas(16) value_type vals[simd_width];
         neon_load<value_type>(vals, data_vec);
 
         for (int j = 0; j < simd_width; ++j)
@@ -83,15 +81,13 @@ tensor<_Tp>& tensor<_Tp>::neon_sinh_() {
         throw type_error("Type must be arithmetic");
     }
 
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
     {
-        neon_type<value_type> data_vec = neon_load<value_type>(&data_[i]);
-        value_type            vals[simd_width];
+        neon_type<value_type>  data_vec = neon_load<value_type>(&data_[i]);
+        alignas(16) value_type vals[simd_width];
         neon_load<value_type>(vals, data_vec);
 
         for (int j = 0; j < simd_width; ++j)
@@ -118,15 +114,13 @@ tensor<_Tp>& tensor<_Tp>::neon_asinh_() {
         throw type_error("Type must be arithmetic");
     }
 
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
     {
-        neon_type<value_type> data_vec = neon_load<value_type>(&data_[i]);
-        value_type            vals[simd_width];
+        neon_type<value_type>  data_vec = neon_load<value_type>(&data_[i]);
+        alignas(16) value_type vals[simd_width];
         neon_load<value_type>(vals, data_vec);
 
         for (int j = 0; j < simd_width; ++j)
@@ -158,15 +152,13 @@ tensor<_Tp>& tensor<_Tp>::neon_asin_() {
         throw type_error("Type must be arithmetic");
     }
 
-    constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-    static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
     {
-        neon_type<value_type> data_vec = neon_load<value_type>(&data_[i]);
-        value_type            vals[simd_width];
+        neon_type<value_type>  data_vec = neon_load<value_type>(&data_[i]);
+        alignas(16) value_type vals[simd_width];
         neon_load<value_type>(vals, data_vec);
 
         for (int j = 0; j < simd_width; ++j)
