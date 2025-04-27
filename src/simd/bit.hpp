@@ -9,10 +9,8 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_right_shift_(const int amount) {
         throw type_error("Type must be integral");
     }
 
-    const index_type simd_end = data_.size() - (data_.size() % simd_width);
-
-    int                         right_shift_amount = -amount;
-    const neon_type<value_type> shift_amount_vec   = neon_dup<value_type>(&(right_shift_amount));
+    const index_type            simd_end         = data_.size() - (data_.size() % simd_width);
+    const neon_type<value_type> shift_amount_vec = neon_dup<value_type>(-amount);
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
@@ -42,9 +40,8 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_or_(const value_type val) {
         throw type_error("Cannot perform a bitwise OR on non-integral values");
     }
 
-    const index_type simd_end = data_.size() - (data_.size() % simd_width);
-
-    neon_type<value_type> val_vec = neon_dup<value_type>(&val);
+    const index_type      simd_end = data_.size() - (data_.size() % simd_width);
+    neon_type<value_type> val_vec  = neon_dup<value_type>(val);
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
@@ -69,9 +66,8 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_xor_(const value_type val) {
         throw type_error("Cannot perform a bitwise XOR on non-integral values");
     }
 
-    const index_type simd_end = data_.size() - (data_.size() % simd_width);
-
-    neon_type<value_type> val_vec = neon_dup<value_type>(&val);
+    const index_type      simd_end = data_.size() - (data_.size() % simd_width);
+    neon_type<value_type> val_vec  = neon_dup<value_type>(val);
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
@@ -136,9 +132,8 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_and_(const value_type val) {
         throw type_error("Cannot perform a bitwise AND on non-integral values");
     }
 
-    const index_type simd_end = data_.size() - (data_.size() % simd_width);
-
-    neon_type<value_type> val_vec = neon_dup<value_type>(&val);
+    const index_type      simd_end = data_.size() - (data_.size() % simd_width);
+    neon_type<value_type> val_vec  = neon_dup<value_type>(val);
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
