@@ -1,5 +1,6 @@
 #pragma once
 
+#include "alias.hpp"
 #include "tensorbase.hpp"
 
 template<class _Tp>
@@ -9,26 +10,29 @@ typename tensor<_Tp>::index_type tensor<_Tp>::neon_count_nonzero(index_type dim)
         throw type_error("Type must be arithmetic");
     }
 
-    index_type c           = 0;
-    index_type local_count = 0;
-    index_type i           = 0;
-    const index_type simd_end = data_.size() - (data_.size() % simd_width);
-    value_type _zero(0.0f);
-    value_type _one(1.0f);
+    index_type       c           = 0;
+    index_type       local_count = 0;
+    index_type       i           = 0;
+    const index_type simd_end    = data_.size() - (data_.size() % simd_width);
 
     if (dim == 0)
     {
-        for (; i < simd_end; i += simd_width) {
-            neon_type<value_type> vec = neon_load<value_type>(&data_[i]);
-            neon_u32 nonzero_mask = neon_cgt<value_type>(vec, neon_dup<value_type>(&_zero));
-            local_count += neon_addv<value_type>(neon_and(nonzero_mask, neon_dup<value_type>(_one)));
+        for (; i < simd_end; i += simd_width)
+        {
+            neon_type<value_type> vec          = neon_load<value_type>(&data_[i]);
+            neon_type<value_type> zero_vec     = neon_dup<value_type>(value_type(0.0f));
+            neon_u32              nonzero_mask = neon_cgt<value_type>(vec, zero_vec);
+            local_count += neon_addv<value_type>(neon_and<value_type>(
+              reinterpret_cast<neon_type<value_type>>(nonzero_mask), neon_dup<value_type>(value_type(1.0f))));
         }
-        
-        for (index_type j = i; j < data_.size(); ++j){
+
+        for (index_type j = i; j < data_.size(); ++j)
+        {
             if (data_[j] != 0)
             {
                 ++local_count;
-            }}
+            }
+        }
 
         c += local_count;
     }
@@ -64,13 +68,13 @@ tensor<_Tp>& tensor<_Tp>::neon_zeros_(shape_type sh) {
     std::size_t s = computeSize(shape_);
     data_.resize(s);
     compute_strides();
-    value_type _zero(0.0f);
-    
-    const index_type simd_end = s - (s % simd_width);
-    neon_type<value_type> zero_vec = neon_dup<value_type>(&_zero);
-    
-    index_type       i        = 0;
-    for (; i < simd_end; i+= simd_width) {
+
+    const index_type      simd_end = s - (s % simd_width);
+    neon_type<value_type> zero_vec = neon_dup<value_type>(value_type(0.0f));
+
+    index_type i = 0;
+    for (; i < simd_end; i += simd_width)
+    {
         neon_store<value_type>(&data_[i], zero_vec);
     }
 
@@ -101,42 +105,14 @@ tensor<_Tp>& tensor<_Tp>::neon_ones_(shape_type sh) {
     std::size_t s = computeSize(shape_);
     data_.resize(s);
     compute_strides();
-    value_type _one(1.0f);
 
-    const index_type simd_end = s - (s % simd_width);
-    neon_type<value_type> one_vec = neon_dup<value_type>(&_one);
+    const index_type      simd_end = s - (s % simd_width);
+    neon_type<value_type> one_vec  = neon_dup<value_type>(1.0f);
 
     index_type i = 0;
-    for (; i < simd_end; i += simd_width) {
+    for (; i < simd_end; i += simd_width)
+    {
         neon_store<value_type>(&data_[i], one_vec);
-    }
-
-    if constexpr (std::is_floating_point_v<value_type>)
-    {
-        neon_f32 one_vec = vdupq_n_f32(1.0f);
-
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            vst1q_f32(reinterpret_cast<_f32*>(&data_[i]), one_vec);
-        }
-    }
-    else if constexpr (std::is_signed_v<value_type>)
-    {
-        neon_s32 one_vec = vdupq_n_s32(1);
-
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            vst1q_s32(reinterpret_cast<_s32*>(&data_[i]), one_vec);
-        }
-    }
-    else if constexpr (std::is_unsigned_v<value_type>)
-    {
-        neon_u32 one_vec = vdupq_n_u32(1);
-
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            vst1q_u32(reinterpret_cast<_u32*>(&data_[i]), one_vec);
-        }
     }
 
     for (; i < s; ++i)
