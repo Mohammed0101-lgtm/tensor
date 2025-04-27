@@ -17,15 +17,13 @@ tensor<_Tp> tensor<_Tp>::neon_sum(const index_type axis) const {
     const index_type axis_size  = shape_[axis];
     const index_type outer_size = compute_outer_size(axis);
     const index_type inner_size = size(0) / (outer_size * axis_size);
-
-    const index_type simd_end = data_.size() - (data_.size() % simd_width);
-    value_type       zero(0.0f);
+    const index_type simd_end   = data_.size() - (data_.size() % simd_width);
 
     for (index_type outer = 0; outer < outer_size; ++outer)
     {
         for (index_type inner = 0; inner < inner_size; ++inner)
         {
-            neon_type<value_type> sum_vec = neon_dup<value_type>(&zero);
+            neon_type<value_type> sum_vec = neon_dup<value_type>(value_type(0.0f));
             index_type            i       = outer * axis_size * inner_size + inner;
             index_type            j       = 0;
 
