@@ -35,13 +35,9 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argmax_(index_type di
         index_type j = 0;
         for (; j < inner_size; ++j)
         {
-            value_type zero(0);
-            value_type one(1);
-            value_type inf = -std::numeric_limits<value_type>::infinity();
-
-            neon_type<value_type> max_vec       = neon_dup<value_type>(&inf);
-            neon_type<value_type> index_vec     = neon_dup<value_type>(&zero);
-            neon_type<value_type> increment     = neon_dup<value_type>(&one);
+            neon_type<value_type> max_vec       = neon_dup<value_type>(-std::numeric_limits<value_type>::infinity());
+            neon_type<value_type> index_vec     = neon_dup<value_type>(value_type(0.0f));
+            neon_type<value_type> increment     = neon_dup<value_type>(value_type(1.0f));
             neon_type<value_type> current_index = {value_type(0), value_type(1), value_type(2), value_type(3)};
 
             index_type k = 0;
@@ -122,8 +118,7 @@ tensor<_Tp> tensor<_Tp>::neon_argmax(index_type dim) const {
     {
         for (index_type j = 0; j < inner_size; ++j)
         {
-            value_type            inf     = -std::numeric_limits<value_type>::infinity();
-            neon_type<value_type> max_vec = neon_dup<value_type>(&inf);
+            neon_type<value_type> max_vec = neon_dup<value_type>(-std::numeric_limits<value_type>::infinity());
             index_type            k       = 0;
 
             for (; k + simd_width <= shape_[dim]; k += simd_width)
