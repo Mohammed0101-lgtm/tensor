@@ -100,9 +100,8 @@ tensor<_Tp>& tensor<_Tp>::neon_maximum_(const value_type val) {
         throw type_error("Value type must be arithmetic");
     }
 
-    const index_type simd_end = data_.size() - (data_.size() % simd_width);
-
-    neon_type<value_type> val_vec = neon_dup<value_type>(val);
+    const index_type      simd_end = data_.size() - (data_.size() % simd_width);
+    neon_type<value_type> val_vec  = neon_dup<value_type>(val);
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
