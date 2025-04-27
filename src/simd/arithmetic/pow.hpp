@@ -15,7 +15,7 @@ tensor<_Tp>& tensor<_Tp>::neon_pow_(const value_type val) {
     for (; i < simd_end; i += simd_width)
     {
         neon_type<value_type>  data_vec = neon_load<value_type>(&data_[i]);
-        alignas(16) value_type vals[simd_width];
+        alignas(16) value_type vals[simd_widthww
         neon_load<value_type>(vals, data_vec);
 
         for (int j = 0; j < simd_width; ++j)
