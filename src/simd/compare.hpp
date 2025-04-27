@@ -125,7 +125,7 @@ tensor<bool> tensor<_Tp>::neon_less_equal(const value_type val) const {
     for (; i < simd_end; i += simd_width)
     {
         neon_type<value_type> vec_a    = neon_load<value_type>(&data_[i]);
-        neon_type<value_type> vec_b    = neon_dup<value_type>(&val);
+        neon_type<value_type> vec_b    = neon_dup<value_type>(val);
         neon_type<value_type> leq_mask = neon_cleq<value_type>(vec_a, vec_b);
         neon_store<value_type>(&ret[i], leq_mask);
     }
