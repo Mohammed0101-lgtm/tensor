@@ -4,7 +4,7 @@
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::neon_sum(const index_type axis) const {
-    if (axis < 0 or axis >= static_cast<index_type>(shape_.size()))
+    if (axis < 0 || axis >= static_cast<index_type>(shape_.size()))
     {
         throw std::invalid_argument("Invalid axis for sum");
     }
