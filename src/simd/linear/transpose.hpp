@@ -18,7 +18,7 @@ tensor<_Tp> tensor<_Tp>::neon_transpose() const {
     {
         for (index_type j = 0; j < cols; j += simd_width)
         {
-            if (i + simd_width <= rows and j + simd_width <= cols)
+            if (i + simd_width <= rows && j + simd_width <= cols)
             {
                 wide_neon_type<value_type> input;
 
