@@ -9,12 +9,12 @@ tensor<_Tp> tensor<_Tp>::neon_cross_product(const tensor& other) const {
         throw type_error("Type must be arithmetic");
     }
 
-    if (empty() or other.empty())
+    if (empty() || other.empty())
     {
         throw std::invalid_argument("Cannot cross product an empty vector");
     }
 
-    if (!equal_shape(shape(), shape_type({3})) or !equal_shape(other.shape(), shape_type({3})))
+    if (!equal_shape(shape(), shape_type({3})) || !equal_shape(other.shape(), shape_type({3})))
     {
         throw shape_error("Cross product can only be performed on 3-element vectors");
     }
@@ -42,12 +42,12 @@ tensor<_Tp> tensor<_Tp>::neon_dot(const tensor& other) const {
         throw type_error("Type must be arithmetic");
     }
 
-    if (empty() or other.empty())
+    if (empty() || other.empty())
     {
         throw std::invalid_argument("Cannot dot product an empty vector");
     }
 
-    if (equal_shape(shape_, shape_type({1})) and equal_shape(other.shape(), shape_type({1})))
+    if (equal_shape(shape_, shape_type({1})) && equal_shape(other.shape(), shape_type({1})))
     {
         if (shape_[0] != other.shape()[0])
         {
