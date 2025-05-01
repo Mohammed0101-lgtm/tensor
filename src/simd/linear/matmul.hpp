@@ -19,13 +19,13 @@ tensor<_Tp> tensor<_Tp>::neon_matmul(const tensor& other) const {
         throw operator_error("Value type must have times operator");
     }
 
-    if (shape_.size() < 2 or other.shape().size() < 2)
+    if (shape_.size() < 2 || other.shape().size() < 2)
     {
         throw shape_error("matmul is only supported for 2D tensors");
     }
 
     if (!equal_shape(shape_, shape_type({shape_[0], shape_[1]}))
-        or !equal_shape(other.shape(), shape_type({other.shape()[0], other.shape()[1]})))
+        || !equal_shape(other.shape(), shape_type({other.shape()[0], other.shape()[1]})))
     {
         throw shape_error("matmul is only supported for 2D tensors");
     }
