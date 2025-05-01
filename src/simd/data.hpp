@@ -4,18 +4,16 @@
 #include "tensorbase.hpp"
 
 template<class _Tp>
-typename tensor<_Tp>::index_type tensor<_Tp>::neon_count_nonzero(index_type dim) const {
+typename tensor<_Tp>::index_type tensor<_Tp>::neon_count_nonzero(index_type dimension) const {
     if (!std::is_arithmetic_v<value_type>)
-    {
         throw type_error("Type must be arithmetic");
-    }
 
     index_type       c           = 0;
     index_type       local_count = 0;
     index_type       i           = 0;
     const index_type simd_end    = data_.size() - (data_.size() % simd_width);
 
-    if (dim == 0)
+    if (dimension == 0)
     {
         for (; i < simd_end; i += simd_width)
         {
@@ -27,22 +25,15 @@ typename tensor<_Tp>::index_type tensor<_Tp>::neon_count_nonzero(index_type dim)
         }
 
         for (index_type j = i; j < data_.size(); ++j)
-        {
             if (data_[j] != 0)
-            {
                 ++local_count;
-            }
-        }
 
         c += local_count;
     }
     else
     {
-        if (dim < 0 or dim >= static_cast<index_type>(shape_.size()))
-        {
+        if (dimension < 0 || dimension >= static_cast<index_type>(shape_.size()))
             throw index_error("Invalid dimension provided.");
-        }
-
         throw std::runtime_error("Dimension-specific non-zero counting is not implemented yet.");
     }
 
@@ -50,19 +41,19 @@ typename tensor<_Tp>::index_type tensor<_Tp>::neon_count_nonzero(index_type dim)
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_zeros_(shape_type sh) {
+tensor<_Tp>& tensor<_Tp>::neon_zeros_(shape_type shape_) {
     if (!std::is_arithmetic_v<value_type>)
     {
         throw type_error("Type must be arithmetic");
     }
 
-    if (sh.empty())
+    if (shape_.empty())
     {
-        sh = shape_;
+        shape_ = shape_;
     }
     else
     {
-        shape_ = sh;
+        shape_ = shape_;
     }
 
     std::size_t s = computeSize(shape_);
@@ -87,19 +78,19 @@ tensor<_Tp>& tensor<_Tp>::neon_zeros_(shape_type sh) {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_ones_(shape_type sh) {
+tensor<_Tp>& tensor<_Tp>::neon_ones_(shape_type shape_) {
     if (!std::is_arithmetic_v<value_type>)
     {
         throw type_error("Type must be arithmetic");
     }
 
-    if (sh.empty())
+    if (shape_.empty())
     {
-        sh = shape_;
+        shape_ = shape_;
     }
     else
     {
-        shape_ = sh;
+        shape_ = shape_;
     }
 
     std::size_t s = computeSize(shape_);
@@ -124,7 +115,7 @@ tensor<_Tp>& tensor<_Tp>::neon_ones_(shape_type sh) {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_randomize_(const shape_type& sh, bool bounded) {
+tensor<_Tp>& tensor<_Tp>::neon_randomize_(const shape_type& shape_, bool bounded) {
     if (!std::is_arithmetic_v<value_type>)
     {
         throw type_error("Type must be arithmetic");
@@ -135,14 +126,14 @@ tensor<_Tp>& tensor<_Tp>::neon_randomize_(const shape_type& sh, bool bounded) {
         throw type_error("Cannot bound non floating point data type");
     }
 
-    if (sh.empty() and shape_.empty())
+    if (shape_.empty() && shape_.empty())
     {
         throw shape_error("randomize_ : Shape must be initialized");
     }
 
-    if (shape_.empty() or shape_ != sh)
+    if (shape_.empty() || shape_ != shape_)
     {
-        shape_ = sh;
+        shape_ = shape_;
     }
 
     index_type s = computeSize(shape_);
