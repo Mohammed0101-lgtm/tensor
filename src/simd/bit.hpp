@@ -34,14 +34,14 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_left_shift_(const int amount) {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_bitwise_or_(const value_type val) {
+tensor<_Tp>& tensor<_Tp>::neon_bitwise_or_(const value_type value) {
     if (!std::is_integral_v<value_type>)
     {
         throw type_error("Cannot perform a bitwise OR on non-integral values");
     }
 
     const index_type      simd_end = data_.size() - (data_.size() % simd_width);
-    neon_type<value_type> val_vec  = neon_dup<value_type>(val);
+    neon_type<value_type> val_vec  = neon_dup<value_type>(value);
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
@@ -53,21 +53,21 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_or_(const value_type val) {
 
     for (; i < data_.size(); ++i)
     {
-        data_[i] |= val;
+        data_[i] |= value;
     }
 
     return *this;
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_bitwise_xor_(const value_type val) {
+tensor<_Tp>& tensor<_Tp>::neon_bitwise_xor_(const value_type value) {
     if (!std::is_integral_v<value_type>)
     {
         throw type_error("Cannot perform a bitwise XOR on non-integral values");
     }
 
     const index_type      simd_end = data_.size() - (data_.size() % simd_width);
-    neon_type<value_type> val_vec  = neon_dup<value_type>(val);
+    neon_type<value_type> val_vec  = neon_dup<value_type>(value);
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
@@ -79,7 +79,7 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_xor_(const value_type val) {
 
     for (; i < data_.size(); ++i)
     {
-        data_[i] ^= val;
+        data_[i] ^= value;
     }
 
     return *this;
@@ -87,7 +87,7 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_xor_(const value_type val) {
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_bitwise_not_() {
-    if (!std::is_integral_v<value_type> and !std::is_same_v<value_type, bool>)
+    if (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     {
         throw type_error("Cannot perform a bitwise not on non-integral value");
     }
@@ -126,14 +126,14 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_not_() {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_bitwise_and_(const value_type val) {
+tensor<_Tp>& tensor<_Tp>::neon_bitwise_and_(const value_type value) {
     if (!std::is_integral_v<value_type>)
     {
         throw type_error("Cannot perform a bitwise AND on non-integral values");
     }
 
     const index_type      simd_end = data_.size() - (data_.size() % simd_width);
-    neon_type<value_type> val_vec  = neon_dup<value_type>(val);
+    neon_type<value_type> val_vec  = neon_dup<value_type>(value);
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
@@ -145,7 +145,7 @@ tensor<_Tp>& tensor<_Tp>::neon_bitwise_and_(const value_type val) {
 
     for (; i < data_.size(); ++i)
     {
-        data_[i] &= val;
+        data_[i] &= value;
     }
 
     return *this;
