@@ -3,15 +3,15 @@
 #include "tensorbase.hpp"
 
 template<class _Tp>
-tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argmax_(index_type dim) const {
-    if (dim < 0 or dim >= shape_.size())
+tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argmax_(index_type dimension) const {
+    if (dimension < 0 || dimension >= shape_.size())
     {
         throw index_error("Dimension out of range in argmax");
     }
 
     tensor<index_type> ret;
     shape_type         ret_sh = shape_;
-    ret_sh.erase(ret_sh.begin() + dim);
+    ret_sh.erase(ret_sh.begin() + dimension);
     ret.shape_ = ret_sh;
     ret.data_.resize(computeSize(ret_sh), 0);
 
@@ -19,11 +19,11 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argmax_(index_type di
     index_type inner_size = 1;
     index_type i          = 0;
 
-    for (; i < dim; ++i)
+    for (; i < dimension; ++i)
     {
         outer_size *= shape_[i];
     }
-    for (i = dim + 1; i < shape_.size(); ++i)
+    for (i = dimension + 1; i < shape_.size(); ++i)
     {
         inner_size *= shape_[i];
     }
@@ -41,9 +41,9 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argmax_(index_type di
             neon_type<value_type> current_index = {value_type(0), value_type(1), value_type(2), value_type(3)};
 
             index_type k = 0;
-            for (; k + simd_width <= shape_[dim]; k += simd_width)
+            for (; k + simd_width <= shape_[dimension]; k += simd_width)
             {
-                neon_type<value_type> data_vec = neon_load<value_type>(&data_[(i * shape_[dim] + k) * inner_size + j]);
+                neon_type<value_type> data_vec = neon_load<value_type>(&data_[(i * shape_[dimension] + k) * inner_size + j]);
                 neon_type<value_type> mask     = neon_vcgtq<value_type>(data_vec, max_vec);
                 max_vec                        = neon_vbslq<value_type>(mask, data_vec, max_vec);
                 index_vec                      = neon_vbslq<value_type>(mask, current_index, index_vec);
@@ -67,9 +67,9 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argmax_(index_type di
                     max_index = indices[k];
                 }
 
-                for (; k < shape_[dim]; ++k)
+                for (; k < shape_[dimension]; ++k)
                 {
-                    value_type v = data_[(i * shape_[dim] + k) * inner_size + j];
+                    value_type v = data_[(i * shape_[dimension] + k) * inner_size + j];
                     if (v > max_val)
                     {
                         max_val   = v;
@@ -85,8 +85,8 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::neon_argmax_(index_type di
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::neon_argmax(index_type dim) const {
-    if (dim < 0 or dim >= shape_.size())
+tensor<_Tp> tensor<_Tp>::neon_argmax(index_type dimension) const {
+    if (dimension < 0 || dimension >= shape_.size())
     {
         throw index_error("Dimension out of range in argmax");
     }
@@ -94,7 +94,7 @@ tensor<_Tp> tensor<_Tp>::neon_argmax(index_type dim) const {
     tensor     ret;
     shape_type ret_sh = shape_;
 
-    ret_sh.erase(ret_sh.begin() + dim);
+    ret_sh.erase(ret_sh.begin() + dimension);
     ret.shape_ = ret_sh;
     ret.data_.resize(computeSize(ret_sh), value_type(0));
 
@@ -102,12 +102,12 @@ tensor<_Tp> tensor<_Tp>::neon_argmax(index_type dim) const {
     index_type inner_size = 1;
     index_type i          = 0;
 
-    for (; i < dim; ++i)
+    for (; i < dimension; ++i)
     {
         outer_size *= shape_[i];
     }
 
-    for (i = dim + 1; i < static_cast<index_type>(shape_.size()); ++i)
+    for (i = dimension + 1; i < static_cast<index_type>(shape_.size()); ++i)
     {
         inner_size *= shape_[i];
     }
@@ -121,16 +121,16 @@ tensor<_Tp> tensor<_Tp>::neon_argmax(index_type dim) const {
             neon_type<value_type> max_vec = neon_dup<value_type>(-std::numeric_limits<value_type>::infinity());
             index_type            k       = 0;
 
-            for (; k + simd_width <= shape_[dim]; k += simd_width)
+            for (; k + simd_width <= shape_[dimension]; k += simd_width)
             {
-                neon_type<value_type> data_vec = neon_load<value_type>(&data_[(i * shape_[dim] + k) * inner_size + j]);
+                neon_type<value_type> data_vec = neon_load<value_type>(&data_[(i * shape_[dimension] + k) * inner_size + j]);
                 max_vec                        = neon_max<value_type>(max_vec, data_vec);
             }
 
             value_type max_value = neon_maxv<value_type>(max_vec);
-            for (; k < shape_[dim]; ++k)
+            for (; k < shape_[dimension]; ++k)
             {
-                value_type v = data_[(i * shape_[dim] + k) * inner_size + j];
+                value_type v = data_[(i * shape_[dimension] + k) * inner_size + j];
                 max_value    = std::max(max_value, v);
             }
 
