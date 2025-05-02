@@ -716,9 +716,9 @@ TEST(TensorTest, BitwiseNot) {
 
 TEST(TensorTest, BitwiseAndScalar) {
     tensor<int> t({3}, {0b1010, 0b1100, 0b1111});
-    int         val = 0b0101;
-    tensor<int> expected({3}, {0b1010 & val, 0b1100 & val, 0b1111 & val});
-    tensor<int> result = t.bitwise_and(val);
+    int         value = 0b0101;
+    tensor<int> expected({3}, {0b1010 & value, 0b1100 & value, 0b1111 & value});
+    tensor<int> result = t.bitwise_and(value);
 
     for (std::size_t i = 0; i < result.size(0); ++i)
         EXPECT_EQ(result[i], expected[i]);
@@ -736,9 +736,9 @@ TEST(TensorTest, BitwiseAndTensor) {
 
 TEST(TensorTest, BitwiseOrScalar) {
     tensor<int> t({3}, {0b0001, 0b1000, 0b1111});
-    int         val = 0b0101;
-    tensor<int> expected({3}, {0b0001 | val, 0b1000 | val, 0b1111 | val});
-    tensor<int> result = t.bitwise_or(val);
+    int         value = 0b0101;
+    tensor<int> expected({3}, {0b0001 | value, 0b1000 | value, 0b1111 | value});
+    tensor<int> result = t.bitwise_or(value);
 
     for (std::size_t i = 0; i < result.size(0); ++i)
         EXPECT_EQ(result[i], expected[i]);
@@ -756,9 +756,9 @@ TEST(TensorTest, BitwiseOrTensor) {
 
 TEST(TensorTest, BitwiseXorScalar) {
     tensor<int> t({3}, {0b1100, 0b1010, 0b1111});
-    int         val = 0b0101;
-    tensor<int> expected({3}, {0b1100 ^ val, 0b1010 ^ val, 0b1111 ^ val});
-    tensor<int> result = t.bitwise_xor(val);
+    int         value = 0b0101;
+    tensor<int> expected({3}, {0b1100 ^ value, 0b1010 ^ value, 0b1111 ^ value});
+    tensor<int> result = t.bitwise_xor(value);
 
     for (std::size_t i = 0; i < result.size(0); ++i)
         EXPECT_EQ(result[i], expected[i]);
