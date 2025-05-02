@@ -111,13 +111,13 @@ class tensor
 
    public:
     tensor() = default;
-    explicit tensor(const shape_type& sh, const_reference v, Device d = Device::CPU);
-    explicit tensor(const shape_type& sh, Device d = Device::CPU);
-    explicit tensor(const shape_type& sh, const data_t& d, Device dev = Device::CPU);
+    explicit tensor(const shape_type& shape_, const_reference v, Device d = Device::CPU);
+    explicit tensor(const shape_type& shape_, Device d = Device::CPU);
+    explicit tensor(const shape_type& shape_, const data_t& d, Device dev = Device::CPU);
     tensor(const tensor& t);
     tensor(tensor&& t) noexcept;
-    tensor(const shape_type& sh, const tensor& other);
-    tensor(const shape_type& sh, std::initializer_list<value_type> init_list, Device d = Device::CPU);
+    tensor(const shape_type& shape_, const tensor& other);
+    tensor(const shape_type& shape_, std::initializer_list<value_type> init_list, Device d = Device::CPU);
 
    private:
     class destroy_tensor
@@ -149,9 +149,9 @@ class tensor
     shape_type      strides() const noexcept;
     Device          device() const noexcept;
     std::size_t     n_dims() const noexcept;
-    index_type      size(const index_type dim) const;
+    index_type      size(const index_type dimension) const;
     index_type      capacity() const noexcept;
-    index_type      count_nonzero(index_type dim = 0) const;
+    index_type      count_nonzero(index_type dimension = 0) const;
     index_type      lcm() const;
     index_type      hash() const;
     reference       at(shape_type idx);
@@ -174,9 +174,9 @@ class tensor
 
     /// @brief Computes the logical OR operation between each element and a scalar
     /// value.
-    /// @param val The scalar value to compute the logical OR with.
+    /// @param value The scalar value to compute the logical OR with.
     /// @return A tensor of boolean values.
-    tensor<bool> logical_or(const value_type val) const;
+    tensor<bool> logical_or(const value_type value) const;
 
     /// @brief Computes the logical OR operation between corresponding elements of
     /// two tensors.
@@ -191,9 +191,9 @@ class tensor
     tensor<bool> less_equal(const tensor& other) const;
 
     /// @brief Checks if each element is less than or equal to a scalar value.
-    /// @param val The scalar value to compare with.
+    /// @param value The scalar value to compare with.
     /// @return A tensor of boolean values.
-    tensor<bool> less_equal(const value_type val) const;
+    tensor<bool> less_equal(const value_type value) const;
 
     /// @brief Checks if each element is greater than or equal to the
     /// corresponding element in another tensor.
@@ -202,9 +202,9 @@ class tensor
     tensor<bool> greater_equal(const tensor& other) const;
 
     /// @brief Checks if each element is greater than or equal to a scalar value.
-    /// @param val The scalar value to compare with.
+    /// @param value The scalar value to compare with.
     /// @return A tensor of boolean values.
-    tensor<bool> greater_equal(const value_type val) const;
+    tensor<bool> greater_equal(const value_type value) const;
 
     /// @brief Checks if each element is equal to the corresponding element in
     /// another tensor.
@@ -213,9 +213,9 @@ class tensor
     tensor<bool> equal(const tensor& other) const;
 
     /// @brief Checks if each element is equal to a scalar value.
-    /// @param val The scalar value to compare with.
+    /// @param value The scalar value to compare with.
     /// @return A tensor of boolean values.
-    tensor<bool> equal(const value_type val) const;
+    tensor<bool> equal(const value_type value) const;
 
     /// @brief Checks if each element is not equal to the corresponding element in
     /// another tensor.
@@ -224,9 +224,9 @@ class tensor
     tensor<bool> not_equal(const tensor& other) const;
 
     /// @brief Checks if each element is not equal to a scalar value.
-    /// @param val The scalar value to compare with.
+    /// @param value The scalar value to compare with.
     /// @return A tensor of boolean values.
-    tensor<bool> not_equal(const value_type val) const;
+    tensor<bool> not_equal(const value_type value) const;
 
     /// @brief Checks if each element is less than the corresponding element in
     /// another tensor.
@@ -235,9 +235,9 @@ class tensor
     tensor<bool> less(const tensor& other) const;
 
     /// @brief Checks if each element is less than a scalar value.
-    /// @param val The scalar value to compare with.
+    /// @param value The scalar value to compare with.
     /// @return A tensor of boolean values.
-    tensor<bool> less(const value_type val) const;
+    tensor<bool> less(const value_type value) const;
 
     /// @brief Checks if each element is greater than the corresponding element in
     /// another tensor.
@@ -246,9 +246,9 @@ class tensor
     tensor<bool> greater(const tensor& other) const;
 
     /// @brief Checks if each element is greater than a scalar value.
-    /// @param val The scalar value to compare with.
+    /// @param value The scalar value to compare with.
     /// @return A tensor of boolean values.
-    tensor<bool> greater(const value_type val) const;
+    tensor<bool> greater(const value_type value) const;
 
     /// @brief Compares this tensor with another tensor for equality.
     /// @param other The tensor to compare with.
@@ -271,19 +271,19 @@ class tensor
     tensor operator-(const tensor& other) const;
 
     /// @brief Adds a scalar value to each element of the tensor.
-    /// @param val The scalar value to add.
+    /// @param value The scalar value to add.
     /// @return A new tensor containing the result of the addition.
-    tensor operator+(const value_type val) const;
+    tensor operator+(const value_type value) const;
 
     /// @brief Subtracts a scalar value from each element of the tensor.
-    /// @param val The scalar value to subtract.
+    /// @param value The scalar value to subtract.
     /// @return A new tensor containing the result of the subtraction.
-    tensor operator-(const value_type val) const;
+    tensor operator-(const value_type value) const;
 
     /// @brief Multiply a scalar value with each element of the tensor.
-    /// @param val The scalar value to multiply with.
+    /// @param value The scalar value to multiply with.
     /// @return A new tensor containing the result of the multiplication.
-    tensor operator*(const value_type val) const;
+    tensor operator*(const value_type value) const;
 
     /// @brief Multiply each element of the input tensor with each element of the
     /// tensor.
@@ -317,21 +317,21 @@ class tensor
 
     /// @brief Adds a scalar value to each element of the tensor and updates the
     /// current tensor.
-    /// @param val The scalar value to add.
+    /// @param value The scalar value to add.
     /// @return A \ref to the current tensor after the addition.
-    tensor& operator+=(const_reference val) const;
+    tensor& operator+=(const_reference value) const;
 
     /// @brief Subtracts a scalar value from each element of the tensor and
     /// updates the current tensor.
-    /// @param val The scalar value to subtract.
+    /// @param value The scalar value to subtract.
     /// @return A \ref to the current tensor after the subtraction.
-    tensor& operator-=(const_reference val) const;
+    tensor& operator-=(const_reference value) const;
 
     /// @brief Divides each element of the tensor by a scalar value and updates
     /// the current tensor.
-    /// @param val The scalar value to divide by.
+    /// @param value The scalar value to divide by.
     /// @return A \ref to the current tensor after the division.
-    tensor& operator/=(const_reference val) const;
+    tensor& operator/=(const_reference value) const;
 
     /// @brief Divides each element of the tensor by the corresponding element of
     /// the other tensor
@@ -340,15 +340,15 @@ class tensor
     tensor operator/(const tensor& other) const;
 
     /// @brief Divides each element of the tensor by a scalar value
-    /// @param val The scalar value to divide by (non zero)
+    /// @param value The scalar value to divide by (non zero)
     /// @return A tensor the contains the result of the division
-    tensor operator/(const_reference val) const;
+    tensor operator/(const_reference value) const;
 
     /// @brief Multiplies each element of the tensor by a scalar value and updates
     /// the current tensor.
-    /// @param val The scalar value to multiply with.
+    /// @param value The scalar value to multiply with.
     /// @return A \ref to the current tensor after the multiplication.
-    tensor& operator*=(const_reference val) const;
+    tensor& operator*=(const_reference value) const;
 
     /// @brief Assigns the values of another tensor to this tensor.
     /// @param other The tensor to assign from.
@@ -370,12 +370,12 @@ class tensor
     const tensor<bool>& operator!() const;
     /*
     /// @brief Extracts a slice of the tensor along the specified dimension.
-    /// @param dim The dimension along which to slice.
+    /// @param dimension The dimension along which to slice.
     /// @param start The starting index of the slice (optional).
     /// @param end The ending index of the slice (optional).
     /// @param step The step size for the slice.
     /// @return A new tensor containing the sliced data.
-    tensor slice(index_type dim, std::optional<index_type> start, std::optional<index_type> end, int64_t step) const;
+    tensor slice(index_type dimension, std::optional<index_type> start, std::optional<index_type> end, int64_t step) const;
 */
 
     /// @brief Computes the element-wise maximum between this tensor and another
@@ -386,9 +386,9 @@ class tensor
 
     /// @brief Computes the element-wise maximum between this tensor and a scalar
     /// value.
-    /// @param val The scalar value to compare with.
+    /// @param value The scalar value to compare with.
     /// @return A new tensor containing the element-wise maximum values.
-    tensor fmax(const value_type val) const;
+    tensor fmax(const value_type value) const;
 
     /// @brief Computes the element-wise floating-point remainder of division with
     /// another tensor.
@@ -398,9 +398,9 @@ class tensor
 
     /// @brief Computes the element-wise floating-point remainder of division with
     /// a scalar value.
-    /// @param val The scalar value to divide by.
+    /// @param value The scalar value to divide by.
     /// @return A new tensor containing the element-wise remainders.
-    tensor fmod(const value_type val) const;
+    tensor fmod(const value_type value) const;
 
     /// @brief Computes the fractional part of each element in the tensor.
     /// @return A new tensor containing the fractional parts.
@@ -539,9 +539,9 @@ class tensor
 
     /// @brief Performs a logical XOR operation between the tensor and a scalar
     /// value.
-    /// @param val The scalar value to apply the logical XOR operation with.
+    /// @param value The scalar value to apply the logical XOR operation with.
     /// @return A new tensor containing the result of the logical XOR operation.
-    tensor logical_xor(const value_type val) const;
+    tensor logical_xor(const value_type value) const;
 
     /// @brief Performs a logical AND operation between the tensor and another
     /// tensor.
@@ -551,9 +551,9 @@ class tensor
 
     /// @brief Performs a logical AND operation between the tensor and a scalar
     /// value.
-    /// @param val The scalar value to apply the logical AND operation with.
+    /// @param value The scalar value to apply the logical AND operation with.
     /// @return A new tensor containing the result of the logical AND operation.
-    tensor logical_and(const value_type val) const;
+    tensor logical_and(const value_type value) const;
 
     /// @brief Performs a bitwise NOT operation on each element of the tensor.
     /// @return A new tensor containing the result of the bitwise NOT operation.
@@ -561,9 +561,9 @@ class tensor
 
     /// @brief Performs a bitwise AND operation between the tensor and a scalar
     /// value.
-    /// @param val The scalar value to apply the bitwise AND operation with.
+    /// @param value The scalar value to apply the bitwise AND operation with.
     /// @return A new tensor containing the result of the bitwise AND operation.
-    tensor bitwise_and(const value_type val) const;
+    tensor bitwise_and(const value_type value) const;
 
     /// @brief Performs a bitwise AND operation between the tensor and another
     /// tensor.
@@ -573,9 +573,9 @@ class tensor
 
     /// @brief Performs a bitwise OR operation between the tensor and a scalar
     /// value.
-    /// @param val The scalar value to apply the bitwise OR operation with.
+    /// @param value The scalar value to apply the bitwise OR operation with.
     /// @return A new tensor containing the result of the bitwise OR operation.
-    tensor bitwise_or(const value_type val) const;
+    tensor bitwise_or(const value_type value) const;
 
     /// @brief Performs a bitwise OR operation between the tensor and another
     /// tensor.
@@ -585,9 +585,9 @@ class tensor
 
     /// @brief Performs a bitwise XOR operation between the tensor and a scalar
     /// value.
-    /// @param val The scalar value to apply the bitwise XOR operation with.
+    /// @param value The scalar value to apply the bitwise XOR operation with.
     /// @return A new tensor containing the result of the bitwise XOR operation.
-    tensor bitwise_xor(const value_type val) const;
+    tensor bitwise_xor(const value_type value) const;
 
     /// @brief Performs a bitwise XOR operation between the tensor and another
     /// tensor.
@@ -649,9 +649,9 @@ class tensor
     tensor transpose() const;
 
     /// @brief Fills the tensor with a specified scalar value.
-    /// @param val The scalar value to fill the tensor with.
+    /// @param value The scalar value to fill the tensor with.
     /// @return A new tensor filled with the specified value.
-    tensor fill(const value_type val) const;
+    tensor fill(const value_type value) const;
 
     /// @brief Fills the tensor with the values from another tensor.
     /// @param other The tensor whose values are to be used for filling.
@@ -660,9 +660,9 @@ class tensor
 
     /// @brief Resizes the tensor to a specified shape, keeping its data
     /// consistent.
-    /// @param sh The desired shape for the tensor.
+    /// @param shape_ The desired shape for the tensor.
     /// @return A new tensor resized to the specified shape.
-    tensor resize_as(const shape_type sh) const;
+    tensor resize_as(const shape_type shape_) const;
 
     /// @brief Checks if all elements in the tensor are non-zero.
     /// @return A scalar tensor containing true if all elements are non-zero,
@@ -693,17 +693,17 @@ class tensor
     tensor clipped_relu(const value_type clip_limit) const;
 
     /// @brief Sorts the elements of the tensor along a specified dimension.
-    /// @param dim The dimension along which to sort the tensor.
+    /// @param dimension The dimension along which to sort the tensor.
     /// @param descending Whether to sort in descending order (default is
     /// false).
     /// @return A new tensor with the sorted elements.
-    tensor sort(index_type dim, bool descending = false) const;
+    tensor sort(index_type dimension, bool descending = false) const;
 
     /// @brief Computes the remainder of division between each element and a
     /// scalar value.
-    /// @param val The scalar value to divide by.
+    /// @param value The scalar value to divide by.
     /// @return A new tensor containing the remainders.
-    tensor remainder(const value_type val) const;
+    tensor remainder(const value_type value) const;
 
     /// @brief Computes the remainder of division between each element of the
     /// tensor and another tensor.
@@ -719,9 +719,9 @@ class tensor
 
     /// @brief Computes the element-wise maximum between the tensor and a scalar
     /// value.
-    /// @param val The scalar value to compare with.
+    /// @param value The scalar value to compare with.
     /// @return A new tensor containing the element-wise maximum values.
-    tensor maximum(const_reference val) const;
+    tensor maximum(const_reference value) const;
 
     /// @brief Computes the distance between the tensor and another tensor.
     /// @param other The tensor to compute the distance from.
@@ -729,15 +729,15 @@ class tensor
     tensor dist(const tensor& other) const;
 
     /// @brief Computes the distance between the tensor and a scalar value.
-    /// @param val The scalar value to compute the distance from.
+    /// @param value The scalar value to compute the distance from.
     /// @return A scalar tensor containing the computed distance.
-    tensor dist(const value_type val) const;
+    tensor dist(const value_type value) const;
 
     /// @brief Removes dimensions of size 1 from the specified axis of the tensor.
-    /// @param dim The dimension to squeeze.
+    /// @param dimension The dimension to squeeze.
     /// @return A new tensor with the specified dimension removed if its size
     /// is 1.
-    tensor squeeze(index_type dim) const;
+    tensor squeeze(index_type dimension) const;
 
     /// @brief Computes the element-wise negation of the tensor.
     /// @return A new tensor with all elements negated.
@@ -748,17 +748,17 @@ class tensor
     /// each dimension.
     /// @return A new tensor with repeated elements along the specified
     /// dimensions.
-    tensor repeat(const data_t& d, int dim = 0) const;
+    tensor repeat(const data_t& d, int dimension = 0) const;
 
     /// @brief Permutes the dimensions of the tensor.
-    /// @param dim The order of dimensions for permutation.
+    /// @param dimension The order of dimensions for permutation.
     /// @return A new tensor with permuted dimensions.
-    tensor permute(const index_type dim) const;
+    tensor permute(const index_type dimension) const;
 
     /// @brief Computes the log softmax along a specified dimension of the tensor.
-    /// @param dim The dimension along which to compute the log softmax.
+    /// @param dimension The dimension along which to compute the log softmax.
     /// @return A new tensor containing the log softmax values.
-    tensor log_softmax(const index_type dim) const;
+    tensor log_softmax(const index_type dimension) const;
 
     /// @brief Computes the element-wise greatest common divisor (GCD) between the
     /// tensor and another tensor.
@@ -768,9 +768,9 @@ class tensor
 
     /// @brief Computes the element-wise greatest common divisor (GCD) between the
     /// tensor and a scalar value.
-    /// @param val The scalar value to compute the GCD with.
+    /// @param value The scalar value to compute the GCD with.
     /// @return A new tensor containing the element-wise GCD values.
-    tensor gcd(const value_type val) const;
+    tensor gcd(const value_type value) const;
 
     /// @brief Computes the element-wise power of the tensor, raising each element
     /// to the power of the corresponding element in another tensor.
@@ -780,17 +780,17 @@ class tensor
 
     /// @brief Computes the element-wise power of the tensor, raising each element
     /// to the power of a scalar value.
-    /// @param val The scalar exponent value.
+    /// @param value The scalar exponent value.
     /// @return A new tensor containing the element-wise power values.
-    tensor pow(const value_type val) const;
+    tensor pow(const value_type value) const;
 
     /// @brief Computes the cumulative product of elements along a specified
     /// dimension.
-    /// @param dim The dimension along which to compute the cumulative product.
+    /// @param dimension The dimension along which to compute the cumulative product.
     /// Default is -1 (last dimension).
     /// @return A new tensor containing the cumulative product along the specified
     /// dimension.
-    tensor cumprod(index_type dim = -1) const;
+    tensor cumprod(index_type dimension = -1) const;
 
     /// @brief Concatenates the tensor with a list of other tensors along a
     /// specified dimension.
@@ -801,34 +801,34 @@ class tensor
 
     /// @brief Finds the indices of the maximum values along a specified
     /// dimension.
-    /// @param dim The dimension along which to compute the indices of the
+    /// @param dimension The dimension along which to compute the indices of the
     /// maximum values.
     /// @return A new tensor containing the indices of the maximum values along
     /// the specified dimension.
-    tensor argmax(index_type dim) const;
+    tensor argmax(index_type dimension) const;
 
     /// @brief Adds a dimension of size 1 at the specified axis.
-    /// @param dim The dimension where the new axis will be added.
+    /// @param dimension The dimension where the new axis will be added.
     /// @return A new tensor with the added dimension.
-    tensor unsqueeze(index_type dim) const;
+    tensor unsqueeze(index_type dimension) const;
 
     /// @brief Creates a tensor filled with zeros, with the specified shape.
-    /// @param sh The shape of the tensor to be created.
+    /// @param shape_ The shape of the tensor to be created.
     /// @return A new tensor filled with zeros.
-    tensor zeros(const shape_type& sh);
+    tensor zeros(const shape_type& shape_);
 
     /// @brief Creates a tensor filled with ones, with the specified shape.
-    /// @param sh The shape of the tensor to be created.
+    /// @param shape_ The shape of the tensor to be created.
     /// @return A new tensor filled with ones.
-    tensor ones(const shape_type& sh);
+    tensor ones(const shape_type& shape_);
 
     /// @brief Creates a tensor filled with random values, with the specified
     /// shape.
-    /// @param sh The shape of the tensor to be created.
+    /// @param shape_ The shape of the tensor to be created.
     /// @param bounded Whether the random values should be bounded (default is
     /// false).
     /// @return A new tensor filled with random values.
-    tensor randomize(const shape_type& sh, bool bounded = false);
+    tensor randomize(const shape_type& shape_, bool bounded = false);
 
     /// @brief Extracts the minor matrix by removing the specified row and column.
     /// @param a The row index to remove.
@@ -838,10 +838,10 @@ class tensor
 
     /// @brief Expands the tensor to match the shape of another tensor along a
     /// specified dimension.
-    /// @param sh The target shape for expansion.
-    /// @param dim The dimension along which the tensor will be expanded.
+    /// @param shape_ The target shape for expansion.
+    /// @param dimension The dimension along which the tensor will be expanded.
     /// @return A new tensor expanded to the specified shape.
-    tensor expand_as(shape_type sh, index_type dim) const;
+    tensor expand_as(shape_type shape_, index_type dimension) const;
 
     /// @brief Computes the element-wise least common multiple (LCM) with another
     /// tensor.
@@ -854,15 +854,15 @@ class tensor
     double mean() const;
 
     /// @brief Computes the median of the elements along a specified dimension.
-    /// @param dim The dimension along which to compute the median.
+    /// @param dimension The dimension along which to compute the median.
     /// @return The median value of the elements along the specified dimension.
-    double median(const index_type dim) const;
+    double median(const index_type dimension) const;
 
     /// @brief Computes the mode (most frequent value) of the elements along a
     /// specified dimension.
-    /// @param dim The dimension along which to compute the mode.
+    /// @param dimension The dimension along which to compute the mode.
     /// @return The mode value of the elements along the specified dimension.
-    double mode(const index_type dim) const;
+    double mode(const index_type dimension) const;
 
     /// @brief Appends a value to the end of the tensor.
     /// @param v The value to be appended to the tensor.
@@ -945,14 +945,14 @@ class tensor
 
     /// @brief Computes the element-wise modulus (remainder) of each element in
     /// the tensor with a scalar value, modifying the tensor in place.
-    /// @param val The scalar value to compute the modulus with.
+    /// @param value The scalar value to compute the modulus with.
     /// @return A \ref to the tensor after the modulus operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       fmod_(const value_type val);
-    const tensor& fmod_(const value_type val) const;
+    tensor&       fmod_(const value_type value);
+    const tensor& fmod_(const value_type value) const;
 
     /// @brief Computes the cosine of each element in the tensor, modifying the
     /// tensor in place.
@@ -1147,14 +1147,14 @@ class tensor
 
     /// @brief Performs logical OR between the tensor and a scalar value,
     /// modifying the tensor in place.
-    /// @param val The scalar value to perform logical OR with.
+    /// @param value The scalar value to perform logical OR with.
     /// @return A \ref to the tensor after the logical OR operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       logical_or_(const value_type val);
-    const tensor& logical_or_(const value_type val) const;
+    tensor&       logical_or_(const value_type value);
+    const tensor& logical_or_(const value_type value) const;
 
     /// @brief Performs logical XOR between the tensor and another tensor,
     /// modifying the tensor in place.
@@ -1169,14 +1169,14 @@ class tensor
 
     /// @brief Performs logical XOR between the tensor and a scalar value,
     /// modifying the tensor in place.
-    /// @param val The scalar value to perform logical XOR with.
+    /// @param value The scalar value to perform logical XOR with.
     /// @return A \ref to the tensor after the logical XOR operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       logical_xor_(const value_type val);
-    const tensor& logical_xor_(const value_type val) const;
+    tensor&       logical_xor_(const value_type value);
+    const tensor& logical_xor_(const value_type value) const;
 
     /// @brief Performs logical AND between the tensor and another tensor,
     /// modifying the tensor in place.
@@ -1191,14 +1191,14 @@ class tensor
 
     /// @brief Performs logical AND between the tensor and a scalar value,
     /// modifying the tensor in place.
-    /// @param val The scalar value to perform logical AND with.
+    /// @param value The scalar value to perform logical AND with.
     /// @return A \ref to the tensor after the logical AND operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       logical_and_(const value_type val);
-    const tensor& logical_and_(const value_type val) const;
+    tensor&       logical_and_(const value_type value);
+    const tensor& logical_and_(const value_type value) const;
 
     /// @brief Computes the absolute value of each element in the tensor,
     /// modifying the tensor in place.
@@ -1212,24 +1212,24 @@ class tensor
 
     /// @brief Applies the log softmax function along the specified dimension,
     /// modifying the tensor in place.
-    /// @param dim The dimension along which the log softmax is applied.
+    /// @param dimension The dimension along which the log softmax is applied.
     /// @return A \ref to the tensor after the log softmax operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       log_softmax_(const index_type dim);
-    const tensor& log_softmax_(const index_type dim) const;
+    tensor&       log_softmax_(const index_type dimension);
+    const tensor& log_softmax_(const index_type dimension) const;
 
     /// @brief Permutes the dimensions of the tensor according to the specified
     /// dimension, modifying the tensor in place.
-    /// @param dim The dimension along which the permutation is applied.
+    /// @param dimension The dimension along which the permutation is applied.
     /// @return A \ref to the tensor after the permutation has been applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       permute_(const index_type dim);
-    const tensor& permute_(const index_type dim) const;
+    tensor&       permute_(const index_type dimension);
+    const tensor& permute_(const index_type dimension) const;
 
     /// @brief Repeats the tensor according to the specified dimensions, modifying
     /// the tensor in place.
@@ -1239,8 +1239,8 @@ class tensor
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       repeat_(const data_t& d, int dim = 0);
-    const tensor& repeat_(const data_t& d, int dim = 0) const;
+    tensor&       repeat_(const data_t& d, int dimension = 0);
+    const tensor& repeat_(const data_t& d, int dimension = 0) const;
 
     /// @brief Negates each element in the tensor, modifying the tensor in place.
     /// @return A \ref to the tensor after the negation has been applied.
@@ -1261,36 +1261,36 @@ class tensor
 
     /// @brief Adds an extra dimension at the specified index, modifying the
     /// tensor in place.
-    /// @param dim The index at which to insert the new dimension.
+    /// @param dimension The index at which to insert the new dimension.
     /// @return A \ref to the tensor after the unsqueeze operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       unsqueeze_(index_type dim);
-    const tensor& unsqueeze_(index_type dim) const;
+    tensor&       unsqueeze_(index_type dimension);
+    const tensor& unsqueeze_(index_type dimension) const;
 
     /// @brief Removes the dimension at the specified index, modifying the tensor
     /// in place.
-    /// @param dim The index of the dimension to squeeze.
+    /// @param dimension The index of the dimension to squeeze.
     /// @return A \ref to the tensor after the squeeze operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       squeeze_(index_type dim);
-    const tensor& squeeze_(index_type dim) const;
+    tensor&       squeeze_(index_type dimension);
+    const tensor& squeeze_(index_type dimension) const;
 
     /// @brief Resizes the tensor to the specified shape, modifying the tensor in
     /// place.
-    /// @param sh The new shape to resize the tensor to.
+    /// @param shape_ The new shape to resize the tensor to.
     /// @return A \ref to the tensor after the resize operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       resize_as_(const shape_type sh);
-    const tensor& resize_as_(const shape_type sh) const;
+    tensor&       resize_as_(const shape_type shape_);
+    const tensor& resize_as_(const shape_type shape_) const;
 
     /// @brief Computes the distance between the tensor and another tensor,
     /// modifying the tensor in place.
@@ -1305,14 +1305,14 @@ class tensor
 
     /// @brief Computes the distance between the tensor and a scalar value,
     /// modifying the tensor in place.
-    /// @param val The scalar value to compute the distance with.
+    /// @param value The scalar value to compute the distance with.
     /// @return A \ref to the tensor after the distance operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       dist_(const value_type val);
-    const tensor& dist_(const value_type val) const;
+    tensor&       dist_(const value_type value);
+    const tensor& dist_(const value_type value) const;
 
     /// @brief Computes the element-wise maximum of the tensor and another tensor,
     /// modifying the tensor in place.
@@ -1327,25 +1327,25 @@ class tensor
 
     /// @brief Computes the element-wise maximum of the tensor and a scalar value,
     /// modifying the tensor in place.
-    /// @param val The scalar value to compare with.
+    /// @param value The scalar value to compare with.
     /// @return A \ref to the tensor after the element-wise maximum operation
     /// has been applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       maximum_(const value_type val);
-    const tensor& maximum_(const value_type val) const;
+    tensor&       maximum_(const value_type value);
+    const tensor& maximum_(const value_type value) const;
 
     /// @brief Computes the element-wise remainder of the tensor and a scalar
     /// value, modifying the tensor in place.
-    /// @param val The scalar value to compute the remainder with.
+    /// @param value The scalar value to compute the remainder with.
     /// @return A \ref to the tensor after the element-wise remainder
     /// operation has been applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       remainder_(const value_type val);
-    const tensor& remainder_(const value_type val) const;
+    tensor&       remainder_(const value_type value);
+    const tensor& remainder_(const value_type value) const;
 
     /// @brief Computes the element-wise remainder of the tensor and another
     /// tensor, modifying the tensor in place.
@@ -1360,14 +1360,14 @@ class tensor
 
     /// @brief Fills the tensor with the specified scalar value, modifying the
     /// tensor in place.
-    /// @param val The scalar value to fill the tensor with.
+    /// @param value The scalar value to fill the tensor with.
     /// @return A \ref to the tensor after the fill operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       fill_(const value_type val);
-    const tensor& fill_(const value_type val) const;
+    tensor&       fill_(const value_type value);
+    const tensor& fill_(const value_type value) const;
 
     /// @brief Fills the tensor with the values from another tensor, modifying the
     /// tensor in place.
@@ -1425,14 +1425,14 @@ class tensor
 
     /// @brief Raises the tensor elements to the power of a scalar value,
     /// modifying the tensor in place.
-    /// @param val The scalar value to which tensor elements are raised.
+    /// @param value The scalar value to which tensor elements are raised.
     /// @return A \ref to the tensor after the element-wise power operation
     /// has been applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       pow_(const value_type val);
-    const tensor& pow_(const value_type val) const;
+    tensor&       pow_(const value_type value);
+    const tensor& pow_(const value_type value) const;
 
     /// @brief Applies the element-wise sinc function to the tensor, modifying the
     /// tensor in place.
@@ -1468,14 +1468,14 @@ class tensor
 
     /// @brief Performs a bitwise AND operation between the tensor and a scalar
     /// value, modifying the tensor in place.
-    /// @param val The scalar value to apply the bitwise AND operation with.
+    /// @param value The scalar value to apply the bitwise AND operation with.
     /// @return A \ref to the tensor after the bitwise AND operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       bitwise_and_(const value_type val);
-    const tensor& bitwise_and_(const value_type val) const;
+    tensor&       bitwise_and_(const value_type value);
+    const tensor& bitwise_and_(const value_type value) const;
 
     /// @brief Performs a bitwise AND operation between the tensor and another
     /// tensor, modifying the tensor in place.
@@ -1490,14 +1490,14 @@ class tensor
 
     /// @brief Performs a bitwise OR operation between the tensor and a scalar
     /// value, modifying the tensor in place.
-    /// @param val The scalar value to apply the bitwise OR operation with.
+    /// @param value The scalar value to apply the bitwise OR operation with.
     /// @return A \ref to the tensor after the bitwise OR operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       bitwise_or_(const value_type val);
-    const tensor& bitwise_or_(const value_type val) const;
+    tensor&       bitwise_or_(const value_type value);
+    const tensor& bitwise_or_(const value_type value) const;
 
     /// @brief Performs a bitwise OR operation between the tensor and another
     /// tensor, modifying the tensor in place.
@@ -1512,14 +1512,14 @@ class tensor
 
     /// @brief Performs a bitwise XOR operation between the tensor and a scalar
     /// value, modifying the tensor in place.
-    /// @param val The scalar value to apply the bitwise XOR operation with.
+    /// @param value The scalar value to apply the bitwise XOR operation with.
     /// @return A \ref to the tensor after the bitwise XOR operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       bitwise_xor_(const value_type val);
-    const tensor& bitwise_xor_(const value_type val) const;
+    tensor&       bitwise_xor_(const value_type value);
+    const tensor& bitwise_xor_(const value_type value) const;
 
     /// @brief Performs a bitwise XOR operation between the tensor and another
     /// tensor, modifying the tensor in place.
@@ -1544,14 +1544,14 @@ class tensor
 
     /// @brief Reshapes the tensor to a new shape specified by an initializer list
     /// of dimensions, modifying the tensor in place.
-    /// @param new_sh The new shape of the tensor.
+    /// @param new_shape The new shape of the tensor.
     /// @return A \ref to the tensor after the reshape operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       view(std::initializer_list<index_type> new_sh);
-    const tensor& view(std::initializer_list<index_type> new_sh) const;
+    tensor&       view(std::initializer_list<index_type> new_shape);
+    const tensor& view(std::initializer_list<index_type> new_shape) const;
 
     /// @brief Applies the element-wise maximum function between the tensor and
     /// another tensor, modifying the tensor in place.
@@ -1567,19 +1567,19 @@ class tensor
 
     /// @brief Applies the element-wise maximum function between the tensor and a
     /// scalar value, modifying the tensor in place.
-    /// @param val The scalar value to apply the element-wise maximum operation
+    /// @param value The scalar value to apply the element-wise maximum operation
     /// with.
     /// @return A \ref to the tensor after the element-wise maximum operation
     /// has been applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       fmax_(const value_type val);
-    const tensor& fmax_(const value_type val) const;
+    tensor&       fmax_(const value_type value);
+    const tensor& fmax_(const value_type value) const;
 
     /// @brief Randomizes the values in the tensor with the specified shape,
     /// modifying the tensor in place.
-    /// @param sh The shape to which the tensor will be randomized.
+    /// @param shape_ The shape to which the tensor will be randomized.
     /// @param bounded If true, the random values will be bounded; otherwise,
     /// they will not.
     /// @return A \ref to the tensor after the randomization operation has
@@ -1587,43 +1587,43 @@ class tensor
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       randomize_(const shape_type& sh, bool bounded = false);
-    const tensor& randomize_(const shape_type& sh, bool bounded = false) const;
+    tensor&       randomize_(const shape_type& shape_, bool bounded = false);
+    const tensor& randomize_(const shape_type& shape_, bool bounded = false) const;
 
     /// @brief Fills the tensor with zeros, modifying the tensor in place.
-    /// @param sh The shape to which the tensor will be resized before being
+    /// @param shape_ The shape to which the tensor will be resized before being
     /// filled with zeros.
     /// @return A \ref to the tensor after the zero-fill operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       zeros_(shape_type sh = {});
-    const tensor& zeros_(shape_type sh = {}) const;
+    tensor&       zeros_(shape_type shape_ = {});
+    const tensor& zeros_(shape_type shape_ = {}) const;
 
     /// @brief Fills the tensor with ones, modifying the tensor in place.
-    /// @param sh The shape to which the tensor will be resized before being
+    /// @param shape_ The shape to which the tensor will be resized before being
     /// filled with ones.
     /// @return A \ref to the tensor after the one-fill operation has been
     /// applied.
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       ones_(shape_type sh = {});
-    const tensor& ones_(shape_type sh = {}) const;
+    tensor&       ones_(shape_type shape_ = {});
+    const tensor& ones_(shape_type shape_ = {}) const;
 
     void print() const {
         printRecursive(0, 0, shape_);
         std::cout << std::endl;
     }
 
-    tensor<index_type> argmax_(index_type dim) const;
-    tensor<index_type> argsort(index_type dim = -1, bool ascending = true) const;
+    tensor<index_type> argmax_(index_type dimension) const;
+    tensor<index_type> argsort(index_type dimension = -1, bool ascending = true) const;
 
    private:
     tensor&          neon_fmax_(const value_type v);
     tensor&          neon_fmax_(const tensor& other);
-    tensor&          neon_fmod_(const value_type val);
+    tensor&          neon_fmod_(const value_type value);
     tensor&          neon_fmod_(const tensor& other);
     tensor&          neon_frac_();
     tensor&          neon_log_();
@@ -1644,25 +1644,25 @@ class tensor
     tensor&          neon_asin_();
     tensor&          neon_cosh_();
     tensor&          neon_acosh_();
-    tensor&          neon_pow_(const value_type val);
+    tensor&          neon_pow_(const value_type value);
     tensor&          neon_pow_(const tensor& other);
     tensor&          neon_abs_();
     tensor&          neon_dist_(const tensor& other);
-    tensor&          neon_dist_(const value_type val);
+    tensor&          neon_dist_(const value_type value);
     tensor&          neon_maximum_(const tensor& other);
-    tensor&          neon_maximum_(const value_type val);
+    tensor&          neon_maximum_(const value_type value);
     tensor&          neon_bitwise_right_shift_(const int amount);
     tensor&          neon_bitwise_left_shift_(const int amount);
-    tensor&          neon_bitwise_or_(const value_type val);
-    tensor&          neon_bitwise_xor_(const value_type val);
+    tensor&          neon_bitwise_or_(const value_type value);
+    tensor&          neon_bitwise_xor_(const value_type value);
     tensor&          neon_bitwise_not_();
-    tensor&          neon_bitwise_and_(const value_type val);
+    tensor&          neon_bitwise_and_(const value_type value);
     tensor&          neon_bitwise_and_(const tensor& other);
     tensor&          neon_bitwise_or_(const tensor& other);
     tensor&          neon_bitwise_xor_(const tensor& other);
-    tensor&          neon_zeros_(shape_type sh = {});
-    tensor&          neon_ones_(shape_type sh);
-    tensor&          neon_randomize_(const shape_type& sh, bool bounded);
+    tensor&          neon_zeros_(shape_type shape_ = {});
+    tensor&          neon_ones_(shape_type shape_);
+    tensor&          neon_randomize_(const shape_type& shape_, bool bounded);
     tensor&          neon_negative_();
     tensor&          neon_relu_();
     tensor&          neon_sigmoid_();
@@ -1671,16 +1671,16 @@ class tensor
                                  const_reference max_val = std::numeric_limits<value_type>::max());
     tensor&          neon_floor_();
     tensor&          neon_ceil_();
-    tensor&          neon_logical_or_(const value_type val);
-    tensor&          neon_logical_xor_(const value_type val);
-    tensor&          neon_logical_and_(const value_type val);
+    tensor&          neon_logical_or_(const value_type value);
+    tensor&          neon_logical_xor_(const value_type value);
+    tensor&          neon_logical_and_(const value_type value);
     tensor&          neon_logical_or_(const tensor& other);
     tensor&          neon_logical_xor_(const tensor& other);
     tensor&          neon_logical_and_(const tensor& other);
-    tensor&          neon_operator_plus_eq(const_reference val) const;
+    tensor&          neon_operator_plus_eq(const_reference value) const;
     tensor&          neon_operator_minus_eq(const tensor& other) const;
     tensor&          neon_operator_times_eq(const tensor& other) const;
-    tensor&          neon_operator_minus_eq(const_reference val) const;
+    tensor&          neon_operator_minus_eq(const_reference value) const;
     tensor<_s32>     neon_int32_() const;
     tensor<_u32>     neon_uint32_() const;
     tensor<_f32>     neon_float32_() const;
@@ -1688,41 +1688,41 @@ class tensor
     tensor<uint64_t> neon_unsigned_long_() const;
     tensor<int64_t>  neon_long_() const;
     tensor           neon_operator_plus(const tensor& other) const;
-    tensor           neon_operator_plus(const value_type val) const;
+    tensor           neon_operator_plus(const value_type value) const;
     tensor           neon_operator_minus(const tensor& other) const;
-    tensor           neon_operator_minus(const value_type val) const;
+    tensor           neon_operator_minus(const value_type value) const;
     tensor           neon_transpose() const;
     tensor           neon_matmul(const tensor& other) const;
     tensor           neon_absolute_(const tensor& tensor) const;
     tensor           neon_cross_product(const tensor& other) const;
     tensor           neon_dot(const tensor& other) const;
-    tensor           neon_argmax(index_type dim) const;
+    tensor           neon_argmax(index_type dimension) const;
     tensor           neon_sum(const index_type axis) const;
     tensor
-    neon_slice(index_type dim, std::optional<index_type> start, std::optional<index_type> end, index_type step) const;
+    neon_slice(index_type dimension, std::optional<index_type> start, std::optional<index_type> end, index_type step) const;
     tensor<bool>       neon_equal(const tensor& other) const;
-    tensor<bool>       neon_equal(const value_type val) const;
+    tensor<bool>       neon_equal(const value_type value) const;
     tensor<bool>       neon_less_equal(const tensor& other) const;
-    tensor<bool>       neon_less_equal(const value_type val) const;
-    tensor<bool>       neon_less(const value_type val) const;
+    tensor<bool>       neon_less_equal(const value_type value) const;
+    tensor<bool>       neon_less(const value_type value) const;
     tensor<bool>       neon_less(const tensor& other) const;
-    tensor<bool>       neon_greater(const value_type val) const;
+    tensor<bool>       neon_greater(const value_type value) const;
     tensor<bool>       neon_greater(const tensor& other) const;
-    tensor<bool>       neon_greater_equal(const value_type val) const;
+    tensor<bool>       neon_greater_equal(const value_type value) const;
     tensor<bool>       neon_greater_equal(const tensor& other) const;
     tensor<index_type> neon_argsort(index_type d, bool ascending) const;
-    tensor<index_type> neon_argmax_(index_type dim) const;
-    index_type         neon_count_nonzero(index_type dim) const;
+    tensor<index_type> neon_argmax_(index_type dimension) const;
+    index_type         neon_count_nonzero(index_type dimension) const;
     double             neon_mean() const;
 
    private:
-    [[nodiscard]] std::size_t       computeStride(std::size_t dim, const shape_type& shape) const noexcept;
+    [[nodiscard]] std::size_t       computeStride(std::size_t dimension, const shape_type& shape) const noexcept;
     void                            printRecursive(std::size_t index, std::size_t depth, const shape_type& shape) const;
     void                            compute_strides();
     [[nodiscard]] index_type        compute_index(const std::vector<index_type>& idx) const;
     [[nodiscard]] static index_type computeSize(const shape_type& dims) noexcept;
-    index_type                      compute_outer_size(const index_type dim) const;
-    [[nodiscard]] static _f32       frac(const_reference val) noexcept;
+    index_type                      compute_outer_size(const index_type dimension) const;
+    [[nodiscard]] static _f32       frac(const_reference value) noexcept;
     // where the tensor is stored
     bool is_cuda_device() const;
     bool equal_shape(const shape_type& x, const shape_type& y) const;
@@ -1755,12 +1755,12 @@ inline bool tensor<_Tp>::is_cuda_device() const {
 
 template<class _Tp>
 [[nodiscard]]
-inline _f32 tensor<_Tp>::frac(const_reference val) noexcept {
-    return std::fmod(static_cast<float32_t>(val), 1.0f);
+inline _f32 tensor<_Tp>::frac(const_reference value) noexcept {
+    return std::fmod(static_cast<float32_t>(value), 1.0f);
 }
 
 template<class _Tp>
-inline typename tensor<_Tp>::index_type tensor<_Tp>::compute_outer_size(const index_type dim) const {
+inline typename tensor<_Tp>::index_type tensor<_Tp>::compute_outer_size(const index_type dimension) const {
     // just a placeholder for now
     return 0;
 }
@@ -1857,7 +1857,7 @@ void tensor<_Tp>::printRecursive(std::size_t index, std::size_t depth, const sha
 
 template<class _Tp>
 [[nodiscard]]
-inline std::size_t tensor<_Tp>::computeStride(std::size_t dim, const shape_type& shape) const noexcept {
+inline std::size_t tensor<_Tp>::computeStride(std::size_t dimension, const shape_type& shape) const noexcept {
     std::size_t stride = 1;
     for (const auto& elem : shape)
         stride *= elem;
@@ -1899,25 +1899,25 @@ class tensor<bool>
    public:
     tensor() = default;
 
-    explicit tensor(const shape_type& sh, value_type v, Device d = Device::CPU) :
-        shape_(sh),
-        data_(computeSize(sh), v),
+    explicit tensor(const shape_type& shape_, value_type v, Device d = Device::CPU) :
+        shape_(shape_),
+        data_(computeSize(shape_), v),
         device_(d) {
         compute_strides();
     }
 
-    explicit tensor(const shape_type& sh, Device d = Device::CPU) :
-        shape_(sh),
+    explicit tensor(const shape_type& shape_, Device d = Device::CPU) :
+        shape_(shape_),
         device_(d) {
-        index_type s = computeSize(sh);
+        index_type s = computeSize(shape_);
         data_        = data_t(s);
         compute_strides();
     }
 
-    explicit tensor(const shape_type& sh, const data_t& d, Device dev = Device::CPU) :
-        shape_(sh),
+    explicit tensor(const shape_type& shape_, const data_t& d, Device dev = Device::CPU) :
+        shape_(shape_),
         device_(dev) {
-        index_type s = computeSize(sh);
+        index_type s = computeSize(shape_);
         if (d.size() != static_cast<std::size_t>(s))
         {
             throw std::invalid_argument("Initial data vector must match the tensor");
@@ -1938,10 +1938,10 @@ class tensor<bool>
         strides_(std::move(t.strides())),
         device_(std::move(t.device())) {}
 
-    tensor(const shape_type& sh, std::initializer_list<value_type> init_list, Device d = Device::CPU) :
-        shape_(sh),
+    tensor(const shape_type& shape_, std::initializer_list<value_type> init_list, Device d = Device::CPU) :
+        shape_(shape_),
         device_(d) {
-        index_type s = computeSize(sh);
+        index_type s = computeSize(shape_);
         if (init_list.size() != static_cast<std::size_t>(s))
         {
             throw std::invalid_argument("Initializer list size must match tensor size");
@@ -1950,9 +1950,9 @@ class tensor<bool>
         compute_strides();
     }
 
-    tensor(const shape_type& sh, const tensor& other) :
+    tensor(const shape_type& shape_, const tensor& other) :
         data_(other.storage()),
-        shape_(sh),
+        shape_(shape_),
         device_(other.device()) {
         compute_strides();
     }
@@ -2003,23 +2003,23 @@ class tensor<bool>
 
     std::size_t n_dims() const noexcept { return shape_.size(); }
 
-    index_type size(const index_type dim) const {
-        if (dim < 0 || dim > static_cast<index_type>(shape_.size()))
+    index_type size(const index_type dimension) const {
+        if (dimension < 0 || dimension > static_cast<index_type>(shape_.size()))
             throw std::invalid_argument("dimension input is out of range");
 
-        if (dim == 0)
+        if (dimension == 0)
             return data_.size();
 
-        return shape_[dim - 1];
+        return shape_[dimension - 1];
     }
 
     index_type capacity() const noexcept { return data_.capacity(); }
 
     tensor<bool> logical_not() const { return tensor<bool>(logical_not_()); }
 
-    tensor<bool> logical_or(const value_type val) const {
+    tensor<bool> logical_or(const value_type value) const {
         self t = clone();
-        t.logical_or_(val);
+        t.logical_or_(value);
         return t;
     }
 
@@ -2029,9 +2029,9 @@ class tensor<bool>
         return t;
     }
 
-    tensor<bool> logical_and(const value_type val) const {
+    tensor<bool> logical_and(const value_type value) const {
         self t = clone();
-        t.logical_and_(val);
+        t.logical_and_(value);
         return t;
     }
 
@@ -2041,9 +2041,9 @@ class tensor<bool>
         return t;
     }
 
-    tensor<bool> logical_xor(const value_type val) const {
+    tensor<bool> logical_xor(const value_type value) const {
         self t = clone();
-        t.logical_and_(val);
+        t.logical_and_(value);
         return t;
     }
 
@@ -2060,9 +2060,9 @@ class tensor<bool>
         return *this;
     }
 
-    tensor<bool>& logical_or_(const value_type val) {
+    tensor<bool>& logical_or_(const value_type value) {
         for (index_type i = 0; i < data_.size(); ++i)
-            data_[i] = (data_[i] || val);
+            data_[i] = (data_[i] || value);
 
         return *this;
     }
@@ -2074,9 +2074,9 @@ class tensor<bool>
         return *this;
     }
 
-    tensor<bool>& logical_and_(const value_type val) {
+    tensor<bool>& logical_and_(const value_type value) {
         for (index_type i = 0; i < data_.size(); ++i)
-            data_[i] = (data_[i] && val);
+            data_[i] = (data_[i] && value);
 
         return *this;
     }
@@ -2088,9 +2088,9 @@ class tensor<bool>
         return *this;
     }
 
-    tensor<bool>& logical_xor_(const value_type val) {
+    tensor<bool>& logical_xor_(const value_type value) {
         for (index_type i = 0; i < data_.size(); ++i)
-            data_[i] = (data_[i] xor val);
+            data_[i] = (data_[i] xor value);
 
         return *this;
     }
@@ -2109,9 +2109,9 @@ class tensor<bool>
         return *this;
     }
 
-    const tensor<bool>& logical_or_(const value_type val) const {
+    const tensor<bool>& logical_or_(const value_type value) const {
         for (index_type i = 0; i < data_.size(); ++i)
-            data_[i] = (data_[i] || val);
+            data_[i] = (data_[i] || value);
 
         return *this;
     }
@@ -2123,9 +2123,9 @@ class tensor<bool>
         return *this;
     }
 
-    const tensor<bool>& logical_and_(const value_type val) const {
+    const tensor<bool>& logical_and_(const value_type value) const {
         for (index_type i = 0; i < data_.size(); ++i)
-            data_[i] = (data_[i] && val);
+            data_[i] = (data_[i] && value);
 
         return *this;
     }
@@ -2138,9 +2138,9 @@ class tensor<bool>
         return *this;
     }
 
-    const tensor<bool>& logical_xor_(const value_type val) const {
+    const tensor<bool>& logical_xor_(const value_type value) const {
         for (index_type i = 0; i < data_.size(); ++i)
-            data_[i] = (data_[i] xor val);
+            data_[i] = (data_[i] xor value);
 
         return *this;
     }
@@ -2167,12 +2167,12 @@ class tensor<bool>
     }
 
     tensor<bool>
-    slice(index_type dim, std::optional<index_type> start, std::optional<index_type> end, index_type step) const {
-        if (dim < 0 || dim >= static_cast<index_type>(data_.size()))
+    slice(index_type dimension, std::optional<index_type> start, std::optional<index_type> end, index_type step) const {
+        if (dimension < 0 || dimension >= static_cast<index_type>(data_.size()))
             throw shape_error("Dimension out of range");
 
         tensor<bool> ret;
-        index_type   s       = shape_[dim];
+        index_type   s       = shape_[dimension];
         index_type   start_i = start.value_or(0);
         index_type   end_i   = end.value_or(0);
 
@@ -2188,7 +2188,7 @@ class tensor<bool>
         index_type slice_size = (end_i - start_i + step - 1) / step;
         shape_type ret_dims   = shape_;
 
-        ret_dims[-dim] = slice_size;
+        ret_dims[-dimension] = slice_size;
         ret            = self(ret_dims);
 
         index_type i = start_i, j = 0;
@@ -2238,16 +2238,16 @@ class tensor<bool>
         return self(s, d);
     }
 
-    tensor<bool> reshape(const shape_type sh) const {
+    tensor<bool> reshape(const shape_type shape_) const {
         data_t     d = data_;
-        index_type s = computeSize(sh);
+        index_type s = computeSize(shape_);
 
         if (s != data_.size())
             throw shape_error("input shape must have size of element equal to the current number of elements in "
                               "the"
                               "tensor data");
 
-        return self(sh, d);
+        return self(shape_, d);
     }
 
     tensor<bool> reshape_as(const tensor& other) const { return reshape(other.shape()); }
@@ -2306,29 +2306,29 @@ class tensor<bool>
         return *this;
     }
 
-    tensor<bool> resize_as(const shape_type sh) const {
+    tensor<bool> resize_as(const shape_type shape_) const {
         self ret = clone();
-        ret.resize_as_(sh);
+        ret.resize_as_(shape_);
         return ret;
     }
 
-    tensor<bool>& resize_as_(const shape_type sh) { return *this; }
+    tensor<bool>& resize_as_(const shape_type shape_) { return *this; }
 
-    tensor<bool> squeeze(const index_type dim) const {
+    tensor<bool> squeeze(const index_type dimension) const {
         self ret = clone();
-        ret.squeeze_(dim);
+        ret.squeeze_(dimension);
         return ret;
     }
 
-    tensor<bool>& squeeze_(const index_type dim) { return *this; }
+    tensor<bool>& squeeze_(const index_type dimension) { return *this; }
 
-    tensor<bool> repeat(const data_t& d, int dim) const {
+    tensor<bool> repeat(const data_t& d, int dimension) const {
         self ret = clone();
-        ret.repeat_(d, dim);
+        ret.repeat_(d, dimension);
         return ret;
     }
 
-    tensor<bool>& repeat_(const data_t& d, int dim) {
+    tensor<bool>& repeat_(const data_t& d, int dimension) {
         if (d.empty())
             throw std::invalid_argument("Cannot repeat an empty tensor");
 
@@ -2359,25 +2359,25 @@ class tensor<bool>
         return *this;
     }
 
-    tensor<bool> permute(const index_type dim) const {
+    tensor<bool> permute(const index_type dimension) const {
         // TODO : implement permute here
         data_t d;
         return self(shape_, d);
     }
 
-    tensor<bool> cat(const std::vector<tensor<value_type>>& others, index_type dim) const {
+    tensor<bool> cat(const std::vector<tensor<value_type>>& others, index_type dimension) const {
         for (const tensor& t : others)
         {
             index_type i = 0;
             for (; i < shape_.size(); ++i)
-                if (i != dim && shape_[i] != t.shape_[i])
+                if (i != dimension && shape_[i] != t.shape_[i])
                     throw shape_error("Cannot concatenate tensors with different shapes along non-concatenation "
                                       "dimensions");
         }
 
         shape_type ret_sh = shape_;
         for (const tensor& t : others)
-            ret_sh[dim] += t.shape_[dim];
+            ret_sh[dimension] += t.shape_[dimension];
 
         data_t c;
         c.reserve(data_.size());
@@ -2389,12 +2389,12 @@ class tensor<bool>
         return self(ret_sh, c);
     }
 
-    tensor<bool> unsqueeze(const index_type dim) const {
-        if (dim < 0 || dim > static_cast<index_type>(shape_.size()))
+    tensor<bool> unsqueeze(const index_type dimension) const {
+        if (dimension < 0 || dimension > static_cast<index_type>(shape_.size()))
             throw index_error("Dimension out of range in unsqueeze");
 
         shape_type s = shape_;
-        s.insert(s.begin() + dim, 1);
+        s.insert(s.begin() + dimension, 1);
 
         tensor ret;
         ret.shape_ = s;
@@ -2403,12 +2403,12 @@ class tensor<bool>
         return ret;
     }
 
-    tensor<bool>& randomize_(const shape_type& sh = {}) {
-        if (sh.empty() && shape_.empty())
+    tensor<bool>& randomize_(const shape_type& shape_ = {}) {
+        if (shape_.empty() && shape_.empty())
             throw shape_error("Shape must be initialized");
 
-        if (shape_.empty() || shape_ != sh)
-            shape_ = sh;
+        if (shape_.empty() || shape_ != shape_)
+            shape_ = shape_;
 
         index_type s = computeSize(shape_);
         data_.resize(s);
@@ -2444,13 +2444,13 @@ class tensor<bool>
         return *this;
     }
 
-    tensor<bool>& view(std::initializer_list<index_type> sh) {
-        index_type s = computeSize(sh);
+    tensor<bool>& view(std::initializer_list<index_type> shape_) {
+        index_type s = computeSize(shape_);
 
         if (s != data_.size())
             throw std::invalid_argument("Total elements do not match for new shape");
 
-        shape_ = sh;
+        shape_ = shape_;
         compute_strides();
         return *this;
     }
@@ -2480,9 +2480,9 @@ class tensor<bool>
     }
 
     [[nodiscard]]
-    inline std::size_t computeStride(std::size_t dim, const shape_type& shape) const noexcept {
+    inline std::size_t computeStride(std::size_t dimension, const shape_type& shape) const noexcept {
         std::size_t stride = 1;
-        for (index_type i = dim; i < shape_.size(); ++i)
+        for (index_type i = dimension; i < shape_.size(); ++i)
             stride *= shape_[i];
 
         return stride;
@@ -2565,14 +2565,14 @@ class tensor<bool>
         return ret;
     }
 
-    index_type compute_outer_size(const index_type dim) const {
+    index_type compute_outer_size(const index_type dimension) const {
         // just a placeholder for now
         return 0;
     }
 
     [[nodiscard]]
-    static _f32 frac(const_reference val) noexcept {
-        return std::fmod(static_cast<float32_t>(val), 1.0f);
+    static _f32 frac(const_reference value) noexcept {
+        return std::fmod(static_cast<float32_t>(value), 1.0f);
     }
 
     bool is_cuda_device() const { return (device_ == Device::CUDA); }
