@@ -40,7 +40,7 @@ tensor<bool> tensor<_Tp>::neon_equal(const tensor& other) const {
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::neon_equal(const value_type val) const {
+tensor<bool> tensor<_Tp>::neon_equal(const value_type value) const {
     if constexpr (!has_equal_operator_v<value_type>)
     {
         throw operator_error("Value type must have equal to operator");
@@ -50,7 +50,7 @@ tensor<bool> tensor<_Tp>::neon_equal(const value_type val) const {
     const index_type  simd_end = data_.size() - (data_.size() % 4);
 
     index_type            i       = 0;
-    neon_type<value_type> val_vec = neon_dup<value_type>(val);
+    neon_type<value_type> val_vec = neon_dup<value_type>(value);
     for (; i < simd_end; i += simd_width)
     {
         neon_type<value_type> data_vec   = neon_load<value_type>(&data_[i]);
@@ -65,7 +65,7 @@ tensor<bool> tensor<_Tp>::neon_equal(const value_type val) const {
 
     for (; i < data_.size(); ++i)
     {
-        ret[i] = (data_[i] == val);
+        ret[i] = (data_[i] == value);
     }
 
     return tensor<bool>(shape_, ret);
@@ -112,7 +112,7 @@ tensor<bool> tensor<_Tp>::neon_less_equal(const tensor& other) const {
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::neon_less_equal(const value_type val) const {
+tensor<bool> tensor<_Tp>::neon_less_equal(const value_type value) const {
     if constexpr (!has_less_equal_operator_v<value_type>)
     {
         throw operator_error("Value type must have less than or equal to operator");
@@ -125,14 +125,14 @@ tensor<bool> tensor<_Tp>::neon_less_equal(const value_type val) const {
     for (; i < simd_end; i += simd_width)
     {
         neon_type<value_type> vec_a    = neon_load<value_type>(&data_[i]);
-        neon_type<value_type> vec_b    = neon_dup<value_type>(val);
+        neon_type<value_type> vec_b    = neon_dup<value_type>(value);
         neon_type<value_type> leq_mask = neon_cleq<value_type>(vec_a, vec_b);
         neon_store<value_type>(&ret[i], leq_mask);
     }
 
     for (; i < data_.size(); ++i)
     {
-        ret[i] = (data_[i] <= val) ? 1 : 0;
+        ret[i] = (data_[i] <= value) ? 1 : 0;
     }
 
     std::vector<bool> to_bool(ret.size());
@@ -147,7 +147,7 @@ tensor<bool> tensor<_Tp>::neon_less_equal(const value_type val) const {
 }
 
 template<class _Tp>
-inline tensor<bool> tensor<_Tp>::neon_less(const value_type val) const {
+inline tensor<bool> tensor<_Tp>::neon_less(const value_type value) const {
     if constexpr (!has_less_operator_v<value_type>)
     {
         throw operator_error("Value type must have less than operator");
