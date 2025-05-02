@@ -4,11 +4,11 @@
 
 /*
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::neon_slice(index_type                dim,
+tensor<_Tp> tensor<_Tp>::neon_slice(index_type                dimension,
                                     std::optional<index_type> start,
                                     std::optional<index_type> end,
                                     index_type                step) const {
-    if (dim < 0 or dim >= static_cast<index_type>(shape_.size()))
+    if (dimension < 0 or dimension >= static_cast<index_type>(shape_.size()))
     {
         throw index_error("Dimension out of range.");
     }
@@ -18,7 +18,7 @@ tensor<_Tp> tensor<_Tp>::neon_slice(index_type                dim,
         throw std::invalid_argument("Step cannot be zero.");
     }
 
-    index_type s       = shape_[dim];
+    index_type s       = shape_[dimension];
     index_type start_i = start.value_or(0);
     index_type end_i   = end.value_or(s);
 
@@ -36,7 +36,7 @@ tensor<_Tp> tensor<_Tp>::neon_slice(index_type                dim,
     end_i                 = std::max(index_type(0), std::min(end_i, s));
     index_type slice_size = (end_i - start_i + step - 1) / step;
     shape_type ret_dims   = shape_;
-    ret_dims[dim]         = slice_size;
+    ret_dims[dimension]         = slice_size;
     tensor ret(ret_dims);
 
     index_type vector_end = start_i + ((end_i - start_i) / _ARM64_REG_WIDTH) * _ARM64_REG_WIDTH;
