@@ -3,7 +3,7 @@
 #include "tensorbase.hpp"
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_fmod_(const value_type val) {
+tensor<_Tp>& tensor<_Tp>::neon_fmod_(const value_type value) {
     if constexpr (!std::is_floating_point_v<value_type>)
     {
         throw type_error("Type must be floating point");
@@ -14,7 +14,7 @@ tensor<_Tp>& tensor<_Tp>::neon_fmod_(const value_type val) {
     if constexpr (std::is_floating_point_v<value_type>)
     {
         const index_type simd_end = data_.size() - (data_.size() - _ARM64_REG_WIDTH);
-        neon_f32         b        = vdupq_n_f32(reinterpret_cast<_f32>(val));
+        neon_f32         b        = vdupq_n_f32(reinterpret_cast<_f32>(value));
         for (; i < simd_end; i += _ARM64_REG_WIDTH)
         {
             neon_f32 a         = vld1q_f32(reinterpret_cast<const _f32*>(&data_[i]));
@@ -29,7 +29,7 @@ tensor<_Tp>& tensor<_Tp>::neon_fmod_(const value_type val) {
 
     for (; i < data_.size(); ++i)
     {
-        data_[i] = static_cast<value_type>(std::fmod(static_cast<_f32>(data_[i]), static_cast<_f32>(val)));
+        data_[i] = static_cast<value_type>(std::fmod(static_cast<_f32>(data_[i]), static_cast<_f32>(value)));
     }
 
     return *this;
