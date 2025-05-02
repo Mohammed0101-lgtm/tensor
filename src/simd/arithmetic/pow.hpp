@@ -3,7 +3,7 @@
 #include "tensorbase.hpp"
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_pow_(const value_type val) {
+tensor<_Tp>& tensor<_Tp>::neon_pow_(const value_type value) {
     if (!std::is_arithmetic_v<value_type>)
     {
         throw type_error("Type must be arithmetic");
@@ -20,7 +20,7 @@ tensor<_Tp>& tensor<_Tp>::neon_pow_(const value_type val) {
 
         for (int j = 0; j < simd_width; ++j)
         {
-            vals[j] = static_cast<value_type>(std::pow(vals[j], val));
+            vals[j] = static_cast<value_type>(std::pow(vals[j], value));
         }
 
         neon_type<value_type> pow_vec = neon_load<value_type>(vals);
@@ -29,7 +29,7 @@ tensor<_Tp>& tensor<_Tp>::neon_pow_(const value_type val) {
 
     for (; i < data_.size(); ++i)
     {
-        data_[i] = static_cast<value_type>(std::pow(data_[i], val));
+        data_[i] = static_cast<value_type>(std::pow(data_[i], value));
     }
 
     return *this;
