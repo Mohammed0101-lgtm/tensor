@@ -3,7 +3,7 @@
 #include "tensorbase.hpp"
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type val) {
+tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type value) {
     if (!std::is_integral_v<value_type>)
         throw type_error("Cannot perform logical OR on non-integral values");
 
@@ -12,7 +12,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type val) {
 
     if constexpr (std::is_signed_v<value_type> || std::is_same_v<value_type, bool>)
     {
-        neon_s32 val_vec = vdupq_n_s32(static_cast<_s32>(val));
+        neon_s32 val_vec = vdupq_n_s32(static_cast<_s32>(value));
 
         for (; i < simd_end; i += _ARM64_REG_WIDTH)
         {
@@ -24,7 +24,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type val) {
     }
     else if constexpr (std::is_unsigned_v<value_type>)
     {
-        neon_u32 val_vec = vdupq_n_u32(static_cast<_u32>(val));
+        neon_u32 val_vec = vdupq_n_u32(static_cast<_u32>(value));
 
         for (; i < simd_end; i += _ARM64_REG_WIDTH)
         {
@@ -36,13 +36,13 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_or_(const value_type val) {
     }
 
     for (; i < data_.size(); ++i)
-        data_[i] = static_cast<value_type>(data_[i] || val);
+        data_[i] = static_cast<value_type>(data_[i] || value);
 
     return *this;
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const value_type val) {
+tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const value_type value) {
     if (!std::is_integral_v<value_type>)
         throw type_error("Cannot get the element wise xor of non-integral value");
 
@@ -51,7 +51,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const value_type val) {
 
     if constexpr (std::is_signed_v<value_type> || std::is_same_v<value_type, bool>)
     {
-        neon_s32 val_vec = vdupq_n_s32(static_cast<_s32>(val));
+        neon_s32 val_vec = vdupq_n_s32(static_cast<_s32>(value));
 
         for (; i < simd_end; i += _ARM64_REG_WIDTH)
         {
@@ -63,7 +63,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const value_type val) {
     }
     else if constexpr (std::is_unsigned_v<value_type>)
     {
-        neon_u32 val_vec = vdupq_n_u32(static_cast<_u32>(val));
+        neon_u32 val_vec = vdupq_n_u32(static_cast<_u32>(value));
 
         for (; i < simd_end; i += _ARM64_REG_WIDTH)
         {
@@ -75,13 +75,13 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_xor_(const value_type val) {
     }
 
     for (; i < data_.size(); ++i)
-        data_[i] = static_cast<value_type>(data_[i] xor val);
+        data_[i] = static_cast<value_type>(data_[i] xor value);
 
     return *this;
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type val) {
+tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type value) {
     if (!std::is_integral_v<value_type>)
         throw type_error("Cannot get the element wise and of non-integral value");
 
@@ -90,7 +90,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type val) {
 
     if constexpr (std::is_signed_v<value_type>)
     {
-        neon_s32 vals = vdupq_n_s32(reinterpret_cast<_s32>(&val));
+        neon_s32 vals = vdupq_n_s32(reinterpret_cast<_s32>(&value));
 
         for (; i < simd_end; i += _ARM64_REG_WIDTH)
         {
@@ -102,7 +102,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type val) {
     }
     else if constexpr (std::is_unsigned_v<value_type>)
     {
-        neon_u32 vals = vdupq_n_u32(reinterpret_cast<_u32>(&val));
+        neon_u32 vals = vdupq_n_u32(reinterpret_cast<_u32>(&value));
 
         for (; i < simd_end; i += _ARM64_REG_WIDTH)
         {
@@ -114,7 +114,7 @@ tensor<_Tp>& tensor<_Tp>::neon_logical_and_(const value_type val) {
     }
 
     for (; i < data_.size(); ++i)
-        data_[i] = static_cast<value_type>(data_[i] && val);
+        data_[i] = static_cast<value_type>(data_[i] && value);
 
     return *this;
 }
