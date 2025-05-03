@@ -2,71 +2,82 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp> tensor<_Tp>::transpose() const {
-  if (this->__shape_.size() != 2)
-    throw __shape_error__("Matrix transposition can only be done on 2D tensors");
+    if (shape_.size() != 2)
+    {
+        throw shape_error("Matrix transposition can only be done on 2D tensors");
+    }
 
-  tensor           __ret({this->__shape_[1], this->__shape_[0]});
-  const index_type __rows = this->__shape_[0];
-  const index_type __cols = this->__shape_[1];
+    tensor           ret({shape_[1], shape_[0]});
+    const index_type rows = shape_[0];
+    const index_type cols = shape_[1];
 
-#ifdef __CUDACC__
-  if (this->__is_cuda_tensor) {
-    dim3 blockDim(16, 16);
-    dim3 gridDim((__cols + blockDim.x - 1) / blockDim.x, (__rows + blockDim.y - 1) / blockDim.y);
-    transpose_kernel<<<gridDim, blockDim>>>(thrust::raw_pointer_cast(this->__data_.data()),
-                                            thrust::raw_pointer_cast(__ret.__data_.data()), __rows,
-                                            __cols);
-    cudaDeviceSynchronize();
-    return __ret;
-  }
+#ifdef CUDACC
+    if (is_cuda_tensor)
+    {
+        dim3 blockDim(16, 16);
+        dim3 gridDim((cols + blockDim.x - 1) / blockDim.x, (rows + blockDim.y - 1) / blockDim.y);
+        transpose_kernel<<<gridDim, blockDim>>>(thrust::raw_pointer_cast(data_.data()),
+                                                thrust::raw_pointer_cast(ret.data_.data()), rows, cols);
+        cudaDeviceSynchronize();
+        return ret;
+    }
 #endif
 
-#if defined(__ARM_NEON)
-  return this->neon_transpose();
-#endif
+    index_type i = 0;
 
-  index_type __i = 0;
+    for (; i < rows; ++i)
+    {
+        index_type j = 0;
 
-  for (; __i < __rows; ++__i) {
-    index_type __j = 0;
+        for (; j < cols; ++j)
+        {
+            ret.at({j, i}) = at({i, j});
+        }
+    }
 
-    for (; __j < __cols; ++__j) __ret.at({__j, __i}) = this->at({__i, __j});
-  }
-
-  return __ret;
+    return ret;
 }
 
-#ifdef __CUDACC__
-template <class _Tp>
-__global__ void transpose_kernel(_Tp* __input, _Tp* __output, int __rows, int __cols) {
-  int __i = blockIdx.y * blockDim.y + threadIdx.y;
-  int __j = blockIdx.x * blockDim.x + threadIdx.x;
+#ifdef CUDACC
+template<class _Tp>
+global void transpose_kernel(_Tp* input, _Tp* output, int rows, int cols) {
+    int i = blockIdx.y * blockDim.y + threadIdx.y;
+    int j = blockIdx.x * blockDim.x + threadIdx.x;
 
-  if (__i < __rows && __j < __cols) output[__j * __rows + __i] = input[__i * __cols + __j];
+    if (i < rows && j < cols)
+        output[j * rows + i] = input[i * cols + j];
 }
 #endif
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::transpose_() {
-  if (this->__shape_.size() != 2)
-    throw __shape_error__("Transpose operation is only valid for 2D tensors");
+    if (shape_.size() != 2)
+    {
+        throw shape_error("Transpose operation is only valid for 2D tensors");
+    }
 
-  const index_type __rows = this->__shape_[0];
-  const index_type __cols = this->__shape_[1];
+    const index_type rows = shape_[0];
+    const index_type cols = shape_[1];
 
-  if (__rows != __cols)
-    throw __shape_error__("In-place transpose is only supported for square tensors");
+    if (rows != cols)
+    {
+        throw shape_error("In-place transpose is only supported for square tensors");
+    }
 
-  for (index_type __i = 0; __i < __rows; ++__i)
-    for (index_type __j = __i + 1; __j < __cols; ++__j)
-      std::swap(this->__data_[__i * __cols + __j], this->__data_[__j * __cols + __i]);
+    for (index_type i = 0; i < rows; ++i)
+    {
+        for (index_type j = i + 1; j < cols; ++j)
+        {
+            std::swap(data_[i * cols + j], data_[j * cols + i]);
+        }
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::transpose_() const {
-  return this->transpose_();
+    return transpose_();
 }
