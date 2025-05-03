@@ -2,41 +2,42 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::sum(const index_type __axis) const {
-#if defined(__ARM_NEON)
-  return this->neon_sum(__axis);
-#endif
-  if (__axis < 0 || __axis >= static_cast<index_type>(this->__shape_.size()))
-    throw __index_error__("Invalid axis for sum");
-
-  shape_type __ret_sh = this->__shape_;
-  __ret_sh[__axis]    = 1;
-  index_type __ret_size =
-      std::accumulate(__ret_sh.begin(), __ret_sh.end(), 1, std::multiplies<index_type>());
-  data_t __ret_data(__ret_size, value_type(0.0f));
-
-  index_type __i = 0;
-  for (; __i < static_cast<index_type>(this->__data_.size()); ++__i) {
-    std::vector<index_type> __orig(this->__shape_.size());
-    index_type              __index = __i;
-    index_type              __j     = static_cast<index_type>(this->__shape_.size()) - 1;
-
-    for (; __j >= 0; __j--) {
-      __orig[__j] = __index % this->__shape_[__j];
-      __index /= this->__shape_[__j];
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::sum(const index_type axis) const {
+    if (axis < 0 || axis >= static_cast<index_type>(shape_.size()))
+    {
+        throw index_error("Invalid axis for sum");
     }
 
-    __orig[__axis]         = 0;
-    index_type __ret_index = 0;
-    index_type __st        = 1;
+    shape_type ret_sh   = shape_;
+    ret_sh[axis]        = 1;
+    index_type ret_size = std::accumulate(ret_sh.begin(), ret_sh.end(), 1, std::multiplies<index_type>());
+    data_t     ret_data(ret_size, value_type(0.0f));
 
-    for (__j = static_cast<index_type>(this->__shape_.size()) - 1; __j >= 0; __j--) {
-      __ret_index += __orig[__j] * __st;
-      __st *= __ret_sh[__j];
+    index_type i = 0;
+    for (; i < static_cast<index_type>(data_.size()); ++i)
+    {
+        std::vector<index_type> orig(shape_.size());
+        index_type              index = i;
+        index_type              j     = static_cast<index_type>(shape_.size()) - 1;
+
+        for (; j >= 0; j--)
+        {
+            orig[j] = index % shape_[j];
+            index /= shape_[j];
+        }
+
+        orig[axis]           = 0;
+        index_type ret_index = 0;
+        index_type st        = 1;
+
+        for (j = static_cast<index_type>(shape_.size()) - 1; j >= 0; j--)
+        {
+            ret_index += orig[j] * st;
+            st *= ret_sh[j];
+        }
+        ret_data[ret_index] += data_[i];
     }
-    __ret_data[__ret_index] += this->__data_[__i];
-  }
 
-  return __self(__ret_data, __ret_sh);
+    return self(ret_data, ret_sh);
 }
