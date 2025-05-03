@@ -3,7 +3,7 @@
 #include "tensorbase.hpp"
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type val) {
+tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type value) {
     if (!std::is_integral_v<value_type>)
     {
         throw type_error("Cannot get the element wise and of non-integral and non-boolean value");
@@ -11,14 +11,14 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type val) {
 
     for (auto& elem : data_)
     {
-        elem = (elem and val);
+        elem = (elem && value);
     }
 
     return *this;
 }
 
 template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type val) const {
+inline const tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type value) const {
     if (!std::is_integral_v<value_type>)
     {
         throw type_error("Cannot get the element wise and of non-integral and non-boolean value");
@@ -26,7 +26,7 @@ inline const tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type val) const 
 
     for (auto& elem : data_)
     {
-        elem = (elem and val);
+        elem = (elem && value);
     }
 
     return *this;
@@ -40,9 +40,9 @@ tensor<_Tp> tensor<_Tp>::logical_and(const tensor& other) const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::logical_and(const value_type val) const {
+tensor<_Tp> tensor<_Tp>::logical_and(const value_type value) const {
     self ret = clone();
-    ret.logical_and_(val);
+    ret.logical_and_(value);
     return ret;
 }
 
@@ -61,7 +61,7 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const tensor& other) {
     index_type i = 0;
     for (auto& elem : data_)
     {
-        elem = (elem and other[i++]);
+        elem = (elem && other[i++]);
     }
 
     return *this;
@@ -82,7 +82,7 @@ inline const tensor<_Tp>& tensor<_Tp>::logical_and_(const tensor& other) const {
     index_type i = 0;
     for (auto& elem : data_)
     {
-        elem = (elem and other[i++]);
+        elem = (elem && other[i++]);
     }
 
     return *this;
