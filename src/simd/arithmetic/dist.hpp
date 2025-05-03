@@ -41,7 +41,7 @@ tensor<_Tp>& tensor<_Tp>::neon_dist_(const tensor& other) {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_dist_(const value_type val) {
+tensor<_Tp>& tensor<_Tp>::neon_dist_(const value_type value) {
     if (!std::is_arithmetic_v<value_type>)
     {
         throw type_error("Type must be arithmetic");
@@ -53,14 +53,14 @@ tensor<_Tp>& tensor<_Tp>::neon_dist_(const value_type val) {
     for (; i < simd_end; i += simd_width)
     {
         neon_type<value_type> a    = neon_load<value_type>(&data_[i]);
-        neon_type<value_type> b    = neon_dup<value_type>(&val);
+        neon_type<value_type> b    = neon_dup<value_type>(value);
         neon_type<value_type> diff = neon_vabdq<value_type>(a, b);
         neon_store<value_type>(&data_[i], diff);
     }
 
     for (; i < data_.size(); ++i)
     {
-        data_[i] = static_cast<value_type>(std::abs(static_cast<_f64>(data_[i] - val)));
+        data_[i] = static_cast<value_type>(std::abs(static_cast<_f64>(data_[i] - value)));
     }
 
     return *this;
