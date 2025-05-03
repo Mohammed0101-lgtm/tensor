@@ -3,7 +3,7 @@
 #include "tensorbase.hpp"
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_type val) {
+tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_type value) {
     if constexpr (!std::is_integral_v<value_type>)
     {
         throw type_error("Cannot get the element wise xor of non-integral and non-boolean value");
@@ -11,14 +11,14 @@ tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_type val) {
 
     for (auto& elem : data_)
     {
-        elem = (elem xor val);
+        elem = (elem xor value);
     }
 
     return *this;
 }
 
 template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_type val) const {
+inline const tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_type value) const {
     if constexpr (!std::is_integral_v<value_type>)
     {
         throw type_error("Cannot get the element wise xor of non-integral and non-boolean value");
@@ -26,7 +26,7 @@ inline const tensor<_Tp>& tensor<_Tp>::logical_xor_(const value_type val) const 
 
     for (auto& elem : data_)
     {
-        elem = (elem xor val);
+        elem = (elem xor value);
     }
 
     return *this;
@@ -40,9 +40,9 @@ tensor<_Tp> tensor<_Tp>::logical_xor(const tensor& other) const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::logical_xor(const value_type val) const {
+tensor<_Tp> tensor<_Tp>::logical_xor(const value_type value) const {
     self ret = clone();
-    ret.logical_xor(val);
+    ret.logical_xor(value);
     return ret;
 }
 
