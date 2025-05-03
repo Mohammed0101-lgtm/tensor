@@ -94,14 +94,14 @@ tensor<_Tp>& tensor<_Tp>::neon_maximum_(const tensor& other) {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_maximum_(const value_type val) {
+tensor<_Tp>& tensor<_Tp>::neon_maximum_(const value_type value) {
     if constexpr (!std::is_arithmetic_v<value_type>)
     {
         throw type_error("Value type must be arithmetic");
     }
 
     const index_type      simd_end = data_.size() - (data_.size() % simd_width);
-    neon_type<value_type> val_vec  = neon_dup<value_type>(val);
+    neon_type<value_type> val_vec  = neon_dup<value_type>(value);
 
     index_type i = 0;
     for (; i < simd_end; i += simd_width)
@@ -113,7 +113,7 @@ tensor<_Tp>& tensor<_Tp>::neon_maximum_(const value_type val) {
 
     for (; i < data_.size(); ++i)
     {
-        data_[i] = std::max(data_[i], val);
+        data_[i] = std::max(data_[i], value);
     }
 
     return *this;
