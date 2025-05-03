@@ -3,7 +3,7 @@
 #include "tensorbase.hpp"
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type val) {
+tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type value) {
     if constexpr (!std::is_integral_v<value_type>)
     {
         throw type_error("Cannot perform logical OR on non-integral and non-boolean values");
@@ -11,31 +11,31 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type val) {
 
     for (auto& elem : data_)
     {
-        elem = (elem or val);
+        elem = (elem || value);
     }
 
     return *this;
 }
 
 template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type val) const {
-    if constexpr (!std::is_integral_v<value_type> and !std::is_same_v<value_type, bool>)
+inline const tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type value) const {
+    if constexpr (!std::is_integral_v<value_type> && !std::is_same_v<value_type, bool>)
     {
         throw type_error("Cannot perform logical OR on non-integral and non-boolean values");
     }
 
     for (auto& elem : data_)
     {
-        elem = (elem or val);
+        elem = (elem || value);
     }
 
     return *this;
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::logical_or(const value_type val) const {
+tensor<bool> tensor<_Tp>::logical_or(const value_type value) const {
     tensor<bool> ret = clone().bool_();
-    ret.logical_or_(val);
+    ret.logical_or_(value);
     return ret;
 }
 
@@ -61,7 +61,7 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& other) {
     index_type i = 0;
     for (auto& elem : data_)
     {
-        elem = (elem or other[i++]);
+        elem = (elem || other[i++]);
     }
 
     return *this;
@@ -82,7 +82,7 @@ inline const tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& other) const {
     index_type i = 0;
     for (auto& elem : data_)
     {
-        elem = (elem or other[i++]);
+        elem = (elem || other[i++]);
     }
 
     return *this;
