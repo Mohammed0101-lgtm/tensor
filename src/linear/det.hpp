@@ -2,45 +2,61 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp> tensor<_Tp>::det() const {
-  if (this->__shape_.size() < 2) throw __shape_error__("det: tensor must be at least 2D");
-
-  index_type __h, __w;
-  if (this->__shape_.size() == 2) {
-    __h = this->__shape_[0];
-    __w = this->__shape_[1];
-  } else {
-    index_type __last        = this->__shape_.size() - 1;
-    index_type __second_last = this->__shape_.size() - 2;
-
-    if (this->__shape_[__last] == 1) {
-      __h = this->__shape_[__second_last - 1];
-      __w = this->__shape_[__second_last];
-    } else if (this->__shape_[__second_last] == 1) {
-      __h = this->__shape_[__last - 1];
-      __w = this->__shape_[__last];
-    } else {
-      __h = this->__shape_[__second_last];
-      __w = this->__shape_[__last];
+    if (shape_.size() < 2)
+    {
+        throw shape_error("det: tensor must be at least 2D");
     }
-  }
 
-  if (__h != __w) throw __shape_error__("det: tensor must be a square matrix (n x n)");
+    index_type h, w;
+    if (shape_.size() == 2)
+    {
+        h = shape_[0];
+        w = shape_[1];
+    }
+    else
+    {
+        index_type last        = shape_.size() - 1;
+        index_type second_last = shape_.size() - 2;
 
-  index_type __n = __h;
+        if (shape_[last] == 1)
+        {
+            h = shape_[second_last - 1];
+            w = shape_[second_last];
+        }
+        else if (shape_[second_last] == 1)
+        {
+            h = shape_[last - 1];
+            w = shape_[last];
+        }
+        else
+        {
+            h = shape_[second_last];
+            w = shape_[last];
+        }
+    }
 
-  if (__n == 2)
-    return tensor<_Tp>(this->operator()(0, 0) * this->operator()(1, 1) -
-                       this->operator()(0, 1) * this->operator()(1, 0));
+    if (h != w)
+    {
+        throw shape_error("det: tensor must be a square matrix (n x n)");
+    }
 
-  value_type __determinant = 0;
+    index_type n = h;
 
-  for (index_type __col = 0; __col < __n; ++__col) {
-    tensor<_Tp> __minor = this->get_minor(0, __col);
-    value_type  __sign  = (__col % 2 == 0) ? 1 : -1;
-    __determinant += __sign * this->operator()(0, __col) * __minor.det();
-  }
+    if (n == 2)
+    {
+        return tensor<_Tp>({1}, {(*this)({0, 0}) * (*this)({1, 1}) - (*this)({0, 1}) * (*this)({1, 0})});
+    }
 
-  return tensor<_Tp>(__determinant);
+    value_type determinant = 0;
+
+    for (index_type col = 0; col < n; ++col)
+    {
+        tensor<_Tp> minor = get_minor(0, col);
+        value_type  sign  = (col % 2 == 0) ? 1 : -1;
+        determinant += sign * (*this)({0, col}) * minor.det()[0];
+    }
+
+    return tensor<_Tp>({1}, {determinant});
 }
