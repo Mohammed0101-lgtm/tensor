@@ -2,145 +2,141 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::clamp_(const_reference __min_val, const_reference __max_val) {
-#if defined(__ARM_NEON)
-  return this->neon_clamp_(__min_val, __max_val);
-#endif
-  index_type __i = 0;
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::clamp_(const_reference min_val, const_reference max_val) {
+    index_type i = 0;
 
-#pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) {
-    this->__data_[__i] = std::max(__min_val, this->__data_[__i]);
-    this->__data_[__i] = std::min(__max_val, this->__data_[__i]);
-  }
+    for (auto& elem : data_)
+    {
+        elem = std::max(min_val, elem);
+        elem = std::min(max_val, elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::clamp_(const_reference __min_val,
-                                              const_reference __max_val) const {
-#if defined(__ARM_NEON)
-  return this->neon_clamp_(__min_val, __max_val);
-#endif
-  index_type __i = 0;
-#pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i) {
-    this->__data_[__i] = std::max(__min_val, this->__data_[__i]);
-    this->__data_[__i] = std::min(__max_val, this->__data_[__i]);
-  }
+template<class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::clamp_(const_reference min_val, const_reference max_val) const {
+    index_type i = 0;
 
-  return *this;
+    for (auto& elem : data_)
+    {
+        elem = std::max(min_val, elem);
+        elem = std::min(max_val, elem);
+    }
+
+    return *this;
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::clamp(const_reference __min_val, const_reference __max_val) const {
-  __self __ret = this->clone();
-  __ret.clamp_(__min_val, __max_val);
-  return __ret;
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::clamp(const_reference min_val, const_reference max_val) const {
+    self ret = clone();
+    ret.clamp_(min_val, max_val);
+    return ret;
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp> tensor<_Tp>::floor() const {
-  __self __ret = this->clone();
-  __ret.floor_();
-  return __ret;
+    self ret = clone();
+    ret.floor_();
+    return ret;
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::floor_() {
-#if defined(__ARM_NEON)
-  return this->neon_floor_();
-#endif
-  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+    if (!std::is_floating_point_v<value_type>)
+    {
+        throw type_error("Type must be floating point");
+    }
 
-  index_type __i = 0;
-#pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::floor(static_cast<_f32>(this->__data_[__i])));
+    index_type i = 0;
 
-  return *this;
+    for (auto& elem : data_)
+    {
+        elem = std::floor(elem);
+    }
+
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::floor_() const {
-#if defined(__ARM_NEON)
-  return this->neon_floor_();
-#endif
-  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+    if (!std::is_floating_point_v<value_type>)
+    {
+        throw type_error("Type must be floating point");
+    }
 
-  index_type __i = 0;
-#pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::floor(static_cast<_f32>(this->__data_[__i])));
+    for (auto& elem : data_)
+    {
+        elem = std::floor(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::ceil_() {
-#if defined(__ARM_NEON)
-  return this->neon_ceil_();
-#endif
-  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+    if (!std::is_floating_point_v<value_type>)
+    {
+        throw type_error("Type must be floating point");
+    }
 
-  index_type __i = 0;
-#pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::ceil(static_cast<_f32>(this->__data_[__i])));
+    for (auto& elem : data_)
+    {
+        elem = std::ceil(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::ceil_() const {
-#if defined(__ARM_NEON)
-  return this->neon_ceil_();
-#endif
-  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+    if (!std::is_floating_point_v<value_type>)
+    {
+        throw type_error("Type must be floating point");
+    }
 
-  index_type __i = 0;
-#pragma omp parallel
-  for (; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::ceil(static_cast<_f32>(this->__data_[__i])));
+    for (auto& elem : data_)
+    {
+        elem = std::ceil(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp> tensor<_Tp>::ceil() const {
-  __self __ret = this->clone();
-  __ret.ceil_();
-  return __ret;
+    self ret = clone();
+    ret.ceil_();
+    return ret;
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::clamp_min(const_reference __min_val) const {
-  return this->clamp(__min_val);
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::clamp_min(const_reference min_val) const {
+    return clamp(min_val);
 }
 
-template <class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::clamp_min_(const_reference __min_val) {
-  return this->clamp_(__min_val);
+template<class _Tp>
+inline tensor<_Tp>& tensor<_Tp>::clamp_min_(const_reference min_val) {
+    return clamp_(min_val);
 }
 
-template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::clamp_min_(const_reference __min_val) const {
-  return this->clamp_(__min_val);
+template<class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::clamp_min_(const_reference min_val) const {
+    return clamp_(min_val);
 }
 //
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::clamp_max(const_reference __max_val) const {
-  return this->clamp(std::numeric_limits<value_type>::lowest(), __max_val);
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::clamp_max(const_reference max_val) const {
+    return clamp(std::numeric_limits<value_type>::lowest(), max_val);
 }
 
-template <class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::clamp_max_(const_reference __max_val) {
-  return this->clamp_(std::numeric_limits<value_type>::lowest(), __max_val);
+template<class _Tp>
+inline tensor<_Tp>& tensor<_Tp>::clamp_max_(const_reference max_val) {
+    return clamp_(std::numeric_limits<value_type>::lowest(), max_val);
 }
 
-template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::clamp_max_(const_reference __max_val) const {
-  return this->clamp_(std::numeric_limits<value_type>::lowest(), __max_val);
+template<class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::clamp_max_(const_reference max_val) const {
+    return clamp_(std::numeric_limits<value_type>::lowest(), max_val);
 }
