@@ -2,100 +2,89 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::matmul(const tensor& __other) const {
-#if defined(__ARM_NEON)
-  return this->neon_matmul(__other);
-#endif
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::matmul(const tensor& other) const {
+    static_assert(has_times_operator_v<value_type>, "Error: value_type must support multiplication (*) for matmul");
+    static_assert(has_plus_operator_v<value_type>, "Error: value_type must support addition (+) for matmul");
 
-  static_assert(has_times_operator_v<value_type>, "Value type must have a times operator");
-  static_assert(has_plus_operator_v<value_type>, "Value type must have a plus operator");
-
-  if (this->n_dims() < 2 || __other.n_dims() < 2)
-    throw __shape_error__("matmul is only supported for 2D tensors");
-
-  // Get shape of 'this' tensor
-  index_type __h, __w;
-  if (this->n_dims() == 2) {
-    __h = this->__shape_[0];
-    __w = this->__shape_[1];
-  } else {
-    index_type __last        = this->n_dims() - 1;
-    index_type __second_last = this->n_dims() - 2;
-
-    if (__second_last > 0 && this->__shape_[__last] == 1) {
-      __h = this->__shape_[__second_last - 1];
-      __w = this->__shape_[__second_last];
-    } else if (this->__shape_[__second_last] == 1) {
-      __h = this->__shape_[__last - 1];
-      __w = this->__shape_[__last];
-    } else {
-      __h = this->__shape_[__second_last];
-      __w = this->__shape_[__last];
+    if (n_dims() < 2 || other.n_dims() < 2)
+    {
+        throw shape_error("matmul is only supported for tensors with at least 2 dimensions");
     }
-  }
 
-  // Get shape of 'other' tensor
-  index_type __h1, __w1;
-  if (__other.n_dims() == 2) {
-    __h1 = __other.shape()[0];
-    __w1 = __other.shape()[1];
-  } else {
-    index_type __last        = __other.n_dims() - 1;
-    index_type __second_last = __other.n_dims() - 2;
+    // Helper lambda to extract effective matrix dimensions
+    auto extract_hw = [](const tensor& t) -> std::pair<index_type, index_type> {
+        const auto& shape = t.shape();
+        index_type  ndims = t.n_dims();
 
-    if (__second_last > 0 && __other.shape()[__last] == 1) {
-      __h1 = __other.shape()[__second_last - 1];
-      __w1 = __other.shape()[__second_last];
-    } else if (__other.shape()[__second_last] == 1) {
-      __h1 = __other.shape()[__last - 1];
-      __w1 = __other.shape()[__last];
-    } else {
-      __h1 = __other.shape()[__second_last];
-      __w1 = __other.shape()[__last];
+        if (ndims == 2)
+        {
+            return {shape[0], shape[1]};
+        }
+
+        index_type last        = ndims - 1;
+        index_type second_last = ndims - 2;
+
+        if (second_last > 0 && shape[last] == 1)
+        {
+            return {shape[second_last - 1], shape[second_last]};
+        }
+        if (shape[second_last] == 1)
+        {
+            return {shape[last - 1], shape[last]};
+        }
+
+        return {shape[second_last], shape[last]};
+    };
+
+    // Get shapes
+    auto [h, w]   = extract_hw(*this);
+    auto [h1, w1] = extract_hw(other);
+
+    if (w != h1)
+    {
+        throw shape_error("Shape mismatch in matmul: "
+                          "lhs = ["
+                          + std::to_string(h) + ", " + std::to_string(w)
+                          + "], "
+                            "rhs = ["
+                          + std::to_string(h1) + ", " + std::to_string(w1) + "]");
     }
-  }
 
-  // Validate shapes for matrix multiplication
-  if (__w != __h1) {
-    throw __shape_error__(
-        "Shape mismatch for matrix multiplication: "
-        "this shape: [" +
-        std::to_string(__h) + ", " + std::to_string(__w) +
-        "] "
-        "other shape: [" +
-        std::to_string(__h1) + ", " + std::to_string(__w1) + "]");
-  }
+    shape_type result_shape = {h, w1};
+    data_t     result_data(h * w1, value_type(0));
 
-  // Define output shape
-  shape_type __ret_sh = {__h, __w1};
-  data_t     __ret_d(__h * __w1, value_type(0));
-
-#pragma omp parallel for collapse(2)
-  for (int64_t __i = 0; __i < __h; ++__i) {
-    for (int64_t __j = 0; __j < __w1; ++__j) {
-      value_type __sum = value_type(0);
-      for (int64_t __k = 0; __k < __w; ++__k)
-        __sum = __sum + (this->__data_[__i * __w + __k] * __other.__data_[__k * __w1 + __j]);
-
-      __ret_d[__i * __w1 + __j] = __sum;
+    for (int64_t i = 0; i < h; ++i)
+    {
+        for (int64_t j = 0; j < w1; ++j)
+        {
+            value_type sum = value_type(0);
+            for (int64_t k = 0; k < w; ++k)
+            {
+                sum += data_[i * w + k] * other.data_[k * w1 + j];
+            }
+            result_data[i * w1 + j] = sum;
+        }
     }
-  }
 
-  return tensor<_Tp>(__ret_sh, __ret_d);
+    return tensor<_Tp>(result_shape, std::move(result_data));
 }
 
-#ifdef __CUDACC__
-template <class _Tp>
-__global__ void matmul_kernel(_Tp* __a, _Tp* __b, _Tp* __c, int __m, int __n, int __k) {
-  int __row = blockIdx.y * blockDim.y + threadIdx.y;
-  int __col = blockIdx.x * blockDim.x + threadIdx.x;
+#ifdef CUDACC
+template<class _Tp>
+global void matmul_kernel(_Tp* a, _Tp* b, _Tp* c, int m, int n, int k) {
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
 
-  if (__row < __m && __col < __k) {
-    _Tp __sum = 0;
-    for (int __i = 0; __i < __n; ++__i) __sum += __a[__row * __n + __i] * __b[__i * __k + __col];
+    if (row < m && col < k)
+    {
+        _Tp sum = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            sum += a[row * n + i] * b[i * k + col];
+        }
 
-    __c[__row * __k + __col] = __sum;
-  }
+        c[row * k + col] = sum;
+    }
 }
 #endif
