@@ -1,96 +1,135 @@
-#pragma once
+#pragma once  // Ensures the file is only included once during compilation (include guard)
 
-#include <stdexcept>
-#include <string>
+#include <stdexcept>  // For std::exception base class
+#include <string>     // For using std::string
 
-class __type_error__ : public std::exception {
- private:
-  std::string __imp_;
+// Custom exception class for type-related errors (e.g., mismatched data types)
+class type_error: public std::exception
+{
+private:
+    std::string imp_;  // Stores the detailed error message
 
- public:
-  explicit __type_error__(const std::string& __msg) : __imp_(__msg) {}
-  explicit __type_error__(const char* __msg) : __imp_(__msg) {}
+public:
+    // Constructors for initializing the error message
+    explicit type_error(const std::string& msg) : imp_(msg) {}
+    explicit type_error(const char* msg) : imp_(msg) {}
 
-  __type_error__(const __type_error__& __other) noexcept : __imp_(__other.imp()) {}
+    // Copy constructor for safely duplicating error objects
+    type_error(const type_error& other) noexcept : imp_(other.imp()) {}
 
-  __type_error__& operator=(const __type_error__& __other) noexcept {
-    if (this != &__other) __imp_ = __other.imp();
+    // Copy assignment operator with self-assignment check
+    type_error& operator=(const type_error& other) noexcept {
+        if (this != &other)
+            imp_ = other.imp();
+        return *this;
+    }
 
-    return *this;
-  }
+    // Override base class destructor
+    ~type_error() override = default;
 
-  ~__type_error__() override = default;
+    // Override `what()` to return a generic error message (not the detailed message)
+    const char* what() const noexcept override { return "Type error occurred"; }
 
-  const char* what() const noexcept override { return "Type error occurred"; }
-
-  std::string imp() const { return __imp_; }
+    // Provides access to the stored detailed message
+    const std::string& imp() const { return imp_; }
 };
 
-class __index_error__ : public std::exception {
- private:
-  std::string __imp_;
+// Custom exception class for out-of-range or invalid index errors
+class index_error: public std::exception
+{
+private:
+    std::string imp_;
 
- public:
-  explicit __index_error__(const std::string& __msg) : __imp_(__msg) {}
-  explicit __index_error__(const char* __msg) : __imp_(__msg) {}
+public:
+    explicit index_error(const std::string& msg) : imp_(msg) {}
+    explicit index_error(const char* msg) : imp_(msg) {}
 
-  __index_error__(const __index_error__& __other) noexcept : __imp_(__other.imp()) {}
+    index_error(const index_error& other) noexcept : imp_(other.imp()) {}
 
-  __index_error__& operator=(const __index_error__& __other) noexcept {
-    if (this != &__other) __imp_ = __other.imp();
+    index_error& operator=(const index_error& other) noexcept {
+        if (this != &other)
+            imp_ = other.imp();
+        return *this;
+    }
 
-    return *this;
-  }
+    ~index_error() override = default;
 
-  ~__index_error__() override = default;
+    const char* what() const noexcept override { return "Index error occured"; }
 
-  const char* what() const noexcept override { return "Index error occured"; }
-
-  std::string imp() const { return __imp_; }
+    const std::string& imp() const { return imp_; }
 };
 
-class __shape_error__ : public std::exception {
- private:
-  std::string __imp_;
+// Custom exception class for shape mismatches in data structures (e.g., matrices)
+class shape_error: public std::exception
+{
+private:
+    std::string imp_;
 
- public:
-  explicit __shape_error__(const std::string& __msg) : __imp_(__msg) {}
-  explicit __shape_error__(const char* __msg) : __imp_(__msg) {}
+public:
+    explicit shape_error(const std::string& msg) : imp_(msg) {}
+    explicit shape_error(const char* msg) : imp_(msg) {}
 
-  __shape_error__(const __shape_error__& __other) noexcept : __imp_(__other.imp()) {}
+    shape_error(const shape_error& other) noexcept : imp_(other.imp()) {}
 
-  __shape_error__& operator=(const __shape_error__& __other) noexcept {
-    if (this != &__other) __imp_ = __other.imp();
+    shape_error& operator=(const shape_error& other) noexcept {
+        if (this != &other)
+            imp_ = other.imp();
+        return *this;
+    }
 
-    return *this;
-  }
+    ~shape_error() override = default;
 
-  ~__shape_error__() override = default;
+    const char* what() const noexcept override { return "Shape error occured"; }
 
-  const char* what() const noexcept override { return "Shape error occured"; }
-
-  std::string imp() const { return __imp_; }
+    const std::string& imp() const { return imp_; }
 };
 
-class __access_error__ : public std::exception {
- private:
-  std::string __imp_;
+// Custom exception class for access violations (e.g., unauthorized access or invalid permissions)
+class access_error: public std::exception
+{
+private:
+    std::string imp_;
 
- public:
-  explicit __access_error__(const std::string& __msg) : __imp_(__msg) {}
-  explicit __access_error__(const char* __msg) : __imp_(__msg) {}
+public:
+    explicit access_error(const std::string& msg) noexcept : imp_(msg) {}
+    explicit access_error(const char* msg) noexcept : imp_(msg) {}
 
-  __access_error__(const __access_error__& __other) noexcept : __imp_(__other.imp()) {}
+    access_error(const access_error& other) noexcept : imp_(other.imp()) {}
 
-  __access_error__& operator=(const __access_error__& __other) noexcept {
-    if (this != &__other) __imp_ = __other.imp();
+    access_error& operator=(const access_error& other) noexcept {
+        if (this != &other)
+            imp_ = other.imp();
+        return *this;
+    }
 
-    return *this;
-  }
+    ~access_error() override = default;
 
-  ~__access_error__() override = default;
+    const char* what() const noexcept override { return "Access error ocurred"; }
 
-  const char* what() const noexcept override { return "Access error ocurred"; }
+    const std::string& imp() const { return imp_; }
+};
 
-  std::string imp() const { return __imp_; }
+// Custom exception class for operator misuse or failure (e.g., unsupported operations)
+class operator_error: public std::exception
+{
+private:
+    std::string imp_;
+
+public:
+    explicit operator_error(const std::string& msg) noexcept : imp_(msg) {}
+    explicit operator_error(const char* msg) noexcept : imp_(msg) {}
+
+    operator_error(const operator_error& other) noexcept : imp_(other.imp()) {}
+
+    operator_error& operator=(const operator_error& other) noexcept {
+        if (this != &other)
+            imp_ = other.imp();
+        return *this;
+    }
+
+    ~operator_error() override = default;
+
+    const char* what() const noexcept override { return "Operator error occured"; }
+    
+    const std::string& imp() const { return imp_; }
 };
