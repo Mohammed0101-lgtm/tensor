@@ -2,576 +2,583 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
-inline tensor<_Tp> tensor<_Tp>::reshape_as(const tensor& __other) const {
-  return this->reshape(__other.shape());
+template<class _Tp>
+inline tensor<_Tp> tensor<_Tp>::reshape_as(const tensor& other) const {
+    return reshape(other.shape());
 }
 
-template <class _Tp>
-inline typename tensor<_Tp>::index_type tensor<_Tp>::size(const index_type __dim) const {
-  if (__dim < 0 || __dim > static_cast<index_type>(this->__shape_.size()))
-    throw __index_error__("dimension input is out of range");
+template<class _Tp>
+inline typename tensor<_Tp>::index_type tensor<_Tp>::size(const index_type dimension) const {
+    if (dimension < 0 || dimension > static_cast<index_type>(shape_.size()))
+        throw index_error("dimension input is out of range");
 
-  if (__dim == 0) return this->__data_.size();
+    if (!dimension)
+        return data_.size();
 
-  return this->__shape_[__dim - 1];
+    return shape()[dimension - 1];
 }
 
-template <class _Tp>
-inline typename tensor<_Tp>::reference tensor<_Tp>::at(tensor<_Tp>::shape_type __idx) {
-  if (__idx.empty()) throw std::invalid_argument("Passing an empty vector as indices for a tensor");
+template<class _Tp>
+inline typename tensor<_Tp>::reference tensor<_Tp>::at(tensor<_Tp>::shape_type idx) {
+    if (idx.empty())
+        throw std::invalid_argument("Passing an empty vector as indices for a tensor");
 
-  index_type __i = this->__compute_index(__idx);
-  if (__i < 0 || __i >= this->__data_.size())
-    throw __index_error__("input indices are out of bounds");
+    index_type i = compute_index(idx);
+    if (i < 0 || i >= data_.size())
+        throw index_error("input indices are out of bounds");
 
-  return this->__data_[__i];
+    return data_[i];
 }
 
-template <class _Tp>
-inline typename tensor<_Tp>::const_reference tensor<_Tp>::at(
-    const tensor<_Tp>::shape_type __idx) const {
-  if (__idx.empty()) throw std::invalid_argument("Passing an empty vector as indices for a tensor");
+template<class _Tp>
+inline typename tensor<_Tp>::const_reference tensor<_Tp>::at(const tensor<_Tp>::shape_type idx) const {
+    if (idx.empty())
+        throw std::invalid_argument("Passing an empty vector as indices for a tensor");
 
-  index_type __i = this->__compute_index(__idx);
+    index_type i = compute_index(idx);
 
-  if (__i < 0 || __i >= this->__data_.size())
-    throw __index_error__("input indices are out of bounds");
+    if (i < 0 || i >= data_.size())
+        throw index_error("input indices are out of bounds");
 
-  return this->__data_[__i];
+    return data_[i];
 }
 
-template <class _Tp>
-typename tensor<_Tp>::index_type tensor<_Tp>::count_nonzero(index_type __dim) const {
+template<class _Tp>
+typename tensor<_Tp>::index_type tensor<_Tp>::count_nonzero(index_type dimension) const {
 #if defined(__ARM_NEON)
-  return this->neon_count_nonzero(__dim);
+    return neon_count_nonzero(dimension);
 #endif
-  index_type __c           = 0;
-  index_type __local_count = 0;
-  index_type __i           = 0;
-  if (__dim == 0) {
-#pragma omp parallel for reduction(+ : __local_count)
-    for (index_type __j = __i; __j < this->__data_.size(); ++__j)
-      if (this->__data_[__j] != 0) ++__local_count;
+    index_type c           = 0;
+    index_type local_count = 0;
+    index_type i           = 0;
 
-    __c += __local_count;
-  } else {
-    if (__dim < 0 || __dim >= static_cast<index_type>(__shape_.size()))
-      throw __index_error__("Invalid dimension provided.");
+    if (dimension == 0)
+    {
+        for (const auto& elem : data_)
+            if (elem)
+                ++local_count;
 
-    throw std::runtime_error("Dimension-specific non-zero counting is not implemented yet.");
-  }
+        c += local_count;
+    }
+    else
+    {
+        if (dimension < 0 || dimension >= static_cast<index_type>(shape_.size()))
+            throw index_error("Invalid dimension provided.");
+        throw std::runtime_error("Dimension-specific non-zero counting is not implemented yet.");
+    }
 
-  return __c;
+    return c;
 }
 
-template <class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::push_back(value_type __v) const {
-  if (this->__shape_.size() != 1)
-    throw std::range_error("push_back is only supported for one dimensional tensors");
+template<class _Tp>
+inline tensor<_Tp>& tensor<_Tp>::push_back(value_type v) const {
+    if (shape_.size() != 1)
+        throw std::range_error("push_back is only supported for one dimensional tensors");
 
-  this->__data_.push_back(__v);
-  ++this->__shape_[0];
-  this->__compute_strides();
-  return *this;
+    data_.push_back(v);
+    ++shape_[0];
+    compute_strides();
+    return *this;
 }
 
-template <class _Tp>
-inline tensor<_Tp> tensor<_Tp>::zeros(const shape_type& __sh) {
-  __self __ret = this->clone();
-  __ret.zeros_(__sh);
-  return __ret;
+template<class _Tp>
+inline tensor<_Tp> tensor<_Tp>::zeros(const shape_type& shape_) {
+    self ret = clone();
+    ret.zeros_(shape_);
+    return ret;
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::zeros_(shape_type __sh) {
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::zeros_(shape_type shape_) {
 #if defined(__ARM_NEON)
-  return this->neon_zeros_(__sh);
+    return neon_zeros_(shape_);
 #endif
-  if (__sh.empty())
-    __sh = this->__shape_;
-  else
-    this->__shape_ = __sh;
+    if (shape_.empty())
+        shape_ = shape();
+    else
+        shape_ = shape_;
 
-  size_t __s = this->__computeSize(this->__shape_);
-  this->__data_.resize(__s);
-  this->__compute_strides();
+    std::size_t s = computeSize(shape());
+    data_.resize(s);
+    compute_strides();
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < __s; ++__i) this->__data_[__i] = value_type(0.0);
+    for (auto& elem : data_)
+        elem = value_type(0.0);
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::zeros_(shape_type __sh) const {
+template<class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::zeros_(shape_type shape_) const {
 #if defined(__ARM_NEON)
-  return this->neon_zeros_(__sh);
+    return neon_zeros_(shape_);
 #endif
-  if (__sh.empty())
-    __sh = this->__shape_;
-  else
-    this->__shape_ = __sh;
+    if (shape_.empty())
+        shape_ = shape();
+    else
+        shape_ = shape_;
 
-  size_t __s = this->__computeSize(this->__shape_);
-  this->__data_.resize(__s);
-  this->__compute_strides();
+    std::size_t s = computeSize(shape());
+    data_.resize(s);
+    compute_strides();
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < __s; ++__i) this->__data_[__i] = value_type(0.0);
+    for (auto& elem : data_)
+        elem = value_type(0.0);
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::ones_(shape_type __sh) {
-#if defined(__ARM_NEON)
-  return this->neon_ones_(__sh);
-#endif
-  if (__sh.empty())
-    __sh = this->__shape_;
-  else
-    this->__shape_ = __sh;
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::ones_(shape_type shape_) {
+    if (shape_.empty())
+        shape_ = shape();
+    else
+        shape_ = shape_;
 
-  size_t __s = this->__computeSize(this->__shape_);
-  this->__data_.resize(__s);
-  this->__compute_strides();
+    std::size_t s = computeSize(shape());
+    data_.resize(s);
+    compute_strides();
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < __s; ++__i) this->__data_[__i] = value_type(1.0);
+    for (auto& elem : data_)
+        elem = value_type(1.0);
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::ones_(shape_type __sh) const {
-#if defined(__ARM_NEON)
-  return this->neon_ones_(__sh);
-#endif
-  if (__sh.empty())
-    __sh = this->__shape_;
-  else
-    this->__shape_ = __sh;
+template<class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::ones_(shape_type shape_) const {
+    if (shape_.empty())
+        shape_ = shape();
+    else
+        shape_ = shape_;
 
-  size_t __s = this->__computeSize(this->__shape_);
-  this->__data_.resize(__s);
-  this->__compute_strides();
+    std::size_t s = computeSize(shape());
+    data_.resize(s);
+    compute_strides();
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < __s; ++__i) this->__data_[__i] = value_type(1.0);
+    for (auto& elem : data_)
+        elem = value_type(1.0);
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-inline tensor<_Tp> tensor<_Tp>::ones(const shape_type& __sh) {
-  __self __ret = this->clone();
-  __ret.ones_(__sh);
-  return __ret;
+template<class _Tp>
+inline tensor<_Tp> tensor<_Tp>::ones(const shape_type& shape_) {
+    self ret = clone();
+    ret.ones_(shape_);
+    return ret;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline typename tensor<_Tp>::index_type tensor<_Tp>::hash() const {
-  index_type            __hash_val = 0;
-  std::hash<value_type> __hasher;
+    index_type            hash_val = 0;
+    std::hash<value_type> hasher;
 
-  index_type __i = 0;
-  for (; __i < this->__data_.size(); ++__i)
-    __hash_val ^= __hasher(this->__data_[__i]) + 0x9e3779b9 + (__hash_val << 6) + (__hash_val >> 2);
+    for (const auto& elem : data_)
+        hash_val ^= hasher(elem) + 0x9e3779b9 + (hash_val << 6) + (hash_val >> 2);
 
-  return __hash_val;
+    return hash_val;
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::row(const index_type __index) const {
-  if (this->__shape_.size() != 2)
-    throw __shape_error__("Cannot get a row from a non two dimensional tensor");
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::row(const index_type index) const {
+    if (shape_.size() != 2)
+        throw shape_error("Cannot get a row from a non two-dimensional tensor");
 
-  if (this->__shape_[0] <= __index || __index < 0)
-    throw __index_error__("Index input is out of range");
+    if (index < 0 || index >= shape_[0])
+        throw index_error("Index is out of range");
 
-  data_t     __r;
-  index_type __start = this->__shape_[1] * __index;
-  index_type __end   = this->__shape_[1] * __index + this->__shape_[1];
-  index_type __i     = __start;
-  for (; __i < __end; ++__i) __r.push_back(this->__data_[__i]);
+    data_t row_data;
+    row_data.reserve(shape_[1]);
 
-  return __self({this->__shape_[1]}, __r);
+    const index_type offset = index * shape_[1];
+    for (index_type j = 0; j < shape_[1]; ++j)
+        row_data.push_back(data_[offset + j]);
+
+    return tensor<_Tp>({shape_[1]}, row_data);
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::col(const index_type __index) const {
-  if (this->__shape_.size() != 2)
-    throw __shape_error__("Cannot get a column from a non two dimensional tensor");
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::col(const index_type index) const {
+    if (shape_.size() != 2)
+        throw shape_error("Cannot get a column from a non two-dimensional tensor");
 
-  if (this->__shape_[1] <= __index || __index < 0)
-    throw __index_error__("Index input out of range");
+    if (index < 0 || index >= shape_[1])
+        throw index_error("Index is out of range");
 
-  data_t     __c;
-  index_type __i = 0;
-  for (; __i < this->__shape_[0]; ++__i)
-    __c.push_back(this->__data_[this->__compute_index({__i, __index})]);
+    data_t col_data;
+    col_data.reserve(shape_[0]);
 
-  return __self({this->__shape_[0]}, __c);
+    for (index_type i = 0; i < shape_[0]; ++i)
+        col_data.push_back(data_[compute_index({i, index})]);
+
+    return tensor<_Tp>({shape_[0]}, col_data);
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::view(std::initializer_list<index_type> __sh) {
-  index_type __s = this->__computeSize(__sh);
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::view(std::initializer_list<index_type> shape_) {
+    index_type s = computeSize(shape_);
 
-  if (__s != this->__data_.size())
-    throw std::invalid_argument("Total elements do not match for new shape");
+    if (s != data_.size())
+        throw std::invalid_argument("Total elements do not match for new shape");
 
-  this->__shape_ = __sh;
-  this->__compute_strides();
+    shape_ = shape_;
+    compute_strides();
 }
 
-template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::view(std::initializer_list<index_type> __new_sh) const {
-  return this->view(__new_sh);
+template<class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::view(std::initializer_list<index_type> new_shape) const {
+    return view(new_shape);
 }
 
-template <class _Tp>
-inline tensor<_Tp> tensor<_Tp>::randomize(const shape_type& __sh, bool __bounded) {
-  __self __ret = this->clone();
-  __ret.randomize_(__sh, __bounded);
-  return __ret;
+template<class _Tp>
+inline tensor<_Tp> tensor<_Tp>::randomize(const shape_type& shape_, bool bounded) {
+    self ret = clone();
+    ret.randomize_(shape_, bounded);
+    return ret;
 }
 
-template <class _Tp>
-inline tensor<_Tp> tensor<_Tp>::get_minor(index_type __a, index_type __b) const {
-  // not implemented yet
-  return tensor();
+template<class _Tp>
+inline tensor<_Tp> tensor<_Tp>::get_minor(index_type a, index_type b) const {
+    // not implemented yet
+    return tensor();
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::randomize_(const shape_type& __sh, bool __bounded) {
-#if defined(__ARM_NEON)
-  return this->neon_randomize_(__sh, __bounded);
-#endif
-  if (__bounded && !std::is_floating_point_v<value_type>)
-    throw __type_error__("Cannot bound non floating point data type");
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::randomize_(const shape_type& shape_, bool bounded) {
+    if (bounded && !std::is_floating_point_v<value_type>)
+        throw type_error("Cannot bound non floating point data type");
 
-  if (__sh.empty() && this->__shape_.empty())
-    throw __shape_error__("randomize_ : Shape must be initialized");
+    if (shape_.empty() && shape_.empty())
+        throw shape_error("randomize_ : Shape must be initialized");
 
-  if (this->__shape_.empty() || this->__shape_ != __sh) this->__shape_ = __sh;
+    if (shape_.empty() && shape_ != shape_)
+        shape_ = shape_;
 
-  index_type __s = this->__computeSize(this->__shape_);
-  this->__data_.resize(__s);
-  this->__compute_strides();
+    index_type s = computeSize(shape());
+    data_.resize(s);
+    compute_strides();
+    std::random_device                   rd;
+    std::mt19937                         gen(rd());
+    std::uniform_real_distribution<_f32> unbounded_dist(1.0f, static_cast<_f32>(RAND_MAX));
+    std::uniform_real_distribution<_f32> bounded_dist(0.0f, 1.0f);
 
-  std::random_device                   __rd;
-  std::mt19937                         __gen(__rd());
-  std::uniform_real_distribution<_f32> __unbounded_dist(1.0f, static_cast<_f32>(RAND_MAX));
-  std::uniform_real_distribution<_f32> __bounded_dist(0.0f, 1.0f);
-  index_type                           __i = 0;
+    for (auto& elem : data_)
+        elem = value_type(bounded ? bounded_dist(gen) : unbounded_dist(gen));
 
-#pragma omp parallel
-  for (; __i < static_cast<index_type>(__s); ++__i)
-    this->__data_[__i] = value_type(__bounded ? __bounded_dist(__gen) : __unbounded_dist(__gen));
-
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::randomize_(const shape_type& __sh, bool __bounded) const {
-#if defined(__ARM_NEON)
-  return this->neon_randomize_(__sh, __bounded);
-#endif
-  if (__bounded && !std::is_floating_point_v<value_type>)
-    throw __type_error__("Cannot bound non floating point data type");
+template<class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::randomize_(const shape_type& shape_, bool bounded) const {
+    if (bounded && !std::is_floating_point_v<value_type>)
+        throw type_error("Cannot bound non floating point data type");
 
-  if (__sh.empty() && this->__shape_.empty())
-    throw __shape_error__("randomize_ : Shape must be initialized");
+    if (shape_.empty() && shape_.empty())
+        throw shape_error("randomize_ : Shape must be initialized");
 
-  if (this->__shape_.empty() || this->__shape_ != __sh) this->__shape_ = __sh;
+    if (shape_.empty() && shape_ != shape_)
+        shape_ = shape_;
 
-  index_type __s = this->__computeSize(this->__shape_);
-  this->__data_.resize(__s);
-  this->__compute_strides();
+    index_type s = computeSize(shape());
+    data_.resize(s);
+    compute_strides();
 
-  std::random_device                   __rd;
-  std::mt19937                         __gen(__rd());
-  std::uniform_real_distribution<_f32> __unbounded_dist(1.0f, static_cast<_f32>(RAND_MAX));
-  std::uniform_real_distribution<_f32> __bounded_dist(0.0f, 1.0f);
-  index_type                           __i = 0;
-#pragma omp parallel
-  for (; __i < static_cast<index_type>(__s); ++__i)
-    this->__data_[__i] = value_type(__bounded ? __bounded_dist(__gen) : __unbounded_dist(__gen));
+    std::random_device                   rd;
+    std::mt19937                         gen(rd());
+    std::uniform_real_distribution<_f32> unbounded_dist(1.0f, static_cast<_f32>(RAND_MAX));
+    std::uniform_real_distribution<_f32> bounded_dist(0.0f, 1.0f);
 
-  return *this;
+    for (auto& elem : data_)
+        elem = value_type(bounded ? bounded_dist(gen) : unbounded_dist(gen));
+
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::clone() const {
-  data_t     __d = this->__data_;
-  shape_type __s = this->__shape_;
-  return __self(__s, __d);
+    data_t     d = data_;
+    shape_type s = shape();
+    return self(s, d);
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::negative_() {
-#if defined(__ARM_NEON)
-  return this->neon_negative_();
-#endif
+    for (auto& elem : data_)
+        elem = -elem;
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = -this->__data_[__i];
-
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::negative_() const {
-#if defined(__ARM_NEON)
-  return this->neon_negative_();
-#endif
+    for (auto& elem : data_)
+        elem = -elem;
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = -this->__data_[__i];
-
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp> tensor<_Tp>::negative() const {
-  __self __ret = this->clone();
-  __ret.negative_();
-  return __ret;
+    self ret = clone();
+    ret.negative_();
+    return ret;
 }
 
-void _permutations(std::vector<std::vector<int>>& __res, std::vector<int>& __arr, int __idx) {
-  if (__idx == __arr.size() - 1) {
-    __res.push_back(__arr);
-    return;
-  }
-
-  for (int __i = __idx; __i < __arr.size(); ++__i) {
-    std::swap(__arr[__idx], __arr[__i]);
-    _permutations(__res, __arr, __idx + 1);
-    std::swap(__arr[__idx], __arr[__i]);
-  }
-}
-
-void _nextPermutation(std::vector<int>& __arr) {
-  std::vector<std::vector<int>> __ret;
-  _permutations(__ret, __arr, 0);
-  std::sort(__ret.begin(), __ret.end());
-
-  for (int __i = 0; __i < __ret.size(); ++__i) {
-    if (__ret[__i] == __arr) {
-      if (__i < __ret.size() - 1) __arr = __ret[__i + 1];
-      if (__i == __ret.size() - 1) __arr = __ret[0];
-      break;
+void _permutations(std::vector<std::vector<int>>& res, std::vector<int>& arr, int idx) {
+    if (idx == arr.size() - 1)
+    {
+        res.push_back(arr);
+        return;
     }
-  }
+
+    for (int i = idx; i < arr.size(); ++i)
+    {
+        std::swap(arr[idx], arr[i]);
+        _permutations(res, arr, idx + 1);
+        std::swap(arr[idx], arr[i]);
+    }
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::permute_(const index_type __dim) {
-  if (__dim < 0 || __dim > this->n_dims()) throw __index_error__("Dimension index is out of range");
+void _nextPermutation(std::vector<int>& arr) {
+    std::vector<std::vector<int>> ret;
+    _permutations(ret, arr, 0);
+    std::sort(ret.begin(), ret.end());
 
-  if (__dim == 0) {
-    _nextPermutation(this->__data_);
+    for (int i = 0; i < ret.size(); ++i)
+    {
+        if (ret[i] == arr)
+        {
+            if (i < ret.size() - 1)
+                arr = ret[i + 1];
+
+            if (i == ret.size() - 1)
+                arr = ret[0];
+
+            break;
+        }
+    }
+}
+
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::permute_(const index_type dimension) {
+    if (dimension < 0 || dimension > n_dims())
+        throw index_error("Dimension index is out of range");
+
+    if (dimension == 0)
+    {
+        _nextPermutation(data_);
+        return *this;
+    }
+
+    index_type start = strides_[dimension - 1];
+    index_type end   = strides_[dimension];
+
+    data_t p(data_.begin() + start, data_.begin() + end);
+    _nextPermutation(p);
+
+    for (index_type i = start, pi = 0; i < end && pi < p.size(); ++i, ++pi)
+        data_[i] = p[pi];
+
     return *this;
-  }
-
-  index_type __start = this->__strides_[__dim - 1];
-  index_type __end   = this->__strides_[__dim];
-
-  data_t __p(this->__data_.begin() + __start, this->__data_.begin() + __end);
-  _nextPermutation(__p);
-#pragma omp parallel
-  for (index_type __i = __start, __pi = 0; __i < __end && __pi < __p.size(); ++__i, ++__pi)
-    this->__data_[__i] = __p[__pi];
-
-  return *this;
 }
 
-template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::permute_(const index_type __dim) const {
-  if (__dim < 0 || __dim > this->n_dims()) throw __index_error__("Dimension index is out of range");
+template<class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::permute_(const index_type dimension) const {
+    if (dimension < 0 || dimension > n_dims())
+        throw index_error("Dimension index is out of range");
 
-  if (__dim == 0) {
-    _nextPermutation(this->__data_);
+    if (dimension == 0)
+    {
+        _nextPermutation(data_);
+        return *this;
+    }
+
+    index_type start = strides_[dimension - 1];
+    index_type end   = strides_[dimension];
+
+    data_t p(data_.begin() + start, data_.begin() + end);
+    _nextPermutation(p);
+
+    for (index_type i = start, pi = 0; i < end && pi < p.size(); ++i, ++pi)
+        data_[i] = p[pi];
+
     return *this;
-  }
-
-  index_type __start = this->__strides_[__dim - 1];
-  index_type __end   = this->__strides_[__dim];
-
-  data_t __p(this->__data_.begin() + __start, this->__data_.begin() + __end);
-  _nextPermutation(__p);
-#pragma omp parallel
-  for (index_type __i = __start, __pi = 0; __i < __end && __pi < __p.size(); ++__i, ++__pi)
-    this->__data_[__i] = __p[__pi];
-
-  return *this;
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::permute(const index_type __dim) const {
-  __self __ret = this->clone();
-  __ret.permute_(__dim);
-  return __ret;
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::permute(const index_type dimension) const {
+    self ret = clone();
+    ret.permute_(dimension);
+    return ret;
 }
 
-template <class _Tp>
-const tensor<_Tp>& tensor<_Tp>::repeat_(const data_t& __d, int __dim) const {
-  if (__d.empty()) throw std::invalid_argument("Cannot repeat an empty data tensor.");
+template<class _Tp>
+const tensor<_Tp>& tensor<_Tp>::repeat_(const data_t& d, int dimension) const {
+    if (d.empty())
+        throw std::invalid_argument("Cannot repeat an empty data tensor.");
 
-  if (this->size(0) < __d.size()) this->__data_ = data_t(__d.begin(), __d.end());
+    if (size(0) < d.size())
+        data_ = data_t(d.begin(), d.end());
 
-  index_type __start      = 0;
-  index_type __end        = __d.size();
-  index_type __total_size = this->size(0);
+    index_type start      = 0;
+    index_type end        = d.size();
+    index_type total_size = size(0);
 
-  if (__total_size < __d.size()) return *this;
+    if (total_size < d.size())
+        return *this;
 
-  unsigned int __nbatches  = __total_size / __d.size();
-  index_type   __remainder = __total_size % __d.size();
+    unsigned int nbatches  = total_size / d.size();
+    index_type   remainder = total_size % d.size();
 
-  for (unsigned int __i = 0; __i < __nbatches; ++__i) {
-    for (index_type __j = __start, __k = 0; __k < __d.size(); ++__j, ++__k)
-      this->__data_[__j] = __d[__k];
+    for (unsigned int i = 0; i < nbatches; ++i)
+    {
+        for (index_type j = start, k = 0; k < d.size(); ++j, ++k)
+            data_[j] = d[k];
 
-    __start += __d.size();
-  }
-#pragma omp parallel
-  for (index_type __j = __start, __k = 0; __j < __total_size && __k < __remainder; ++__j, ++__k)
-    this->__data_[__j] = __d[__k];
+        start += d.size();
+    }
 
-  return *this;
+    for (index_type j = start, k = 0; j < total_size && k < remainder; ++j, ++k)
+        data_[j] = d[k];
+
+    return *this;
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::repeat_(const data_t& __d, int __dim) {
-  if (__d.empty()) throw std::invalid_argument("Cannot repeat an empty data tensor.");
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::repeat_(const data_t& d, int dimension) {
+    if (d.empty())
+        throw std::invalid_argument("Cannot repeat an empty data tensor.");
 
-  if (this->size(0) < __d.size()) this->__data_ = data_t(__d.begin(), __d.end());
+    if (size(0) < d.size())
+        data_ = data_t(d.begin(), d.end());
 
-  index_type __start      = 0;
-  index_type __end        = __d.size();
-  index_type __total_size = this->size(0);
+    index_type start      = 0;
+    index_type end        = d.size();
+    index_type total_size = size(0);
 
-  if (__total_size < __d.size()) return *this;
+    if (total_size < d.size())
+        return *this;
 
-  unsigned int __nbatches  = __total_size / __d.size();
-  index_type   __remainder = __total_size % __d.size();
+    unsigned int nbatches  = total_size / d.size();
+    index_type   remainder = total_size % d.size();
 
-  for (unsigned int __i = 0; __i < __nbatches; ++__i) {
-    for (index_type __j = __start, __k = 0; __k < __d.size(); ++__j, ++__k)
-      this->__data_[__j] = __d[__k];
+    for (unsigned int i = 0; i < nbatches; ++i)
+    {
+        for (index_type j = start, k = 0; k < d.size(); ++j, ++k)
+            data_[j] = d[k];
 
-    __start += __d.size();
-  }
-#pragma omp parallel
-  for (index_type __j = __start, __k = 0; __j < __total_size && __k < __remainder; ++__j, ++__k)
-    this->__data_[__j] = __d[__k];
+        start += d.size();
+    }
 
-  return *this;
+    for (index_type j = start, k = 0; j < total_size && k < remainder; ++j, ++k)
+        data_[j] = d[k];
+
+    return *this;
 }
 
-template <class _Tp>
-inline tensor<_Tp> tensor<_Tp>::repeat(const data_t& __d, int __dim) const {
-  __self __ret = this->clone();
-  __ret.repeat_(__d, __dim);
-  return __ret;
+template<class _Tp>
+inline tensor<_Tp> tensor<_Tp>::repeat(const data_t& d, int dimension) const {
+    self ret = clone();
+    ret.repeat_(d, dimension);
+    return ret;
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::sort(index_type __dim, bool __descending) const {}
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::sort(index_type dimension, bool descending) const {}
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::fill(const value_type __val) const {
-  __self __ret = this->clone();
-  __ret.fill_(__val);
-  return __ret;
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::fill(const value_type value) const {
+    self ret = clone();
+    ret.fill_(value);
+    return ret;
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::fill(const tensor& __other) const {
-  __self __ret = this->clone();
-  __ret.fill_(__other);
-  return __ret;
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::fill(const tensor& other) const {
+    self ret = clone();
+    ret.fill_(other);
+    return ret;
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::resize_as(const shape_type __sh) const {
-  __self __ret = this->clone();
-  __ret.resize_as_(__sh);
-  return __ret;
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::resize_as(const shape_type shape_) const {
+    self ret = clone();
+    ret.resize_as_(shape_);
+    return ret;
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp> tensor<_Tp>::all() const {
-  bool       __result = true;
-  index_type __i      = 0;
+    bool       result = true;
+    index_type i      = 0;
 
-  for (; __i < this->__data_.size(); ++__i) {
-    if (this->__data_[__i] == static_cast<value_type>(0)) {
-      __result = false;
-      break;
+    for (; i < data_.size(); ++i)
+    {
+        if (data_[i] == static_cast<value_type>(0))
+        {
+            result = false;
+            break;
+        }
     }
-  }
 
-  tensor __ret;
-  __ret.__data_ = {__result ? static_cast<value_type>(1) : static_cast<value_type>(0)};
+    tensor ret;
+    ret.data_ = {result ? static_cast<value_type>(1) : static_cast<value_type>(0)};
 
-  return __ret;
+    return ret;
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp> tensor<_Tp>::any() const {
-  bool __result = false;
+    bool result = false;
 
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i) {
-    if (this->__data_[__i] != static_cast<value_type>(0)) {
-      __result = true;
-      break;
+    for (index_type i = 0; i < data_.size(); ++i)
+    {
+        if (data_[i] != static_cast<value_type>(0))
+        {
+            result = true;
+            break;
+        }
     }
-  }
 
-  tensor __ret;
-  __ret.__data_ = {__result ? static_cast<value_type>(1) : static_cast<value_type>(0)};
+    tensor ret;
+    ret.data_ = {result ? static_cast<value_type>(1) : static_cast<value_type>(0)};
 
-  return __ret;
+    return ret;
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::gcd(const tensor& __other) const {
-    if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::gcd(const tensor& other) const {
+    if (!equal_shape(shape(), other.shape()))
+        throw shape_error("Tensors shapes must be equal");
 
-  tensor     __ret = this->clone();
-  index_type __i   = 0;
+    tensor     ret = clone();
+    index_type i   = 0;
 
-  for (; __i < this->__data_.size(); ++__i) {
-    index_type __gcd__ = static_cast<index_type>(this->__data_[__i] * __other[__i]);
-    index_type __lcm__ =
-        __lcm(static_cast<index_type>(this->__data_[__i]), static_cast<index_type>(__other[__i]));
-    __gcd__ /= __lcm__;
-    __ret[__i] = __gcd__;
-  }
+    for (auto& elem : data_)
+    {
+        index_type gcd  = static_cast<index_type>(elem * other[i]);
+        index_type _lcm = lcm(static_cast<index_type>(elem), static_cast<index_type>(other[i]));
+        gcd /= _lcm;
+        ret[i] = gcd;
+        i++;
+    }
 
-  return __ret;
+    return ret;
 }
 
-template <class _Tp>
-tensor<_Tp> tensor<_Tp>::gcd(const value_type __val) const {
-  tensor     __ret = this->clone();
-  index_type __i   = 0;
+template<class _Tp>
+tensor<_Tp> tensor<_Tp>::gcd(const value_type value) const {
+    tensor     ret = clone();
+    index_type i   = 0;
 
-  for (; __i < this->__data_.size(); ++__i) {
-    index_type __gcd__ = static_cast<index_type>(this->__data_[__i] * __val);
-    index_type __lcm__ =
-        __lcm(static_cast<index_type>(this->__data_[__i]), static_cast<index_type>(__val));
-    __gcd__ /= __lcm__;
-    __ret[__i] = __gcd__;
-  }
+    for (; i < data_.size(); ++i)
+    {
+        index_type gcd  = static_cast<index_type>(data_[i] * value);
+        index_type _lcm = lcm(static_cast<index_type>(data_[i]), static_cast<index_type>(value));
+        gcd /= _lcm;
+        ret[i] = gcd;
+    }
 
-  return __ret;
+    return ret;
 }
