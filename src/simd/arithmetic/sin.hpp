@@ -163,7 +163,7 @@ tensor<_Tp>& tensor<_Tp>::neon_asin_() {
 
         for (int j = 0; j < simd_width; ++j)
         {
-            if (vals[j] < static_cast<value_type>(-1) || vals[j] > static_cast<value_type>(1))
+            if (vals[j] < static_cast<value_type>(-1) ||w vals[j] > static_cast<value_type>(1))
             {
                 throw std::domain_error("Input value is out of domain for asin()");
             }
