@@ -1621,85 +1621,87 @@ class tensor
     tensor<index_type> argsort(index_type dimension = -1, bool ascending = true) const;
 
    private:
-    tensor&          neon_fmax_(const value_type v);
-    tensor&          neon_fmax_(const tensor& other);
-    tensor&          neon_fmod_(const value_type value);
-    tensor&          neon_fmod_(const tensor& other);
-    tensor&          neon_frac_();
-    tensor&          neon_log_();
-    tensor&          neon_log10_();
-    tensor&          neon_log2_();
-    tensor&          neon_exp_();
-    tensor&          neon_sqrt_();
-    tensor&          neon_cos_();
-    tensor&          neon_acos_();
-    tensor&          neon_sin_();
-    tensor&          neon_tan_();
-    tensor&          neon_tanh_();
-    tensor&          neon_sinc_();
-    tensor&          neon_atan_();
-    tensor&          neon_atanh_();
-    tensor&          neon_sinh_();
-    tensor&          neon_asinh_();
-    tensor&          neon_asin_();
-    tensor&          neon_cosh_();
-    tensor&          neon_acosh_();
-    tensor&          neon_pow_(const value_type value);
-    tensor&          neon_pow_(const tensor& other);
-    tensor&          neon_abs_();
-    tensor&          neon_dist_(const tensor& other);
-    tensor&          neon_dist_(const value_type value);
-    tensor&          neon_maximum_(const tensor& other);
-    tensor&          neon_maximum_(const value_type value);
-    tensor&          neon_bitwise_right_shift_(const int amount);
-    tensor&          neon_bitwise_left_shift_(const int amount);
-    tensor&          neon_bitwise_or_(const value_type value);
-    tensor&          neon_bitwise_xor_(const value_type value);
-    tensor&          neon_bitwise_not_();
-    tensor&          neon_bitwise_and_(const value_type value);
-    tensor&          neon_bitwise_and_(const tensor& other);
-    tensor&          neon_bitwise_or_(const tensor& other);
-    tensor&          neon_bitwise_xor_(const tensor& other);
-    tensor&          neon_zeros_(shape_type shape_ = {});
-    tensor&          neon_ones_(shape_type shape_);
-    tensor&          neon_randomize_(const shape_type& shape_, bool bounded);
-    tensor&          neon_negative_();
-    tensor&          neon_relu_();
-    tensor&          neon_sigmoid_();
-    tensor&          neon_clipped_relu_(const value_type clip_limit);
-    tensor&          neon_clamp_(const_reference min_val = std::numeric_limits<value_type>::lowest(),
-                                 const_reference max_val = std::numeric_limits<value_type>::max());
-    tensor&          neon_floor_();
-    tensor&          neon_ceil_();
-    tensor&          neon_logical_or_(const value_type value);
-    tensor&          neon_logical_xor_(const value_type value);
-    tensor&          neon_logical_and_(const value_type value);
-    tensor&          neon_logical_or_(const tensor& other);
-    tensor&          neon_logical_xor_(const tensor& other);
-    tensor&          neon_logical_and_(const tensor& other);
-    tensor&          neon_operator_plus_eq(const_reference value) const;
-    tensor&          neon_operator_minus_eq(const tensor& other) const;
-    tensor&          neon_operator_times_eq(const tensor& other) const;
-    tensor&          neon_operator_minus_eq(const_reference value) const;
-    tensor<_s32>     neon_int32_() const;
-    tensor<_u32>     neon_uint32_() const;
-    tensor<_f32>     neon_float32_() const;
-    tensor<_f64>     neon_double_() const;
-    tensor<uint64_t> neon_unsigned_long_() const;
-    tensor<int64_t>  neon_long_() const;
-    tensor           neon_operator_plus(const tensor& other) const;
-    tensor           neon_operator_plus(const value_type value) const;
-    tensor           neon_operator_minus(const tensor& other) const;
-    tensor           neon_operator_minus(const value_type value) const;
-    tensor           neon_transpose() const;
-    tensor           neon_matmul(const tensor& other) const;
-    tensor           neon_absolute_(const tensor& tensor) const;
-    tensor           neon_cross_product(const tensor& other) const;
-    tensor           neon_dot(const tensor& other) const;
-    tensor           neon_argmax(index_type dimension) const;
-    tensor           neon_sum(const index_type axis) const;
-    tensor
-    neon_slice(index_type dimension, std::optional<index_type> start, std::optional<index_type> end, index_type step) const;
+    tensor&            neon_fmax_(const value_type v);
+    tensor&            neon_fmax_(const tensor& other);
+    tensor&            neon_fmod_(const value_type value);
+    tensor&            neon_fmod_(const tensor& other);
+    tensor&            neon_frac_();
+    tensor&            neon_log_();
+    tensor&            neon_log10_();
+    tensor&            neon_log2_();
+    tensor&            neon_exp_();
+    tensor&            neon_sqrt_();
+    tensor&            neon_cos_();
+    tensor&            neon_acos_();
+    tensor&            neon_sin_();
+    tensor&            neon_tan_();
+    tensor&            neon_tanh_();
+    tensor&            neon_sinc_();
+    tensor&            neon_atan_();
+    tensor&            neon_atanh_();
+    tensor&            neon_sinh_();
+    tensor&            neon_asinh_();
+    tensor&            neon_asin_();
+    tensor&            neon_cosh_();
+    tensor&            neon_acosh_();
+    tensor&            neon_pow_(const value_type value);
+    tensor&            neon_pow_(const tensor& other);
+    tensor&            neon_abs_();
+    tensor&            neon_dist_(const tensor& other);
+    tensor&            neon_dist_(const value_type value);
+    tensor&            neon_maximum_(const tensor& other);
+    tensor&            neon_maximum_(const value_type value);
+    tensor&            neon_bitwise_right_shift_(const int amount);
+    tensor&            neon_bitwise_left_shift_(const int amount);
+    tensor&            neon_bitwise_or_(const value_type value);
+    tensor&            neon_bitwise_xor_(const value_type value);
+    tensor&            neon_bitwise_not_();
+    tensor&            neon_bitwise_and_(const value_type value);
+    tensor&            neon_bitwise_and_(const tensor& other);
+    tensor&            neon_bitwise_or_(const tensor& other);
+    tensor&            neon_bitwise_xor_(const tensor& other);
+    tensor&            neon_zeros_(shape_type shape_ = {});
+    tensor&            neon_ones_(shape_type shape_);
+    tensor&            neon_randomize_(const shape_type& shape_, bool bounded);
+    tensor&            neon_negative_();
+    tensor&            neon_relu_();
+    tensor&            neon_sigmoid_();
+    tensor&            neon_clipped_relu_(const value_type clip_limit);
+    tensor&            neon_clamp_(const_reference min_val = std::numeric_limits<value_type>::lowest(),
+                                   const_reference max_val = std::numeric_limits<value_type>::max());
+    tensor&            neon_floor_();
+    tensor&            neon_ceil_();
+    tensor&            neon_logical_or_(const value_type value);
+    tensor&            neon_logical_xor_(const value_type value);
+    tensor&            neon_logical_and_(const value_type value);
+    tensor&            neon_logical_or_(const tensor& other);
+    tensor&            neon_logical_xor_(const tensor& other);
+    tensor&            neon_logical_and_(const tensor& other);
+    tensor&            neon_operator_plus_eq(const_reference value) const;
+    tensor&            neon_operator_minus_eq(const tensor& other) const;
+    tensor&            neon_operator_times_eq(const tensor& other) const;
+    tensor&            neon_operator_minus_eq(const_reference value) const;
+    tensor<_s32>       neon_int32_() const;
+    tensor<_u32>       neon_uint32_() const;
+    tensor<_f32>       neon_float32_() const;
+    tensor<_f64>       neon_double_() const;
+    tensor<uint64_t>   neon_unsigned_long_() const;
+    tensor<int64_t>    neon_long_() const;
+    tensor             neon_operator_plus(const tensor& other) const;
+    tensor             neon_operator_plus(const value_type value) const;
+    tensor             neon_operator_minus(const tensor& other) const;
+    tensor             neon_operator_minus(const value_type value) const;
+    tensor             neon_transpose() const;
+    tensor             neon_matmul(const tensor& other) const;
+    tensor             neon_absolute_(const tensor& tensor) const;
+    tensor             neon_cross_product(const tensor& other) const;
+    tensor             neon_dot(const tensor& other) const;
+    tensor             neon_argmax(index_type dimension) const;
+    tensor             neon_sum(const index_type axis) const;
+    tensor             neon_slice(index_type                dimension,
+                                  std::optional<index_type> start,
+                                  std::optional<index_type> end,
+                                  index_type                step) const;
     tensor<bool>       neon_equal(const tensor& other) const;
     tensor<bool>       neon_equal(const value_type value) const;
     tensor<bool>       neon_less_equal(const tensor& other) const;
@@ -1919,9 +1921,8 @@ class tensor<bool>
         device_(dev) {
         index_type s = computeSize(shape_);
         if (d.size() != static_cast<std::size_t>(s))
-        {
             throw std::invalid_argument("Initial data vector must match the tensor");
-        }
+        
         data_ = d;
         compute_strides();
     }
@@ -1943,9 +1944,8 @@ class tensor<bool>
         device_(d) {
         index_type s = computeSize(shape_);
         if (init_list.size() != static_cast<std::size_t>(s))
-        {
             throw std::invalid_argument("Initializer list size must match tensor size");
-        }
+
         data_ = data_t(init_list);
         compute_strides();
     }
@@ -2189,7 +2189,7 @@ class tensor<bool>
         shape_type ret_dims   = shape_;
 
         ret_dims[-dimension] = slice_size;
-        ret            = self(ret_dims);
+        ret                  = self(ret_dims);
 
         index_type i = start_i, j = 0;
 
