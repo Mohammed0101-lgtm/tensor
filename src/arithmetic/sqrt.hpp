@@ -2,37 +2,39 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::sqrt_() {
-#if defined(__ARM_NEON)
-  return this->neon_sqrt_();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::sqrt(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        elem = std::sqrt(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::sqrt_() const {
-#if defined(__ARM_NEON)
-  return this->neon_sqrt_();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::sqrt(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        elem = std::sqrt(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::sqrt() const {
-  __self __ret = this->clone();
-  __ret.sqrt_();
-  return __ret;
+    self ret = clone();
+    ret.sqrt_();
+    return ret;
 }
