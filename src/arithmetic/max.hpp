@@ -2,146 +2,154 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
-inline tensor<_Tp> tensor<_Tp>::fmax(const tensor& __other) const {
-  __self __ret = this->clone();
-  __ret.fmax_(__other);
-  return __ret;
+template<class _Tp>
+inline tensor<_Tp> tensor<_Tp>::fmax(const tensor& other) const {
+    self ret = clone();
+    ret.fmax_(other);
+    return ret;
 }
 
-template <class _Tp>
-inline tensor<_Tp> tensor<_Tp>::fmax(const value_type __val) const {
-  __self __ret = this->clone();
-  __ret.fmax_(__val);
-  return __ret;
+template<class _Tp>
+inline tensor<_Tp> tensor<_Tp>::fmax(const value_type value) const {
+    self ret = clone();
+    ret.fmax_(value);
+    return ret;
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::fmax_(const value_type __val) {
-#if defined(__ARM_NEON)
-  return this->neon_fmax(__val);
-#endif
-  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::fmax_(const value_type value) {
+    if (!std::is_floating_point_v<value_type>)
+    {
+        throw type_error("Type must be floating point");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = std::fmax(this->__data_[__i], __val);
+    for (auto& elem : data_)
+    {
+        elem = std::fmax(elem, value);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::fmax_(const value_type __val) const {
-#if defined(__ARM_NEON)
-  return this->neon_fmax_(__val);
-#endif
-  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+template<class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::fmax_(const value_type value) const {
+    if (!std::is_floating_point_v<value_type>)
+    {
+        throw type_error("Type must be floating point");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = std::fmax(this->__data_[__i], __val);
+    for (auto& elem : data_)
+    {
+        elem = std::fmax(elem, value);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::fmax_(const tensor& __other) {
-#if defined(__ARM_NEON)
-  return this->neon_fmax_(__other);
-#endif
-  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::fmax_(const tensor& other) {
+    if (!std::is_floating_point_v<value_type>)
+    {
+        throw type_error("Type must be floating point");
+    }
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+    if (!equal_shape(shape(), other.shape()))
+    {
+        throw shape_error("Tensors shapes must be equal");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = std::fmax(this->__data_[__i], __other[__i]);
+    index_type i = 0;
+    for (auto& elem : data_)
+    {
+        elem = std::fmax(elem, other[i++]);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::fmax_(const tensor& __other) const {
-#if defined(__ARM_NEON)
-  return this->neon_fmax_(__other);
-#endif
-  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+template<class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::fmax_(const tensor& other) const {
+    if (!std::is_floating_point_v<value_type>)
+    {
+        throw type_error("Type must be floating point");
+    }
 
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+    if (!equal_shape(shape(), other.shape()))
+    {
+        throw shape_error("Tensors shapes must be equal");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = std::fmax(this->__data_[__i], __other[__i]);
+    index_type i = 0;
+    for (auto& elem : data_)
+    {
+        elem = std::fmax(elem, other[i++]);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-inline tensor<_Tp> tensor<_Tp>::maximum(const tensor& __other) const {
-  __self __ret = this->clone();
-  __ret.maximum_(__other);
-  return __ret;
+template<class _Tp>
+inline tensor<_Tp> tensor<_Tp>::maximum(const tensor& other) const {
+    self ret = clone();
+    ret.maximum_(other);
+    return ret;
 }
 
-template <class _Tp>
-inline tensor<_Tp> tensor<_Tp>::maximum(const_reference __val) const {
-  __self __ret = this->clone();
-  __ret.maximum_(__val);
-  return __ret;
+template<class _Tp>
+inline tensor<_Tp> tensor<_Tp>::maximum(const_reference value) const {
+    self ret = clone();
+    ret.maximum_(value);
+    return ret;
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::maximum_(const tensor& __other) {
-#if defined(__ARM_NEON)
-  return this->neon_maximum_(__other);
-#endif
-  if (!__equal_shape(this->shape(), __other.shape()))
-    throw __shape_error__("Tensors shapes must be equal");
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::maximum_(const tensor& other) {
+    if (!equal_shape(shape(), other.shape()))
+    {
+        throw shape_error("Tensors shapes must be equal");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = std::max(this->__data_[__i], __other[__i]);
+    index_type i = 0;
+    for (auto& elem : data_)
+    {
+        elem = std::max(elem, other[i++]);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::maximum_(const tensor& __other) const {
-#if defined(__ARM_NEON)
-  return this->neon_maximum_(__other);
-#endif
+template<class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::maximum_(const tensor& other) const {
+    if (!equal_shape(shape(), other.shape()))
+    {
+        throw shape_error("Tensors shapes must be equal");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = std::max(this->__data_[__i], __other[__i]);
+    index_type i = 0;
+    for (auto& elem : data_)
+    {
+        elem = std::max(elem, other[i++]);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::maximum_(const value_type __val) {
-#if defined(__ARM_NEON)
-  return this->neon_maximum_(__val);
-#endif
+template<class _Tp>
+tensor<_Tp>& tensor<_Tp>::maximum_(const value_type value) {
+    for (auto& elem : data_)
+    {
+        elem = std::max(elem, value);
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = std::max(this->__data_[__i], __val);
-
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::maximum_(const value_type __val) const {
-#if defined(__ARM_NEON)
-  return this->neon_maximum_(__val);
-#endif
+template<class _Tp>
+inline const tensor<_Tp>& tensor<_Tp>::maximum_(const value_type value) const {
+    for (auto& elem : data_)
+    {
+        elem = std::max(elem, value);
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = std::max(this->__data_[__i], __val);
-
-  return *this;
+    return *this;
 }
