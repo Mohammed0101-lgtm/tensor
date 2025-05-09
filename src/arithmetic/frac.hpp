@@ -2,37 +2,39 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::frac_() {
-#if defined(__ARM_NEON)
-  return this->neon_frac_();
-#endif
-  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+    if (!std::is_floating_point_v<value_type>)
+    {
+        throw type_error("Type must be floating point");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(this->__frac(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        elem = frac(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::frac_() const {
-#if defined(__ARM_NEON)
-  return this->neon_frac_();
-#endif
-  if (!std::is_floating_point_v<value_type>) throw __type_error__("Type must be floating point");
+    if (!std::is_floating_point_v<value_type>)
+    {
+        throw type_error("Type must be floating point");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(this->__frac(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        elem = frac(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::frac() const {
-  __self __ret = this->clone();
-  __ret.frac_();
-  return __ret;
+    self ret = clone();
+    ret.frac_();
+    return ret;
 }
