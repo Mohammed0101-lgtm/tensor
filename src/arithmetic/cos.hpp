@@ -2,142 +2,170 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::cos_() {
-#if defined(__ARM_NEON)
-  return this->neon_cos_();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::cos(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        elem = std::cos(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::cos_() const {
-#if defined(__ARM_NEON)
-  return this->neon_cos_();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::cos(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        elem = std::cos(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::acos_() {
-#if defined(__ARM_NEON)
-  return this->neon_acos_();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::acos(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        if (elem > 1.0 || elem < -1.0)
+        {
+            throw std::domain_error("Input data is out of domain for acos()");
+        }
 
-  return *this;
+        elem = std::acos(elem);
+    }
+
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::acos_() const {
-#if defined(__ARM_NEON)
-  return this->neon_acos_();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::acos(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        if (elem > 1.0 || elem < -1.0)
+        {
+            throw std::domain_error("Input data is out of domain for acos()");
+        }
 
-  return *this;
+        elem = std::acos(elem);
+    }
+
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::acos() const {
-  __self __ret = this->clone();
-  __ret.acos_();
-  return __ret;
+    self ret = clone();
+    ret.acos_();
+    return ret;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::cos() const {
-  __self __ret = this->clone();
-  __ret.cos_();
-  return __ret;
+    self ret = clone();
+    ret.cos_();
+    return ret;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::cosh() const {
-  __self __ret = this->clone();
-  __ret.cosh_();
-  return __ret;
+    self ret = clone();
+    ret.cosh_();
+    return ret;
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::cosh_() {
-#if defined(__ARM_NEON)
-  return this->neon_cosh_();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::cosh(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        elem = std::cosh(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::cosh_() const {
-#if defined(__ARM_NEON)
-  return this->neon_cosh_();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::cosh(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        elem = std::cosh(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::acosh_() {
-#if defined(__ARM_NEON)
-  return this->neon_acosh_();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::acosh(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        if (elem < 1.0)
+        {
+            throw std::domain_error("Input data is out of domain of acosh()");
+        }
 
-  return *this;
+        elem = std::acosh(elem);
+    }
+
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::acosh_() const {
-#if defined(__ARM_NEON)
-  return this->neon_acosh_();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::acosh(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        if (elem < 1.0)
+        {
+            throw std::domain_error("Input data is out of domain of acosh()");
+        }
 
-  return *this;
+        elem = std::acosh(elem);
+    }
+
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::acosh() const {
-  __self __ret = this->clone();
-  __ret.acosh_();
-  return __ret;
+    self ret = clone();
+    ret.acosh_();
+    return ret;
 }
