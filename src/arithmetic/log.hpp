@@ -2,114 +2,120 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::log_() {
-#if defined(__ARM_NEON)
-  return this->neon_log_();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::log(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        elem = std::log(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::log_() const {
-#if defined(__ARM_NEON)
-  return this->neon_log_();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::log(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        elem = std::log(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::log() const {
-  __self __ret = this->clone();
-  __ret.log_();
-  return __ret;
+    self ret = clone();
+    ret.log_();
+    return ret;
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::log10_() {
-#if defined(__ARM_NEON)
-  return this->neon_log10_();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::log10(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        elem = std::log10(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::log10_() const {
-#if defined(__ARM_NEON)
-  return this->neon_log10_();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::log10(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        elem = std::log10(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::log10() const {
-  __self __ret = this->clone();
-  __ret.log10_();
-  return __ret;
+    self ret = clone();
+    ret.log10_();
+    return ret;
 }
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::log2_() {
-#if defined(__ARM_NEON)
-  return this->neon_log2_();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::log2(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        elem = std::log2(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline const tensor<_Tp>& tensor<_Tp>::log2_() const {
-#if defined(__ARM_NEON)
-  return this->neon_log2_();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+    {
+        throw type_error("Type must be arithmetic");
+    }
 
-#pragma omp parallel
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i)
-    this->__data_[__i] = static_cast<value_type>(std::log2(this->__data_[__i]));
+    for (auto& elem : data_)
+    {
+        elem = std::log2(elem);
+    }
 
-  return *this;
+    return *this;
 }
 
-template <class _Tp>
+template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::log2() const {
-  __self __ret = this->clone();
-  __ret.log2_();
-  return __ret;
+    self ret = clone();
+    ret.log2_();
+    return ret;
 }
 
-template <class _Tp>
-inline tensor<_Tp> tensor<_Tp>::log_softmax(const index_type __dim) const {
-  __self __ret = this->clone();
-  __ret.log_softmax_(__dim);
-  return __ret;
+template<class _Tp>
+inline tensor<_Tp> tensor<_Tp>::log_softmax(const index_type dimension) const {
+    self ret = clone();
+    ret.log_softmax_(dimension);
+    return ret;
 }
