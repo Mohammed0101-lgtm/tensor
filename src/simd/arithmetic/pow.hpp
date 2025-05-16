@@ -5,9 +5,7 @@
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_pow_(const value_type value) {
     if (!std::is_arithmetic_v<value_type>)
-    {
         throw type_error("Type must be arithmetic");
-    }
 
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
@@ -15,22 +13,18 @@ tensor<_Tp>& tensor<_Tp>::neon_pow_(const value_type value) {
     for (; i < simd_end; i += simd_width)
     {
         neon_type<value_type>  data_vec = neon_load<value_type>(&data_[i]);
-        alignas(16) value_type vals[simd_widthww
+        alignas(16) value_type vals[simd_width];
         neon_load<value_type>(vals, data_vec);
 
         for (int j = 0; j < simd_width; ++j)
-        {
             vals[j] = static_cast<value_type>(std::pow(vals[j], value));
-        }
 
         neon_type<value_type> pow_vec = neon_load<value_type>(vals);
         neon_store<value_type>(&data_[i], pow_vec);
     }
 
     for (; i < data_.size(); ++i)
-    {
         data_[i] = static_cast<value_type>(std::pow(data_[i], value));
-    }
 
     return *this;
 }
@@ -38,14 +32,10 @@ tensor<_Tp>& tensor<_Tp>::neon_pow_(const value_type value) {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::neon_pow_(const tensor& other) {
     if (!std::is_arithmetic_v<value_type>)
-    {
         throw type_error("Type must be arithmetic");
-    }
 
     if (!equal_shape(shape(), other.shape()))
-    {
         throw shape_error("Tensors shapes must be equal");
-    }
 
     const index_type simd_end = data_.size() - (data_.size() % simd_width);
 
@@ -68,9 +58,7 @@ tensor<_Tp>& tensor<_Tp>::neon_pow_(const tensor& other) {
     }
 
     for (; i < data_.size(); ++i)
-    {
-        data_[i] = static_cast<value_type>(std::pow(static_cast<_f32>(data_[i]), static_cast<_f32>(other[i])));
-    }
+        data_[i] = static_cast<value_type>(std::pow((_f32) data_[i], (_f32) other[i]));
 
     return *this;
 }
