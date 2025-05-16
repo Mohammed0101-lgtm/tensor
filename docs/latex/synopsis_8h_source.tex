@@ -22,7 +22,7 @@
 \DoxyCodeLine{00019\ \ \ \ \textcolor{keyword}{public}:}
 \DoxyCodeLine{00020\ \ \ \ \ \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor}}()\ =\ \textcolor{keywordflow}{default};}
 \DoxyCodeLine{00021\ }
-\DoxyCodeLine{00022\ \ \ \ \ \mbox{\hyperlink{classtensor_ad22a32030600f96df9fc5a7e2b0ab392}{tensor}}(\textcolor{keyword}{const}\ std::vector<int64\_t>\ \_\_sh,\ \textcolor{keyword}{const}\ \_Tp\ val)\ :}
+\DoxyCodeLine{00022\ \ \ \ \ \mbox{\hyperlink{classtensor_ad22a32030600f96df9fc5a7e2b0ab392}{tensor}}(\textcolor{keyword}{const}\ std::vector<int64\_t>\ \_\_sh,\ \textcolor{keyword}{const}\ \_Tp\ value)\ :}
 \DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ shape\_(\_\_sh)\ \{}
 \DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ int64\_t\ \_size\ =\ 1LL;}
 \DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ d\ :\ \_\_sh)}
@@ -30,16 +30,16 @@
 \DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \ \ \ \ \_size\ *=\ d;}
 \DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{00029\ }
-\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ this-\/>data\_\ =\ std::vector<\_Tp>(\_size,\ val);}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ this-\/>data\_\ =\ std::vector<\_Tp>(\_size,\ value);}
 \DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ compute\_strides();}
 \DoxyCodeLine{00032\ \ \ \ \ \}}
 \DoxyCodeLine{00033\ }
 \DoxyCodeLine{00034\ \ \ \ \ \mbox{\hyperlink{classtensor_add431218c82f5859a13e30022cb2933d}{tensor}}(\textcolor{keyword}{const}\ std::vector<int64\_t>\ \_\_sh)\ :}
 \DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ shape\_(\_\_sh)\ \{}
 \DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ int64\_t\ \_size\ =\ 1;}
-\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ dim\ :\ \_\_sh)}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ dimension\ :\ \_\_sh)}
 \DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \ \ \ \ \_size\ *=\ dim;}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \ \ \ \ \_size\ *=\ dimension;}
 \DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{00041\ }
 \DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ this-\/>data\_\ =\ std::vector<\_Tp>(\_size);}
@@ -1429,7 +1429,7 @@
 \DoxyCodeLine{01426\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{01427\ \ \ \ \ \}}
 \DoxyCodeLine{01428\ }
-\DoxyCodeLine{01429\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classtensor_a45218616edeefdc8558691ad83ebe1bc}{count\_nonzero}}(int64\_t\ dim\ =\ -\/1LL)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{01429\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classtensor_a45218616edeefdc8558691ad83ebe1bc}{count\_nonzero}}(int64\_t\ dimension\ =\ -\/1LL)\textcolor{keyword}{\ const\ }\{}
 \DoxyCodeLine{01430\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::is\_scalar<\_Tp>::value)}
 \DoxyCodeLine{01431\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{01432\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ compare\ a\ non\ scalar\ value\ to\ zero"{}});}
@@ -1437,7 +1437,7 @@
 \DoxyCodeLine{01434\ }
 \DoxyCodeLine{01435\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ count\ =\ 0;}
 \DoxyCodeLine{01436\ }
-\DoxyCodeLine{01437\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dim\ ==\ -\/1)}
+\DoxyCodeLine{01437\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dimension\ ==\ -\/1)}
 \DoxyCodeLine{01438\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{01439\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \_Tp\&\ elem\ :\ data\_)}
 \DoxyCodeLine{01440\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
@@ -1449,7 +1449,7 @@
 \DoxyCodeLine{01446\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{01447\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
 \DoxyCodeLine{01448\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{01449\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dim\ <\ 0\ ||\ dim\ >=\ \textcolor{keyword}{static\_cast<}int64\_t\textcolor{keyword}{>}(shape\_.size()))}
+\DoxyCodeLine{01449\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dimension\ <\ 0\ ||\ dimension\ >=\ \textcolor{keyword}{static\_cast<}int64\_t\textcolor{keyword}{>}(shape\_.size()))}
 \DoxyCodeLine{01450\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{01451\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::invalid\_argument(\textcolor{stringliteral}{"{}Invalid\ dimension\ provided."{}});}
 \DoxyCodeLine{01452\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
@@ -1844,9 +1844,9 @@
 \DoxyCodeLine{01841\ }
 \DoxyCodeLine{01842\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}]\(\backslash\)nData:\ "{}};}
 \DoxyCodeLine{01843\ }
-\DoxyCodeLine{01844\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \_Tp\&\ val\ :\ this-\/>data\_)}
+\DoxyCodeLine{01844\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \_Tp\&\ value\ :\ this-\/>data\_)}
 \DoxyCodeLine{01845\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{01846\ \ \ \ \ \ \ \ \ \ \ \ \ std::cout\ <<\ val\ <<\ \textcolor{stringliteral}{"{}\ "{}};}
+\DoxyCodeLine{01846\ \ \ \ \ \ \ \ \ \ \ \ \ std::cout\ <<\ value\ <<\ \textcolor{stringliteral}{"{}\ "{}};}
 \DoxyCodeLine{01847\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{01848\ \ \ \ \ \ \ \ \ std::cout\ <<\ std::endl;}
 \DoxyCodeLine{01849\ \ \ \ \ \}}
@@ -1890,9 +1890,9 @@
 \DoxyCodeLine{01887\ }
 \DoxyCodeLine{01888\ \ \ \ \ \ \ \ \ std::srand(time(\textcolor{keyword}{nullptr}));}
 \DoxyCodeLine{01889\ \ \ \ \ \ \ \ \ int64\_t\ \_size\ =\ 1;}
-\DoxyCodeLine{01890\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ dim\ :\ \_sh)}
+\DoxyCodeLine{01890\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (int64\_t\ dimension\ :\ \_sh)}
 \DoxyCodeLine{01891\ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{01892\ \ \ \ \ \ \ \ \ \ \ \ \ \_size\ *=\ dim;}
+\DoxyCodeLine{01892\ \ \ \ \ \ \ \ \ \ \ \ \ \_size\ *=\ dimension;}
 \DoxyCodeLine{01893\ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{01894\ }
 \DoxyCodeLine{01895\ \ \ \ \ \ \ \ \ std::vector<\_Tp>\ d(\_size);}
