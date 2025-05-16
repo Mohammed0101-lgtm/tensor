@@ -8,6 +8,11 @@ inline typename tensor<_Tp>::data_t tensor<_Tp>::storage() const noexcept {
 }
 
 template<class _Tp>
+inline typename tensor<_Tp>::data_t& tensor<_Tp>::storage_() const {
+    return std::ref<data_t>(data_);
+}
+
+template<class _Tp>
 inline typename tensor<_Tp>::shape_type tensor<_Tp>::shape() const noexcept {
     return shape_;
 }
