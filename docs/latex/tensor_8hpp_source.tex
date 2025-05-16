@@ -1026,8 +1026,8 @@
 \DoxyCodeLine{01023\ \ \ \ \ this-\/>\_\_check\_is\_scalar\_type(\textcolor{stringliteral}{"{}Cannot\ get\ the\ square\ root\ of\ non\ scalar\ values"{}});}
 \DoxyCodeLine{01024\ \ \ \ \ data\_t\ \_\_ret(this-\/>\_\_data\_.size());}
 \DoxyCodeLine{01025\ }
-\DoxyCodeLine{01026\ \ \ \ \ std::transform(this-\/>\_\_data\_.begin(),\ this-\/>\_\_data\_.end(),\ \_\_ret.begin(),\ [](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ val)\ \{}
-\DoxyCodeLine{01027\ \ \ \ \ \ \ \ \ return\ static\_cast<value\_type>(std::sqrt(static\_cast<double>(val)));}
+\DoxyCodeLine{01026\ \ \ \ \ std::transform(this-\/>\_\_data\_.begin(),\ this-\/>\_\_data\_.end(),\ \_\_ret.begin(),\ [](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ value)\ \{}
+\DoxyCodeLine{01027\ \ \ \ \ \ \ \ \ return\ static\_cast<value\_type>(std::sqrt(static\_cast<double>(value)));}
 \DoxyCodeLine{01028\ \ \ \ \ \});}
 \DoxyCodeLine{01029\ }
 \DoxyCodeLine{01030\ \ \ \ \ \textcolor{keywordflow}{return}\ \_\_self(\_\_ret,\ this-\/>\_\_shape\_);}
@@ -1039,8 +1039,8 @@
 \DoxyCodeLine{01036\ \ \ \ \ this-\/>\_\_check\_is\_scalar\_type(\textcolor{stringliteral}{"{}Cannot\ perform\ a\ acosh\ on\ non-\/scalar\ data\ type"{}});}
 \DoxyCodeLine{01037\ \ \ \ \ data\_t\ \_\_ret(this-\/>\_\_data\_.size());}
 \DoxyCodeLine{01038\ }
-\DoxyCodeLine{01039\ \ \ \ \ std::transform(this-\/>\_\_data\_.begin(),\ this-\/>\_\_data\_.end(),\ \_\_ret.begin(),\ [](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ val)\ \{}
-\DoxyCodeLine{01040\ \ \ \ \ \ \ \ \ return\ static\_cast<value\_type>(std::acosh(static\_cast<double>(val)));}
+\DoxyCodeLine{01039\ \ \ \ \ std::transform(this-\/>\_\_data\_.begin(),\ this-\/>\_\_data\_.end(),\ \_\_ret.begin(),\ [](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ value)\ \{}
+\DoxyCodeLine{01040\ \ \ \ \ \ \ \ \ return\ static\_cast<value\_type>(std::acosh(static\_cast<double>(value)));}
 \DoxyCodeLine{01041\ \ \ \ \ \});}
 \DoxyCodeLine{01042\ }
 \DoxyCodeLine{01043\ \ \ \ \ \textcolor{keywordflow}{return}\ \_\_self(\_\_ret,\ this-\/>\_\_shape\_);}
@@ -1052,8 +1052,8 @@
 \DoxyCodeLine{01049\ \ \ \ \ this-\/>\_\_check\_is\_integral\_type(\textcolor{stringliteral}{"{}Given\ data\ type\ must\ be\ an\ integral"{}});}
 \DoxyCodeLine{01050\ \ \ \ \ data\_t\ \_\_ret(this-\/>\_\_data\_.size());}
 \DoxyCodeLine{01051\ }
-\DoxyCodeLine{01052\ \ \ \ \ std::transform(this-\/>\_\_data\_.begin(),\ this-\/>\_\_data\_.end(),\ \_\_ret.begin(),\ [](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ val)\ \{}
-\DoxyCodeLine{01053\ \ \ \ \ \ \ \ \ return\ static\_cast<value\_type>(std::acosh(static\_cast<double>(val)));}
+\DoxyCodeLine{01052\ \ \ \ \ std::transform(this-\/>\_\_data\_.begin(),\ this-\/>\_\_data\_.end(),\ \_\_ret.begin(),\ [](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ value)\ \{}
+\DoxyCodeLine{01053\ \ \ \ \ \ \ \ \ return\ static\_cast<value\_type>(std::acosh(static\_cast<double>(value)));}
 \DoxyCodeLine{01054\ \ \ \ \ \});}
 \DoxyCodeLine{01055\ }
 \DoxyCodeLine{01056\ \ \ \ \ \textcolor{keywordflow}{return}\ \_\_self(\_\_ret,\ this-\/>\_\_shape\_);}
@@ -2803,14 +2803,14 @@
 \DoxyCodeLine{02800\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ float32x4x4\_t\ input;}
 \DoxyCodeLine{02801\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\ =\ 0;\ k\ <\ 4;\ k++)}
 \DoxyCodeLine{02802\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{02803\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ input.val[k]\ =\ vld1q\float32_t(\&this-\/>\_\_data\_[(i\ +\ k)\ *\ cols\ +\ j]);}
+\DoxyCodeLine{02803\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ input.value[k]\ =\ vld1q\float32_t(\&this-\/>\_\_data\_[(i\ +\ k)\ *\ cols\ +\ j]);}
 \DoxyCodeLine{02804\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{02805\ }
 \DoxyCodeLine{02806\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ float32x4x4\_t\ output\ =\ vld4q\float32_t(\textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }\textcolor{keywordtype}{float}*\textcolor{keyword}{>}(\&input));}
 \DoxyCodeLine{02807\ }
 \DoxyCodeLine{02808\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\ =\ 0;\ k\ <\ 4;\ k++)}
 \DoxyCodeLine{02809\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
-\DoxyCodeLine{02810\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vst1q\float32_t(\&\_\_ret.\_\_data\_[(j\ +\ k)\ *\ rows\ +\ i],\ output.val[k]);}
+\DoxyCodeLine{02810\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vst1q\float32_t(\&\_\_ret.\_\_data\_[(j\ +\ k)\ *\ rows\ +\ i],\ output.value[k]);}
 \DoxyCodeLine{02811\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{02812\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
 \DoxyCodeLine{02813\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
@@ -3308,8 +3308,8 @@
 \DoxyCodeLine{03305\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (;\ \_\_i\ <\ num\_vectors\ *\ vec\_size;\ \_\_i\ +=\ vec\_size)}
 \DoxyCodeLine{03306\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{03307\ \ \ \ \ \ \ \ \ \ \ \ \ float32x4\_t\ data\_vec\ \ \ =\ vld1q\float32_t(\&this-\/>\_\_data\_[\_\_i]);}
-\DoxyCodeLine{03308\ \ \ \ \ \ \ \ \ \ \ \ \ float32x4\_t\ val\_vec\ \ \ \ =\ vdupq\_n\float32_t(\_\_val);}
-\DoxyCodeLine{03309\ \ \ \ \ \ \ \ \ \ \ \ \ uint32x4\_t\ \ cmp\_result\ =\ vcleq\float32_t(data\_vec,\ val\_vec);}
+\DoxyCodeLine{03308\ \ \ \ \ \ \ \ \ \ \ \ \ float32x4\_t\ value\_vec\ \ \ \ =\ vdupq\_n\float32_t(\_\_val);}
+\DoxyCodeLine{03309\ \ \ \ \ \ \ \ \ \ \ \ \ uint32x4\_t\ \ cmp\_result\ =\ vcleq\float32_t(data\_vec,\ value\_vec);}
 \DoxyCodeLine{03310\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ mask\ \ \ \ \ \ \ =\ vaddvq\_u32(cmp\_result);}
 \DoxyCodeLine{03311\ }
 \DoxyCodeLine{03312\ \ \ \ \ \ \ \ \ \ \ \ \ \_\_ret[\_\_i]\ \ \ \ \ =\ mask\ \&\ 1;}
@@ -3414,11 +3414,11 @@
 \DoxyCodeLine{03411\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ remaining\ \ \ =\ this-\/>\_\_data\_.size()\ \%\ vec\_size;}
 \DoxyCodeLine{03412\ }
 \DoxyCodeLine{03413\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \ \ \ \ \ \_\_i\ \ \ \ \ =\ 0;}
-\DoxyCodeLine{03414\ \ \ \ \ \ \ \ \ float32x4\_t\ val\_vec\ =\ vdupq\_n\float32_t(\_\_val);}
+\DoxyCodeLine{03414\ \ \ \ \ \ \ \ \ float32x4\_t\ value\_vec\ =\ vdupq\_n\float32_t(\_\_val);}
 \DoxyCodeLine{03415\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (;\ \_\_i\ <\ num\_vectors\ *\ vec\_size;\ \_\_i\ +=\ vec\_size)}
 \DoxyCodeLine{03416\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{03417\ \ \ \ \ \ \ \ \ \ \ \ \ float32x4\_t\ data\_vec\ \ \ =\ vld1q\float32_t(\&this-\/>\_\_data\_[\_\_i]);}
-\DoxyCodeLine{03418\ \ \ \ \ \ \ \ \ \ \ \ \ uint32x4\_t\ \ cmp\_result\ =\ vcgeq\float32_t(data\_vec,\ val\_vec);}
+\DoxyCodeLine{03418\ \ \ \ \ \ \ \ \ \ \ \ \ uint32x4\_t\ \ cmp\_result\ =\ vcgeq\float32_t(data\_vec,\ value\_vec);}
 \DoxyCodeLine{03419\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ mask\ \ \ \ \ \ \ =\ vaddvq\_u32(cmp\_result);}
 \DoxyCodeLine{03420\ }
 \DoxyCodeLine{03421\ \ \ \ \ \ \ \ \ \ \ \ \ \_\_ret[\_\_i]\ \ \ \ \ =\ mask\ \&\ 1;}
@@ -3523,13 +3523,13 @@
 \DoxyCodeLine{03520\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ num\_vectors\ =\ this-\/>\_\_data\_.size()\ /\ vec\_size;}
 \DoxyCodeLine{03521\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ remaining\ \ \ =\ this-\/>\_\_data\_.size()\ \%\ vec\_size;}
 \DoxyCodeLine{03522\ }
-\DoxyCodeLine{03523\ \ \ \ \ \ \ \ \ float32x4\_t\ val\_vec\ =\ vdupq\_n\float32_t(\_\_val);}
+\DoxyCodeLine{03523\ \ \ \ \ \ \ \ \ float32x4\_t\ value\_vec\ =\ vdupq\_n\float32_t(\_\_val);}
 \DoxyCodeLine{03524\ }
 \DoxyCodeLine{03525\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \_\_i\ =\ 0;}
 \DoxyCodeLine{03526\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (;\ \_\_i\ <\ num\_vectors\ *\ vec\_size;\ \_\_i\ +=\ vec\_size)}
 \DoxyCodeLine{03527\ \ \ \ \ \ \ \ \ \{}
 \DoxyCodeLine{03528\ \ \ \ \ \ \ \ \ \ \ \ \ float32x4\_t\ data\_vec\ \ \ =\ vld1q\float32_t(\&this-\/>\_\_data\_[\_\_i]);}
-\DoxyCodeLine{03529\ \ \ \ \ \ \ \ \ \ \ \ \ uint32x4\_t\ \ cmp\_result\ =\ vceqq\float32_t(data\_vec,\ val\_vec);}
+\DoxyCodeLine{03529\ \ \ \ \ \ \ \ \ \ \ \ \ uint32x4\_t\ \ cmp\_result\ =\ vceqq\float32_t(data\_vec,\ value\_vec);}
 \DoxyCodeLine{03530\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ mask\ \ \ \ \ \ \ =\ vaddvq\_u32(cmp\_result);}
 \DoxyCodeLine{03531\ }
 \DoxyCodeLine{03532\ \ \ \ \ \ \ \ \ \ \ \ \ \_\_ret[\_\_i]\ \ \ \ \ =\ mask\ \&\ 1;}
