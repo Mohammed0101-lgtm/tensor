@@ -1,7 +1,7 @@
 //
 // tensor base
 //
-
+/*
 #pragma once
 
 #include <__algorithm/clamp.h>
@@ -679,3 +679,4 @@ class tensor<bool>
 };  // aten::tensor<bool>
 
 };  // namespace at
+*/
