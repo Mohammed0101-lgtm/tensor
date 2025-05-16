@@ -2,69 +2,77 @@
 
 #include "tensorbase.hpp"
 
-template <class _Tp>
-double tensor<_Tp>::mode(const index_type __dim) const {
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+template<class _Tp>
+double tensor<_Tp>::mode(const index_type dimension) const {
+    if (!std::is_arithmetic_v<value_type>)
+        throw type_error("Type must be arithmetic");
 
-  if (__dim >= this->n_dims() || __dim < -1)
-    throw __index_error__("given dimension is out of range of the tensor dimensions");
+    if (dimension >= n_dims() || dimension < -1)
+        throw index_error("given dimension is out of range of the tensor dimensions");
 
-  index_type __stride = (__dim == -1) ? 0 : this->__strides_[__dim];
-  index_type __end    = (__dim == -1) ? this->__data_.size() : this->__strides_[__dim];
+    index_type stride = (dimension == -1) ? 0 : strides_[dimension];
+    index_type end    = (dimension == -1) ? data_.size() : strides_[dimension];
 
-  if (this->__data_.empty()) return std::numeric_limits<double>::quiet_NaN();
+    if (data_.empty())
+        return std::numeric_limits<double>::quiet_NaN();
 
-  std::unordered_map<value_type, size_t> __counts;
-  for (index_type __i = __stride; __i < __end; ++__i) ++__counts[this->__data_[__i]];
+    std::unordered_map<value_type, std::size_t> counts;
+    for (index_type i = stride; i < end; ++i)
+        ++counts[data_[i]];
 
-  value_type __ret  = 0;
-  size_t     __most = 0;
-  for (const std::pair<value_type, size_t>& __pair : __counts) {
-    if (__pair.second > __most) {
-      __ret  = __pair.first;
-      __most = __pair.second;
+    value_type  ret  = 0;
+    std::size_t most = 0;
+    for (const auto& pair : counts)
+    {
+        if (pair.second > most)
+        {
+            ret  = pair.first;
+            most = pair.second;
+        }
     }
-  }
 
-  return static_cast<double>(__ret);
+    return static_cast<double>(ret);
 }
 
-template <class _Tp>
-double tensor<_Tp>::median(const index_type __dim) const {
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+template<class _Tp>
+double tensor<_Tp>::median(const index_type dimension) const {
+    if (!std::is_arithmetic_v<value_type>)
+        throw type_error("Type must be arithmetic");
 
-  if (__dim >= this->n_dims() || __dim < -1)
-    throw __index_error__("given dimension is out of range of the tensor dimensions");
+    if (dimension >= n_dims() || dimension < -1)
+        throw index_error("given dimension is out of range of the tensor dimensions");
 
-  index_type __stride = (__dim == -1) ? 0 : this->__strides_[__dim];
-  index_type __end    = (__dim == -1) ? this->__data_.size() : this->__strides_[__dim];
+    index_type stride = (dimension == -1) ? 0 : strides_[dimension];
+    index_type end    = (dimension == -1) ? data_.size() : strides_[dimension];
 
-  data_t __d(this->__data_.begin() + __stride, this->__data_.begin() + __end);
+    data_t d(data_.begin() + stride, data_.begin() + end);
 
-  if (__d.empty()) return std::numeric_limits<double>::quiet_NaN();
+    if (d.empty())
+        return std::numeric_limits<double>::quiet_NaN();
 
-  std::nth_element(__d.begin(), __d.begin() + __d.size() / 2, __d.end());
+    std::nth_element(d.begin(), d.begin() + d.size() / 2, d.end());
 
-  if (__d.size() % 2 == 0) {
-    std::nth_element(__d.begin(), __d.begin() + __d.size() / 2 - 1, __d.end());
-    return (static_cast<double>(__d[__d.size() / 2]) + __d[__d.size() / 2 - 1]) / 2.0;
-  }
+    if (d.size() % 2 == 0)
+    {
+        std::nth_element(d.begin(), d.begin() + d.size() / 2 - 1, d.end());
+        return (static_cast<double>(d[d.size() / 2]) + d[d.size() / 2 - 1]) / 2.0;
+    }
 
-  return __d[__d.size() / 2];
+    return d[d.size() / 2];
 }
 
-template <class _Tp>
+template<class _Tp>
 double tensor<_Tp>::mean() const {
-#if defined(__ARM_NEON)
-  return this->neon_mean();
-#endif
-  if (!std::is_arithmetic_v<value_type>) throw __type_error__("Type must be arithmetic");
+    if (!std::is_arithmetic_v<value_type>)
+        throw type_error("Type must be arithmetic");
 
-  double __m = 0.0;
+    double m = 0.0;
 
-  if (this->empty()) return __m;
+    if (empty())
+        return m;
 
-  for (index_type __i = 0; __i < this->__data_.size(); ++__i) __m += this->__data_[__i];
+    for (const auto& elem : data_)
+        m += elem;
 
-  return static_cast<double>(__m) / static_cast<double>(this->__data_.size());
+    return static_cast<double>(m) / static_cast<double>(data_.size());
 }
