@@ -145,6 +145,7 @@ class tensor
     tensor<double>        double_() const;
 
     data_t          storage() const noexcept;
+    data_t&         storage_() const;
     shape_type      shape() const noexcept;
     shape_type      strides() const noexcept;
     Device          device() const noexcept;
@@ -1922,7 +1923,7 @@ class tensor<bool>
         index_type s = computeSize(shape_);
         if (d.size() != static_cast<std::size_t>(s))
             throw std::invalid_argument("Initial data vector must match the tensor");
-        
+
         data_ = d;
         compute_strides();
     }
@@ -2403,12 +2404,12 @@ class tensor<bool>
         return ret;
     }
 
-    tensor<bool>& randomize_(const shape_type& shape_ = {}) {
-        if (shape_.empty() && shape_.empty())
+    tensor<bool>& randomize_(const shape_type& shape = {}) {
+        if (shape_.empty() && shape.empty())
             throw shape_error("Shape must be initialized");
 
-        if (shape_.empty() || shape_ != shape_)
-            shape_ = shape_;
+        if (shape.empty() || shape != shape_)
+            shape_ = shape;
 
         index_type s = computeSize(shape_);
         data_.resize(s);
