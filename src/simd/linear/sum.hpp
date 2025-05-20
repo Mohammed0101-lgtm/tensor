@@ -3,38 +3,36 @@
 #include "tensorbase.hpp"
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::neon_sum(const index_type axis) const {
-    if (axis < 0 || axis >= static_cast<index_type>(shape_.size()))
-    {
+tensor<_Tp> internal::neon::sum(tensor<_Tp>& t, const _u64 axis) {
+    if (axis < 0 || axis >= static_cast<_u64>(shape_.size()))
         throw std::invalid_argument("Invalid axis for sum");
-    }
 
-    shape_type ret_sh   = shape_;
-    ret_sh[axis]        = 1;
-    index_type ret_size = std::accumulate(ret_sh.begin(), ret_sh.end(), 1, std::multiplies<index_type>());
-    data_t     ret_data(ret_size, value_type(0.0f));
+    std::vector<_Tp>& data_  = t.storage_();
+    shape_type        ret_sh = shape_;
+    ret_sh[axis]             = 1;
+    _u64       ret_size      = std::accumulate(ret_sh.begin(), ret_sh.end(), 1, std::multiplies<_u64>());
+    data_t     ret_data(ret_size, _Tp(0.0f));
+    const _u64 axis_size  = shape_[axis];
+    const _u64 outer_size = compute_outer_size(axis);
+    const _u64 inner_size = size(0) / (outer_size * axis_size);
+    const _u64 simd_end   = data_.size() - (data_.size() % t.simd_width);
 
-    const index_type axis_size  = shape_[axis];
-    const index_type outer_size = compute_outer_size(axis);
-    const index_type inner_size = size(0) / (outer_size * axis_size);
-    const index_type simd_end   = data_.size() - (data_.size() % simd_width);
-
-    for (index_type outer = 0; outer < outer_size; ++outer)
+    for (_u64 outer = 0; outer < outer_size; ++outer)
     {
-        for (index_type inner = 0; inner < inner_size; ++inner)
+        for (_u64 inner = 0; inner < inner_size; ++inner)
         {
-            neon_type<value_type> sum_vec = neon_dup<value_type>(value_type(0.0f));
-            index_type            i       = outer * axis_size * inner_size + inner;
-            index_type            j       = 0;
+            neon_type<_Tp> sum_vec = neon_dup<_Tp>(_Tp(0.0f));
+            _u64           i       = outer * axis_size * inner_size + inner;
+            _u64           j       = 0;
 
-            for (; j < axis_size; j += simd_width)
+            for (; j < axis_size; j += t.simd_width)
             {
-                neon_type<value_type> data_vec = neon_load<value_type>(&data_[i]);
-                sum_vec                        = neon_add<value_type>(sum_vec, data_vec);
-                i += inner_size * simd_width;
+                neon_type<_Tp> data_vec = neon_load<_Tp>(&data_[i]);
+                sum_vec                 = neon_add<_Tp>(sum_vec, data_vec);
+                i += inner_size * t.simd_width;
             }
 
-            value_type sum = neon_addv<value_type>(sum_vec);
+            _Tp sum = neon_addv<_Tp>(sum_vec);
 
             for (; j < axis_size; ++j)
             {
