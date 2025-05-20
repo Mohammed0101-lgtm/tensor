@@ -3,57 +3,48 @@
 #include "tensorbase.hpp"
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::neon_transpose() const {
+tensor<_Tp> internal::neon::transpose(tensor<_Tp>& t) {
     if (!equal_shape(shape_, shape_type({shape_[0], shape_[1]})))
-        throw shape_error("Matrix transposition can only be done on 2D tensors");
+        throw error::shape_error("Matrix transposition can only be done on 2D tensors");
 
-    tensor           ret({shape_[1], shape_[0]});
-    const index_type rows = shape_[0];
-    const index_type cols = shape_[1];
+    std::vector<_Tp>& data_ = t.storage_();
+    tensor            ret({shape_[1], shape_[0]});
+    const _u64        rows     = shape_[0];
+    const _u64        cols     = shape_[1];
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+    _u64              i        = 0;
 
-    const index_type simd_end = data_.size() - (data_.size() % simd_width);
-
-    index_type i = 0;
-    for (; i < rows; i += simd_width)
+    for (; i < rows; i += t.simd_width)
     {
-        for (index_type j = 0; j < cols; j += simd_width)
+        for (_u64 j = 0; j < cols; j += t.simd_width)
         {
-            if (i + simd_width <= rows && j + simd_width <= cols)
+            if (i + t.simd_width <= rows && j + t.simd_width <= cols)
             {
-                wide_neon_type<value_type> input;
+                wide_neon_type<_Tp> input;
 
-                for (index_type k = 0; k < simd_width; ++k)
-                {
-                    input[k] = neon_load<value_type>(&data_[(i + k) * cols + j]);
-                }
+                for (_u64 k = 0; k < t.simd_width; ++k)
+                    input[k] = neon_load<_Tp>(&data_[(i + k) * cols + j]);
 
-                wide_neon_type<value_type> output = wide_neon_load<value_type>(&input);
+                wide_neon_type<_Tp> output = wide_neon_load<_Tp>(&input);
 
-                for (index_type k = 0; k < simd_width; ++k)
-                {
-                    neon_store<value_type>(&ret[(j + k) * rows + i], output[k]);
-                }
+                for (_u64 k = 0; k < t.simd_width; ++k)
+                    neon_store<_Tp>(&ret[(j + k) * rows + i], output[k]);
             }
             else
             {
-                for (index_type ii = i; ii < std::min(static_cast<index_type>(i + simd_width), rows); ++ii)
-                {
-                    for (index_type jj = j; jj < std::min(static_cast<index_type>(j + simd_width), cols); ++jj)
-                    {
+                for (_u64 ii = i; ii < std::min(static_cast<_u64>(i + t.simd_width), rows); ++ii)
+                    for (_u64 jj = j; jj < std::min(static_cast<_u64>(j + t.simd_width), cols); ++jj)
                         ret.at({jj, ii}) = at({ii, jj});
-                    }
-                }
             }
         }
     }
 
     for (; i < rows; ++i)
     {
-        index_type j = 0;
+        _u64 j = 0;
+
         for (; j < cols; ++j)
-        {
             ret.at({j, i}) = at({i, j});
-        }
     }
 
     return ret;
