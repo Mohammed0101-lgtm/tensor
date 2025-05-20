@@ -2,6 +2,18 @@
 
 #include "tensorbase.hpp"
 
+
+namespace internal {
+namespace types { 
+
+// this should be probablu moved to a separate file for routing the neon code
+bool using_neon() {
+#ifdef __ARM_NEON
+    return true;
+#endif
+    return false;
+}
+
 template<class, class = std::void_t<>>
 struct has_plus_operator: std::false_type
 {
@@ -133,17 +145,23 @@ struct has_greater_equal_operator<_Tp, std::void_t<decltype(std::declval<_Tp>() 
 template<typename _Tp>
 constexpr bool has_greater_equal_operator_v = has_greater_equal_operator<_Tp>::value;
 
+}  // namespace types
+}  // namespace internal
+
 template<class _Tp>
 tensor<int> tensor<_Tp>::int_() const {
+    if (using_neon())
+        return internal::neon::int_();
+
     if (!std::is_convertible_v<value_type, int>)
-        throw type_error("Type must be convertible to 32 bit signed int");
+        throw error::type_error("Type must be convertible to 32 bit signed int");
 
     if (empty())
         return tensor<int>(shape_);
 
     std::vector<int> d(data_.size());
+    index_type       i = 0;
 
-    index_type i = 0;
     for (const auto& elem : data_)
         d[i++] = int(elem);
 
@@ -152,15 +170,18 @@ tensor<int> tensor<_Tp>::int_() const {
 
 template<class _Tp>
 tensor<unsigned int> tensor<_Tp>::unsigned_int_() const {
+    if (using_neon())
+        return internal::neon::unsigned_int_();
+
     if (!std::is_convertible_v<value_type, unsigned int>)
-        throw type_error("Type must be convertible to 32 bit unsigned int");
+        throw error::type_error("Type must be convertible to 32 bit unsigned int");
 
     if (empty())
         return tensor<unsigned int>(shape_);
 
     std::vector<unsigned int> d(data_.size());
+    index_type                i = 0;
 
-    index_type i = 0;
     for (const auto& elem : data_)
         d[i++] = (unsigned int) (elem);
 
@@ -169,15 +190,18 @@ tensor<unsigned int> tensor<_Tp>::unsigned_int_() const {
 
 template<class _Tp>
 tensor<float> tensor<_Tp>::float_() const {
+    if (using_neon())
+        return internal::neon::float_();
+
     if (!std::is_convertible_v<value_type, float>)
-        throw type_error("Type must be convertible to 32 bit float");
+        throw error::type_error("Type must be convertible to 32 bit float");
 
     if (empty())
         return tensor<float>(shape_);
 
     std::vector<float> d(data_.size());
+    index_type         i = 0;
 
-    index_type i = 0;
     for (const auto& elem : data_)
         d[i++] = float(elem);
 
@@ -186,15 +210,18 @@ tensor<float> tensor<_Tp>::float_() const {
 
 template<class _Tp>
 tensor<double> tensor<_Tp>::double_() const {
+    if (using_neon())
+        return internal::neon::double_();
+
     if (!std::is_convertible_v<value_type, double>)
-        throw type_error("Type must be convertible to 64 bit float");
+        throw error::type_error("Type must be convertible to 64 bit float");
 
     if (empty())
         return tensor<double>(shape_);
 
     std::vector<double> d(data_.size());
+    index_type          i = 0;
 
-    index_type i = 0;
     for (const auto& elem : data_)
         d[i++] = double(elem);
 
@@ -203,15 +230,18 @@ tensor<double> tensor<_Tp>::double_() const {
 
 template<class _Tp>
 tensor<unsigned long> tensor<_Tp>::unsigned_long_() const {
+    if (using_neon())
+        return internal::neon::unsigned_long_();
+
     if (!std::is_convertible_v<value_type, unsigned long>)
-        throw type_error("Type must be convertible to unsigned 64 bit int");
+        throw error::type_error("Type must be convertible to unsigned 64 bit int");
 
     if (empty())
         return tensor<unsigned long>(shape_);
 
     std::vector<unsigned long> d(data_.size());
+    index_type                 i = 0;
 
-    index_type i = 0;
     for (const auto& elem : data_)
         d[i++] = (unsigned long) (elem);
 
@@ -219,16 +249,19 @@ tensor<unsigned long> tensor<_Tp>::unsigned_long_() const {
 }
 
 template<class _Tp>
-inline tensor<short> tensor<_Tp>::short_() const {
+tensor<short> tensor<_Tp>::short_() const {
+    if (using_neon())
+        return internal::neon::short_();
+
     if (!std::is_convertible_v<value_type, short>)
-        throw type_error("Type must be convertible to short (aka 16 bit int)");
+        throw error::type_error("Type must be convertible to short (aka 16 bit int)");
 
     if (empty())
         return tensor<short>(shape_);
 
     std::vector<short> d(data_.size());
+    index_type         i = 0;
 
-    index_type i = 0;
     for (const auto& elem : data_)
         d[i++] = short(elem);
 
@@ -236,16 +269,19 @@ inline tensor<short> tensor<_Tp>::short_() const {
 }
 
 template<class _Tp>
-inline tensor<long long> tensor<_Tp>::long_long_() const {
+tensor<long long> tensor<_Tp>::long_long_() const {
+    if (using_neon())
+        return internal::neon::long_long_();
+
     if (!std::is_convertible_v<value_type, long long>)
-        throw type_error("Type must be convertible to 64 bit int (aka long long)");
+        throw error::type_error("Type must be convertible to 64 bit int (aka long long)");
 
     if (empty())
         return tensor<long long>(shape_);
 
     std::vector<long long> d(data_.size());
+    index_type             i = 0;
 
-    index_type i = 0;
     for (const auto& elem : data_)
         d[i++] = (long long) (elem);
 
@@ -254,30 +290,35 @@ inline tensor<long long> tensor<_Tp>::long_long_() const {
 
 template<class _Tp>
 tensor<long> tensor<_Tp>::long_() const {
+    if (using_neon())
+        return internal::neon::long_();
+
     if (!std::is_convertible_v<value_type, long>)
-        throw type_error("Type must be convertible to 64 bit signed int");
+        throw error::type_error("Type must be convertible to 64 bit signed int");
 
     if (empty())
         return tensor<long>(shape_);
 
     std::vector<long> d(data_.size());
+    index_type        i = 0;
 
-    index_type i = 0;
     for (const auto& elem : data_)
         d[i++] = long(elem);
 
     return tensor<long>(shape_, d);
 }
 
-
 template<class _Tp>
 tensor<bool> tensor<_Tp>::bool_() const {
+    if (using_neon())
+        return internal::neon::bool_();
+
     if (!std::is_convertible_v<value_type, bool>)
-        throw type_error("Type must be convertible to bool");
+        throw error::type_error("Type must be convertible to bool");
 
     std::vector<bool> d(data_.size());
+    index_type        i = 0;
 
-    index_type i = 0;
     for (const auto& elem : data_)
         d[i++] = bool(elem);
 
