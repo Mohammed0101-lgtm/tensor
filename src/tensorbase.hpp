@@ -40,6 +40,8 @@
 #include <version>
 
 #include "error.hpp"
+#include "shape.hpp"
+#include "stride.hpp"
 
 #if defined(USE_CUDA)
     #include <cuda_runtime.h>
@@ -75,6 +77,311 @@ using neon_f64 = float64x2_t;
 
 constexpr int _ARM64_REG_WIDTH = 128;  // 128 bit wide register
 
+
+// forward declaration
+template<class _Tp>
+class tensor;
+
+
+namespace internal {
+namespace neon {
+
+template<class _Tp>
+tensor<_s32> int32_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_u32> uint32_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_f32> float32_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_f64> double_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<uint64_t> unsigned_long_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<int64_t> long_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& fmax_(tensor<_Tp>& t, const _Tp v);
+
+template<class _Tp>
+tensor<_Tp>& fmax_(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp>& fmod_(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<_Tp>& fmod_(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp>& frac_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& log_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& log10_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& log2_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& exp_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& sqrt_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& cos_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& acos_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& sin_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& tan_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& tanh_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& sinc_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& atan_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& atanh_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& sinh_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& asinh_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& asin_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& cosh_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& acosh_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& pow_(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<_Tp>& pow_(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp>& abs_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& dist_(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp>& dist_(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<_Tp>& maximum_(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp>& maximum_(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<_Tp>& bitwise_right_shift_(tensor<_Tp>& t, const int amount);
+
+template<class _Tp>
+tensor<_Tp>& bitwise_left_shift_(tensor<_Tp>& t, const int amount);
+
+template<class _Tp>
+tensor<_Tp>& bitwise_or_(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<_Tp>& bitwise_xor_(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<_Tp>& bitwise_not_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& bitwise_and_(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<_Tp>& bitwise_and_(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp>& bitwise_or_(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp>& bitwise_xor_(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp>& zeros_(tensor<_Tp>& t, shape::Shape shape_ = {});
+
+template<class _Tp>
+tensor<_Tp>& ones_(tensor<_Tp>& t, shape::Shape shape_);
+
+template<class _Tp>
+tensor<_Tp>& randomize_(tensor<_Tp>& t, const shape::Shape& shape_, bool bounded);
+
+template<class _Tp>
+tensor<_Tp>& negative_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& relu_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& sigmoid_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& clipped_relu_(tensor<_Tp>& t, const _Tp clip_limit);
+
+template<class _Tp>
+tensor<_Tp>& clamp_(tensor<_Tp>& t,
+                    const _Tp&   min_val = std::numeric_limits<_Tp>::lowest(),
+                    const _Tp&   max_val = std::numeric_limits<_Tp>::max());
+
+template<class _Tp>
+tensor<_Tp>& floor_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& ceil_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp>& logical_or_(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<_Tp>& logical_xor_(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<_Tp>& logical_and_(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<_Tp>& logical_or_(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp>& logical_xor_(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp>& logical_and_(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp>& operator_plus_eq(tensor<_Tp>& t, const _Tp& value);
+
+template<class _Tp>
+tensor<_Tp>& operator_minus_eq(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp>& operator_times_eq(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp>& operator_minus_eq(tensor<_Tp>& t, const _Tp& value);
+
+template<class _Tp>
+tensor<_s32> int32_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_u32> uint32_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_f32> float32_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_f64> double_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<uint64_t> unsigned_long_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<int64_t> long_(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp> operator_plus(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp> operator_plus(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<_Tp> operator_minus(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp> operator_minus(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<_Tp> transpose(tensor<_Tp>& t);
+
+template<class _Tp>
+tensor<_Tp> matmul(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp> absolute_(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp> cross_product(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp> dot(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp> argmax(tensor<_Tp>& t, _u64 dimension);
+
+template<class _Tp>
+tensor<_Tp> sum(tensor<_Tp>& t, const _u64 axis);
+
+template<class _Tp>
+tensor<_Tp> slice(tensor<_Tp>& t, _u64 dimension, std::optional<_u64> start, std::optional<_u64> end, _u64 step);
+
+template<class _Tp>
+tensor<bool> equal(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<bool> equal(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<bool> less_equal(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<bool> less_equal(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<bool> less(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<bool> less(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<bool> greater(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<bool> greater(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<bool> greater_equal(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<bool> greater_equal(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_u64> argsort(tensor<_Tp>& t, _u64 d, bool ascending);
+
+template<class _Tp>
+tensor<_u64> argmax_(tensor<_Tp>& t, _u64 dimension);
+
+template<class _Tp>
+_u64 count_nonzero(tensor<_Tp>& t, _u64 dimension);
+
+template<class _Tp>
+double mean(tensor<_Tp>& t);
+
+}  // namespace neon
+}  // namespace internal
+
 template<class _Tp>
 class tensor
 {
@@ -93,7 +400,7 @@ class tensor
     using reverse_iterator       = typename data_t::reverse_iterator;
     using const_reverse_iterator = typename data_t::const_reverse_iterator;
 
-    enum class Device {
+    enum class Device : int {
         CPU,
         CUDA
     };
@@ -103,21 +410,20 @@ class tensor
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
    private:
-    mutable data_t     data_;
-    mutable shape_type shape_;
-    mutable shape_type strides_;
-    Device             device_;
-    bool               is_cuda_tensor_ = false;
+    mutable data_t       data_;
+    mutable shape::Shape shape_;
+    Device               device_;
+    bool                 is_cuda_tensor_ = false;
 
    public:
     tensor() = default;
-    explicit tensor(const shape_type& shape_, const_reference v, Device d = Device::CPU);
-    explicit tensor(const shape_type& shape_, Device d = Device::CPU);
-    explicit tensor(const shape_type& shape_, const data_t& d, Device dev = Device::CPU);
     tensor(const tensor& t);
     tensor(tensor&& t) noexcept;
     tensor(const shape_type& shape_, const tensor& other);
     tensor(const shape_type& shape_, std::initializer_list<value_type> init_list, Device d = Device::CPU);
+    explicit tensor(const shape_type& shape_, const_reference v, Device d = Device::CPU);
+    explicit tensor(const shape_type& shape_, Device d = Device::CPU);
+    explicit tensor(const shape_type& shape_, const data_t& d, Device dev = Device::CPU);
 
    private:
     class destroy_tensor
@@ -143,26 +449,24 @@ class tensor
     tensor<unsigned long> unsigned_long_() const;
     tensor<float>         float_() const;
     tensor<double>        double_() const;
-
-    data_t          storage() const noexcept;
-    data_t&         storage_() const;
-    shape_type      shape() const noexcept;
-    shape_type      strides() const noexcept;
-    Device          device() const noexcept;
-    std::size_t     n_dims() const noexcept;
-    index_type      size(const index_type dimension) const;
-    index_type      capacity() const noexcept;
-    index_type      count_nonzero(index_type dimension = 0) const;
-    index_type      lcm() const;
-    index_type      hash() const;
-    reference       at(shape_type idx);
-    reference       operator[](const index_type idx);
-    const_reference at(const shape_type idx) const;
-    const_reference operator[](const index_type idx) const;
-    reference       operator()(std::initializer_list<index_type> index_list);
-    const_reference operator()(std::initializer_list<index_type> index_list) const;
-
-    bool empty() const;
+    data_t                storage() const noexcept;
+    data_t&               storage_() const;
+    shape_type            shape() const noexcept;
+    shape_type            strides() const noexcept;
+    Device                device() const noexcept;
+    std::size_t           n_dims() const noexcept;
+    index_type            size(const index_type dimension) const;
+    index_type            capacity() const noexcept;
+    index_type            count_nonzero(index_type dimension = 0) const;
+    index_type            lcm() const;
+    index_type            hash() const;
+    reference             at(shape_type idx);
+    reference             operator[](const index_type idx);
+    const_reference       at(const shape_type idx) const;
+    const_reference       operator[](const index_type idx) const;
+    reference             operator()(std::initializer_list<index_type> index_list);
+    const_reference       operator()(std::initializer_list<index_type> index_list) const;
+    bool                  empty() const;
 
     /// @brief Converts the tensor elements to boolean values.
     /// @return A tensor of boolean values.
@@ -1621,102 +1925,6 @@ class tensor
     tensor<index_type> argmax_(index_type dimension) const;
     tensor<index_type> argsort(index_type dimension = -1, bool ascending = true) const;
 
-   private:
-    tensor&            neon_fmax_(const value_type v);
-    tensor&            neon_fmax_(const tensor& other);
-    tensor&            neon_fmod_(const value_type value);
-    tensor&            neon_fmod_(const tensor& other);
-    tensor&            neon_frac_();
-    tensor&            neon_log_();
-    tensor&            neon_log10_();
-    tensor&            neon_log2_();
-    tensor&            neon_exp_();
-    tensor&            neon_sqrt_();
-    tensor&            neon_cos_();
-    tensor&            neon_acos_();
-    tensor&            neon_sin_();
-    tensor&            neon_tan_();
-    tensor&            neon_tanh_();
-    tensor&            neon_sinc_();
-    tensor&            neon_atan_();
-    tensor&            neon_atanh_();
-    tensor&            neon_sinh_();
-    tensor&            neon_asinh_();
-    tensor&            neon_asin_();
-    tensor&            neon_cosh_();
-    tensor&            neon_acosh_();
-    tensor&            neon_pow_(const value_type value);
-    tensor&            neon_pow_(const tensor& other);
-    tensor&            neon_abs_();
-    tensor&            neon_dist_(const tensor& other);
-    tensor&            neon_dist_(const value_type value);
-    tensor&            neon_maximum_(const tensor& other);
-    tensor&            neon_maximum_(const value_type value);
-    tensor&            neon_bitwise_right_shift_(const int amount);
-    tensor&            neon_bitwise_left_shift_(const int amount);
-    tensor&            neon_bitwise_or_(const value_type value);
-    tensor&            neon_bitwise_xor_(const value_type value);
-    tensor&            neon_bitwise_not_();
-    tensor&            neon_bitwise_and_(const value_type value);
-    tensor&            neon_bitwise_and_(const tensor& other);
-    tensor&            neon_bitwise_or_(const tensor& other);
-    tensor&            neon_bitwise_xor_(const tensor& other);
-    tensor&            neon_zeros_(shape_type shape_ = {});
-    tensor&            neon_ones_(shape_type shape_);
-    tensor&            neon_randomize_(const shape_type& shape_, bool bounded);
-    tensor&            neon_negative_();
-    tensor&            neon_relu_();
-    tensor&            neon_sigmoid_();
-    tensor&            neon_clipped_relu_(const value_type clip_limit);
-    tensor&            neon_clamp_(const_reference min_val = std::numeric_limits<value_type>::lowest(),
-                                   const_reference max_val = std::numeric_limits<value_type>::max());
-    tensor&            neon_floor_();
-    tensor&            neon_ceil_();
-    tensor&            neon_logical_or_(const value_type value);
-    tensor&            neon_logical_xor_(const value_type value);
-    tensor&            neon_logical_and_(const value_type value);
-    tensor&            neon_logical_or_(const tensor& other);
-    tensor&            neon_logical_xor_(const tensor& other);
-    tensor&            neon_logical_and_(const tensor& other);
-    tensor&            neon_operator_plus_eq(const_reference value) const;
-    tensor&            neon_operator_minus_eq(const tensor& other) const;
-    tensor&            neon_operator_times_eq(const tensor& other) const;
-    tensor&            neon_operator_minus_eq(const_reference value) const;
-    tensor<_s32>       neon_int32_() const;
-    tensor<_u32>       neon_uint32_() const;
-    tensor<_f32>       neon_float32_() const;
-    tensor<_f64>       neon_double_() const;
-    tensor<uint64_t>   neon_unsigned_long_() const;
-    tensor<int64_t>    neon_long_() const;
-    tensor             neon_operator_plus(const tensor& other) const;
-    tensor             neon_operator_plus(const value_type value) const;
-    tensor             neon_operator_minus(const tensor& other) const;
-    tensor             neon_operator_minus(const value_type value) const;
-    tensor             neon_transpose() const;
-    tensor             neon_matmul(const tensor& other) const;
-    tensor             neon_absolute_(const tensor& tensor) const;
-    tensor             neon_cross_product(const tensor& other) const;
-    tensor             neon_dot(const tensor& other) const;
-    tensor             neon_argmax(index_type dimension) const;
-    tensor             neon_sum(const index_type axis) const;
-    tensor             neon_slice(index_type                dimension,
-                                  std::optional<index_type> start,
-                                  std::optional<index_type> end,
-                                  index_type                step) const;
-    tensor<bool>       neon_equal(const tensor& other) const;
-    tensor<bool>       neon_equal(const value_type value) const;
-    tensor<bool>       neon_less_equal(const tensor& other) const;
-    tensor<bool>       neon_less_equal(const value_type value) const;
-    tensor<bool>       neon_less(const value_type value) const;
-    tensor<bool>       neon_less(const tensor& other) const;
-    tensor<bool>       neon_greater(const value_type value) const;
-    tensor<bool>       neon_greater(const tensor& other) const;
-    tensor<bool>       neon_greater_equal(const value_type value) const;
-    tensor<bool>       neon_greater_equal(const tensor& other) const;
-    tensor<index_type> neon_argsort(index_type d, bool ascending) const;
-    tensor<index_type> neon_argmax_(index_type dimension) const;
-    index_type         neon_count_nonzero(index_type dimension) const;
-    double             neon_mean() const;
 
    private:
     [[nodiscard]] std::size_t       computeStride(std::size_t dimension, const shape_type& shape) const noexcept;
@@ -1744,6 +1952,7 @@ bool tensor<_Tp>::equal_shape(const shape_type& x, const shape_type& y) const {
         return equal_shape(y, x);
 
     int diff = size_x - size_y;
+
     for (std::size_t i = 0; i < size_y; ++i)
         if (x[i + diff] != y[i] && x[i + diff] != 1 && y[i] != 1)
             return false;
@@ -1775,6 +1984,7 @@ inline typename tensor<_Tp>::index_type tensor<_Tp>::computeSize(const shape_typ
         return static_cast<index_type>(0);
 
     index_type ret = 1;
+
     for (const index_type& d : dims)
         ret *= d;
 
@@ -1785,7 +1995,7 @@ template<class _Tp>
 [[nodiscard]]
 inline typename tensor<_Tp>::index_type tensor<_Tp>::compute_index(const std::vector<index_type>& idx) const {
     if (idx.size() != shape_.size())
-        throw index_error("compute_index : input indices does not match the tensor shape");
+        throw error::index_error("compute_index : input indices does not match the tensor shape");
 
     index_type index = 0, i = 0;
 
@@ -1851,6 +2061,7 @@ void tensor<_Tp>::printRecursive(std::size_t index, std::size_t depth, const sha
         }
 
         std::cout << "\n";
+
         for (std::size_t j = 0; j < depth; ++j)
             std::cout << " ";
 
@@ -1862,6 +2073,7 @@ template<class _Tp>
 [[nodiscard]]
 inline std::size_t tensor<_Tp>::computeStride(std::size_t dimension, const shape_type& shape) const noexcept {
     std::size_t stride = 1;
+
     for (const auto& elem : shape)
         stride *= elem;
 
@@ -1921,6 +2133,7 @@ class tensor<bool>
         shape_(shape_),
         device_(dev) {
         index_type s = computeSize(shape_);
+
         if (d.size() != static_cast<std::size_t>(s))
             throw std::invalid_argument("Initial data vector must match the tensor");
 
@@ -1944,6 +2157,7 @@ class tensor<bool>
         shape_(shape_),
         device_(d) {
         index_type s = computeSize(shape_);
+
         if (init_list.size() != static_cast<std::size_t>(s))
             throw std::invalid_argument("Initializer list size must match tensor size");
 
@@ -1973,19 +2187,19 @@ class tensor<bool>
 
     reference at(shape_type idx) {
         if (idx.empty())
-            throw index_error("Passing an empty vector as indices for a tensor");
+            throw error::index_error("Passing an empty vector as indices for a tensor");
 
         index_type i = compute_index(idx);
 
         if (i < 0 || i >= data_.size())
-            throw index_error("input indices are out of bounds");
+            throw error::index_error("input indices are out of bounds");
 
         return data_[i];
     }
 
     reference operator[](const index_type idx) {
         if (idx < 0 || idx >= data_.size())
-            throw index_error("input index is out of bounds");
+            throw error::index_error("input index is out of bounds");
 
         return data_[idx];
     }
@@ -2170,7 +2384,7 @@ class tensor<bool>
     tensor<bool>
     slice(index_type dimension, std::optional<index_type> start, std::optional<index_type> end, index_type step) const {
         if (dimension < 0 || dimension >= static_cast<index_type>(data_.size()))
-            throw shape_error("Dimension out of range");
+            throw error::shape_error("Dimension out of range");
 
         tensor<bool> ret;
         index_type   s       = shape_[dimension];
@@ -2202,10 +2416,10 @@ class tensor<bool>
 
     tensor<bool> row(const index_type index) const {
         if (shape_.size() != 2)
-            throw shape_error("Cannot get a row from a non two dimensional tensor");
+            throw error::shape_error("Cannot get a row from a non two dimensional tensor");
 
         if (shape_[0] <= index || index < 0)
-            throw index_error("Index input is out of range");
+            throw error::index_error("Index input is out of range");
 
         index_type start = shape_[1] * index;
         index_type end   = shape_[1] * index + shape_[1];
@@ -2220,13 +2434,14 @@ class tensor<bool>
 
     tensor<bool> col(const index_type index) const {
         if (shape_.size() != 2)
-            throw index_error("Cannot get a column from a non two dimensional tensor");
+            throw error::index_error("Cannot get a column from a non two dimensional tensor");
 
         if (shape_[1] <= index || index < 0)
-            throw index_error("Index input out of range");
+            throw error::index_error("Index input out of range");
 
         data_t     c(shape_[0]);
         index_type i = 0;
+
         for (; i < shape_[0]; ++i)
             c[i] = data_[compute_index({i, index})];
 
@@ -2244,9 +2459,9 @@ class tensor<bool>
         index_type s = computeSize(shape_);
 
         if (s != data_.size())
-            throw shape_error("input shape must have size of element equal to the current number of elements in "
-                              "the"
-                              "tensor data");
+            throw error::shape_error("input shape must have size of element equal to the current number of elements in "
+                                     "the"
+                                     "tensor data");
 
         return self(shape_, d);
     }
@@ -2256,7 +2471,7 @@ class tensor<bool>
     tensor<bool> transpose() const {
         if (equal_shape(shape_, shape_type({shape_[0], shape_[1], 1}))
             || equal_shape(shape_, shape_type({1, shape_[0], shape_[1]})))
-            throw shape_error("Matrix transposition can only be done on 2D tensors");
+            throw error::shape_error("Matrix transposition can only be done on 2D tensors");
 
         tensor           ret({shape_[1], shape_[0]});
         const index_type rows = shape_[0];
@@ -2266,6 +2481,7 @@ class tensor<bool>
         for (; i < rows; ++i)
         {
             index_type j = 0;
+
             for (; j < cols; ++j)
                 ret.at({j, i}) = at({i, j});
         }
@@ -2275,13 +2491,13 @@ class tensor<bool>
 
     tensor<bool>& transpose_() {
         if (shape_.size() != 2)
-            throw shape_error("Transpose operation is only valid for 2D tensors");
+            throw error::shape_error("Transpose operation is only valid for 2D tensors");
 
         const index_type r = shape_[0];
         const index_type c = shape_[1];
 
         if (r != c)
-            throw shape_error("In-place transpose is only supported for square tensors");
+            throw error::shape_error("In-place transpose is only supported for square tensors");
 
         for (index_type i = 0; i < r; ++i)
             for (index_type j = i + 1; j < c; ++j)
@@ -2292,13 +2508,13 @@ class tensor<bool>
 
     const tensor<bool>& transpose_() const {
         if (shape_.size() != 2)
-            throw shape_error("Transpose operation is only valid for 2D tensors");
+            throw error::shape_error("Transpose operation is only valid for 2D tensors");
 
         const index_type r = shape_[0];
         const index_type c = shape_[1];
 
         if (r != c)
-            throw shape_error("In-place transpose is only supported for square tensors");
+            throw error::shape_error("In-place transpose is only supported for square tensors");
 
         for (index_type i = 0; i < r; ++i)
             for (index_type j = i + 1; j < c; ++j)
@@ -2370,13 +2586,15 @@ class tensor<bool>
         for (const tensor& t : others)
         {
             index_type i = 0;
+
             for (; i < shape_.size(); ++i)
                 if (i != dimension && shape_[i] != t.shape_[i])
-                    throw shape_error("Cannot concatenate tensors with different shapes along non-concatenation "
-                                      "dimensions");
+                    throw error::shape_error("Cannot concatenate tensors with different shapes along non-concatenation "
+                                             "dimensions");
         }
 
         shape_type ret_sh = shape_;
+
         for (const tensor& t : others)
             ret_sh[dimension] += t.shape_[dimension];
 
@@ -2392,7 +2610,7 @@ class tensor<bool>
 
     tensor<bool> unsqueeze(const index_type dimension) const {
         if (dimension < 0 || dimension > static_cast<index_type>(shape_.size()))
-            throw index_error("Dimension out of range in unsqueeze");
+            throw error::index_error("Dimension out of range in unsqueeze");
 
         shape_type s = shape_;
         s.insert(s.begin() + dimension, 1);
@@ -2406,7 +2624,7 @@ class tensor<bool>
 
     tensor<bool>& randomize_(const shape_type& shape = {}) {
         if (shape_.empty() && shape.empty())
-            throw shape_error("Shape must be initialized");
+            throw error::shape_error("Shape must be initialized");
 
         if (shape.empty() || shape != shape_)
             shape_ = shape;
@@ -2427,7 +2645,7 @@ class tensor<bool>
 
     tensor<bool>& push_back(value_type v) {
         if (shape_.size() != 1)
-            throw shape_error("push_back is only supported for one dimensional tensors");
+            throw error::shape_error("push_back is only supported for one dimensional tensors");
 
         data_.push_back(v);
         ++(shape_[0]);
@@ -2437,7 +2655,7 @@ class tensor<bool>
 
     tensor<bool>& pop_back(value_type v) {
         if (shape_.size() != 1)
-            throw shape_error("push_back is only supported for one dimensional tensors");
+            throw error::shape_error("push_back is only supported for one dimensional tensors");
 
         data_.pop_back();
         --(shape_[0]);
@@ -2473,6 +2691,7 @@ class tensor<bool>
             return equal_shape(y, x);
 
         int diff = size_x - size_y;
+
         for (std::size_t i = 0; i < size_y; ++i)
             if (x[i + diff] != y[i] && x[i + diff] != 1 && y[i] != 1)
                 return false;
@@ -2483,6 +2702,7 @@ class tensor<bool>
     [[nodiscard]]
     inline std::size_t computeStride(std::size_t dimension, const shape_type& shape) const noexcept {
         std::size_t stride = 1;
+
         for (index_type i = dimension; i < shape_.size(); ++i)
             stride *= shape_[i];
 
@@ -2532,7 +2752,7 @@ class tensor<bool>
 
     void compute_strides() {
         if (shape_.empty())
-            throw shape_error("Shape must be initialized before computing strides");
+            throw error::shape_error("Shape must be initialized before computing strides");
 
         strides_ = shape_type(shape_.size(), 1);
         int st = 1, i = static_cast<int>(shape_.size() - 1);
@@ -2547,10 +2767,11 @@ class tensor<bool>
     [[nodiscard]]
     index_type compute_index(const std::vector<index_type>& idx) const {
         if (idx.size() != shape_.size())
-            throw index_error("compute_index : input indices does not match the tensor shape");
+            throw error::index_error("compute_index : input indices does not match the tensor shape");
 
         index_type index = 0;
         index_type i     = 0;
+
         for (; i < shape_.size(); ++i)
             index += idx[i] * strides_[i];
 
@@ -2560,6 +2781,7 @@ class tensor<bool>
     [[nodiscard]]
     static index_type computeSize(const shape_type& dims) noexcept {
         uint64_t ret = 1;
+
         for (const auto& d : dims)
             ret *= d;
 
