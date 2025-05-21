@@ -87,13 +87,13 @@ namespace internal {
 namespace neon {
 
 template<class _Tp>
-tensor<_s32> int32_(tensor<_Tp>& t);
+tensor<_s32> int_(tensor<_Tp>& t);
 
 template<class _Tp>
-tensor<_u32> uint32_(tensor<_Tp>& t);
+tensor<_u32> unsigned_int_(tensor<_Tp>& t);
 
 template<class _Tp>
-tensor<_f32> float32_(tensor<_Tp>& t);
+tensor<_f32> float_(tensor<_Tp>& t);
 
 template<class _Tp>
 tensor<_f64> double_(tensor<_Tp>& t);
@@ -419,11 +419,11 @@ class tensor
     tensor() = default;
     tensor(const tensor& t);
     tensor(tensor&& t) noexcept;
-    tensor(const shape_type& shape_, const tensor& other);
-    tensor(const shape_type& shape_, std::initializer_list<value_type> init_list, Device d = Device::CPU);
-    explicit tensor(const shape_type& shape_, const_reference v, Device d = Device::CPU);
-    explicit tensor(const shape_type& shape_, Device d = Device::CPU);
-    explicit tensor(const shape_type& shape_, const data_t& d, Device dev = Device::CPU);
+    tensor(const shape::Shape& shape_, const tensor& other);
+    tensor(const shape::Shape& shape_, std::initializer_list<value_type> init_list, Device d = Device::CPU);
+    explicit tensor(const shape::Shape& shape_, const_reference v, Device d = Device::CPU);
+    explicit tensor(const shape::Shape& shape_, Device d = Device::CPU);
+    explicit tensor(const shape::Shape& shape_, const data_t& d, Device dev = Device::CPU);
 
    private:
     class destroy_tensor
