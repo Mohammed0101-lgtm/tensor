@@ -3,7 +3,7 @@
 #include "tensorbase.hpp"
 
 template<class _Tp>
-tensor<_s32> internal::neon::int32_(tensor<_Tp>& t) {
+tensor<_s32> internal::neon::int_(tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _s32>)
         throw error::type_error("Type must be convertible to 32 bit signed int");
 
@@ -43,7 +43,7 @@ tensor<_s32> internal::neon::int32_(tensor<_Tp>& t) {
 }
 
 template<class _Tp>
-tensor<_u32> internal::neon::uint32_(tensor<_Tp>& t) {
+tensor<_u32> internal::neon::unsigned_int_(tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _u32>)
         throw error::type_error("Type must be convertible to unsigned 32 bit int");
 
@@ -83,7 +83,7 @@ tensor<_u32> internal::neon::uint32_(tensor<_Tp>& t) {
 }
 
 template<class _Tp>
-tensor<_f32> internal::neon::float32_(tensor<_Tp>& t) {
+tensor<_f32> internal::neon::float_(tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _f32>)
         throw error::type_error("Type must be convertible to 32 bit float");
 
