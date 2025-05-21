@@ -4,22 +4,19 @@
 #include "types.hpp"
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::neon_absolute_(const tensor& tensor) const {
-    if (!std::is_arithmetic_v<value_type>)
-    {
-        throw type_error("Type must be arithmetic");
-    }
+tensor<_Tp> internal::neon::absolute_(tensor<_Tp>& t, const tensor<_Tp>& other) {
+    if (!std::is_arithmetic_v<_Tp>)
+        throw error::type_error("Type must be arithmetic");
 
-    if (std::is_unsigned_v<value_type>)
-    {
+    if (std::is_unsigned_v<_Tp>)
         return *this;
-    }
 
-    index_type s = tensor.storage().size();
-    data_t     a(s);
-    index_type i = 0;
+    std::vector<_Tp>& data_ = t.storage_();
+    _u64   s = tensor.storage().size();
+    data_t a(s);
+    _u64   i = 0;
 
-    if constexpr (std::is_floating_point_v<value_type>)
+    if constexpr (std::is_floating_point_v<_Tp>)
     {
         for (; i < data_.size(); i += _ARM64_REG_WIDTH)
         {
@@ -28,7 +25,7 @@ tensor<_Tp> tensor<_Tp>::neon_absolute_(const tensor& tensor) const {
             vst1q_f32(reinterpret_cast<_f32*>(&data_[i]), abs_vec);
         }
     }
-    else if constexpr (std::is_signed_v<value_type>)
+    else if constexpr (std::is_signed_v<_Tp>)
     {
         for (; i < data_.size(); i += _ARM64_REG_WIDTH)
         {
@@ -39,9 +36,7 @@ tensor<_Tp> tensor<_Tp>::neon_absolute_(const tensor& tensor) const {
     }
 
     for (; i < s; ++i)
-    {
-        data_[i] = static_cast<value_type>(std::abs(data_[i]));
-    }
+        data_[i] = static_cast<_Tp>(std::abs(data_[i]));
 
     return self(a, tensor.shape_);
 }
