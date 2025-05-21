@@ -2,19 +2,21 @@
 
 #include "tensorbase.hpp"
 
+
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_relu_() {
-    return neon_clamp_min_(value_type(0));
+tensor<_Tp>& internal::neon::relu_(tensor<_Tp>& t) {
+    return internal::neon::clamp_min_(_Tp(0));
 }
+
 /*
 template <class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_clipped_relu_(const value_type clip_limit) {
-  if constexpr (std::is_unsigned_v<value_type>) return *this;
+tensor<_Tp>& tensor<_Tp>::neon_clipped_relu_(const _Tp clip_limit) {
+  if constexpr (std::is_unsigned_v<_Tp>) return *this;
 
-  index_type s = data_.size();
-  index_type i = 0;
+  _u64 s = data_.size();
+  _u64 i = 0;
 
-  if constexpr (std::is_same_v<value_type, _f32>) {
+  if constexpr (std::is_same_v<_Tp, _f32>) {
     const neon_f32 vZero = vdupq_n_f32(0.0f);
     const neon_f32 vClip = vdupq_n_f32(clip_limit);
 
@@ -24,7 +26,7 @@ tensor<_Tp>& tensor<_Tp>::neon_clipped_relu_(const value_type clip_limit) {
 
       vst1q_f32(&data_[i], v);
     }
-  } else if constexpr (std::is_same_v<value_type, _s32>) {
+  } else if constexpr (std::is_same_v<_Tp, _s32>) {
     const neon_s32 vZero = vdupq_n_s32(0);
     const neon_s32 vClip = vdupq_n_s32(clip_limit);
 
@@ -37,20 +39,19 @@ tensor<_Tp>& tensor<_Tp>::neon_clipped_relu_(const value_type clip_limit) {
   }
 
   for (; i < s; ++i)
-    data_[i] = std::min(std::max(data_[i], value_type(0)), clip_limit);
+    data_[i] = std::min(std::max(data_[i], _Tp(0)), clip_limit);
 
   return *this;
 }
 */
-template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_clipped_relu_(const value_type clip_limit) {
-    if constexpr (std::is_unsigned_v<value_type>)
-    {
-        return *this;
-    }
 
-    neon_clamp_(value_type(0), std::numeric_limits<value_type>::max());
-    neon_clamp_(std::numeric_limits<value_type>::lowest(), clip_limit);
+template<class _Tp>
+tensor<_Tp>& internal::neon::clipped_relu_(tensor<_Tp>& t, const _Tp clip_limit) {
+    if constexpr (std::is_unsigned_v<_Tp>)
+        return *this;
+
+    internal::neon::clamp_(_Tp(0), std::numeric_limits<_Tp>::max());
+    internal::neon::clamp_(std::numeric_limits<_Tp>::lowest(), clip_limit);
 
     return *this;
 }
