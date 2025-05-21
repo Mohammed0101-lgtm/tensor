@@ -150,7 +150,7 @@ constexpr bool has_greater_equal_operator_v = has_greater_equal_operator<_Tp>::v
 
 template<class _Tp>
 tensor<int> tensor<_Tp>::int_() const {
-    if (using_neon())
+    if (internal::types::using_neon())
         return internal::neon::int_();
 
     if (!std::is_convertible_v<value_type, int>)
@@ -170,8 +170,8 @@ tensor<int> tensor<_Tp>::int_() const {
 
 template<class _Tp>
 tensor<unsigned int> tensor<_Tp>::unsigned_int_() const {
-    if (using_neon())
-        return internal::neon::unsigned_int_();
+    if (internal::types::using_neon())
+        return internal::neon::unsigned_int_(*this);
 
     if (!std::is_convertible_v<value_type, unsigned int>)
         throw error::type_error("Type must be convertible to 32 bit unsigned int");
