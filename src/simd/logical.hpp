@@ -5,7 +5,9 @@
 template<class _Tp>
 tensor<_Tp>& internal::neon::logical_or_(tensor<_Tp>& t, const _Tp value) {
     if (!std::is_integral_v<_Tp>)
-        throw error::type_error("Cannot perform logical OR on non-integral values");
+        {
+            throw error::type_error("Cannot perform logical OR on non-integral values");
+            }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -19,7 +21,6 @@ tensor<_Tp>& internal::neon::logical_or_(tensor<_Tp>& t, const _Tp value) {
         {
             neon_s32 data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&data_[i]));
             neon_s32 or_vec   = vorrq_s32(data_vec, val_vec);
-
             vst1q_s32(&data_[i], or_vec);
         }
     }
@@ -31,13 +32,14 @@ tensor<_Tp>& internal::neon::logical_or_(tensor<_Tp>& t, const _Tp value) {
         {
             neon_u32 data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
             neon_u32 or_vec   = vorrq_u32(data_vec, val_vec);
-
             vst1q_u32(&data_[i], or_vec);
         }
     }
 
     for (; i < data_.size(); ++i)
-        data_[i] = static_cast<_Tp>(data_[i] || value);
+        {
+            data_[i] = static_cast<_Tp>(data_[i] || value);
+            }
 
     return *this;
 }
@@ -45,7 +47,9 @@ tensor<_Tp>& internal::neon::logical_or_(tensor<_Tp>& t, const _Tp value) {
 template<class _Tp>
 tensor<_Tp>& internal::neon::logical_xor_(tensor<_Tp>& t, const _Tp value) {
     if (!std::is_integral_v<_Tp>)
-        throw error::type_error("Cannot get the element wise xor of non-integral value");
+        {
+            throw error::type_error("Cannot get the element wise xor of non-integral value");
+            }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -77,7 +81,9 @@ tensor<_Tp>& internal::neon::logical_xor_(tensor<_Tp>& t, const _Tp value) {
     }
 
     for (; i < data_.size(); ++i)
-        data_[i] = static_cast<_Tp>(data_[i] xor value);
+        {
+            data_[i] = static_cast<_Tp>(data_[i] xor value);
+            }
 
     return *this;
 }
@@ -85,7 +91,9 @@ tensor<_Tp>& internal::neon::logical_xor_(tensor<_Tp>& t, const _Tp value) {
 template<class _Tp>
 tensor<_Tp>& internal::neon::logical_and_(tensor<_Tp>& t, const _Tp value) {
     if (!std::is_integral_v<_Tp>)
-        throw error::type_error("Cannot get the element wise and of non-integral value");
+        {
+            throw error::type_error("Cannot get the element wise and of non-integral value");
+            }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -99,7 +107,6 @@ tensor<_Tp>& internal::neon::logical_and_(tensor<_Tp>& t, const _Tp value) {
         {
             neon_s32 vec     = vld1q_s32(reinterpret_cast<const _s32*>(&data_[i]));
             neon_s32 and_vec = vandq_s32(vec, vals);
-
             vst1q_s32(&data_[i], and_vec);
         }
     }
@@ -111,13 +118,14 @@ tensor<_Tp>& internal::neon::logical_and_(tensor<_Tp>& t, const _Tp value) {
         {
             neon_u32 vec     = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
             neon_u32 and_vec = vandq_u32(vec, vals);
-
             vst1q_u32(&data_[i], and_vec);
         }
     }
 
     for (; i < data_.size(); ++i)
-        data_[i] = static_cast<_Tp>(data_[i] && value);
+        {
+            data_[i] = static_cast<_Tp>(data_[i] && value);
+            }
 
     return *this;
 }
@@ -125,10 +133,14 @@ tensor<_Tp>& internal::neon::logical_and_(tensor<_Tp>& t, const _Tp value) {
 template<class _Tp>
 tensor<_Tp>& internal::neon::logical_or_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     if (!std::is_integral_v<_Tp>)
-        throw error::type_error("Cannot get the element wise not of non-integral values");
+        {
+            throw error::type_error("Cannot get the element wise not of non-integral values");
+            }
 
     if (!equal_shape(shape(), other.shape()))
-        throw error::shape_error("Tensors shapes must be equal");
+        {
+            throw error::shape_error("Tensors shapes must be equal");
+            }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -141,7 +153,6 @@ tensor<_Tp>& internal::neon::logical_or_(tensor<_Tp>& t, const tensor<_Tp>& othe
             neon_u32 data_vec  = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
             neon_u32 other_vec = vld1q_u32(reinterpret_cast<const _u32*>(&other[i]));
             neon_u32 or_vec    = vornq_u32(data_vec, other_vec);
-
             vst1q_u32(reinterpret_cast<_u32*>(&data_[i]), or_vec);
         }
     }
@@ -152,13 +163,14 @@ tensor<_Tp>& internal::neon::logical_or_(tensor<_Tp>& t, const tensor<_Tp>& othe
             neon_s32 data_vec  = vld1q_s32(reinterpret_cast<const _s32*>(&data_[i]));
             neon_s32 other_vec = vld1q_s32(reinterpret_cast<const _s32*>(&other[i]));
             neon_s32 or_vec    = vornq_s32(data_vec, other_vec);
-
             vst1q_s32(reinterpret_cast<_s32*>(&data_[i]), or_vec);
         }
     }
 
     for (; i < data_.size(); ++i)
-        data_[i] = (data_[i] || other[i]);
+        {
+            data_[i] = (data_[i] || other[i]);
+            }
 
     return *this;
 }
@@ -166,10 +178,14 @@ tensor<_Tp>& internal::neon::logical_or_(tensor<_Tp>& t, const tensor<_Tp>& othe
 template<class _Tp>
 tensor<_Tp>& internal::neon::logical_xor_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     if (!std::is_integral_v<_Tp>)
-        throw error::type_error("Cannot get the element wise xor of non-integral value");
+        {
+            throw error::type_error("Cannot get the element wise xor of non-integral value");
+            }
 
     if (!equal_shape(shape(), other.shape()))
+        {
         throw error::shape_error("Tensors shapes must be equal");
+        }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -197,7 +213,9 @@ tensor<_Tp>& internal::neon::logical_xor_(tensor<_Tp>& t, const tensor<_Tp>& oth
     }
 
     for (; i < data_.size(); ++i)
-        data_[i] = (data_[i] xor other[i]);
+        {
+            data_[i] = (data_[i] xor other[i]);
+            }
 
     return *this;
 }
@@ -205,10 +223,14 @@ tensor<_Tp>& internal::neon::logical_xor_(tensor<_Tp>& t, const tensor<_Tp>& oth
 template<class _Tp>
 tensor<_Tp>& internal::neon::logical_and_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     if (!std::is_integral_v<_Tp>)
-        throw error::type_error("Cannot get the element-wise and of non-integral value");
+        {
+            throw error::type_error("Cannot get the element-wise and of non-integral value");
+            }
 
     if (!equal_shape(shape(), other.shape()))
-        throw error::shape_error("Tensors shapes must be equal");
+        {
+            throw error::shape_error("Tensors shapes must be equal");
+            }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -221,7 +243,6 @@ tensor<_Tp>& internal::neon::logical_and_(tensor<_Tp>& t, const tensor<_Tp>& oth
             neon_u32 data_vec  = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
             neon_u32 other_vec = vld1q_u32(reinterpret_cast<const _u32*>(&other[i]));
             neon_u32 and_vec   = vandq_u32(data_vec, other_vec);
-
             vst1q_u32(reinterpret_cast<_u32*>(&data_[i]), and_vec);
         }
     }
@@ -232,13 +253,14 @@ tensor<_Tp>& internal::neon::logical_and_(tensor<_Tp>& t, const tensor<_Tp>& oth
             neon_s32 data_vec  = vld1q_s32(reinterpret_cast<const _s32*>(&data_[i]));
             neon_s32 other_vec = vld1q_s32(reinterpret_cast<const _s32*>(&other[i]));
             neon_s32 and_vec   = vandq_s32(data_vec, other_vec);
-
             vst1q_s32(reinterpret_cast<_s32*>(&data_[i]), and_vec);
         }
     }
 
     for (; i < data_.size(); ++i)
-        data_[i] = (data_[i] && other[i]);
+        {
+            data_[i] = (data_[i] && other[i]);
+            }
 
     return *this;
 }
