@@ -5,10 +5,14 @@
 template<class _Tp>
 tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const tensor<_Tp>& other) {
     if constexpr (!internal::types::has_plus_operator_v<_Tp>)
+    {
         throw error::operator_error("Value type must have a plus operator");
+    }
 
     if (!equal_shape(shape(), other.shape()))
+    {
         throw error::shape_error("Cannot add two tensors with different shapes");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -24,7 +28,9 @@ tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const tensor<_Tp>& oth
     }
 
     for (; i < data_.size(); ++i)
+    {
         d[i] = data_[i] + other[i];
+    }
 
     return self(shape_, d);
 }
@@ -32,7 +38,9 @@ tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const tensor<_Tp>& oth
 template<class _Tp>
 tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const _Tp value) {
     if constexpr (!internal::types::has_plus_operator_v<_Tp>)
+    {
         throw error::operator_error("Value type must have a plus operator");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -48,7 +56,9 @@ tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const _Tp value) {
     }
 
     for (; i < data_.size(); ++i)
+    {
         d[i] = data_[i] + value;
+    }
 
     return self(d, shape_);
 }
@@ -56,7 +66,9 @@ tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const _Tp value) {
 template<class _Tp>
 tensor<_Tp>& internal::neon::operator_plus_eq(tensor<_Tp>& t, const _Tp& value) {
     if constexpr (!internal::types::has_equal_operator_v<_Tp>)
+    {
         throw error::operator_error("Value type must have a plus operator");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -71,7 +83,9 @@ tensor<_Tp>& internal::neon::operator_plus_eq(tensor<_Tp>& t, const _Tp& value) 
     }
 
     for (; i < data_.size(); ++i)
+    {
         data_[i] = data_[i] + value;
+    }
 
     return *this;
 }
@@ -79,10 +93,14 @@ tensor<_Tp>& internal::neon::operator_plus_eq(tensor<_Tp>& t, const _Tp& value) 
 template<class _Tp>
 tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const tensor<_Tp>& other) {
     if constexpr (!internal::types::has_minus_operator_v<_Tp>)
+    {
         throw error::operator_error("Value type must have a minus operator");
+    }
 
     if (!equal_shape(shape(), other.shape()))
+    {
         throw error::shape_error("Cannot add two tensors with different shapes");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -98,7 +116,9 @@ tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const tensor<_Tp>& ot
     }
 
     for (; i < data_[i]; ++i)
+    {
         d[i] = data_[i] - other[i];
+    }
 
     return self(shape_, d);
 }
@@ -106,7 +126,9 @@ tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const tensor<_Tp>& ot
 template<class _Tp>
 tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const _Tp value) {
     if constexpr (!internal::types::has_minus_operator_v<_Tp>)
+    {
         throw error::operator_error("Value type must have a minus operator");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -122,7 +144,9 @@ tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const _Tp value) {
     }
 
     for (; i < data_.size(); ++i)
+    {
         d[i] = data_[i] - value;
+    }
 
     return self(*this);
 }
@@ -130,10 +154,14 @@ tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const _Tp value) {
 template<class _Tp>
 tensor<_Tp>& internal::neon::operator_minus_eq(tensor<_Tp>& t, const tensor<_Tp>& other) {
     if constexpr (!internal::types::has_minus_operator_v<_Tp>)
+    {
         throw error::operator_error("Value type must have a minus operator");
+    }
 
     if (!equal_shape(shape(), other.shape()))
+    {
         throw error::shape_error("Tensors shapes must be equal");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -148,7 +176,9 @@ tensor<_Tp>& internal::neon::operator_minus_eq(tensor<_Tp>& t, const tensor<_Tp>
     }
 
     for (; i < data_.size(); ++i)
+    {
         data_[i] -= other[i];
+    }
 
     return *this;
 }
@@ -156,14 +186,19 @@ tensor<_Tp>& internal::neon::operator_minus_eq(tensor<_Tp>& t, const tensor<_Tp>
 template<class _Tp>
 tensor<_Tp>& internal::neon::operator_times_eq(tensor<_Tp>& t, const tensor<_Tp>& other) {
     if constexpr (!internal::types::has_minus_operator_v<_Tp>)
+    {
         throw error::operator_error("Value type must have a minus operator");
+    }
 
     if (!equal_shape(shape(), other.shape()))
+    {
         throw error::shape_error("Tensors shapes must be equal");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
     _u64              i        = 0;
+
     for (; i < simd_end; i += t.simd_width)
     {
         neon_type<_Tp> vec1   = neon_load<_Tp>(&data_[i]);
@@ -173,7 +208,9 @@ tensor<_Tp>& internal::neon::operator_times_eq(tensor<_Tp>& t, const tensor<_Tp>
     }
 
     for (; i < data_.size(); ++i)
+    {
         data_[i] *= other[i];
+    }
 
     return *this;
 }
@@ -181,7 +218,9 @@ tensor<_Tp>& internal::neon::operator_times_eq(tensor<_Tp>& t, const tensor<_Tp>
 template<class _Tp>
 tensor<_Tp>& internal::neon::operator_minus_eq(tensor<_Tp>& t, const _Tp& value) {
     if constexpr (!internal::types::has_minus_operator_v<_Tp>)
+    {
         throw error::operator_error("Value type must have a minus operator");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -196,7 +235,9 @@ tensor<_Tp>& internal::neon::operator_minus_eq(tensor<_Tp>& t, const _Tp& value)
     }
 
     for (; i < data_.size(); ++i)
+    {
         data_[i] -= value;
+    }
 
     return *this;
 }
