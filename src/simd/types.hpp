@@ -2,13 +2,63 @@
 
 #include "tensorbase.hpp"
 
+
+template<class _Tp>
+tensor<_s16> internal::neon::short_(tensor<_Tp>& t) {
+    if (!std::is_convertible_v<_Tp, _s16>)
+    {
+        throw error::type_error("Type must be convertible to 16 bit signed int");
+    }
+
+    if (empty())
+    {
+        return tensor<_s16>(shape_);
+    }
+
+    std::vector<_Tp>& data_ = t.storage_();
+    std::vector<_s16> d(data_.size());
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+    _u64              i        = 0;
+
+    if constexpr (std::is_floating_point_v<_Tp>)
+    {
+        for (; i < simd_end; i += t.simd_width)
+        {
+            neon_f32 data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&data_[i]));
+            neon_s16 int_vec  = vcvtq_s16_f32(data_vec);
+            vst1q_s16(reinterpret_cast<_s16*>(&d[i]), int_vec);
+        }
+    }
+    else if constexpr (std::is_unsigned_v<_Tp>)
+    {
+        for (; i < simd_end; i += t.simd_width)
+        {
+            neon_u32 data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
+            neon_s16 int_vec  = vreinterpretq_s16_u32(data_vec);
+            vst1q_s16(reinterpret_cast<_s16*>(&d[i]), int_vec);
+        }
+    }
+
+    for (; i < data_.size(); ++i)
+    {
+        d[i] = static_cast<_s16>(data_[i]);
+    }
+
+    return tensor<_s16>(shape_, d);
+}
+
+
 template<class _Tp>
 tensor<_s32> internal::neon::int_(tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _s32>)
+    {
         throw error::type_error("Type must be convertible to 32 bit signed int");
+    }
 
     if (empty())
+    {
         return tensor<_s32>(shape_);
+    }
 
     std::vector<_Tp>& data_ = t.storage_();
     std::vector<_s32> d(data_.size());
@@ -21,7 +71,6 @@ tensor<_s32> internal::neon::int_(tensor<_Tp>& t) {
         {
             neon_f32 data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&data_[i]));
             neon_s32 int_vec  = vcvtq_s32_f32(data_vec);
-
             vst1q_s32(reinterpret_cast<_s32*>(&d[i]), int_vec);
         }
     }
@@ -31,13 +80,14 @@ tensor<_s32> internal::neon::int_(tensor<_Tp>& t) {
         {
             neon_u32 data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
             neon_s32 int_vec  = vreinterpretq_s32_u32(data_vec);
-
             vst1q_s32(reinterpret_cast<_s32*>(&d[i]), int_vec);
         }
     }
 
     for (; i < data_.size(); ++i)
+    {
         d[i] = static_cast<_s32>(data_[i]);
+    }
 
     return tensor<_s32>(shape_, d);
 }
@@ -45,10 +95,14 @@ tensor<_s32> internal::neon::int_(tensor<_Tp>& t) {
 template<class _Tp>
 tensor<_u32> internal::neon::unsigned_int_(tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _u32>)
+    {
         throw error::type_error("Type must be convertible to unsigned 32 bit int");
+    }
 
     if (empty())
+    {
         return tensor<_u32>(shape_);
+    }
 
     std::vector<_Tp>& data_ = t.storage_();
     std::vector<_u32> d(data_.size());
@@ -61,7 +115,6 @@ tensor<_u32> internal::neon::unsigned_int_(tensor<_Tp>& t) {
         {
             neon_f32 data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&data_[i]));
             neon_u32 uint_vec = vcvtq_u32_f32(data_vec);
-
             vst1q_u32(reinterpret_cast<_u32*>(&d[i]), uint_vec);
         }
     }
@@ -71,13 +124,14 @@ tensor<_u32> internal::neon::unsigned_int_(tensor<_Tp>& t) {
         {
             neon_s32 data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&data_[i]));
             neon_u32 uint_vec = vreinterpretq_u32_s32(data_vec);
-
             vst1q_u32(reinterpret_cast<_u32*>(&d[i]), uint_vec);
         }
     }
 
     for (; i < data_.size(); ++i)
+    {
         d[i] = static_cast<_u32>(data_[i]);
+    }
 
     return tensor<_u32>(shape_, d);
 }
@@ -85,10 +139,14 @@ tensor<_u32> internal::neon::unsigned_int_(tensor<_Tp>& t) {
 template<class _Tp>
 tensor<_f32> internal::neon::float_(tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _f32>)
+    {
         throw error::type_error("Type must be convertible to 32 bit float");
+    }
 
     if (empty())
+    {
         return tensor<_f32>(shape_);
+    }
 
     std::vector<_Tp>& data_ = t.storage_();
     std::vector<_f32> d(data_.size());
@@ -123,7 +181,9 @@ tensor<_f32> internal::neon::float_(tensor<_Tp>& t) {
     }
 
     for (; i < data_.size(); ++i)
+    {
         d[i] = static_cast<_f32>(data_[i]);
+    }
 
     return tensor<_f32>(shape_, d);
 }
@@ -131,77 +191,91 @@ tensor<_f32> internal::neon::float_(tensor<_Tp>& t) {
 template<class _Tp>
 tensor<_f64> internal::neon::double_(tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _f64>)
+    {
         throw error::type_error("Type must be convertible to 64 bit float");
+    }
 
     if (empty())
+    {
         return tensor<_f64>(shape_);
+    }
 
     std::vector<_Tp>& data_ = t.storage_();
     std::vector<_f64> d(data_.size());
-    const _u64        simd_end = data_.size() - (data_.size() % _ARM64_REG_WIDTH);
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
     _u64              i        = 0;
 
-    for (; i < simd_end; i += _ARM64_REG_WIDTH)
+    for (; i < simd_end; i += t.simd_width)
     {
         auto data_vec = vld1q_f64(reinterpret_cast<const double*>(&data_[i]));
         vst1q_f64(reinterpret_cast<_f64*>(&d[i]), data_vec);
     }
 
     for (; i < data_.size(); ++i)
+    {
         d[i] = static_cast<_f64>(data_[i]);
+    }
 
     return tensor<_f64>(shape_, d);
 }
 
 template<class _Tp>
-tensor<uint64_t> internal::neon::unsigned_long_(tensor<_Tp>& t) {
-    if (!std::is_convertible_v<_Tp, uint64_t>)
+tensor<_u64> internal::neon::unsigned_long_(tensor<_Tp>& t) {
+    if (!std::is_convertible_v<_Tp, _u64>)
+    {
         throw error::type_error("Type must be convertible to unsigned 64 bit int");
+    }
 
     if (empty())
-        return tensor<uint64_t>(shape_);
+    {
+        return tensor<_u64>(shape_);
+    }
 
     std::vector<_Tp>&     data_ = t.storage_();
-    std::vector<uint64_t> d(data_.size());
-    const _u64            simd_end = data_.size() - (data_.size() % _ARM64_REG_WIDTH);
+    std::vector<_u64> d(data_.size());
+    const _u64            simd_end = data_.size() - (data_.size() % t.simd_width);
     _u64                  i        = 0;
 
     if constexpr (std::is_unsigned_v<_Tp>)
     {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
+        for (; i < simd_end; i += t.simd_width)
         {
             neon_u32   data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
             uint64x2_t int_vec1 = vmovl_u32(vget_low_u32(data_vec));
             uint64x2_t int_vec2 = vmovl_u32(vget_high_u32(data_vec));
-
-            vst1q_u64(reinterpret_cast<uint64_t*>(&d[i]), int_vec1);
-            vst1q_u64(reinterpret_cast<uint64_t*>(&d[i + 2]), int_vec2);
+            vst1q_u64(reinterpret_cast<_u64*>(&d[i]), int_vec1);
+            vst1q_u64(reinterpret_cast<_u64*>(&d[i + 2]), int_vec2);
         }
     }
     else
     {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
+        for (; i < simd_end; i += t.simd_width)
         {
             neon_f64 data_vec = vld1q_f64(reinterpret_cast<const _f64*>(&data_[i]));
             neon_f64 uint_vec = vcvtq_u64_f64(data_vec);
-
-            vst1q_u64(reinterpret_cast<uint64_t*>(&d[i]), uint_vec);
+            vst1q_u64(reinterpret_cast<_u64*>(&d[i]), uint_vec);
         }
     }
 
     for (; i < data_.size(); ++i)
-        d[i] = static_cast<uint64_t>(data_[i]);
+    {
+        d[i] = static_cast<_u64>(data_[i]);
+    }
 
-    return tensor<uint64_t>(shape_, d);
+    return tensor<_u64>(shape_, d);
 }
 
 template<class _Tp>
 tensor<int64_t> internal::neon::long_(tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, int64_t>)
+    {
         throw error::type_error("Type must be convertible to 64 bit int");
+    }
 
     if (empty())
+    {
         return tensor<int64_t>(shape_);
+    }
 
     std::vector<_Tp>&    data_ = t.storage_();
     std::vector<int64_t> d(data_.size());
@@ -216,7 +290,6 @@ tensor<int64_t> internal::neon::long_(tensor<_Tp>& t) {
             neon_f64  data_vec2 = vld1q_f64(reinterpret_cast<const _f64*>(&data_[i + 2]));
             int64x2_t int_vec1  = vcvtq_s64_f64(data_vec1);
             int64x2_t int_vec2  = vcvtq_s64_f64(data_vec2);
-
             vst1q_s64(reinterpret_cast<int64_t*>(&d[i]), int_vec1);
             vst1q_s64(reinterpret_cast<int64_t*>(&d[i + 2]), int_vec2);
         }
@@ -228,7 +301,6 @@ tensor<int64_t> internal::neon::long_(tensor<_Tp>& t) {
             neon_u32   data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
             uint64x2_t int_vec1 = vmovl_u32(vget_low_u32(data_vec));
             uint64x2_t int_vec2 = vmovl_u32(vget_high_u32(data_vec));
-
             vst1q_u64(reinterpret_cast<uint64_t*>(&d[i]), int_vec1);
             vst1q_u64(reinterpret_cast<uint64_t*>(&d[i + 2]), int_vec2);
         }
@@ -240,14 +312,15 @@ tensor<int64_t> internal::neon::long_(tensor<_Tp>& t) {
             neon_s32  data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&data_[i]));
             int64x2_t int_vec1 = vmovl_s32(vget_low_s32(data_vec));
             int64x2_t int_vec2 = vmovl_s32(vget_high_s32(data_vec));
-
             vst1q_s64(reinterpret_cast<int64_t*>(&d[i]), int_vec1);
             vst1q_s64(reinterpret_cast<int64_t*>(&d[i + 2]), int_vec2);
         }
     }
 
     for (; i < data_.size(); ++i)
+    {
         d[i] = static_cast<int64_t>(data_[i]);
+    }
 
     return tensor<int64_t>(shape_, d);
 }
