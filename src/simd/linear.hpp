@@ -6,15 +6,19 @@
 template<class _Tp>
 tensor<_Tp> internal::neon::absolute_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     if (!std::is_arithmetic_v<_Tp>)
-        throw error::type_error("Type must be arithmetic");
+        {
+            throw error::type_error("Type must be arithmetic");
+            }
 
     if (std::is_unsigned_v<_Tp>)
-        return *this;
+        {
+            return *this;
+            }
 
     std::vector<_Tp>& data_ = t.storage_();
-    _u64   s = tensor.storage().size();
-    data_t a(s);
-    _u64   i = 0;
+    _u64              s     = tensor.storage().size();
+    data_t            a(s);
+    _u64              i = 0;
 
     if constexpr (std::is_floating_point_v<_Tp>)
     {
@@ -36,7 +40,9 @@ tensor<_Tp> internal::neon::absolute_(tensor<_Tp>& t, const tensor<_Tp>& other) 
     }
 
     for (; i < s; ++i)
-        data_[i] = static_cast<_Tp>(std::abs(data_[i]));
+        {
+            data_[i] = static_cast<_Tp>(std::abs(data_[i]));
+            }
 
     return self(a, tensor.shape_);
 }
