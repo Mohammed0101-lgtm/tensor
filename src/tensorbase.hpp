@@ -367,6 +367,15 @@ _u64 count_nonzero(tensor<_Tp>& t, _u64 dimension);
 template<class _Tp>
 double mean(tensor<_Tp>& t);
 
+template<class _Tp>
+tensor<bool> not_equal(tensor<_Tp>& t, const _Tp value);
+
+template<class _Tp>
+tensor<bool> not_equal(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp> absolute(tensor<_Tp>& t, const tensor<_Tp>& other);
+
 }  // namespace neon
 }  // namespace internal
 
@@ -439,8 +448,7 @@ class tensor
     tensor<double>       double_() const;
     data_t               storage() const noexcept;
     data_t&              storage_() const;
-    shape_type           shape() const noexcept;
-    shape_type           strides() const noexcept;
+    shape::Shape         shape() const noexcept;
     Device               device() const noexcept;
     std::size_t          n_dims() const noexcept;
     index_type           size(const index_type dimension) const;
@@ -1582,8 +1590,8 @@ class tensor
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       resize_as_(const shape_type shape_);
-    const tensor& resize_as_(const shape_type shape_) const;
+    tensor&       resize_as_(const shape::Shape sh_);
+    const tensor& resize_as_(const shape::Shape sh) const;
 
     /// @brief Computes the distance between the tensor and another tensor,
     /// modifying the tensor in place.
@@ -1880,8 +1888,8 @@ class tensor
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       randomize_(const shape_type& shape_, bool bounded = false);
-    const tensor& randomize_(const shape_type& shape_, bool bounded = false) const;
+    tensor&       randomize_(const shape::Shape& sh, bool bounded = false);
+    const tensor& randomize_(const shape::Shape& sh, bool bounded = false) const;
 
     /// @brief Fills the tensor with zeros, modifying the tensor in place.
     /// @param shape_ The shape to which the tensor will be resized before being
@@ -1971,60 +1979,6 @@ template<class _Tp>
 inline typename tensor<_Tp>::index_type tensor<_Tp>::compute_outer_size(const index_type dimension) const {
     // just a placeholder for now
     return 0;
-}
-
-template<class _Tp>
-[[nodiscard]]
-inline typename tensor<_Tp>::index_type tensor<_Tp>::computeSize(const shape_type& dims) noexcept {
-    if (dims.empty())
-    {
-        return static_cast<index_type>(0);
-    }
-
-    index_type ret = 1;
-
-    for (const index_type& d : dims)
-    {
-        ret *= d;
-    }
-
-    return ret;
-}
-
-template<class _Tp>
-[[nodiscard]]
-inline typename tensor<_Tp>::index_type tensor<_Tp>::compute_index(const std::vector<index_type>& idx) const {
-    if (idx.size() != shape_.size())
-    {
-        throw error::index_error("compute_index : input indices does not match the tensor shape");
-    }
-
-    index_type index = 0, i = 0;
-
-    for (const auto& elem : strides_)
-    {
-        index += idx[i++] * elem;
-    }
-
-    return index;
-}
-
-template<class _Tp>
-void tensor<_Tp>::compute_strides() {
-    if (shape_.empty())
-    {
-        assert(this->data_.empty());
-        return;
-    }
-
-    strides_ = shape_type(shape_.size(), 1);
-    int st = 1, i = static_cast<int>(shape_.size() - 1);
-
-    for (; i >= 0; i--)
-    {
-        strides_[i] = st;
-        st *= shape_[i];
-    }
 }
 
 template<class _Tp>
@@ -2201,7 +2155,7 @@ class tensor<bool>
             throw error::index_error("Passing an empty vector as indices for a tensor");
         }
 
-        index_type i = compute_index(idx);
+        index_type i = shape_.compute_index(idx);
 
         if (i < 0 || i >= data_.size())
         {
@@ -2493,7 +2447,7 @@ class tensor<bool>
             r[i] = data_[i];
         }
 
-        return self({shape_[1]}, r);
+        return self(shape::Shape({shape_[1]}), r);
     }
 
     tensor<bool> col(const index_type index) const {
@@ -2512,10 +2466,10 @@ class tensor<bool>
 
         for (; i < shape_[0]; ++i)
         {
-            c[i] = data_[compute_index({i, index})];
+            c[i] = data_[shape_.compute_index({i, index})];
         }
 
-        return self({shape_[0]}, c);
+        return self(shape::Shape({shape_[0]}), c);
     }
 
     tensor<bool> clone() const {
@@ -2547,7 +2501,7 @@ class tensor<bool>
             throw error::shape_error("Matrix transposition can only be done on 2D tensors");
         }
 
-        tensor           ret({shape_[1], shape_[0]});
+        tensor           ret(shape::Shape({shape_[1], shape_[0]}));
         const index_type rows = shape_[0];
         const index_type cols = shape_[1];
 
@@ -2725,31 +2679,31 @@ class tensor<bool>
             throw error::index_error("Dimension out of range in unsqueeze");
         }
 
-        shape_type s = shape_;
-        s.insert(s.begin() + dimension, 1);
+        shape::Shape new_shape = shape_;
+        new_shape[dimension]   = 1;
+        new_shape.value_.insert(new_shape.value_.begin() + dimension, 1);
 
         tensor ret;
-        ret.shape_ = s;
+        ret.shape_ = new_shape;
         ret.data_  = data_;
 
         return ret;
     }
 
-    tensor<bool>& randomize_(const shape_type& shape = {}) {
-        if (shape_.empty() && shape.empty())
+    tensor<bool>& randomize_(const shape::Shape& sh = {}) {
+        if (shape_.empty() && sh.empty())
         {
             throw error::shape_error("Shape must be initialized");
         }
 
-        if (shape.empty() || shape != shape_)
+        if (sh.empty() || sh.equal(shape_))
         {
-            shape_ = shape;
+            shape_ = sh;
         }
 
         index_type s = shape_.size();
         data_.resize(s);
-        compute_strides();
-
+        shape_.compute_strides();
         std::random_device                 rd;
         std::mt19937                       gen(rd());
         std::uniform_int_distribution<int> dist(0, 1);
@@ -2770,7 +2724,7 @@ class tensor<bool>
 
         data_.push_back(v);
         ++(shape_[0]);
-        compute_strides();
+        shape_.compute_strides();
         return *this;
     }
 
@@ -2782,20 +2736,21 @@ class tensor<bool>
 
         data_.pop_back();
         --(shape_[0]);
-        compute_strides();
+        shape_.compute_strides();
         return *this;
     }
 
-    tensor<bool>& view(std::initializer_list<index_type> shape_) {
-        index_type s = computeSize(shape_);
+    tensor<bool>& view(std::initializer_list<index_type> sh) {
+        shape::Shape new_shape(sh);
+        index_type   s = new_shape.flatten_size();
 
         if (s != data_.size())
         {
             throw std::invalid_argument("Total elements do not match for new shape");
         }
 
-        shape_ = shape_;
-        compute_strides();
+        new_shape.compute_strides();
+        this->shape_ = new_shape;
         return *this;
     }
 
@@ -2805,18 +2760,6 @@ class tensor<bool>
     }
 
    private:
-    [[nodiscard]]
-    inline std::size_t computeStride(std::size_t dimension, const shape_type& shape) const noexcept {
-        std::size_t stride = 1;
-
-        for (index_type i = dimension; i < shape_.size(); ++i)
-        {
-            stride *= shape_[i];
-        }
-
-        return stride;
-    }
-
     void printRecursive(std::size_t index, std::size_t depth, const shape::Shape& shape) const {
         if (depth == shape.size() - 1)
         {
@@ -2836,7 +2779,7 @@ class tensor<bool>
         else
         {
             std::cout << "[\n";
-            std::size_t stride = computeStride(depth + 1, shape);
+            std::size_t stride = shape_.computeStride(depth + 1, shape);
 
             for (std::size_t i = 0; i < shape[depth]; ++i)
             {
@@ -2867,52 +2810,6 @@ class tensor<bool>
 
             std::cout << "]";
         }
-    }
-
-    void compute_strides() {
-        if (shape_.empty())
-        {
-            throw error::shape_error("Shape must be initialized before computing strides");
-        }
-
-        strides_ = shape_type(shape_.size(), 1);
-        int st = 1, i = static_cast<int>(shape_.size() - 1);
-
-        for (; i >= 0; i--)
-        {
-            strides_[i] = st;
-            st *= shape_[i];
-        }
-    }
-
-    [[nodiscard]]
-    index_type compute_index(const std::vector<index_type>& idx) const {
-        if (idx.size() != shape_.size())
-        {
-            throw error::index_error("compute_index : input indices does not match the tensor shape");
-        }
-
-        index_type index = 0;
-        index_type i     = 0;
-
-        for (; i < shape_.size(); ++i)
-        {
-            index += idx[i] * strides_[i];
-        }
-
-        return index;
-    }
-
-    [[nodiscard]]
-    static index_type computeSize(const shape_type& dims) noexcept {
-        uint64_t ret = 1;
-
-        for (const auto& d : dims)
-        {
-            ret *= d;
-        }
-
-        return ret;
     }
 
     index_type compute_outer_size(const index_type dimension) const {
