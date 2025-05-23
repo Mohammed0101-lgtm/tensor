@@ -374,11 +374,6 @@ tensor<long> tensor<_Tp>::long_() const {
 
 template<class _Tp>
 tensor<bool> tensor<_Tp>::bool_() const {
-    if (internal::types::using_neon())
-    {
-        return internal::neon::bool_();
-    }
-
     if (!std::is_convertible_v<value_type, bool>)
     {
         throw error::type_error("Type must be convertible to bool");
