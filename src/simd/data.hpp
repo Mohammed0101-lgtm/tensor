@@ -7,7 +7,9 @@
 template<class _Tp>
 _u64 internal::neon::count_nonzero(tensor<_Tp>& t, _u64 dimension) {
     if (!std::is_arithmetic_v<_Tp>)
-        throw error::type_error("Type must be arithmetic");
+        {
+            throw error::type_error("Type must be arithmetic");
+            }
 
     std::vector<_Tp>& data_       = t.storage_();
     _u64              c           = 0;
@@ -27,15 +29,19 @@ _u64 internal::neon::count_nonzero(tensor<_Tp>& t, _u64 dimension) {
         }
 
         for (_u64 j = i; j < data_.size(); ++j)
-            if (data_[j] != 0)
-                ++local_count;
+            {if (data_[j] != 0)
+                {
+                    ++local_count;
+                    }}
 
         c += local_count;
     }
     else
     {
         if (dimension < 0 || dimension >= static_cast<_u64>(shape_.size()))
-            throw error::index_error("Invalid dimension provided.");
+            {
+                throw error::index_error("Invalid dimension provided.");
+                }
 
         throw std::runtime_error("Dimension-specific non-zero counting is not implemented yet.");
     }
@@ -46,12 +52,18 @@ _u64 internal::neon::count_nonzero(tensor<_Tp>& t, _u64 dimension) {
 template<class _Tp>
 tensor<_Tp>& internal::neon::zeros_(tensor<_Tp>& t, shape::Shape shape_) {
     if (!std::is_arithmetic_v<_Tp>)
-        throw error::type_error("Type must be arithmetic");
+        {
+            throw error::type_error("Type must be arithmetic");
+            }
 
     if (shape_.empty())
-        shape_ = shape_;
+        {
+            shape_ = shape_;
+            }
     else
-        shape_ = shape_;
+        {
+            shape_ = shape_;
+            }
 
     std::vector<_Tp>& data_ = t.storage_();
     std::size_t       s     = computeSize(shape_);
@@ -62,10 +74,14 @@ tensor<_Tp>& internal::neon::zeros_(tensor<_Tp>& t, shape::Shape shape_) {
     _u64           i        = 0;
 
     for (; i < simd_end; i += t.simd_width)
-        neon_store<_Tp>(&data_[i], zero_vec);
+        {
+            neon_store<_Tp>(&data_[i], zero_vec);
+            }
 
     for (; i < s; ++i)
-        data_[i] = _Tp(0.0);
+        {
+            data_[i] = _Tp(0.0);
+            }
 
     return *this;
 }
@@ -73,12 +89,18 @@ tensor<_Tp>& internal::neon::zeros_(tensor<_Tp>& t, shape::Shape shape_) {
 template<class _Tp>
 tensor<_Tp>& internal::neon::ones_(tensor<_Tp>& t, shape::Shape shape_) {
     if (!std::is_arithmetic_v<_Tp>)
-        throw error::type_error("Type must be arithmetic");
+        {
+            throw error::type_error("Type must be arithmetic");
+            }
 
     if (shape_.empty())
-        shape_ = shape_;
+        {
+            shape_ = shape_;
+            }
     else
-        shape_ = shape_;
+        {
+            shape_ = shape_;
+            }
 
     std::vector<_Tp>& data_ = t.storage_();
     std::size_t       s     = computeSize(shape_);
@@ -89,10 +111,14 @@ tensor<_Tp>& internal::neon::ones_(tensor<_Tp>& t, shape::Shape shape_) {
     _u64           i        = 0;
 
     for (; i < simd_end; i += t.simd_width)
-        neon_store<_Tp>(&data_[i], one_vec);
+        {
+            neon_store<_Tp>(&data_[i], one_vec);
+            }
 
     for (; i < s; ++i)
-        data_[i] = _Tp(1.0);
+        {
+            data_[i] = _Tp(1.0);
+            }
 
     return *this;
 }
@@ -100,22 +126,29 @@ tensor<_Tp>& internal::neon::ones_(tensor<_Tp>& t, shape::Shape shape_) {
 template<class _Tp>
 tensor<_Tp>& internal::neon::randomize_(tensor<_Tp>& t, const shape::Shape& shape_, bool bounded) {
     if (!std::is_arithmetic_v<_Tp>)
-        throw error::type_error("Type must be arithmetic");
+        {
+            throw error::type_error("Type must be arithmetic");
+            }
 
     if (bounded && !std::is_floating_point_v<_Tp>)
-        throw error::type_error("Cannot bound non floating point data type");
+        {
+            throw error::type_error("Cannot bound non floating point data type");
+            }
 
     if (shape_.empty() && shape_.empty())
-        throw error::shape_error("randomize_ : Shape must be initialized");
+        {
+            throw error::shape_error("randomize_ : Shape must be initialized");
+            }
 
     if (shape_.empty() || shape_ != shape_)
-        shape_ = shape_;
+        {
+            shape_ = shape_;
+            }
 
     std::vector<_Tp>& data_ = t.storage_();
     _u64              s     = computeSize(shape_);
     data_.resize(s);
     compute_strides();
-
     std::random_device                   rd;
     std::mt19937                         gen(rd());
     std::uniform_real_distribution<_f32> unbounded_dist(1.0f, static_cast<_f32>(RAND_MAX));
@@ -131,12 +164,18 @@ tensor<_Tp>& internal::neon::randomize_(tensor<_Tp>& t, const shape::Shape& shap
             neon_f32 random_values;
 
             if (bounded)
-                random_values = {bounded_dist(gen), bounded_dist(gen), bounded_dist(gen), bounded_dist(gen)};
+                {
+                    random_values = {bounded_dist(gen), bounded_dist(gen), bounded_dist(gen), bounded_dist(gen)};
+                    }
             else
-                random_values = {unbounded_dist(gen), unbounded_dist(gen), unbounded_dist(gen), unbounded_dist(gen)};
+                {
+                    random_values = {unbounded_dist(gen), unbounded_dist(gen), unbounded_dist(gen), unbounded_dist(gen)};
+                    }
 
             if (!bounded)
-                random_values = vmulq_f32(random_values, vrecpeq_f32(scale));
+                {
+                    random_values = vmulq_f32(random_values, vrecpeq_f32(scale));
+                    }
 
             vst1q_f32(&data_[i], random_values);
         }
@@ -151,7 +190,6 @@ tensor<_Tp>& internal::neon::randomize_(tensor<_Tp>& t, const shape::Shape& shap
                                   static_cast<_f32>(unbounded_dist(gen)), static_cast<_f32>(unbounded_dist(gen))};
             rand_vals          = vmulq_f32(rand_vals, vrecpeq_f32(scale));
             neon_u32 int_vals  = vcvtq_u32_f32(rand_vals);
-
             vst1q_u32(reinterpret_cast<_u32*>(&data_[i]), int_vals);
         }
     }
@@ -165,13 +203,14 @@ tensor<_Tp>& internal::neon::randomize_(tensor<_Tp>& t, const shape::Shape& shap
                                   static_cast<_f32>(unbounded_dist(gen)), static_cast<_f32>(unbounded_dist(gen))};
             rand_vals          = vmulq_f32(rand_vals, vrecpeq_f32(scale));
             neon_s32 int_vals  = vcvtq_s32_f32(rand_vals);
-
             vst1q_s32(reinterpret_cast<_s32*>(&data_[i]), int_vals);
         }
     }
 
     for (; i < static_cast<_u64>(s); ++i)
-        data_[i] = _Tp(bounded ? bounded_dist(gen) : unbounded_dist(gen));
+        {
+            data_[i] = _Tp(bounded ? bounded_dist(gen) : unbounded_dist(gen));
+            }
 
     return *this;
 }
@@ -179,7 +218,9 @@ tensor<_Tp>& internal::neon::randomize_(tensor<_Tp>& t, const shape::Shape& shap
 template<class _Tp>
 tensor<_Tp>& internal::neon::negative_(tensor<_Tp>& t) {
     if (!std::is_arithmetic_v<_Tp>)
-        throw error::type_error("Type must be arithmetic");
+        {
+            throw error::type_error("Type must be arithmetic");
+            }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % _ARM64_REG_WIDTH);
@@ -220,7 +261,9 @@ tensor<_Tp>& internal::neon::negative_(tensor<_Tp>& t) {
     }
 
     for (; i < data_.size(); ++i)
-        data_[i] = -data_[i];
+        {
+            data_[i] = -data_[i];
+            }
 
     return *this;
 }
