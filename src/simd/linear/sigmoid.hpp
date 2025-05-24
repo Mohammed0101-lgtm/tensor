@@ -5,7 +5,9 @@
 template<class _Tp>
 tensor<_Tp>& internal::neon::sigmoid_(tensor<_Tp>& t) {
     if (!std::is_arithmetic_v<_Tp>)
+    {
         throw error::type_error("Type must be arithmetic");
+    }
 
     std::vector<_Tp>& data_ = t.storage_();
     using neon_type         = typename std::conditional<std::is_same_v<_Tp, _f32>, neon_f32, void>::type;
@@ -24,7 +26,9 @@ tensor<_Tp>& internal::neon::sigmoid_(tensor<_Tp>& t) {
     }
 
     for (; i < data_.size(); ++i)
+    {
         data_[i] = static_cast<_Tp>(1.0 / (1.0 + std::exp(-static_cast<double>(data_[i]))));
+    }
 
-    return *this;
+    return t;
 }
