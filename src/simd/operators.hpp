@@ -9,14 +9,14 @@ tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const tensor<_Tp>& oth
         throw error::operator_error("Value type must have a plus operator");
     }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (!t.shape().equal(other.shape()))
     {
         throw error::shape_error("Cannot add two tensors with different shapes");
     }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-    data_t            d(data_.size());
+    std::vector<_Tp>            d(data_.size());
     _u64              i = 0;
 
     for (; i < simd_end; i += t.simd_width)
@@ -32,7 +32,7 @@ tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const tensor<_Tp>& oth
         d[i] = data_[i] + other[i];
     }
 
-    return self(shape_, d);
+    return tensor<_Tp>(shape_, d);
 }
 
 template<class _Tp>
@@ -44,7 +44,7 @@ tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const _Tp value) {
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-    data_t            d(data_.size());
+    std::vector<_Tp>            d(data_.size());
     neon_type<_Tp>    val_vec = neon_dup<_Tp>(value);
     _u64              i       = 0;
 
@@ -60,7 +60,7 @@ tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const _Tp value) {
         d[i] = data_[i] + value;
     }
 
-    return self(d, shape_);
+    return tensor<_Tp>(shape_, d);
 }
 
 template<class _Tp>
@@ -87,7 +87,7 @@ tensor<_Tp>& internal::neon::operator_plus_eq(tensor<_Tp>& t, const _Tp& value) 
         data_[i] = data_[i] + value;
     }
 
-    return *this;
+    return t;
 }
 
 template<class _Tp>
@@ -97,14 +97,14 @@ tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const tensor<_Tp>& ot
         throw error::operator_error("Value type must have a minus operator");
     }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (!t.shape().equal(other.shape()))
     {
         throw error::shape_error("Cannot add two tensors with different shapes");
     }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-    data_t            d(data_.size());
+    std::vector<_Tp>            d(data_.size());
     _u64              i = 0;
 
     for (; i < simd_end; i += t.simd_width)
@@ -120,7 +120,7 @@ tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const tensor<_Tp>& ot
         d[i] = data_[i] - other[i];
     }
 
-    return self(shape_, d);
+    return tensor<_Tp>(shape_, d);
 }
 
 template<class _Tp>
@@ -132,7 +132,7 @@ tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const _Tp value) {
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-    data_t            d(data_.size());
+    std::vector<_Tp>            d(data_.size());
     neon_type<_Tp>    val_vec = neon_dup<_Tp>(value);
     _u64              i       = 0;
 
