@@ -10,9 +10,9 @@ tensor<_s16> internal::neon::short_(tensor<_Tp>& t) {
         throw error::type_error("Type must be convertible to 16 bit signed int");
     }
 
-    if (empty())
+    if (t.empty())
     {
-        return tensor<_s16>(shape_);
+        return tensor<_s16>(t.shape_);
     }
 
     std::vector<_Tp>& data_ = t.storage_();
@@ -44,7 +44,7 @@ tensor<_s16> internal::neon::short_(tensor<_Tp>& t) {
         d[i] = static_cast<_s16>(data_[i]);
     }
 
-    return tensor<_s16>(shape_, d);
+    return tensor<_s16>(t.shape_, d);
 }
 
 
@@ -55,9 +55,9 @@ tensor<_s32> internal::neon::int_(tensor<_Tp>& t) {
         throw error::type_error("Type must be convertible to 32 bit signed int");
     }
 
-    if (empty())
+    if (t.empty())
     {
-        return tensor<_s32>(shape_);
+        return tensor<_s32>(t.shape_);
     }
 
     std::vector<_Tp>& data_ = t.storage_();
@@ -89,7 +89,7 @@ tensor<_s32> internal::neon::int_(tensor<_Tp>& t) {
         d[i] = static_cast<_s32>(data_[i]);
     }
 
-    return tensor<_s32>(shape_, d);
+    return tensor<_s32>(t.shape_, d);
 }
 
 template<class _Tp>
@@ -99,9 +99,9 @@ tensor<_u32> internal::neon::unsigned_int_(tensor<_Tp>& t) {
         throw error::type_error("Type must be convertible to unsigned 32 bit int");
     }
 
-    if (empty())
+    if (t.empty())
     {
-        return tensor<_u32>(shape_);
+        return tensor<_u32>(t.shape_);
     }
 
     std::vector<_Tp>& data_ = t.storage_();
@@ -133,7 +133,7 @@ tensor<_u32> internal::neon::unsigned_int_(tensor<_Tp>& t) {
         d[i] = static_cast<_u32>(data_[i]);
     }
 
-    return tensor<_u32>(shape_, d);
+    return tensor<_u32>(t.shape_, d);
 }
 
 template<class _Tp>
@@ -143,9 +143,9 @@ tensor<_f32> internal::neon::float_(tensor<_Tp>& t) {
         throw error::type_error("Type must be convertible to 32 bit float");
     }
 
-    if (empty())
+    if (t.empty())
     {
-        return tensor<_f32>(shape_);
+        return tensor<_f32>(t.shape_);
     }
 
     std::vector<_Tp>& data_ = t.storage_();
@@ -185,7 +185,7 @@ tensor<_f32> internal::neon::float_(tensor<_Tp>& t) {
         d[i] = static_cast<_f32>(data_[i]);
     }
 
-    return tensor<_f32>(shape_, d);
+    return tensor<_f32>(t.shape_, d);
 }
 
 template<class _Tp>
@@ -195,9 +195,9 @@ tensor<_f64> internal::neon::double_(tensor<_Tp>& t) {
         throw error::type_error("Type must be convertible to 64 bit float");
     }
 
-    if (empty())
+    if (t.empty())
     {
-        return tensor<_f64>(shape_);
+        return tensor<_f64>(t.shape_);
     }
 
     std::vector<_Tp>& data_ = t.storage_();
@@ -216,7 +216,7 @@ tensor<_f64> internal::neon::double_(tensor<_Tp>& t) {
         d[i] = static_cast<_f64>(data_[i]);
     }
 
-    return tensor<_f64>(shape_, d);
+    return tensor<_f64>(t.shape_, d);
 }
 
 template<class _Tp>
@@ -226,15 +226,15 @@ tensor<_u64> internal::neon::unsigned_long_(tensor<_Tp>& t) {
         throw error::type_error("Type must be convertible to unsigned 64 bit int");
     }
 
-    if (empty())
+    if (t.empty())
     {
-        return tensor<_u64>(shape_);
+        return tensor<_u64>(t.shape_);
     }
 
-    std::vector<_Tp>&     data_ = t.storage_();
+    std::vector<_Tp>& data_ = t.storage_();
     std::vector<_u64> d(data_.size());
-    const _u64            simd_end = data_.size() - (data_.size() % t.simd_width);
-    _u64                  i        = 0;
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+    _u64              i        = 0;
 
     if constexpr (std::is_unsigned_v<_Tp>)
     {
@@ -262,7 +262,7 @@ tensor<_u64> internal::neon::unsigned_long_(tensor<_Tp>& t) {
         d[i] = static_cast<_u64>(data_[i]);
     }
 
-    return tensor<_u64>(shape_, d);
+    return tensor<_u64>(t.shape(), d);
 }
 
 template<class _Tp>
@@ -272,9 +272,9 @@ tensor<int64_t> internal::neon::long_(tensor<_Tp>& t) {
         throw error::type_error("Type must be convertible to 64 bit int");
     }
 
-    if (empty())
+    if (t.empty())
     {
-        return tensor<int64_t>(shape_);
+        return tensor<int64_t>(t.shape_);
     }
 
     std::vector<_Tp>&    data_ = t.storage_();
@@ -322,5 +322,5 @@ tensor<int64_t> internal::neon::long_(tensor<_Tp>& t) {
         d[i] = static_cast<int64_t>(data_[i]);
     }
 
-    return tensor<int64_t>(shape_, d);
+    return tensor<int64_t>(t.shape_, d);
 }
