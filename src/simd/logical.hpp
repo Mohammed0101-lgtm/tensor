@@ -5,9 +5,9 @@
 template<class _Tp>
 tensor<_Tp>& internal::neon::logical_or_(tensor<_Tp>& t, const _Tp value) {
     if (!std::is_integral_v<_Tp>)
-        {
-            throw error::type_error("Cannot perform logical OR on non-integral values");
-            }
+    {
+        throw error::type_error("Cannot perform logical OR on non-integral values");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -37,19 +37,19 @@ tensor<_Tp>& internal::neon::logical_or_(tensor<_Tp>& t, const _Tp value) {
     }
 
     for (; i < data_.size(); ++i)
-        {
-            data_[i] = static_cast<_Tp>(data_[i] || value);
-            }
+    {
+        data_[i] = static_cast<_Tp>(data_[i] || value);
+    }
 
-    return *this;
+    return t;
 }
 
 template<class _Tp>
 tensor<_Tp>& internal::neon::logical_xor_(tensor<_Tp>& t, const _Tp value) {
     if (!std::is_integral_v<_Tp>)
-        {
-            throw error::type_error("Cannot get the element wise xor of non-integral value");
-            }
+    {
+        throw error::type_error("Cannot get the element wise xor of non-integral value");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -81,19 +81,19 @@ tensor<_Tp>& internal::neon::logical_xor_(tensor<_Tp>& t, const _Tp value) {
     }
 
     for (; i < data_.size(); ++i)
-        {
-            data_[i] = static_cast<_Tp>(data_[i] xor value);
-            }
+    {
+        data_[i] = static_cast<_Tp>(data_[i] xor value);
+    }
 
-    return *this;
+    return t;
 }
 
 template<class _Tp>
 tensor<_Tp>& internal::neon::logical_and_(tensor<_Tp>& t, const _Tp value) {
     if (!std::is_integral_v<_Tp>)
-        {
-            throw error::type_error("Cannot get the element wise and of non-integral value");
-            }
+    {
+        throw error::type_error("Cannot get the element wise and of non-integral value");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -123,24 +123,24 @@ tensor<_Tp>& internal::neon::logical_and_(tensor<_Tp>& t, const _Tp value) {
     }
 
     for (; i < data_.size(); ++i)
-        {
-            data_[i] = static_cast<_Tp>(data_[i] && value);
-            }
+    {
+        data_[i] = static_cast<_Tp>(data_[i] && value);
+    }
 
-    return *this;
+    return t;
 }
 
 template<class _Tp>
 tensor<_Tp>& internal::neon::logical_or_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     if (!std::is_integral_v<_Tp>)
-        {
-            throw error::type_error("Cannot get the element wise not of non-integral values");
-            }
+    {
+        throw error::type_error("Cannot get the element wise not of non-integral values");
+    }
 
-    if (!equal_shape(shape(), other.shape()))
-        {
-            throw error::shape_error("Tensors shapes must be equal");
-            }
+    if (!t.shape().equal(other.shape()))
+    {
+        throw error::shape_error("Tensors shapes must be equal");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -168,24 +168,24 @@ tensor<_Tp>& internal::neon::logical_or_(tensor<_Tp>& t, const tensor<_Tp>& othe
     }
 
     for (; i < data_.size(); ++i)
-        {
-            data_[i] = (data_[i] || other[i]);
-            }
+    {
+        data_[i] = (data_[i] || other[i]);
+    }
 
-    return *this;
+    return t;
 }
 
 template<class _Tp>
 tensor<_Tp>& internal::neon::logical_xor_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     if (!std::is_integral_v<_Tp>)
-        {
-            throw error::type_error("Cannot get the element wise xor of non-integral value");
-            }
+    {
+        throw error::type_error("Cannot get the element wise xor of non-integral value");
+    }
 
-    if (!equal_shape(shape(), other.shape()))
-        {
+    if (!t.shape().equal(other.shape()))
+    {
         throw error::shape_error("Tensors shapes must be equal");
-        }
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -213,24 +213,24 @@ tensor<_Tp>& internal::neon::logical_xor_(tensor<_Tp>& t, const tensor<_Tp>& oth
     }
 
     for (; i < data_.size(); ++i)
-        {
-            data_[i] = (data_[i] xor other[i]);
-            }
+    {
+        data_[i] = (data_[i] xor other[i]);
+    }
 
-    return *this;
+    return t;
 }
 
 template<class _Tp>
 tensor<_Tp>& internal::neon::logical_and_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     if (!std::is_integral_v<_Tp>)
-        {
-            throw error::type_error("Cannot get the element-wise and of non-integral value");
-            }
+    {
+        throw error::type_error("Cannot get the element-wise and of non-integral value");
+    }
 
-    if (!equal_shape(shape(), other.shape()))
-        {
-            throw error::shape_error("Tensors shapes must be equal");
-            }
+    if (!t.shape().equal(other.shape()))
+    {
+        throw error::shape_error("Tensors shapes must be equal");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -258,9 +258,9 @@ tensor<_Tp>& internal::neon::logical_and_(tensor<_Tp>& t, const tensor<_Tp>& oth
     }
 
     for (; i < data_.size(); ++i)
-        {
-            data_[i] = (data_[i] && other[i]);
-            }
+    {
+        data_[i] = (data_[i] && other[i]);
+    }
 
-    return *this;
+    return t;
 }
