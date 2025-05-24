@@ -4,17 +4,19 @@
 
 template<class _Tp>
 tensor<_Tp> internal::neon::sum(tensor<_Tp>& t, const _u64 axis) {
-    if (axis < 0 || axis >= static_cast<_u64>(shape_.size()))
+    if (axis < 0 || axis >= static_cast<_u64>(t.shape().size()))
+    {
         throw std::invalid_argument("Invalid axis for sum");
+    }
 
     std::vector<_Tp>& data_  = t.storage_();
-    shape_type        ret_sh = shape_;
+    shape::Shape      ret_sh = t.shape();
     ret_sh[axis]             = 1;
-    _u64       ret_size      = std::accumulate(ret_sh.begin(), ret_sh.end(), 1, std::multiplies<_u64>());
-    data_t     ret_data(ret_size, _Tp(0.0f));
-    const _u64 axis_size  = shape_[axis];
-    const _u64 outer_size = compute_outer_size(axis);
-    const _u64 inner_size = size(0) / (outer_size * axis_size);
+    _u64       ret_size      = std::accumulate(ret_sh.value_.begin(), ret_sh.value_.end(), 1, std::multiplies<_u64>());
+    shape::Shape     ret_data(ret_size, _Tp(0.0f));
+    const _u64 axis_size  = t.shape()[axis];
+    const _u64 outer_size = t.compute_outer_size(axis);
+    const _u64 inner_size = t.size(0) / (outer_size * axis_size);
     const _u64 simd_end   = data_.size() - (data_.size() % t.simd_width);
 
     for (_u64 outer = 0; outer < outer_size; ++outer)
@@ -44,5 +46,5 @@ tensor<_Tp> internal::neon::sum(tensor<_Tp>& t, const _u64 axis) {
         }
     }
 
-    return self(ret_data, ret_sh);
+    return tensor<_Tp>(ret_data, ret_sh);
 }
