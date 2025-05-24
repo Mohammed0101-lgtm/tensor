@@ -86,6 +86,21 @@ class tensor;
 namespace internal {
 namespace neon {
 
+template <class _Tp>
+tensor<_Tp> operator_divide(tensor<_Tp>& t, const _Tp& value);
+
+template <class _Tp>
+tensor<_Tp> operator_divide(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template <class _Tp>
+tensor<_Tp> operator_divide_eq(tensor<_Tp>& t, const _Tp& value);
+
+template <class _Tp>
+tensor<_Tp> operator_divide_eq(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template <class _Tp>
+tensor<_Tp> fill_(tensor<_Tp>& t, const tensor<_Tp>& other);
+
 template<class _Tp>
 tensor<_s16> short_(tensor<_Tp>& t);
 
@@ -376,6 +391,9 @@ tensor<bool> not_equal(tensor<_Tp>& t, const tensor<_Tp>& other);
 template<class _Tp>
 tensor<_Tp> absolute(tensor<_Tp>& t, const tensor<_Tp>& other);
 
+template<class _Tp>
+tensor<_Tp>& clamp_min_(const _Tp& min_val);
+
 }  // namespace neon
 }  // namespace internal
 
@@ -418,9 +436,14 @@ class tensor
     tensor(tensor&& t) noexcept;
     tensor(const shape::Shape& shape_, const tensor& other);
     tensor(const shape::Shape& shape_, std::initializer_list<value_type> init_list, Device d = Device::CPU);
+    tensor(const shape_type& shape_, const tensor& other);
+    tensor(const shape_type& shape_, std::initializer_list<value_type> init_list, Device d = Device::CPU);
     explicit tensor(const shape::Shape& shape_, const_reference v, Device d = Device::CPU);
     explicit tensor(const shape::Shape& shape_, Device d = Device::CPU);
     explicit tensor(const shape::Shape& shape_, const data_t& d, Device dev = Device::CPU);
+    explicit tensor(const shape_type& shape_, const_reference v, Device d = Device::CPU);
+    explicit tensor(const shape_type& shape_, Device d = Device::CPU);
+    explicit tensor(const shape_type& shape_, const data_t& d, Device dev = Device::CPU);
 
    private:
     class destroy_tensor
@@ -1899,8 +1922,8 @@ class tensor
     /// @note This `const` overload allows chaining and usage like:
     /// `const auto& result = tensor.asin_();`
     /// The tensor is still modified in place.
-    tensor&       zeros_(shape_type shape_ = {});
-    const tensor& zeros_(shape_type shape_ = {}) const;
+    tensor&       zeros_(shape::Shape sh = {});
+    const tensor& zeros_(shape::Shape sh = {}) const;
 
     /// @brief Fills the tensor with ones, modifying the tensor in place.
     /// @param shape_ The shape to which the tensor will be resized before being
