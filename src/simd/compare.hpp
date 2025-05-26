@@ -6,11 +6,16 @@
 template<class _Tp>
 tensor<bool> internal::neon::equal(tensor<_Tp>& t, const tensor<_Tp>& other) {
     if constexpr (!internal::types::has_equal_operator_v<_Tp>)
+    {
         throw error::operator_error("Value type must have equal to operator");
+    }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (!t.shape().equal(other.shape()))
+    {
         throw error::shape_error("Tensors shapes must be equal");
+    }
 
+    std::vector<_Tp>& data_ = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
     std::vector<bool> ret(data_.size());
     _u64              i = 0;
@@ -24,20 +29,27 @@ tensor<bool> internal::neon::equal(tensor<_Tp>& t, const tensor<_Tp>& other) {
         vst1q_u32(buffer, res_vec);
 
         for (int j = 0; j < t.simd_width; ++j)
+        {
             ret[i + j] = buffer[j] == 0xFFFFFFFF;
+        }
     }
 
     for (; i < data_.size(); ++i)
+    {
         ret[i] = (data_[i] == other[i]);
+    }
 
-    return tensor<bool>(shape_, ret);
+    return tensor<bool>(t.shape_, ret);
 }
 
 template<class _Tp>
 tensor<bool> internal::neon::equal(tensor<_Tp>& t, const _Tp value) {
     if constexpr (!internal::types::has_equal_operator_v<_Tp>)
+    {
         throw error::operator_error("Value type must have equal to operator");
+    }
 
+    std::vector<_Tp>& data_ = t.storage_();
     std::vector<bool> ret(data_.size());
     const _u64        simd_end = data_.size() - (data_.size() % 4);
     _u64              i        = 0;
@@ -51,23 +63,32 @@ tensor<bool> internal::neon::equal(tensor<_Tp>& t, const _Tp value) {
         neon_store<_Tp>(results, cmp_result);
 
         for (int j = 0; j < t.simd_width; ++j)
+        {
             ret[i + j] = results[j] != 0;
+        }
     }
 
     for (; i < data_.size(); ++i)
+    {
         ret[i] = (data_[i] == value);
+    }
 
-    return tensor<bool>(shape_, ret);
+    return tensor<bool>(t.shape_, ret);
 }
 
 template<class _Tp>
 tensor<bool> internal::neon::less_equal(tensor<_Tp>& t, const tensor<_Tp>& other) {
     if constexpr (!internal::types::has_less_operator_v<_Tp>)
+    {
         throw error::operator_error("Value type must have less than operator");
+    }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (!t.shape().equal(other.shape()))
+    {
         throw error::shape_error("Tensors shapes must be equal");
+    }
 
+    std::vector<_Tp>& data_ = t.storage_();
     std::vector<_u32> ret(data_.size());
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
     _u64              i        = 0;
@@ -84,19 +105,26 @@ tensor<bool> internal::neon::less_equal(tensor<_Tp>& t, const tensor<_Tp>& other
     std::vector<bool> d(data_.size());
 
     for (std::size_t j = 0; j < i; ++j)
+    {
         d[j] = ret[j] != 0;
+    }
 
     for (; i < d.size(); ++i)
+    {
         d[i] = (data_[i] <= other[i]);
+    }
 
-    return tensor<bool>(shape_, d);
+    return tensor<bool>(t.shape_, d);
 }
 
 template<class _Tp>
 tensor<bool> internal::neon::less_equal(tensor<_Tp>& t, const _Tp value) {
     if constexpr (!internal::types::has_less_equal_operator_v<_Tp>)
+    {
         throw error::operator_error("Value type must have less than or equal to operator");
+    }
 
+    std::vector<_Tp>& data_ = t.storage_();
     std::vector<_u32> ret(data_.size());
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
     _u64              i        = 0;
@@ -110,19 +138,25 @@ tensor<bool> internal::neon::less_equal(tensor<_Tp>& t, const _Tp value) {
     }
 
     for (; i < data_.size(); ++i)
+    {
         ret[i] = (data_[i] <= value) ? 1 : 0;
+    }
 
     std::vector<bool> to_bool(ret.size());
     i = 0;
 
     for (int i = i; i >= 0; i--)
+    {
         to_bool[i] = ret[i] == 1 ? true : false;
+    }
 
-    return tensor<bool>(to_bool, shape_);
+    return tensor<bool>(t.shape_, to_bool);
 }
 
 template<class _Tp>
 inline tensor<bool> internal::neon::less(tensor<_Tp>& t, const _Tp value) {
     if constexpr (!internal::types::has_less_operator_v<_Tp>)
+    {
         throw error::operator_error("Value type must have less than operator");
+    }
 }
