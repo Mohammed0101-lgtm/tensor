@@ -5,25 +5,31 @@
 
 template<class _Tp>
 tensor<_u64> internal::neon::argmax_(tensor<_Tp>& t, _u64 dimension) {
-    if (dimension < 0 || dimension >= shape_.size())
+    if (dimension < 0 || dimension >= t.shape().size())
+    {
         throw error::index_error("Dimension out of range in argmax");
+    }
 
     std::vector<_Tp>& data_ = t.storage_();
     tensor<_u64>      ret;
-    shape_type        ret_sh = shape_;
-    ret_sh.erase(ret_sh.begin() + dimension);
-    ret.shape_ = ret_sh;
-    ret.data_.resize(computeSize(ret_sh), 0);
+    shape::Shape        ret_sh = t.shape();
+    ret_sh.value_.erase(ret_sh.value_.begin() + dimension);
+    ret.shape() = ret_sh;
+    ret.storage_().resize(ret_sh.flatten_size(), 0);
 
     _u64 outer_size = 1;
     _u64 inner_size = 1;
     _u64 i          = 0;
 
     for (; i < dimension; ++i)
-        outer_size *= shape_[i];
+    {
+        outer_size *= t.shape()[i];
+    }
 
-    for (i = dimension + 1; i < shape_.size(); ++i)
-        inner_size *= shape_[i];
+    for (i = dimension + 1; i < t.shape_.size(); ++i)
+    {
+        inner_size *= t.shape_[i];
+    }
 
     const _u64 simd_end = data_.size() - (data_.size() % t.simd_width);
 
@@ -38,9 +44,9 @@ tensor<_u64> internal::neon::argmax_(tensor<_Tp>& t, _u64 dimension) {
             neon_type<_Tp> current_index = {_Tp(0), _Tp(1), _Tp(2), _Tp(3)};
             _u64           k             = 0;
 
-            for (; k + t.simd_width <= shape_[dimension]; k += t.simd_width)
+            for (; k + t.simd_width <= t.shape()[dimension]; k += t.simd_width)
             {
-                neon_type<_Tp> data_vec = neon_load<_Tp>(&data_[(i * shape_[dimension] + k) * inner_size + j]);
+                neon_type<_Tp> data_vec = neon_load<_Tp>(&data_[(i * t.shape()[dimension] + k) * inner_size + j]);
                 neon_type<_Tp> mask     = neon_vcgtq<_Tp>(data_vec, max_vec);
                 max_vec                 = neon_vbslq<_Tp>(mask, data_vec, max_vec);
                 index_vec               = neon_vbslq<_Tp>(mask, current_index, index_vec);
@@ -64,9 +70,9 @@ tensor<_u64> internal::neon::argmax_(tensor<_Tp>& t, _u64 dimension) {
                     max_index = indices[k];
                 }
 
-                for (; k < shape_[dimension]; ++k)
+                for (; k < t.shape()[dimension]; ++k)
                 {
-                    _Tp v = data_[(i * shape_[dimension] + k) * inner_size + j];
+                    _Tp v = data_[(i * t.shape_[dimension] + k) * inner_size + j];
 
                     if (v > max_val)
                     {
@@ -84,26 +90,32 @@ tensor<_u64> internal::neon::argmax_(tensor<_Tp>& t, _u64 dimension) {
 
 template<class _Tp>
 tensor<_Tp> internal::neon::argmax(tensor<_Tp>& t, _u64 dimension) {
-    if (dimension < 0 || dimension >= shape_.size())
+    if (dimension < 0 || dimension >= t.shape().size())
+    {
         throw error::index_error("Dimension out of range in argmax");
+    }
 
     std::vector<_Tp>& data_ = t.storage_();
-    tensor            ret;
-    shape_type        ret_sh = shape_;
+    tensor<_Tp>            ret;
+    shape::Shape        ret_sh = t.shape();
 
-    ret_sh.erase(ret_sh.begin() + dimension);
+    ret_sh.value_.erase(ret_sh.value_.begin() + dimension);
     ret.shape_ = ret_sh;
-    ret.data_.resize(computeSize(ret_sh), _Tp(0));
+    ret.storage_().resize(ret_sh.flatten_size(), _Tp(0));
 
     _u64 outer_size = 1;
     _u64 inner_size = 1;
     _u64 i          = 0;
 
     for (; i < dimension; ++i)
-        outer_size *= shape_[i];
+    {
+        outer_size *= t.shape()[i];
+    }
 
-    for (i = dimension + 1; i < static_cast<_u64>(shape_.size()); ++i)
-        inner_size *= shape_[i];
+    for (i = dimension + 1; i < static_cast<_u64>(t.shape().size()); ++i)
+    {
+        inner_size *= t.shape()[i];
+    }
 
     const _u64 simd_end = data_.size() - (data_.size() % t.simd_width);
 
@@ -114,17 +126,17 @@ tensor<_Tp> internal::neon::argmax(tensor<_Tp>& t, _u64 dimension) {
             neon_type<_Tp> max_vec = neon_dup<_Tp>(-std::numeric_limits<_Tp>::infinity());
             _u64           k       = 0;
 
-            for (; k + t.simd_width <= shape_[dimension]; k += t.simd_width)
+            for (; k + t.simd_width <= t.shape()[dimension]; k += t.simd_width)
             {
-                neon_type<_Tp> data_vec = neon_load<_Tp>(&data_[(i * shape_[dimension] + k) * inner_size + j]);
+                neon_type<_Tp> data_vec = neon_load<_Tp>(&data_[(i * t.shape()[dimension] + k) * inner_size + j]);
                 max_vec                 = neon_max<_Tp>(max_vec, data_vec);
             }
 
             _Tp max_value = neon_maxv<_Tp>(max_vec);
 
-            for (; k < shape_[dimension]; ++k)
+            for (; k < t.shape()[dimension]; ++k)
             {
-                _Tp v     = data_[(i * shape_[dimension] + k) * inner_size + j];
+                _Tp v     = data_[(i * t.shape()[dimension] + k) * inner_size + j];
                 max_value = std::max(max_value, v);
             }
 
@@ -137,15 +149,17 @@ tensor<_Tp> internal::neon::argmax(tensor<_Tp>& t, _u64 dimension) {
 
 template<class _Tp>
 tensor<_u64> internal::neon::argsort(tensor<_Tp>& t, _u64 d, bool ascending) {
+    std::vector<_Tp>& data_ = t.storage_();
     _u64 adjusted = (d < 0) ? d + data_.size() : d;
 
     if (adjusted != 0)
+    {
         throw error::index_error("Invalid dimension for argsort: only 1D tensors are supported");
+    }
 
-    std::vector<_Tp>& data_ = t.storage_();
     _u64              size  = static_cast<_u64>(data_.size());
-    shape_type        indices(size);
-    std::iota(indices.begin(), indices.end(), 0);
+    shape::Shape        indices(size);
+    std::iota(indices.value_.begin(), indices.value_.end(), 0);
 
     const _u64 simd_end = data_.size() - (data_.size() % t.simd_width);
     _u64       i        = 0;
@@ -194,9 +208,11 @@ tensor<_u64> internal::neon::argsort(tensor<_Tp>& t, _u64 d, bool ascending) {
     }
 
     for (; i < size; ++i)
+    {
         indices[i] = i;
+    }
 
-    std::sort(indices.begin(), indices.end(),
+    std::sort(indices.value_.begin(), indices.value_.end(),
               [&](_u64 a, _u64 b) { return ascending ? data_[a] < data_[b] : data_[a] > data_[b]; });
 
     return tensor<_u64>(indices);
