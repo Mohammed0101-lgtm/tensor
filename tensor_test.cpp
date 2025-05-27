@@ -41,7 +41,7 @@ TEST(TensorTest, ShapeTest) {
 TEST(TensorTest, StridesTest) {
     tensor<int> t({2, 2}, {1, 2, 3, 4});
 
-    EXPECT_EQ(t.strides(), (std::vector<unsigned long long>{2, 1}));
+    EXPECT_EQ(t.shape().strides(), (std::vector<unsigned long long>{2, 1}));
 }
 
 TEST(TensorTest, DeviceTest) {
@@ -974,6 +974,7 @@ TEST(TensorTest, ClippedReLU) {
         EXPECT_FLOAT_EQ(result[i], expected[i]);
     }
 }
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
