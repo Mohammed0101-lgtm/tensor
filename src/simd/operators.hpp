@@ -32,7 +32,7 @@ tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const tensor<_Tp>& oth
         d[i] = data_[i] + other[i];
     }
 
-    return tensor<_Tp>(shape_, d);
+    return tensor<_Tp>(t.shape_, d);
 }
 
 template<class _Tp>
@@ -60,7 +60,7 @@ tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const _Tp value) {
         d[i] = data_[i] + value;
     }
 
-    return tensor<_Tp>(shape_, d);
+    return tensor<_Tp>(t.shape_, d);
 }
 
 template<class _Tp>
@@ -120,7 +120,7 @@ tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const tensor<_Tp>& ot
         d[i] = data_[i] - other[i];
     }
 
-    return tensor<_Tp>(shape_, d);
+    return tensor<_Tp>(t.shape_, d);
 }
 
 template<class _Tp>
@@ -148,7 +148,7 @@ tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const _Tp value) {
         d[i] = data_[i] - value;
     }
 
-    return self(*this);
+    return tensor<_Tp>(*this);
 }
 
 template<class _Tp>
@@ -158,7 +158,7 @@ tensor<_Tp>& internal::neon::operator_minus_eq(tensor<_Tp>& t, const tensor<_Tp>
         throw error::operator_error("Value type must have a minus operator");
     }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (!t.shape().equal(other.shape()))
     {
         throw error::shape_error("Tensors shapes must be equal");
     }
@@ -180,7 +180,7 @@ tensor<_Tp>& internal::neon::operator_minus_eq(tensor<_Tp>& t, const tensor<_Tp>
         data_[i] -= other[i];
     }
 
-    return *this;
+    return t;
 }
 
 template<class _Tp>
@@ -190,7 +190,7 @@ tensor<_Tp>& internal::neon::operator_times_eq(tensor<_Tp>& t, const tensor<_Tp>
         throw error::operator_error("Value type must have a minus operator");
     }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (!t.shape().equal(other.shape()))
     {
         throw error::shape_error("Tensors shapes must be equal");
     }
@@ -212,7 +212,7 @@ tensor<_Tp>& internal::neon::operator_times_eq(tensor<_Tp>& t, const tensor<_Tp>
         data_[i] *= other[i];
     }
 
-    return *this;
+    return t;
 }
 
 template<class _Tp>
@@ -239,5 +239,5 @@ tensor<_Tp>& internal::neon::operator_minus_eq(tensor<_Tp>& t, const _Tp& value)
         data_[i] -= value;
     }
 
-    return *this;
+    return t;
 }
