@@ -86,19 +86,19 @@ class tensor;
 namespace internal {
 namespace neon {
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp> operator_divide(tensor<_Tp>& t, const _Tp& value);
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp> operator_divide(tensor<_Tp>& t, const tensor<_Tp>& other);
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp> operator_divide_eq(tensor<_Tp>& t, const _Tp& value);
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp> operator_divide_eq(tensor<_Tp>& t, const tensor<_Tp>& other);
 
-template <class _Tp>
+template<class _Tp>
 tensor<_Tp> fill_(tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
@@ -2146,6 +2146,50 @@ class tensor<bool>
         device_(std::move(t.device())) {}
 
     tensor(const shape::Shape& shape_, std::initializer_list<value_type> init_list, Device d = Device::CPU) :
+        shape_(shape_),
+        device_(d) {
+        index_type s = shape_.size();
+
+        if (init_list.size() != static_cast<std::size_t>(s))
+        {
+            throw std::invalid_argument("Initializer list size must match tensor size");
+        }
+
+        data_ = data_t(init_list);
+    }
+
+    tensor(const shape::Shape& shape_, const tensor& other) :
+        data_(other.storage()),
+        shape_(shape_),
+        device_(other.device()) {}
+
+
+    explicit tensor(const shape_type& shape_, value_type v, Device d = Device::CPU) :
+        shape_(shape_),
+        data_(shape_.size(), v),
+        device_(d) {}
+
+    explicit tensor(const shape_type& shape_, Device d = Device::CPU) :
+        shape_(shape_),
+        device_(d) {
+        index_type s = shape_.size();
+        data_        = data_t(s);
+    }
+
+    explicit tensor(const shape_type& shape_, const data_t& d, Device dev = Device::CPU) :
+        shape_(shape_),
+        device_(dev) {
+        index_type s = shape_.size();
+
+        if (d.size() != static_cast<std::size_t>(s))
+        {
+            throw std::invalid_argument("Initial data vector must match the tensor");
+        }
+
+        data_ = d;
+    }
+
+    tensor(const shape_type& shape_, std::initializer_list<value_type> init_list, Device d = Device::CPU) :
         shape_(shape_),
         device_(d) {
         index_type s = shape_.size();
