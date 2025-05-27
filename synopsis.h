@@ -4,6 +4,8 @@
 /*
 #pragma once
 
+clang-format on
+
 #include <__algorithm/clamp.h>
 #include <__algorithm/comp.h>
 #include <__algorithm/sort.h>
