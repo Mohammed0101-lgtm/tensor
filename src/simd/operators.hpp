@@ -16,7 +16,7 @@ tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const tensor<_Tp>& oth
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-    std::vector<_Tp>            d(data_.size());
+    std::vector<_Tp>  d(data_.size());
     _u64              i = 0;
 
     for (; i < simd_end; i += t.simd_width)
@@ -44,7 +44,7 @@ tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const _Tp value) {
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-    std::vector<_Tp>            d(data_.size());
+    std::vector<_Tp>  d(data_.size());
     neon_type<_Tp>    val_vec = neon_dup<_Tp>(value);
     _u64              i       = 0;
 
@@ -104,7 +104,7 @@ tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const tensor<_Tp>& ot
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-    std::vector<_Tp>            d(data_.size());
+    std::vector<_Tp>  d(data_.size());
     _u64              i = 0;
 
     for (; i < simd_end; i += t.simd_width)
@@ -132,7 +132,7 @@ tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const _Tp value) {
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-    std::vector<_Tp>            d(data_.size());
+    std::vector<_Tp>  d(data_.size());
     neon_type<_Tp>    val_vec = neon_dup<_Tp>(value);
     _u64              i       = 0;
 
