@@ -11,18 +11,15 @@ TEST(TensorTest, StorageTest) {
 }
 
 TEST(TensorTest, DataTypeConversionTest) {
-    tensor<int> t({3}, {1, 2, 3});
+    tensor<int>       t({3}, {1, 2, 3});
+    tensor<int32_t>   t_int       = t.int32_();
+    tensor<uint32_t>  t_uint      = t.uint32_();
+    tensor<uint64_t>  t_ulong     = t.uint64_();
+    tensor<float32_t> t_float     = t.float32_();
+    tensor<float64_t> t_double    = t.float64_();
+    tensor<int16_t>   t_short     = t.int16_();
+    tensor<int64_t>   t_long_long = t.int64_();
 
-    tensor<long>          t_long      = t.long_();
-    tensor<int>           t_int       = t.int_();
-    tensor<unsigned int>  t_uint      = t.unsigned_int_();
-    tensor<unsigned long> t_ulong     = t.unsigned_long_();
-    tensor<float>         t_float     = t.float_();
-    tensor<double>        t_double    = t.double_();
-    tensor<short>         t_short     = t.short_();
-    tensor<long long>     t_long_long = t.long_long_();
-
-    EXPECT_EQ(t_long.storage(), (std::vector<long>{1, 2, 3}));
     EXPECT_EQ(t_int.storage(), (std::vector<int>{1, 2, 3}));
     EXPECT_EQ(t_uint.storage(), (std::vector<unsigned int>{1, 2, 3}));
     EXPECT_EQ(t_ulong.storage(), (std::vector<unsigned long>{1, 2, 3}));
@@ -640,7 +637,7 @@ TEST(TensorTest, SinhBasic) {
 }
 
 TEST(TensorTest, EmptyTensorOps) {
-    tensor<double> t({}, {});
+    tensor<double> t;
     EXPECT_NO_THROW(t.sin());
     EXPECT_NO_THROW(t.tanh());
     EXPECT_EQ(t.sin().size(0), 0);
