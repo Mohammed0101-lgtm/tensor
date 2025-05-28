@@ -4,7 +4,7 @@
 
 
 template<class _Tp>
-tensor<_s16> internal::neon::short_(tensor<_Tp>& t) {
+tensor<_s16> internal::neon::int16_(tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _s16>)
     {
         throw error::type_error("Type must be convertible to 16 bit signed int");
@@ -49,7 +49,7 @@ tensor<_s16> internal::neon::short_(tensor<_Tp>& t) {
 
 
 template<class _Tp>
-tensor<_s32> internal::neon::int_(tensor<_Tp>& t) {
+tensor<_s32> internal::neon::int32_(tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _s32>)
     {
         throw error::type_error("Type must be convertible to 32 bit signed int");
@@ -93,7 +93,7 @@ tensor<_s32> internal::neon::int_(tensor<_Tp>& t) {
 }
 
 template<class _Tp>
-tensor<_u32> internal::neon::unsigned_int_(tensor<_Tp>& t) {
+tensor<_u32> internal::neon::uint32_(tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _u32>)
     {
         throw error::type_error("Type must be convertible to unsigned 32 bit int");
@@ -137,7 +137,7 @@ tensor<_u32> internal::neon::unsigned_int_(tensor<_Tp>& t) {
 }
 
 template<class _Tp>
-tensor<_f32> internal::neon::float_(tensor<_Tp>& t) {
+tensor<_f32> internal::neon::float32_(tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _f32>)
     {
         throw error::type_error("Type must be convertible to 32 bit float");
@@ -189,7 +189,7 @@ tensor<_f32> internal::neon::float_(tensor<_Tp>& t) {
 }
 
 template<class _Tp>
-tensor<_f64> internal::neon::double_(tensor<_Tp>& t) {
+tensor<_f64> internal::neon::float64_(tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _f64>)
     {
         throw error::type_error("Type must be convertible to 64 bit float");
@@ -220,7 +220,7 @@ tensor<_f64> internal::neon::double_(tensor<_Tp>& t) {
 }
 
 template<class _Tp>
-tensor<_u64> internal::neon::unsigned_long_(tensor<_Tp>& t) {
+tensor<_u64> internal::neon::uint64_(tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _u64>)
     {
         throw error::type_error("Type must be convertible to unsigned 64 bit int");
@@ -263,64 +263,4 @@ tensor<_u64> internal::neon::unsigned_long_(tensor<_Tp>& t) {
     }
 
     return tensor<_u64>(t.shape(), d);
-}
-
-template<class _Tp>
-tensor<int64_t> internal::neon::long_(tensor<_Tp>& t) {
-    if (!std::is_convertible_v<_Tp, int64_t>)
-    {
-        throw error::type_error("Type must be convertible to 64 bit int");
-    }
-
-    if (t.empty())
-    {
-        return tensor<int64_t>(t.shape_);
-    }
-
-    std::vector<_Tp>&    data_ = t.storage_();
-    std::vector<int64_t> d(data_.size());
-    const _u64           simd_end = data_.size() - (data_.size() % _ARM64_REG_WIDTH);
-    _u64                 i        = 0;
-
-    if constexpr (std::is_floating_point_v<_Tp>)
-    {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_f64  data_vec1 = vld1q_f64(reinterpret_cast<const _f64*>(&data_[i]));
-            neon_f64  data_vec2 = vld1q_f64(reinterpret_cast<const _f64*>(&data_[i + 2]));
-            int64x2_t int_vec1  = vcvtq_s64_f64(data_vec1);
-            int64x2_t int_vec2  = vcvtq_s64_f64(data_vec2);
-            vst1q_s64(reinterpret_cast<int64_t*>(&d[i]), int_vec1);
-            vst1q_s64(reinterpret_cast<int64_t*>(&d[i + 2]), int_vec2);
-        }
-    }
-    else if constexpr (std::is_unsigned_v<_Tp>)
-    {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_u32   data_vec = vld1q_u32(reinterpret_cast<const _u32*>(&data_[i]));
-            uint64x2_t int_vec1 = vmovl_u32(vget_low_u32(data_vec));
-            uint64x2_t int_vec2 = vmovl_u32(vget_high_u32(data_vec));
-            vst1q_u64(reinterpret_cast<uint64_t*>(&d[i]), int_vec1);
-            vst1q_u64(reinterpret_cast<uint64_t*>(&d[i + 2]), int_vec2);
-        }
-    }
-    else
-    {
-        for (; i < simd_end; i += _ARM64_REG_WIDTH)
-        {
-            neon_s32  data_vec = vld1q_s32(reinterpret_cast<const _s32*>(&data_[i]));
-            int64x2_t int_vec1 = vmovl_s32(vget_low_s32(data_vec));
-            int64x2_t int_vec2 = vmovl_s32(vget_high_s32(data_vec));
-            vst1q_s64(reinterpret_cast<int64_t*>(&d[i]), int_vec1);
-            vst1q_s64(reinterpret_cast<int64_t*>(&d[i + 2]), int_vec2);
-        }
-    }
-
-    for (; i < data_.size(); ++i)
-    {
-        d[i] = static_cast<int64_t>(data_[i]);
-    }
-
-    return tensor<int64_t>(t.shape_, d);
 }
