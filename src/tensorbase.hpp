@@ -102,28 +102,25 @@ template<class _Tp>
 tensor<_Tp> fill_(tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<_s16> short_(tensor<_Tp>& t);
+tensor<_s16> int16_(tensor<_Tp>& t);
 
 template<class _Tp>
-tensor<_s32> int_(tensor<_Tp>& t);
+tensor<_s32> int32_(tensor<_Tp>& t);
 
 template<class _Tp>
-tensor<_u32> unsigned_int_(tensor<_Tp>& t);
+tensor<_u32> uint32_(tensor<_Tp>& t);
 
 template<class _Tp>
-tensor<_f32> float_(tensor<_Tp>& t);
+tensor<_f32> float32_(tensor<_Tp>& t);
 
 template<class _Tp>
-tensor<_f64> double_(tensor<_Tp>& t);
+tensor<_f64> float64_(tensor<_Tp>& t);
 
 template<class _Tp>
-tensor<uint64_t> unsigned_long_(tensor<_Tp>& t);
+tensor<_u64> uint64_(tensor<_Tp>& t);
 
 template<class _Tp>
-tensor<int64_t> long_(tensor<_Tp>& t);
-
-template<class _Tp>
-tensor<long long> long_long_(tensor<_Tp>& t);
+tensor<_s64> int64_(tensor<_Tp>& t);
 
 template<class _Tp>
 tensor<_Tp>& fmax_(tensor<_Tp>& t, const _Tp v);
@@ -461,31 +458,30 @@ class tensor
    public:
     ~tensor() { destroy_tensor (*this)(); }
 
-    tensor<short>        short_() const;
-    tensor<long long>    long_long_() const;
-    tensor<long>         long_() const;
-    tensor<int>          int_() const;
-    tensor<unsigned int> unsigned_int_() const;
-    tensor<uint64_t>     unsigned_long_() const;
-    tensor<float>        float_() const;
-    tensor<double>       double_() const;
-    data_t               storage() const noexcept;
-    data_t&              storage_() const;
-    shape::Shape         shape() const noexcept;
-    Device               device() const noexcept;
-    std::size_t          n_dims() const noexcept;
-    index_type           size(const index_type dimension) const;
-    index_type           capacity() const noexcept;
-    index_type           count_nonzero(index_type dimension = 0) const;
-    index_type           lcm() const;
-    index_type           hash() const;
-    reference            at(shape_type idx);
-    reference            operator[](const index_type idx);
-    const_reference      at(const shape_type idx) const;
-    const_reference      operator[](const index_type idx) const;
-    reference            operator()(std::initializer_list<index_type> index_list);
-    const_reference      operator()(std::initializer_list<index_type> index_list) const;
-    bool                 empty() const;
+    tensor<_s16>    int16_() const;
+    tensor<_s64>    int64_() const;
+    tensor<_s32>    int32_() const;
+    tensor<_u32>    uint32_() const;
+    tensor<_u64>    uint64_() const;
+    tensor<_f32>    float32_() const;
+    tensor<_f64>    float64_() const;
+    data_t          storage() const noexcept;
+    data_t&         storage_() const;
+    shape::Shape    shape() const noexcept;
+    Device          device() const noexcept;
+    std::size_t     n_dims() const noexcept;
+    index_type      size(const index_type dimension) const;
+    index_type      capacity() const noexcept;
+    index_type      count_nonzero(index_type dimension = 0) const;
+    index_type      lcm() const;
+    index_type      hash() const;
+    reference       at(shape_type idx);
+    reference       operator[](const index_type idx);
+    const_reference at(const shape_type idx) const;
+    const_reference operator[](const index_type idx) const;
+    reference       operator()(std::initializer_list<index_type> index_list);
+    const_reference operator()(std::initializer_list<index_type> index_list) const;
+    bool            empty() const;
 
     /// @brief Converts the tensor elements to boolean values.
     /// @return A tensor of boolean values.
@@ -1201,229 +1197,137 @@ class tensor
     /// @brief Computes the square root of each element in the tensor, modifying
     /// the tensor in place.
     /// @return A \ref to the tensor after the square root has been computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       sqrt_();
-    const tensor& sqrt_() const;
+    tensor& sqrt_();
 
     /// @brief Computes the exponential of each element in the tensor, modifying
     /// the tensor in place.
     /// @return A \ref to the tensor after the exponential has been computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       exp_();
-    const tensor& exp_() const;
+    tensor& exp_();
 
     /// @brief Computes the base-2 logarithm of each element in the tensor,
     /// modifying the tensor in place.
     /// @return A \ref to the tensor after the base-2 logarithm has been
     /// computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       log2_();
-    const tensor& log2_() const;
+    tensor& log2_();
 
     /// @brief Computes the base-10 logarithm of each element in the tensor,
     /// modifying the tensor in place.
     /// @return A \ref to the tensor after the base-10 logarithm has been
     /// computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       log10_();
-    const tensor& log10_() const;
+    tensor& log10_();
 
     /// @brief Computes the natural logarithm (base-e) of each element in the
     /// tensor, modifying the tensor in place.
     /// @return A \ref to the tensor after the natural logarithm has been
     /// computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       log_();
-    const tensor& log_() const;
+    tensor& log_();
 
     /// @brief Computes the fractional part of each element in the tensor,
     /// modifying the tensor in place.
     /// @return A \ref to the tensor after the fractional part has been
     /// computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       frac_();
-    const tensor& frac_() const;
+    tensor& frac_();
 
     /// @brief Computes the element-wise modulus (remainder) of each element in
     /// the tensor with another tensor, modifying the tensor in place.
     /// @param other The tensor to compute the modulus with.
     /// @return A \ref to the tensor after the modulus operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       fmod_(const tensor& other);
-    const tensor& fmod_(const tensor& other) const;
+    tensor& fmod_(const tensor& other);
 
     /// @brief Computes the element-wise modulus (remainder) of each element in
     /// the tensor with a scalar value, modifying the tensor in place.
     /// @param value The scalar value to compute the modulus with.
     /// @return A \ref to the tensor after the modulus operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       fmod_(const value_type value);
-    const tensor& fmod_(const value_type value) const;
+    tensor& fmod_(const value_type value);
 
     /// @brief Computes the cosine of each element in the tensor, modifying the
     /// tensor in place.
     /// @return A \ref to the tensor after the cosine has been computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       cos_();
-    const tensor& cos_() const;
+    tensor& cos_();
 
     /// @brief Computes the hyperbolic cosine of each element in the tensor,
     /// modifying the tensor in place.
     /// @return A \ref to the tensor after the hyperbolic cosine has been
     /// computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       cosh_();
-    const tensor& cosh_() const;
+    tensor& cosh_();
 
     /// @brief Computes the inverse cosine (arc cosine) of each element in the
     /// tensor, modifying the tensor in place.
     /// @return A \ref to the tensor after the inverse cosine has been
     /// computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       acos_();
-    const tensor& acos_() const;
+    tensor& acos_();
 
     /// @brief Computes the inverse hyperbolic cosine of each element in the
     /// tensor, modifying the tensor in place.
     /// @return A \ref to the tensor after the inverse hyperbolic cosine has
     /// been computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       acosh_();
-    const tensor& acosh_() const;
+    tensor& acosh_();
 
     /// @brief Computes the tangent of each element in the tensor, modifying the
     /// tensor in place.
     /// @return A \ref to the tensor after the tangent has been computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.tan_();`
-    /// The tensor is still modified in place.
-    tensor&       tan_();
-    const tensor& tan_() const;
+    tensor& tan_();
 
     /// @brief Computes the hyperbolic tangent of each element in the tensor,
     /// modifying the tensor in place.
     /// @return A \ref to the tensor after the hyperbolic tangent has been
     /// computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       tanh_();
-    const tensor& tanh_() const;
+    tensor& tanh_();
 
     /// @brief Computes the inverse tangent (arc tangent) of each element in the
     /// tensor, modifying the tensor in place.
     /// @return A \ref to the tensor after the inverse tangent has been
     /// computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       atan_();
-    const tensor& atan_() const;
+    tensor& atan_();
 
     /// @brief Computes the inverse hyperbolic tangent of each element in the
     /// tensor, modifying the tensor in place.
     /// @return A \ref to the tensor after the inverse hyperbolic tangent has
     /// been computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       atanh_();
-    const tensor& atanh_() const;
+    tensor& atanh_();
 
     /// @brief Computes the sine of each element in the tensor, modifying the
     /// tensor in place.
     /// @return A \ref to the tensor after the sine has been computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       sin_();
-    const tensor& sin_() const;
+    tensor& sin_();
 
     /// @brief Computes the hyperbolic sine of each element in the tensor,
     /// modifying the tensor in place.
     /// @return A \ref to the tensor after the hyperbolic sine has been
     /// computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       sinh_();
-    const tensor& sinh_() const;
+    tensor& sinh_();
 
     /// @brief Computes the inverse sine (arc sine) of each element in the tensor,
     /// modifying the tensor in place.
     /// @return A \ref to the tensor after the inverse sine has been
     /// computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       asin_();
-    const tensor& asin_() const;
+    tensor& asin_();
 
     /// @brief Computes the inverse hyperbolic sine of each element in the tensor,
     /// modifying the tensor in place.
     /// @return A \ref to the tensor after the inverse hyperbolic sine has
     /// been computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       asinh_();
-    const tensor& asinh_() const;
+    tensor& asinh_();
 
     /// @brief Applies the ceiling function to each element in the tensor,
     /// modifying the tensor in place.
     /// @return A \ref to the tensor after the ceiling function has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       ceil_();
-    const tensor& ceil_() const;
+    tensor& ceil_();
 
     /// @brief Applies the floor function to each element in the tensor, modifying
     /// the tensor in place.
     /// @return A \ref to the tensor after the floor function has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       floor_();
-    const tensor& floor_() const;
+    tensor& floor_();
 
     /// @brief Applies the ReLU activation function to each element in the tensor,
     /// modifying the tensor in place.
     /// @return A \ref to the tensor after the ReLU function has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       relu_();
-    const tensor& relu_() const;
+    tensor& relu_();
 
     /// @brief Clamps each element of the tensor to the given range [min_val,
     /// max_val], modifying the tensor in place.
@@ -1432,287 +1336,180 @@ class tensor
     /// @param max_val The maximum value for clamping, or nullptr to skip the
     /// maximum bound.
     /// @return A \ref to the tensor after the clamping has been applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       clamp_(const_reference min_val = std::numeric_limits<value_type>::lowest(),
-                         const_reference max_val = std::numeric_limits<value_type>::max());
-    const tensor& clamp_(const_reference min_val = std::numeric_limits<value_type>::lowest(),
-                         const_reference max_val = std::numeric_limits<value_type>::max()) const;
+    tensor& clamp_(const_reference min_val = std::numeric_limits<value_type>::lowest(),
+                   const_reference max_val = std::numeric_limits<value_type>::max());
 
-    tensor        clamp_min(const_reference min_val) const;
-    tensor&       clamp_min_(const_reference min_val);
-    const tensor& clamp_min_(const_reference min_val) const;
+    tensor clamp_min(const_reference min_val) const;
+    tensor clamp_max(const_reference max_val) const;
 
-    tensor        clamp_max(const_reference max_val) const;
-    tensor&       clamp_max_(const_reference max_val);
-    const tensor& clamp_max_(const_reference max_val) const;
+    tensor& clamp_min_(const_reference min_val);
+    tensor& clamp_max_(const_reference max_val);
 
     /// @brief Applies bitwise NOT operation to each element in the tensor,
     /// modifying the tensor in place.
     /// @return A \ref to the tensor after the bitwise NOT operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       logical_not_();
-    const tensor& logical_not_() const;
+    tensor& logical_not_();
 
     /// @brief Performs logical OR between the tensor and another tensor,
     /// modifying the tensor in place.
     /// @param other The tensor to perform logical OR with.
     /// @return A \ref to the tensor after the logical OR operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       logical_or_(const tensor& other);
-    const tensor& logical_or_(const tensor& other) const;
+    tensor& logical_or_(const tensor& other);
 
     /// @brief Performs logical OR between the tensor and a scalar value,
     /// modifying the tensor in place.
     /// @param value The scalar value to perform logical OR with.
     /// @return A \ref to the tensor after the logical OR operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       logical_or_(const value_type value);
-    const tensor& logical_or_(const value_type value) const;
+    tensor& logical_or_(const value_type value);
 
     /// @brief Performs logical XOR between the tensor and another tensor,
     /// modifying the tensor in place.
     /// @param other The tensor to perform logical XOR with.
     /// @return A \ref to the tensor after the logical XOR operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       logical_xor_(const tensor& other);
-    const tensor& logical_xor_(const tensor& other) const;
+    tensor& logical_xor_(const tensor& other);
 
     /// @brief Performs logical XOR between the tensor and a scalar value,
     /// modifying the tensor in place.
     /// @param value The scalar value to perform logical XOR with.
     /// @return A \ref to the tensor after the logical XOR operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       logical_xor_(const value_type value);
-    const tensor& logical_xor_(const value_type value) const;
+    tensor& logical_xor_(const value_type value);
 
     /// @brief Performs logical AND between the tensor and another tensor,
     /// modifying the tensor in place.
     /// @param other The tensor to perform logical AND with.
     /// @return A \ref to the tensor after the logical AND operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       logical_and_(const tensor& other);
-    const tensor& logical_and_(const tensor& other) const;
+    tensor& logical_and_(const tensor& other);
 
     /// @brief Performs logical AND between the tensor and a scalar value,
     /// modifying the tensor in place.
     /// @param value The scalar value to perform logical AND with.
     /// @return A \ref to the tensor after the logical AND operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       logical_and_(const value_type value);
-    const tensor& logical_and_(const value_type value) const;
+    tensor& logical_and_(const value_type value);
 
     /// @brief Computes the absolute value of each element in the tensor,
     /// modifying the tensor in place.
     /// @return A \ref to the tensor after the absolute value has been
     /// computed.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       abs_();
-    const tensor& abs_() const;
+    tensor& abs_();
 
     /// @brief Applies the log softmax function along the specified dimension,
     /// modifying the tensor in place.
     /// @param dimension The dimension along which the log softmax is applied.
     /// @return A \ref to the tensor after the log softmax operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       log_softmax_(const index_type dimension);
-    const tensor& log_softmax_(const index_type dimension) const;
+    tensor& log_softmax_(const index_type dimension);
 
     /// @brief Permutes the dimensions of the tensor according to the specified
     /// dimension, modifying the tensor in place.
     /// @param dimension The dimension along which the permutation is applied.
     /// @return A \ref to the tensor after the permutation has been applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       permute_(const index_type dimension);
-    const tensor& permute_(const index_type dimension) const;
+    tensor& permute_(const index_type dimension);
 
     /// @brief Repeats the tensor according to the specified dimensions, modifying
     /// the tensor in place.
     /// @param d The dimensions to repeat the tensor along.
     /// @return A \ref to the tensor after the repeat operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       repeat_(const data_t& d, int dimension = 0);
-    const tensor& repeat_(const data_t& d, int dimension = 0) const;
+    tensor& repeat_(const data_t& d, int dimension = 0);
 
     /// @brief Negates each element in the tensor, modifying the tensor in place.
     /// @return A \ref to the tensor after the negation has been applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       negative_();
-    const tensor& negative_() const;
+    tensor& negative_();
 
     /// @brief Transposes the tensor, modifying the tensor in place.
     /// @return A \ref to the tensor after the transposition has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       transpose_();
-    const tensor& transpose_() const;
+    tensor& transpose_();
 
     /// @brief Adds an extra dimension at the specified index, modifying the
     /// tensor in place.
     /// @param dimension The index at which to insert the new dimension.
     /// @return A \ref to the tensor after the unsqueeze operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       unsqueeze_(index_type dimension);
-    const tensor& unsqueeze_(index_type dimension) const;
+    tensor& unsqueeze_(index_type dimension);
 
     /// @brief Removes the dimension at the specified index, modifying the tensor
     /// in place.
     /// @param dimension The index of the dimension to squeeze.
     /// @return A \ref to the tensor after the squeeze operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       squeeze_(index_type dimension);
-    const tensor& squeeze_(index_type dimension) const;
+    tensor& squeeze_(index_type dimension);
 
     /// @brief Resizes the tensor to the specified shape, modifying the tensor in
     /// place.
     /// @param shape_ The new shape to resize the tensor to.
     /// @return A \ref to the tensor after the resize operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       resize_as_(const shape::Shape sh_);
-    const tensor& resize_as_(const shape::Shape sh) const;
+    tensor& resize_as_(const shape::Shape sh_);
 
     /// @brief Computes the distance between the tensor and another tensor,
     /// modifying the tensor in place.
     /// @param other The tensor to compute the distance with.
     /// @return A \ref to the tensor after the distance operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       dist_(const tensor& other);
-    const tensor& dist_(const tensor& other) const;
+    tensor& dist_(const tensor& other);
 
     /// @brief Computes the distance between the tensor and a scalar value,
     /// modifying the tensor in place.
     /// @param value The scalar value to compute the distance with.
     /// @return A \ref to the tensor after the distance operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       dist_(const value_type value);
-    const tensor& dist_(const value_type value) const;
+    tensor& dist_(const value_type value);
 
     /// @brief Computes the element-wise maximum of the tensor and another tensor,
     /// modifying the tensor in place.
     /// @param other The tensor to compare with.
     /// @return A \ref to the tensor after the element-wise maximum operation
     /// has been applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       maximum_(const tensor& other);
-    const tensor& maximum_(const tensor& other) const;
+    tensor& maximum_(const tensor& other);
 
     /// @brief Computes the element-wise maximum of the tensor and a scalar value,
     /// modifying the tensor in place.
     /// @param value The scalar value to compare with.
     /// @return A \ref to the tensor after the element-wise maximum operation
     /// has been applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       maximum_(const value_type value);
-    const tensor& maximum_(const value_type value) const;
+    tensor& maximum_(const value_type value);
 
     /// @brief Computes the element-wise remainder of the tensor and a scalar
     /// value, modifying the tensor in place.
     /// @param value The scalar value to compute the remainder with.
     /// @return A \ref to the tensor after the element-wise remainder
     /// operation has been applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       remainder_(const value_type value);
-    const tensor& remainder_(const value_type value) const;
+    tensor& remainder_(const value_type value);
 
     /// @brief Computes the element-wise remainder of the tensor and another
     /// tensor, modifying the tensor in place.
     /// @param other The tensor to compute the remainder with.
     /// @return A \ref to the tensor after the element-wise remainder
     /// operation has been applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       remainder_(const tensor& other);
-    const tensor& remainder_(const tensor& other) const;
+    tensor& remainder_(const tensor& other);
 
     /// @brief Fills the tensor with the specified scalar value, modifying the
     /// tensor in place.
     /// @param value The scalar value to fill the tensor with.
     /// @return A \ref to the tensor after the fill operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       fill_(const value_type value);
-    const tensor& fill_(const value_type value) const;
+    tensor& fill_(const value_type value);
 
     /// @brief Fills the tensor with the values from another tensor, modifying the
     /// tensor in place.
     /// @param other The tensor whose values are used to fill this tensor.
     /// @return A \ref to the tensor after the fill operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       fill_(const tensor& other);
-    const tensor& fill_(const tensor& other) const;
+    tensor& fill_(const tensor& other);
 
     /// @brief Applies the element-wise sigmoid function to the tensor, modifying
     /// the tensor in place.
     /// @return A \ref to the tensor after the sigmoid operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       sigmoid_();
-    const tensor& sigmoid_() const;
+    tensor& sigmoid_();
 
     /// @brief Applies the element-wise clipped ReLU function to the tensor,
     /// modifying the tensor in place.
@@ -1720,162 +1517,102 @@ class tensor
     /// @param clip_limit The limit to which values in the tensor are clipped.
     /// @return A \ref to the tensor after the clipped ReLU operation has
     /// been applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       clipped_relu_(const value_type clip_limit);
-    const tensor& clipped_relu_(const value_type clip_limit) const;
+    tensor& clipped_relu_(const value_type clip_limit);
 
     /// @brief Applies the element-wise square function to the tensor, modifying
     /// the tensor in place.
     /// @return A \ref to the tensor after the square operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       square_();
-    const tensor& square_() const;
+    tensor& square_();
 
     /// @brief Raises the tensor elements to the power of the elements of another
     /// tensor, modifying the tensor in place.
     /// @param other The tensor whose elements are used as exponents.
     /// @return A \ref to the tensor after the element-wise power operation
     /// has been applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       pow_(const tensor& other);
-    const tensor& pow_(const tensor& other) const;
+    tensor& pow_(const tensor& other);
 
     /// @brief Raises the tensor elements to the power of a scalar value,
     /// modifying the tensor in place.
     /// @param value The scalar value to which tensor elements are raised.
     /// @return A \ref to the tensor after the element-wise power operation
     /// has been applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       pow_(const value_type value);
-    const tensor& pow_(const value_type value) const;
+    tensor& pow_(const value_type value);
 
     /// @brief Applies the element-wise sinc function to the tensor, modifying the
     /// tensor in place.
     /// @return A \ref to the tensor after the sinc operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       sinc_();
-    const tensor& sinc_() const;
+    tensor& sinc_();
 
     /// @brief Performs a bitwise left shift operation on the tensor elements,
     /// modifying the tensor in place.
     /// @param amount The number of positions to shift the bits.
     /// @return A \ref to the tensor after the bitwise left shift operation
     /// has been applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       bitwise_left_shift_(const int amount);
-    const tensor& bitwise_left_shift_(const int amount) const;
+    tensor& bitwise_left_shift_(const int amount);
 
     /// @brief Performs a bitwise right shift operation on the tensor elements,
     /// modifying the tensor in place.
     /// @param amount The number of positions to shift the bits.
     /// @return A \ref to the tensor after the bitwise right shift operation
     /// has been applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       bitwise_right_shift_(const int amount);
-    const tensor& bitwise_right_shift_(const int amount) const;
+    tensor& bitwise_right_shift_(const int amount);
 
     /// @brief Performs a bitwise AND operation between the tensor and a scalar
     /// value, modifying the tensor in place.
     /// @param value The scalar value to apply the bitwise AND operation with.
     /// @return A \ref to the tensor after the bitwise AND operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       bitwise_and_(const value_type value);
-    const tensor& bitwise_and_(const value_type value) const;
+    tensor& bitwise_and_(const value_type value);
 
     /// @brief Performs a bitwise AND operation between the tensor and another
     /// tensor, modifying the tensor in place.
     /// @param other The tensor to apply the bitwise AND operation with.
     /// @return A \ref to the tensor after the bitwise AND operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       bitwise_and_(const tensor& other);
-    const tensor& bitwise_and_(const tensor& other) const;
+    tensor& bitwise_and_(const tensor& other);
 
     /// @brief Performs a bitwise OR operation between the tensor and a scalar
     /// value, modifying the tensor in place.
     /// @param value The scalar value to apply the bitwise OR operation with.
     /// @return A \ref to the tensor after the bitwise OR operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       bitwise_or_(const value_type value);
-    const tensor& bitwise_or_(const value_type value) const;
+    tensor& bitwise_or_(const value_type value);
 
     /// @brief Performs a bitwise OR operation between the tensor and another
     /// tensor, modifying the tensor in place.
     /// @param other The tensor to apply the bitwise OR operation with.
     /// @return A \ref to the tensor after the bitwise OR operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       bitwise_or_(const tensor& other);
-    const tensor& bitwise_or_(const tensor& other) const;
+    tensor& bitwise_or_(const tensor& other);
 
     /// @brief Performs a bitwise XOR operation between the tensor and a scalar
     /// value, modifying the tensor in place.
     /// @param value The scalar value to apply the bitwise XOR operation with.
     /// @return A \ref to the tensor after the bitwise XOR operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       bitwise_xor_(const value_type value);
-    const tensor& bitwise_xor_(const value_type value) const;
+    tensor& bitwise_xor_(const value_type value);
 
     /// @brief Performs a bitwise XOR operation between the tensor and another
     /// tensor, modifying the tensor in place.
     /// @param other The tensor to apply the bitwise XOR operation with.
     /// @return A \ref to the tensor after the bitwise XOR operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       bitwise_xor_(const tensor& other);
-    const tensor& bitwise_xor_(const tensor& other) const;
+    tensor& bitwise_xor_(const tensor& other);
 
     /// @brief Performs a bitwise NOT operation on the tensor elements, modifying
     /// the tensor in place.
     /// @return A \ref to the tensor after the bitwise NOT operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       bitwise_not_();
-    const tensor& bitwise_not_() const;
+    tensor& bitwise_not_();
 
     /// @brief Reshapes the tensor to a new shape specified by an initializer list
     /// of dimensions, modifying the tensor in place.
     /// @param new_shape The new shape of the tensor.
     /// @return A \ref to the tensor after the reshape operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       view(std::initializer_list<index_type> new_shape);
-    const tensor& view(std::initializer_list<index_type> new_shape) const;
+    tensor& view(std::initializer_list<index_type> new_shape);
 
     /// @brief Applies the element-wise maximum function between the tensor and
     /// another tensor, modifying the tensor in place.
@@ -1883,11 +1620,7 @@ class tensor
     /// with.
     /// @return A \ref to the tensor after the element-wise maximum operation
     /// has been applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       fmax_(const tensor& other);
-    const tensor& fmax_(const tensor& other) const;
+    tensor& fmax_(const tensor& other);
 
     /// @brief Applies the element-wise maximum function between the tensor and a
     /// scalar value, modifying the tensor in place.
@@ -1895,11 +1628,7 @@ class tensor
     /// with.
     /// @return A \ref to the tensor after the element-wise maximum operation
     /// has been applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       fmax_(const value_type value);
-    const tensor& fmax_(const value_type value) const;
+    tensor& fmax_(const value_type value);
 
     /// @brief Randomizes the values in the tensor with the specified shape,
     /// modifying the tensor in place.
@@ -1908,33 +1637,22 @@ class tensor
     /// they will not.
     /// @return A \ref to the tensor after the randomization operation has
     /// been applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       randomize_(const shape::Shape& sh, bool bounded = false);
-    const tensor& randomize_(const shape::Shape& sh, bool bounded = false) const;
+    tensor& randomize_(const shape::Shape& sh, bool bounded = false);
+
 
     /// @brief Fills the tensor with zeros, modifying the tensor in place.
     /// @param shape_ The shape to which the tensor will be resized before being
     /// filled with zeros.
     /// @return A \ref to the tensor after the zero-fill operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       zeros_(shape::Shape sh = {});
-    const tensor& zeros_(shape::Shape sh = {}) const;
+    tensor& zeros_(shape::Shape sh = {});
 
     /// @brief Fills the tensor with ones, modifying the tensor in place.
     /// @param shape_ The shape to which the tensor will be resized before being
     /// filled with ones.
     /// @return A \ref to the tensor after the one-fill operation has been
     /// applied.
-    /// @note This `const` overload allows chaining and usage like:
-    /// `const auto& result = tensor.asin_();`
-    /// The tensor is still modified in place.
-    tensor&       ones_(shape_type shape_ = {});
-    const tensor& ones_(shape_type shape_ = {}) const;
+    tensor& ones_(shape_type shape_ = {});
 
     void print() const {
         printRecursive(0, 0, shape_);
@@ -2271,7 +1989,11 @@ class tensor<bool>
 
     index_type capacity() const noexcept { return data_.capacity(); }
 
-    tensor<bool> logical_not() const { return tensor<bool>(logical_not_()); }
+    tensor<bool> logical_not() const {
+        self t = clone();
+        t.logical_not_();
+        return t;
+    }
 
     tensor<bool> logical_or(const value_type value) const {
         self t = clone();
@@ -2372,78 +2094,7 @@ class tensor<bool>
         return *this;
     }
 
-    const tensor<bool>& logical_not_() const {
-        for (index_type i = 0; i < data_.size(); ++i)
-        {
-            data_[i] = ~(data_[i]);
-        }
-
-        return *this;
-    }
-
-    const tensor<bool>& logical_or_(const value_type value) const {
-        for (index_type i = 0; i < data_.size(); ++i)
-        {
-            data_[i] = (data_[i] || value);
-        }
-
-        return *this;
-    }
-
-    const tensor<bool>& logical_or_(const tensor& other) const {
-        for (index_type i = 0; i < data_.size(); ++i)
-            data_[i] = (data_[i] || other[i]);
-
-        return *this;
-    }
-
-    const tensor<bool>& logical_and_(const value_type value) const {
-        for (index_type i = 0; i < data_.size(); ++i)
-        {
-            data_[i] = (data_[i] && value);
-        }
-
-        return *this;
-    }
-
-    const tensor<bool>& logical_and_(const tensor& other) const {
-        index_type i = 0;
-        for (index_type i = 0; i < data_.size(); ++i)
-        {
-            data_[i] = (data_[i] && other[i]);
-        }
-
-        return *this;
-    }
-
-    const tensor<bool>& logical_xor_(const value_type value) const {
-        for (index_type i = 0; i < data_.size(); ++i)
-        {
-            data_[i] = (data_[i] xor value);
-        }
-
-        return *this;
-    }
-
-    const tensor<bool>& logical_xor_(const tensor& other) const {
-        for (index_type i = 0; i < data_.size(); ++i)
-        {
-            data_[i] = (data_[i] xor other[i]);
-        }
-
-        return *this;
-    }
-
     tensor<bool>& operator!() {
-        for (index_type i = 0; i < data_.size(); ++i)
-        {
-            data_[i] = !(data_[i]);
-        }
-
-        return *this;
-    }
-
-    const tensor<bool>& operator!() const {
         for (index_type i = 0; i < data_.size(); ++i)
         {
             data_[i] = !(data_[i]);
@@ -2479,9 +2130,8 @@ class tensor<bool>
 
         index_type   slice_size = (end_i - start_i + step - 1) / step;
         shape::Shape ret_dims   = shape_;
-
-        ret_dims[-dimension] = slice_size;
-        ret                  = self(ret_dims);
+        ret_dims[-dimension]    = slice_size;
+        ret                     = self(ret_dims);
 
         index_type i = start_i, j = 0;
 
@@ -2572,12 +2222,10 @@ class tensor<bool>
         const index_type rows = shape_[0];
         const index_type cols = shape_[1];
 
-        index_type i = 0;
-        for (; i < rows; ++i)
-        {
-            index_type j = 0;
 
-            for (; j < cols; ++j)
+        for (index_type i = 0; i < rows; ++i)
+        {
+            for (index_type j = 0; j < cols; ++j)
             {
                 ret.at({j, i}) = at({i, j});
             }
@@ -2609,37 +2257,6 @@ class tensor<bool>
         }
 
         return *this;
-    }
-
-    const tensor<bool>& transpose_() const {
-        if (shape_.size() != 2)
-        {
-            throw error::shape_error("Transpose operation is only valid for 2D tensors");
-        }
-
-        const index_type r = shape_[0];
-        const index_type c = shape_[1];
-
-        if (r != c)
-        {
-            throw error::shape_error("In-place transpose is only supported for square tensors");
-        }
-
-        for (index_type i = 0; i < r; ++i)
-        {
-            for (index_type j = i + 1; j < c; ++j)
-            {
-                std::swap(data_[i * c + j], data_[j * c + i]);
-            }
-        }
-
-        return *this;
-    }
-
-    tensor<bool> resize_as(const shape_type shape_) const {
-        self ret = clone();
-        ret.resize_as_(shape_);
-        return ret;
     }
 
     tensor<bool>& resize_as_(const shape_type shape_) { return *this; }
