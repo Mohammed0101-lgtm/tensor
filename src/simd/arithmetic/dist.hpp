@@ -4,64 +4,56 @@
 #include "tensorbase.hpp"
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_dist_(const tensor& other) {
-    if (!std::is_arithmetic_v<value_type>)
-    {
-        throw type_error("Type must be arithmetic");
-    }
+tensor<_Tp>& internal::neon::dist_(tensor<_Tp>& t, const tensor<_Tp>& other) {
+    if (!std::is_arithmetic_v<_Tp>)
+        throw error::type_error("Type must be arithmetic");
 
-    if (!equal_shape(shape(), other.shape()))
-    {
-        throw shape_error("Tensors shapes must be equal");
-    }
+    if (!t.shape().equal(other.shape()))
+        throw error::shape_error("Tensors shapes must be equal");
 
-    const index_type simd_end = data_.size() - (data_.size() % simd_width);
+    std::vector<_Tp>& data_    = t.storage_();
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+    _u64              i        = 0;
 
-    index_type i = 0;
-    for (; i < simd_end; i += simd_width)
+    for (; i < simd_end; i += t.simd_width)
     {
-        value_type dummy;
+        _Tp dummy;
 
         neon_type<decltype(dummy)> a;
         neon_type<decltype(dummy)> b;
         neon_type<decltype(dummy)> diff;
 
-        neon_load<value_type>(&data_[i], &a);
-        neon_load<value_type>(&other[i], &b);
-        neon_vabdq<value_type>(&a, &b, &diff);
-        neon_store<value_type>(&data_[i], &diff);
+        neon_load<_Tp>(&data_[i], &a);
+        neon_load<_Tp>(&other[i], &b);
+        neon_vabdq<_Tp>(&a, &b, &diff);
+        neon_store<_Tp>(&data_[i], &diff);
     }
 
     for (; i < data_.size(); ++i)
-    {
-        data_[i] = static_cast<value_type>(std::abs(static_cast<_f64>(data_[i] - other.data_[i])));
-    }
+        data_[i] = static_cast<_Tp>(std::abs(static_cast<_f64>(data_[i] - other.data_[i])));
 
-    return *this;
+    return t;
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_dist_(const value_type value) {
-    if (!std::is_arithmetic_v<value_type>)
-    {
-        throw type_error("Type must be arithmetic");
-    }
+tensor<_Tp>& internal::neon::dist_(tensor<_Tp>& t, const _Tp value) {
+    if (!std::is_arithmetic_v<_Tp>)
+        throw error::type_error("Type must be arithmetic");
 
-    const index_type simd_end = data_.size() - (data_.size() % simd_width);
+    std::vector<_Tp>& data_    = t.storage_();
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+    _u64              i        = 0;
 
-    index_type i = 0;
-    for (; i < simd_end; i += simd_width)
+    for (; i < simd_end; i += t.simd_width)
     {
-        neon_type<value_type> a    = neon_load<value_type>(&data_[i]);
-        neon_type<value_type> b    = neon_dup<value_type>(value);
-        neon_type<value_type> diff = neon_vabdq<value_type>(a, b);
-        neon_store<value_type>(&data_[i], diff);
+        neon_type<_Tp> a    = neon_load<_Tp>(&data_[i]);
+        neon_type<_Tp> b    = neon_dup<_Tp>(value);
+        neon_type<_Tp> diff = neon_vabdq<_Tp>(a, b);
+        neon_store<_Tp>(&data_[i], diff);
     }
 
     for (; i < data_.size(); ++i)
-    {
-        data_[i] = static_cast<value_type>(std::abs(static_cast<_f64>(data_[i] - value)));
-    }
+        data_[i] = static_cast<_Tp>(std::abs(static_cast<_f64>(data_[i] - value)));
 
-    return *this;
+    return t;
 }
