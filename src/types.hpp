@@ -149,10 +149,10 @@ constexpr bool has_greater_equal_operator_v = has_greater_equal_operator<_Tp>::v
 }  // namespace internal
 
 template<class _Tp>
-tensor<int> tensor<_Tp>::int_() const {
+tensor<_s32> tensor<_Tp>::int32_() const {
     if (internal::types::using_neon())
     {
-        return internal::neon::int_(*this);
+        return internal::neon::int32_(*this);
     }
 
     if (!std::is_convertible_v<value_type, int>)
@@ -177,10 +177,10 @@ tensor<int> tensor<_Tp>::int_() const {
 }
 
 template<class _Tp>
-tensor<unsigned int> tensor<_Tp>::unsigned_int_() const {
+tensor<_u32> tensor<_Tp>::uint32_() const {
     if (internal::types::using_neon())
     {
-        return internal::neon::unsigned_int_(*this);
+        return internal::neon::uint32_(*this);
     }
 
     if (!std::is_convertible_v<value_type, unsigned int>)
@@ -205,38 +205,38 @@ tensor<unsigned int> tensor<_Tp>::unsigned_int_() const {
 }
 
 template<class _Tp>
-tensor<float> tensor<_Tp>::float_() const {
+tensor<_f32> tensor<_Tp>::float32_() const {
     if (internal::types::using_neon())
     {
-        return internal::neon::float_(*this);
+        return internal::neon::float32_(*this);
     }
 
-    if (!std::is_convertible_v<value_type, float>)
+    if (!std::is_convertible_v<value_type, _f32>)
     {
         throw error::type_error("Type must be convertible to 32 bit float");
     }
 
     if (empty())
     {
-        return tensor<float>(shape_);
+        return tensor<_f32>(shape_);
     }
 
-    std::vector<float> d(data_.size());
+    std::vector<_f32> d(data_.size());
     index_type         i = 0;
 
     for (const auto& elem : data_)
     {
-        d[i++] = float(elem);
+        d[i++] = static_cast<_f32>(elem);
     }
 
-    return tensor<float>(shape_, d);
+    return tensor<_f32>(shape_, d);
 }
 
 template<class _Tp>
-tensor<double> tensor<_Tp>::double_() const {
+tensor<double> tensor<_Tp>::float64_() const {
     if (internal::types::using_neon())
     {
-        return internal::neon::double_(*this);
+        return internal::neon::float64_(*this);
     }
 
     if (!std::is_convertible_v<value_type, double>)
@@ -261,10 +261,10 @@ tensor<double> tensor<_Tp>::double_() const {
 }
 
 template<class _Tp>
-tensor<_u64> tensor<_Tp>::unsigned_long_() const {
+tensor<_u64> tensor<_Tp>::uint64_() const {
     if (internal::types::using_neon())
     {
-        return internal::neon::unsigned_long_(*this);
+        return internal::neon::uint64_(*this);
     }
 
     if (!std::is_convertible_v<value_type, _u64>)
@@ -289,10 +289,10 @@ tensor<_u64> tensor<_Tp>::unsigned_long_() const {
 }
 
 template<class _Tp>
-tensor<short> tensor<_Tp>::short_() const {
+tensor<short> tensor<_Tp>::int16_() const {
     if (internal::types::using_neon())
     {
-        return internal::neon::short_(*this);
+        return internal::neon::int16_(*this);
     }
 
     if (!std::is_convertible_v<value_type, short>)
@@ -314,62 +314,6 @@ tensor<short> tensor<_Tp>::short_() const {
     }
 
     return tensor<short>(shape_, d);
-}
-
-template<class _Tp>
-tensor<long long> tensor<_Tp>::long_long_() const {
-    if (internal::types::using_neon())
-    {
-        return internal::neon::long_long_(*this);
-    }
-
-    if (!std::is_convertible_v<value_type, long long>)
-    {
-        throw error::type_error("Type must be convertible to 64 bit int (aka long long)");
-    }
-
-    if (empty())
-    {
-        return tensor<long long>(shape_);
-    }
-
-    std::vector<long long> d(data_.size());
-    index_type             i = 0;
-
-    for (const auto& elem : data_)
-    {
-        d[i++] = (long long) (elem);
-    }
-
-    return tensor<long long>(shape_, d);
-}
-
-template<class _Tp>
-tensor<long> tensor<_Tp>::long_() const {
-    if (internal::types::using_neon())
-    {
-        return internal::neon::long_(*this);
-    }
-
-    if (!std::is_convertible_v<value_type, long>)
-    {
-        throw error::type_error("Type must be convertible to 64 bit signed int");
-    }
-
-    if (empty())
-    {
-        return tensor<long>(shape_);
-    }
-
-    std::vector<long> d(data_.size());
-    index_type        i = 0;
-
-    for (const auto& elem : data_)
-    {
-        d[i++] = long(elem);
-    }
-
-    return tensor<long>(shape_, d);
 }
 
 template<class _Tp>
