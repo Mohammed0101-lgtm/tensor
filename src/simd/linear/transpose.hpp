@@ -4,7 +4,8 @@
 
 template<class _Tp>
 tensor<_Tp> internal::neon::transpose(tensor<_Tp>& t) {
-    if (!t.shape().equal(shape::Shape({t.shape()[0], t.shape()[1]}))) {
+    if (!t.shape().equal(shape::Shape({t.shape()[0], t.shape()[1]})))
+    {
         throw error::shape_error("Matrix transposition can only be done on 2D tensors");
     }
 
