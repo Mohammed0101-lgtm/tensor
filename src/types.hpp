@@ -222,7 +222,7 @@ tensor<_f32> tensor<_Tp>::float32_() const {
     }
 
     std::vector<_f32> d(data_.size());
-    index_type         i = 0;
+    index_type        i = 0;
 
     for (const auto& elem : data_)
     {
