@@ -15,7 +15,7 @@ tensor<bool> internal::neon::equal(tensor<_Tp>& t, const tensor<_Tp>& other) {
         throw error::shape_error("Tensors shapes must be equal");
     }
 
-    std::vector<_Tp>& data_ = t.storage_();
+    std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
     std::vector<bool> ret(data_.size());
     _u64              i = 0;
