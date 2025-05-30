@@ -133,10 +133,10 @@ tensor<_Tp>& internal::neon::bitwise_and_(tensor<_Tp>& t, const _Tp value) {
         throw error::type_error("Cannot perform a bitwise AND on non-integral values");
     }
 
-    std::vector<_Tp>& data_ = t.storage_();
-    const _u64     simd_end = data_.size() - (data_.size() % t.simd_width);
-    neon_type<_Tp> val_vec  = neon_dup<_Tp>(value);
-    _u64           i        = 0;
+    std::vector<_Tp>& data_    = t.storage_();
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+    neon_type<_Tp>    val_vec  = neon_dup<_Tp>(value);
+    _u64              i        = 0;
 
     for (; i < simd_end; i += t.simd_width)
     {
