@@ -12,7 +12,7 @@ tensor<_u64> internal::neon::argmax_(tensor<_Tp>& t, _u64 dimension) {
 
     std::vector<_Tp>& data_ = t.storage_();
     tensor<_u64>      ret;
-    shape::Shape        ret_sh = t.shape();
+    shape::Shape      ret_sh = t.shape();
     ret_sh.value_.erase(ret_sh.value_.begin() + dimension);
     ret.shape() = ret_sh;
     ret.storage_().resize(ret_sh.flatten_size(), 0);
@@ -96,8 +96,8 @@ tensor<_Tp> internal::neon::argmax(tensor<_Tp>& t, _u64 dimension) {
     }
 
     std::vector<_Tp>& data_ = t.storage_();
-    tensor<_Tp>            ret;
-    shape::Shape        ret_sh = t.shape();
+    tensor<_Tp>       ret;
+    shape::Shape      ret_sh = t.shape();
 
     ret_sh.value_.erase(ret_sh.value_.begin() + dimension);
     ret.shape_ = ret_sh;
@@ -149,16 +149,16 @@ tensor<_Tp> internal::neon::argmax(tensor<_Tp>& t, _u64 dimension) {
 
 template<class _Tp>
 tensor<_u64> internal::neon::argsort(tensor<_Tp>& t, _u64 d, bool ascending) {
-    std::vector<_Tp>& data_ = t.storage_();
-    _u64 adjusted = (d < 0) ? d + data_.size() : d;
+    std::vector<_Tp>& data_    = t.storage_();
+    _u64              adjusted = (d < 0) ? d + data_.size() : d;
 
     if (adjusted != 0)
     {
         throw error::index_error("Invalid dimension for argsort: only 1D tensors are supported");
     }
 
-    _u64              size  = static_cast<_u64>(data_.size());
-    shape::Shape        indices(size);
+    _u64         size = static_cast<_u64>(data_.size());
+    shape::Shape indices(size);
     std::iota(indices.value_.begin(), indices.value_.end(), 0);
 
     const _u64 simd_end = data_.size() - (data_.size() % t.simd_width);
