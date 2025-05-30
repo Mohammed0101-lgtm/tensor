@@ -17,7 +17,7 @@ tensor<_Tp> internal::neon::absolute_(tensor<_Tp>& t, const tensor<_Tp>& other) 
 
     std::vector<_Tp>& data_ = t.storage_();
     _u64              s     = t.storage().size();
-    std::vector<_Tp>            a(s);
+    std::vector<_Tp>  a(s);
     _u64              i = 0;
 
     if constexpr (std::is_floating_point_v<_Tp>)
