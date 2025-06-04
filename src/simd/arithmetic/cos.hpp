@@ -1,137 +1,117 @@
 #pragma once
 
-
 #include "../alias.hpp"
 #include "tensorbase.hpp"
 
+
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_cos_() {
-    if (!std::is_arithmetic_v<value_type>)
+tensor<_Tp>& internal::neon::cos_(tensor<_Tp>& t) {
+    if (!std::is_arithmetic_v<_Tp>)
+        throw error::type_error("Type must be arithmetic");
+
+    std::vector<_Tp>& data_    = t.storage_();
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+    _u64              i        = 0;
+
+    for (; i < simd_end; i += t.simd_width)
     {
-        throw type_error("Type must be arithmetic");
-    }
+        neon_type<_Tp>  vec = neon_load<_Tp>(&data_[i]);
+        alignas(16) _Tp vals[t.simd_width];
+        neon_store<_Tp>(&vals, vec);
 
-    const index_type simd_end = data_.size() - (data_.size() % simd_width);
+        for (std::size_t j = 0; j < t.simd_width; j++)
+            vals[j] = static_cast<_Tp>(std::cos(vals[j]));
 
-    index_type i = 0;
-    for (; i < simd_end; i += simd_width)
-    {
-        neon_type<value_type>  vec = neon_load<value_type>(&data_[i]);
-        alignas(16) value_type vals[simd_width];
-        neon_store<value_type>(&vals, vec);
-
-        for (std::size_t j = 0; j < simd_width; j++)
-        {
-            vals[j] = static_cast<value_type>(std::cos(vals[j]));
-        }
-
-        neon_type<value_type> cos_vec = neon_load(&vals);
-        neon_store<value_type>(&data_[i], cos_vec);
+        neon_type<_Tp> cos_vec = neon_load(&vals);
+        neon_store<_Tp>(&data_[i], cos_vec);
     }
 
     for (; i < data_.size(); ++i)
-    {
-        data_[i] = static_cast<value_type>(std::cos(data_[i]));
-    }
+        data_[i] = static_cast<_Tp>(std::cos(data_[i]));
 
-    return *this;
+    return t;
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_acos_() {
-    if (!std::is_arithmetic_v<value_type>)
+tensor<_Tp>& internal::neon::acos_(tensor<_Tp>& t) {
+    if (!std::is_arithmetic_v<_Tp>)
+        throw error::type_error("Type must be arithmetic");
+
+    std::vector<_Tp>& data_    = t.storage_();
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+    _u64              i        = 0;
+
+    for (; i < simd_end; i += t.simd_width)
     {
-        throw type_error("Type must be arithmetic");
-    }
+        neon_type<_Tp>  vec = neon_load<_Tp>(&data_[i]);
+        alignas(16) _Tp vals[t.simd_width];
+        neon_store<_Tp>(&vals, vec);
 
-    const index_type simd_end = data_.size() - (data_.size() % simd_width);
+        for (std::size_t j = 0; j < t.simd_width; j++)
+            vals[j] = static_cast<_Tp>(std::acos(vals[j]));
 
-    index_type i = 0;
-    for (; i < simd_end; i += simd_width)
-    {
-        neon_type<value_type>  vec = neon_load<value_type>(&data_[i]);
-        alignas(16) value_type vals[simd_width];
-        neon_store<value_type>(&vals, vec);
-
-        for (std::size_t j = 0; j < simd_width; j++)
-        {
-            vals[j] = static_cast<value_type>(std::acos(vals[j]));
-        }
-
-        neon_type<value_type> acos_vec = neon_load(&vals);
-        neon_store<value_type>(&data_[i], acos_vec);
+        neon_type<_Tp> acos_vec = neon_load(&vals);
+        neon_store<_Tp>(&data_[i], acos_vec);
     }
 
     for (; i < data_.size(); ++i)
-    {
-        data_[i] = static_cast<value_type>(std::acos(data_[i]));
-    }
+        data_[i] = static_cast<_Tp>(std::acos(data_[i]));
 
-    return *this;
+    return t;
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_cosh_() {
-    if (!std::is_arithmetic_v<value_type>)
+tensor<_Tp>& internal::neon::cosh_(tensor<_Tp>& t) {
+    if (!std::is_arithmetic_v<_Tp>)
+        throw error::type_error("Type must be arithmetic");
+
+    std::vector<_Tp>& data_    = t.storage_();
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+    _u64              i        = 0;
+
+    for (; i < simd_end; i += t.simd_width)
     {
-        throw type_error("Type must be arithmetic");
-    }
+        neon_type<_Tp>  vec = neon_load<_Tp>(&data_[i]);
+        alignas(16) _Tp vals[t.simd_width];
+        neon_store<_Tp>(&vals, vec);
 
-    const index_type simd_end = data_.size() - (data_.size() % simd_width);
+        for (std::size_t j = 0; j < t.simd_width; j++)
+            vals[j] = static_cast<_Tp>(std::cosh(vals[j]));
 
-    index_type i = 0;
-    for (; i < simd_end; i += simd_width)
-    {
-        neon_type<value_type>  vec = neon_load<value_type>(&data_[i]);
-        alignas(16) value_type vals[simd_width];
-        neon_store<value_type>(&vals, vec);
-
-        for (std::size_t j = 0; j < simd_width; j++)
-        {
-            vals[j] = static_cast<value_type>(std::cosh(vals[j]));
-        }
-
-        neon_type<value_type> cosh_vec = neon_load(&vals);
-        neon_store<value_type>(&data_[i], cosh_vec);
+        neon_type<_Tp> cosh_vec = neon_load(&vals);
+        neon_store<_Tp>(&data_[i], cosh_vec);
     }
 
     for (; i < data_.size(); ++i)
-    {
-        data_[i] = static_cast<value_type>(std::cosh(data_[i]));
-    }
+        data_[i] = static_cast<_Tp>(std::cosh(data_[i]));
 
-    return *this;
+    return t;
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::neon_acosh_() {
-    if (!std::is_arithmetic_v<value_type>)
+tensor<_Tp>& internal::neon::acosh_(tensor<_Tp>& t) {
+    if (!std::is_arithmetic_v<_Tp>)
+        throw error::type_error("Type must be arithmetic");
+
+    std::vector<_Tp>& data_    = t.storage_();
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+    _u64              i        = 0;
+
+    for (; i < simd_end; i += t.simd_width)
     {
-        throw type_error("Type must be arithmetic");
-    }
+        neon_type<_Tp>  vec = neon_load<_Tp>(&data_[i]);
+        alignas(16) _Tp vals[t.simd_width];
+        neon_store<_Tp>(&vals, vec);
 
-    const index_type simd_end = data_.size() - (data_.size() % simd_width);
+        for (std::size_t j = 0; j < t.simd_width; j++)
+            vals[j] = static_cast<_Tp>(std::acosh(vals[j]));
 
-    index_type i = 0;
-    for (; i < simd_end; i += simd_width)
-    {
-        neon_type<value_type>  vec = neon_load<value_type>(&data_[i]);
-        alignas(16) value_type vals[simd_width];
-        neon_store<value_type>(&vals, vec);
-
-        for (std::size_t j = 0; j < simd_width; j++)
-        {
-            vals[j] = static_cast<value_type>(std::acosh(vals[j]));
-        }
-
-        neon_type<value_type> acosh_vec = neon_load(&vals);
-        neon_store<value_type>(&data_[i], acosh_vec);
+        neon_type<_Tp> acosh_vec = neon_load(&vals);
+        neon_store<_Tp>(&data_[i], acosh_vec);
     }
 
     for (; i < data_.size(); ++i)
-    {
-        data_[i] = static_cast<value_type>(std::acosh(data_[i]));
-    }
+        data_[i] = static_cast<_Tp>(std::acosh(data_[i]));
 
-    return *this;
+    return t;
 }
