@@ -2,37 +2,33 @@
 
 #include "tensorbase.hpp"
 
+
 template<class _Tp>
-double tensor<_Tp>::neon_mean() const {
+double internal::neon::mean(tensor<_Tp>& t) {
     double m = 0.0;
 
-    if (empty())
-    {
+    if (t.empty())
         return m;
+
+    std::vector<_Tp>& data_    = t.storage_();
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+    neon_type<_Tp>    sum_vec  = neon_dup<_Tp>(_Tp(0.0f));
+    _u64              i        = 0;
+
+    for (; i < simd_end; i += t.simd_width)
+    {
+        neon_type<_Tp> data_vec = neon_load<_Tp>(&data_[i]);
+        sum_vec                 = neon_add<_Tp>(sum_vec, data_vec);
     }
 
-    const index_type      simd_end = data_.size() - (data_.size() % simd_width);
-    neon_type<value_type> sum_vec  = neon_dup<value_type>(value_type(0.0f));
+    alignas(16) _Tp partial_sum[t.simd_width];
+    neon_store<_Tp>(partial_sum, sum_vec);
 
-    index_type i = 0;
-    for (; i < simd_end; i += simd_width)
-    {
-        neon_type<value_type> data_vec = neon_load<value_type>(&data_[i]);
-        sum_vec                        = neon_add<value_type>(sum_vec, data_vec);
-    }
-
-    alignas(16) value_type partial_sum[simd_width];
-    neon_store<value_type>(partial_sum, sum_vec);
-
-    for (std::size_t j = 0; j < simd_width; ++j)
-    {
+    for (std::size_t j = 0; j < t.simd_width; ++j)
         m += partial_sum[j];
-    }
 
     for (; i < data_.size(); ++i)
-    {
         m += data_[i];
-    }
 
     return m / static_cast<double>(data_.size());
 }
