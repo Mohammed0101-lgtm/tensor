@@ -6,15 +6,15 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::sum(const index_type axis) const {
     if (axis < 0 || axis >= static_cast<index_type>(shape_.size()))
     {
-        throw index_error("Invalid axis for sum");
+        throw error::index_error("Invalid axis for sum");
     }
 
-    shape_type ret_sh   = shape_;
+    shape::Shape ret_sh = shape_;
     ret_sh[axis]        = 1;
-    index_type ret_size = std::accumulate(ret_sh.begin(), ret_sh.end(), 1, std::multiplies<index_type>());
+    index_type ret_size = std::accumulate(ret_sh.value_.begin(), ret_sh.value_.end(), 1, std::multiplies<index_type>());
     data_t     ret_data(ret_size, value_type(0.0f));
-
     index_type i = 0;
+
     for (; i < static_cast<index_type>(data_.size()); ++i)
     {
         std::vector<index_type> orig(shape_.size());
@@ -36,6 +36,7 @@ tensor<_Tp> tensor<_Tp>::sum(const index_type axis) const {
             ret_index += orig[j] * st;
             st *= ret_sh[j];
         }
+
         ret_data[ret_index] += data_[i];
     }
 
