@@ -13,28 +13,15 @@ tensor<_Tp>& tensor<_Tp>::relu_() {
 }
 
 template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::relu_() const {
-    return clamp_min_(value_type(0));
-}
-
-template<class _Tp>
 inline tensor<_Tp>& tensor<_Tp>::clipped_relu_(const value_type clip_limit) {
-    if (!std::is_arithmetic_v<value_type>)
+    if (internal::types::using_neon())
     {
-        throw type_error("Type must be arithmetic");
+        return internal::neon::clipped_relu_(clip_limit);
     }
 
-    clamp_(value_type(0), std::numeric_limits<value_type>::max());
-    clamp_(std::numeric_limits<value_type>::lowest(), clip_limit);
-
-    return *this;
-}
-
-template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::clipped_relu_(const value_type clip_limit) const {
     if (!std::is_arithmetic_v<value_type>)
     {
-        throw type_error("Type must be arithmetic");
+        throw error::type_error("Type must be arithmetic");
     }
 
     clamp_(value_type(0), std::numeric_limits<value_type>::max());
