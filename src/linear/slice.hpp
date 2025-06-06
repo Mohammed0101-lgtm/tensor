@@ -12,7 +12,7 @@ tensor<_Tp>::slice(index_type dimension, std::optional<index_type> start, std::o
 
     if (dimension < 0 or dimension >= static_cast<index_type>(shape_.size()))
     {
-        throw index_error("Invalid dimension provided");
+        throw error::index_error("Invalid dimension provided");
     }
 
     if (step == 0)
