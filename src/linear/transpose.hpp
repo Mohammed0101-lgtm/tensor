@@ -5,9 +5,7 @@
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::transpose() const {
     if (shape_.size() != 2)
-    {
-        throw shape_error("Matrix transposition can only be done on 2D tensors");
-    }
+        throw error::shape_error("Matrix transposition can only be done on 2D tensors");
 
     tensor           ret({shape_[1], shape_[0]});
     const index_type rows = shape_[0];
@@ -32,9 +30,7 @@ tensor<_Tp> tensor<_Tp>::transpose() const {
         index_type j = 0;
 
         for (; j < cols; ++j)
-        {
             ret.at({j, i}) = at({i, j});
-        }
     }
 
     return ret;
@@ -54,30 +50,17 @@ global void transpose_kernel(_Tp* input, _Tp* output, int rows, int cols) {
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::transpose_() {
     if (shape_.size() != 2)
-    {
-        throw shape_error("Transpose operation is only valid for 2D tensors");
-    }
+        throw error::shape_error("Transpose operation is only valid for 2D tensors");
 
     const index_type rows = shape_[0];
     const index_type cols = shape_[1];
 
     if (rows != cols)
-    {
-        throw shape_error("In-place transpose is only supported for square tensors");
-    }
+        throw error::shape_error("In-place transpose is only supported for square tensors");
 
     for (index_type i = 0; i < rows; ++i)
-    {
         for (index_type j = i + 1; j < cols; ++j)
-        {
             std::swap(data_[i * cols + j], data_[j * cols + i]);
-        }
-    }
 
     return *this;
-}
-
-template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::transpose_() const {
-    return transpose_();
 }
