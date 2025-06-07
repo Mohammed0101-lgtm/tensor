@@ -42,7 +42,7 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator+(const tensor& other) const {
     if (internal::types::using_neon())
     {
-        return internal::neon::operator_plus(other);
+        return internal::neon::operator_plus(*this, other);
     }
 
     if constexpr (!internal::types::has_plus_operator_v<value_type>)
@@ -50,7 +50,7 @@ tensor<_Tp> tensor<_Tp>::operator+(const tensor& other) const {
         throw error::operator_error("Value type must have a plus operator");
     }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (!shape_.equal(other.shape()))
     {
         throw error::shape_error("Tensors shapes must be equal");
     }
@@ -182,7 +182,7 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator-(const tensor& other) const {
     if (internal::types::using_neon())
     {
-        return internal::neon::operator_minus(other);
+        return internal::neon::operator_minus(*this, other);
     }
 
     if constexpr (!internal::types::has_minus_operator_v<value_type>)
