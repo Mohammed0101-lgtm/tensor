@@ -3,7 +3,7 @@
 #include "tensorbase.hpp"
 
 template<class _Tp>
-tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const tensor<_Tp>& other) {
+tensor<_Tp> internal::neon::operator_plus(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     if constexpr (!internal::types::has_plus_operator_v<_Tp>)
     {
         throw error::operator_error("Value type must have a plus operator");
@@ -36,7 +36,7 @@ tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const tensor<_Tp>& oth
 }
 
 template<class _Tp>
-tensor<_Tp> internal::neon::operator_plus(tensor<_Tp>& t, const _Tp value) {
+tensor<_Tp> internal::neon::operator_plus(const tensor<_Tp>& t, const _Tp value) {
     if constexpr (!internal::types::has_plus_operator_v<_Tp>)
     {
         throw error::operator_error("Value type must have a plus operator");
