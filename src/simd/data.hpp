@@ -5,7 +5,7 @@
 
 
 template<class _Tp>
-_u64 internal::neon::count_nonzero(tensor<_Tp>& t, _u64 dimension) {
+_u64 internal::neon::count_nonzero(const tensor<_Tp>& t, _u64 dimension) {
     if (!std::is_arithmetic_v<_Tp>)
     {
         throw error::type_error("Type must be arithmetic");
@@ -24,8 +24,9 @@ _u64 internal::neon::count_nonzero(tensor<_Tp>& t, _u64 dimension) {
             neon_type<_Tp> vec          = neon_load<_Tp>(&data_[i]);
             neon_type<_Tp> zero_vec     = neon_dup<_Tp>(_Tp(0.0f));
             neon_u32       nonzero_mask = neon_cgt<_Tp>(vec, zero_vec);
+            neon_type nonzero_mask_ = reinterpret_cast<neon_type<_Tp>>(nonzero_mask);
             local_count +=
-              neon_addv<_Tp>(neon_and<_Tp>(reinterpret_cast<neon_type<_Tp>>(nonzero_mask), neon_dup<_Tp>(_Tp(1.0f))));
+              neon_addv<_Tp>(neon_and<_Tp>(nonzero_mask_, neon_dup<_Tp>(_Tp(1.0f))));
         }
 
         for (_u64 j = i; j < data_.size(); ++j)
@@ -40,7 +41,7 @@ _u64 internal::neon::count_nonzero(tensor<_Tp>& t, _u64 dimension) {
     }
     else
     {
-        if (dimension < 0 || dimension >= static_cast<_u64>(t.shape_.size()))
+        if (dimension < 0 || dimension >= static_cast<_u64>(t.shape().size()))
         {
             throw error::index_error("Invalid dimension provided.");
         }
@@ -70,7 +71,7 @@ tensor<_Tp>& internal::neon::zeros_(tensor<_Tp>& t, shape::Shape shape_) {
     std::vector<_Tp>& data_ = t.storage_();
     std::size_t       s     = shape_.flatten_size();
     data_.resize(s);
-    t.shape_.compute_strides();
+    t.shape().compute_strides();
     const _u64     simd_end = s - (s % t.simd_width);
     neon_type<_Tp> zero_vec = neon_dup<_Tp>(_Tp(0.0f));
     _u64           i        = 0;
