@@ -374,7 +374,7 @@ template<class _Tp>
 tensor<_u64> argmax_(tensor<_Tp>& t, _u64 dimension);
 
 template<class _Tp>
-_u64 count_nonzero(tensor<_Tp>& t, _u64 dimension);
+_u64 count_nonzero(const tensor<_Tp>& t, _u64 dimension);
 
 template<class _Tp>
 double mean(tensor<_Tp>& t);
@@ -417,7 +417,7 @@ class tensor
         CUDA
     };
 
-   protected:
+   public:
     static const std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
@@ -433,14 +433,10 @@ class tensor
     tensor(tensor&& t) noexcept;
     tensor(const shape::Shape& shape_, const tensor& other);
     tensor(const shape::Shape& shape_, std::initializer_list<value_type> init_list, Device d = Device::CPU);
-    tensor(const shape_type& shape_, const tensor& other);
-    tensor(const shape_type& shape_, std::initializer_list<value_type> init_list, Device d = Device::CPU);
     explicit tensor(const shape::Shape& shape_, const_reference v, Device d = Device::CPU);
     explicit tensor(const shape::Shape& shape_, Device d = Device::CPU);
     explicit tensor(const shape::Shape& shape_, const data_t& d, Device dev = Device::CPU);
-    explicit tensor(const shape_type& shape_, const_reference v, Device d = Device::CPU);
-    explicit tensor(const shape_type& shape_, Device d = Device::CPU);
-    explicit tensor(const shape_type& shape_, const data_t& d, Device dev = Device::CPU);
+    explicit tensor(const shape::Shape& shape_, const data_t& d, Device dev = Device::CPU);
 
    private:
     class destroy_tensor
@@ -475,9 +471,9 @@ class tensor
     index_type      count_nonzero(index_type dimension = 0) const;
     index_type      lcm() const;
     index_type      hash() const;
-    reference       at(shape_type idx);
+    reference       at(shape::Shape idx);
     reference       operator[](const index_type idx);
-    const_reference at(const shape_type idx) const;
+    const_reference at(const shape::Shape idx) const;
     const_reference operator[](const index_type idx) const;
     reference       operator()(std::initializer_list<index_type> index_list);
     const_reference operator()(std::initializer_list<index_type> index_list) const;
@@ -938,7 +934,7 @@ class tensor
     /// @brief Reshapes the tensor to a specified shape.
     /// @param shape The desired shape for the tensor.
     /// @return A new tensor with the specified shape.
-    tensor reshape(const shape_type shape) const;
+    tensor reshape(const shape::Shape shape) const;
 
     /// @brief Reshapes the tensor to match the shape of another tensor.
     /// @param other The tensor whose shape is to be matched.
@@ -982,7 +978,7 @@ class tensor
     /// consistent.
     /// @param shape_ The desired shape for the tensor.
     /// @return A new tensor resized to the specified shape.
-    tensor resize_as(const shape_type shape_) const;
+    tensor resize_as(const shape::Shape shape_) const;
 
     /// @brief Checks if all elements in the tensor are non-zero.
     /// @return A scalar tensor containing true if all elements are non-zero,
@@ -1135,12 +1131,12 @@ class tensor
     /// @brief Creates a tensor filled with zeros, with the specified shape.
     /// @param shape_ The shape of the tensor to be created.
     /// @return A new tensor filled with zeros.
-    tensor zeros(const shape_type& shape_);
+    tensor zeros(const shape::Shape& shape_);
 
     /// @brief Creates a tensor filled with ones, with the specified shape.
     /// @param shape_ The shape of the tensor to be created.
     /// @return A new tensor filled with ones.
-    tensor ones(const shape_type& shape_);
+    tensor ones(const shape::Shape& shape_);
 
     /// @brief Creates a tensor filled with random values, with the specified
     /// shape.
@@ -1148,7 +1144,7 @@ class tensor
     /// @param bounded Whether the random values should be bounded (default is
     /// false).
     /// @return A new tensor filled with random values.
-    tensor randomize(const shape_type& shape_, bool bounded = false);
+    tensor randomize(const shape::Shape& shape_, bool bounded = false);
 
     /// @brief Extracts the minor matrix by removing the specified row and column.
     /// @param a The row index to remove.
@@ -1161,13 +1157,13 @@ class tensor
     /// @param shape_ The target shape for expansion.
     /// @param dimension The dimension along which the tensor will be expanded.
     /// @return A new tensor expanded to the specified shape.
-    tensor expand_as(shape_type shape_, index_type dimension) const;
+    tensor expand_as(shape::Shape shape_, index_type dimension) const;
 
     /// @brief Computes the element-wise least common multiple (LCM) with another
     /// tensor.
     /// @param other The tensor to compute the LCM with.
     /// @return A new tensor containing the element-wise LCM values.
-    tensor lcm(const tensor& other) const;
+    tensor lcm(const shape::Shape& other) const;
 
     /// @brief Computes the mean (average) of all elements in the tensor.
     /// @return The mean value of all elements in the tensor.
@@ -1652,7 +1648,7 @@ class tensor
     /// filled with ones.
     /// @return A \ref to the tensor after the one-fill operation has been
     /// applied.
-    tensor& ones_(shape_type shape_ = {});
+    tensor& ones_(shape::Shape shape_ = {});
 
     void print() const {
         printRecursive(0, 0, shape_);
@@ -1881,50 +1877,6 @@ class tensor<bool>
         shape_(shape_),
         device_(other.device()) {}
 
-
-    explicit tensor(const shape_type& shape_, value_type v, Device d = Device::CPU) :
-        shape_(shape_),
-        data_(shape_.size(), v),
-        device_(d) {}
-
-    explicit tensor(const shape_type& shape_, Device d = Device::CPU) :
-        shape_(shape_),
-        device_(d) {
-        index_type s = shape_.size();
-        data_        = data_t(s);
-    }
-
-    explicit tensor(const shape_type& shape_, const data_t& d, Device dev = Device::CPU) :
-        shape_(shape_),
-        device_(dev) {
-        index_type s = shape_.size();
-
-        if (d.size() != static_cast<std::size_t>(s))
-        {
-            throw std::invalid_argument("Initial data vector must match the tensor");
-        }
-
-        data_ = d;
-    }
-
-    tensor(const shape_type& shape_, std::initializer_list<value_type> init_list, Device d = Device::CPU) :
-        shape_(shape_),
-        device_(d) {
-        index_type s = shape_.size();
-
-        if (init_list.size() != static_cast<std::size_t>(s))
-        {
-            throw std::invalid_argument("Initializer list size must match tensor size");
-        }
-
-        data_ = data_t(init_list);
-    }
-
-    tensor(const shape_type& shape_, const tensor& other) :
-        data_(other.storage()),
-        shape_(shape_),
-        device_(other.device()) {}
-
     data_t         storage() const noexcept { return data_; }
     shape::Shape   shape() const noexcept { return shape_; }
     shape::Strides strides() const noexcept { return shape_.strides_; }
@@ -1959,15 +1911,13 @@ class tensor<bool>
         return data_[idx];
     }
 
-    const_reference at(const shape_type idx) const { return at(idx); }
+    const_reference at(const shape::Shape idx) const { return at(idx); }
 
     const_reference operator[](const index_type idx) const { return (*this)[idx]; }
 
-    reference operator()(std::initializer_list<index_type> index_list) { return at(shape_type(index_list)); }
+    reference operator()(std::initializer_list<index_type> index_list) { return at(index_list); }
 
-    const_reference operator()(std::initializer_list<index_type> index_list) const {
-        return at(shape_type(index_list));
-    }
+    const_reference operator()(std::initializer_list<index_type> index_list) const { return at(index_list); }
 
     bool empty() const { return data_.empty(); }
 
