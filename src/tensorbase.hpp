@@ -87,40 +87,40 @@ namespace internal {
 namespace neon {
 
 template<class _Tp>
-tensor<_Tp> operator_divide(tensor<_Tp>& t, const _Tp& value);
+tensor<_Tp> operator_divide(const tensor<_Tp>& t, const _Tp& value);
 
 template<class _Tp>
-tensor<_Tp> operator_divide(tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<_Tp> operator_divide(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<_Tp> operator_divide_eq(tensor<_Tp>& t, const _Tp& value);
+tensor<_Tp> operator_divide_eq(const tensor<_Tp>& t, const _Tp& value);
 
 template<class _Tp>
-tensor<_Tp> operator_divide_eq(tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<_Tp> operator_divide_eq(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<_Tp> fill_(tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<_Tp> fill_(const tensor<_Tp>& t, const _Tp& other);
 
 template<class _Tp>
-tensor<_s16> int16_(tensor<_Tp>& t);
+tensor<_s16> int16_(const tensor<_Tp>& t);
 
 template<class _Tp>
-tensor<_s32> int32_(tensor<_Tp>& t);
+tensor<_s32> int32_(const tensor<_Tp>& t);
 
 template<class _Tp>
-tensor<_u32> uint32_(tensor<_Tp>& t);
+tensor<_u32> uint32_(const tensor<_Tp>& t);
 
 template<class _Tp>
-tensor<_f32> float32_(tensor<_Tp>& t);
+tensor<_f32> float32_(const tensor<_Tp>& t);
 
 template<class _Tp>
-tensor<_f64> float64_(tensor<_Tp>& t);
+tensor<_f64> float64_(const tensor<_Tp>& t);
 
 template<class _Tp>
-tensor<_u64> uint64_(tensor<_Tp>& t);
+tensor<_u64> uint64_(const tensor<_Tp>& t);
 
 template<class _Tp>
-tensor<_s64> int64_(tensor<_Tp>& t);
+tensor<_s64> int64_(const tensor<_Tp>& t);
 
 template<class _Tp>
 tensor<_Tp>& fmax_(tensor<_Tp>& t, const _Tp v);
@@ -302,91 +302,91 @@ template<class _Tp>
 tensor<_Tp>& operator_minus_eq(tensor<_Tp>& t, const _Tp& value);
 
 template<class _Tp>
-tensor<_Tp> operator_plus(tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<_Tp> operator_plus(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<_Tp> operator_plus(tensor<_Tp>& t, const _Tp value);
+tensor<_Tp> operator_plus(const tensor<_Tp>& t, const _Tp value);
 
 template<class _Tp>
-tensor<_Tp> operator_minus(tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<_Tp> operator_minus(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<_Tp> operator_minus(tensor<_Tp>& t, const _Tp value);
+tensor<_Tp> operator_minus(const tensor<_Tp>& t, const _Tp value);
 
 template<class _Tp>
-tensor<_Tp> transpose(tensor<_Tp>& t);
+tensor<_Tp> transpose(const tensor<_Tp>& t);
 
 template<class _Tp>
-tensor<_Tp> matmul(tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<_Tp> matmul(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<_Tp> absolute_(tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<_Tp> absolute_(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<_Tp> cross_product(tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<_Tp> cross_product(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<_Tp> dot(tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<_Tp> dot(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<_Tp> argmax(tensor<_Tp>& t, _u64 dimension);
+tensor<_Tp> argmax(const tensor<_Tp>& t, const _u64 dimension);
 
 template<class _Tp>
-tensor<_Tp> sum(tensor<_Tp>& t, const _u64 axis);
+tensor<_Tp> sum(const tensor<_Tp>& t, const _u64 axis);
 
 template<class _Tp>
-tensor<_Tp> slice(tensor<_Tp>& t, _u64 dimension, std::optional<_u64> start, std::optional<_u64> end, _u64 step);
+tensor<_Tp> slice(const tensor<_Tp>& t, const _u64 dimension, std::optional<_u64> start, std::optional<_u64> end, const _u64 step);
 
 template<class _Tp>
-tensor<bool> equal(tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<bool> equal(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<bool> equal(tensor<_Tp>& t, const _Tp value);
+tensor<bool> equal(const tensor<_Tp>& t, const _Tp value);
 
 template<class _Tp>
-tensor<bool> less_equal(tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<bool> less_equal(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<bool> less_equal(tensor<_Tp>& t, const _Tp value);
+tensor<bool> less_equal(const tensor<_Tp>& t, const _Tp value);
 
 template<class _Tp>
-tensor<bool> less(tensor<_Tp>& t, const _Tp value);
+tensor<bool> less(const tensor<_Tp>& t, const _Tp value);
 
 template<class _Tp>
-tensor<bool> less(tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<bool> less(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<bool> greater(tensor<_Tp>& t, const _Tp value);
+tensor<bool> greater(const tensor<_Tp>& t, const _Tp value);
 
 template<class _Tp>
-tensor<bool> greater(tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<bool> greater(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<bool> greater_equal(tensor<_Tp>& t, const _Tp value);
+tensor<bool> greater_equal(const tensor<_Tp>& t, const _Tp value);
 
 template<class _Tp>
-tensor<bool> greater_equal(tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<bool> greater_equal(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<_u64> argsort(tensor<_Tp>& t, _u64 d, bool ascending);
+tensor<_u64> argsort(const tensor<_Tp>& t, _u64 d, bool ascending);
 
 template<class _Tp>
-tensor<_u64> argmax_(tensor<_Tp>& t, _u64 dimension);
+tensor<_u64> argmax_(const tensor<_Tp>& t, _u64 dimension);
 
 template<class _Tp>
 _u64 count_nonzero(const tensor<_Tp>& t, _u64 dimension);
 
 template<class _Tp>
-double mean(tensor<_Tp>& t);
+double mean(const tensor<_Tp>& t);
 
 template<class _Tp>
-tensor<bool> not_equal(tensor<_Tp>& t, const _Tp value);
+tensor<bool> not_equal(const tensor<_Tp>& t, const _Tp value);
 
 template<class _Tp>
-tensor<bool> not_equal(tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<bool> not_equal(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<_Tp> absolute(tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<_Tp> absolute(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
 tensor<_Tp>& clamp_min_(const _Tp& min_val);
@@ -436,7 +436,6 @@ class tensor
     explicit tensor(const shape::Shape& shape_, const_reference v, Device d = Device::CPU);
     explicit tensor(const shape::Shape& shape_, Device d = Device::CPU);
     explicit tensor(const shape::Shape& shape_, const data_t& d, Device dev = Device::CPU);
-    explicit tensor(const shape::Shape& shape_, const data_t& d, Device dev = Device::CPU);
 
    private:
     class destroy_tensor
@@ -470,6 +469,7 @@ class tensor
     index_type      capacity() const noexcept;
     index_type      count_nonzero(index_type dimension = 0) const;
     index_type      lcm() const;
+    tensor<_Tp> lcm(const tensor& other) const;
     index_type      hash() const;
     reference       at(shape::Shape idx);
     reference       operator[](const index_type idx);
@@ -1669,37 +1669,8 @@ class tensor
     [[nodiscard]] static _f32       frac(const_reference value) noexcept;
     // where the tensor is stored
     bool is_cuda_device() const;
-    bool equal_shape(const shape_type& x, const shape_type& y) const;
 
 };  // tensor class
-
-template<class _Tp>
-bool tensor<_Tp>::equal_shape(const shape_type& x, const shape_type& y) const {
-    std::size_t size_x = x.size();
-    std::size_t size_y = y.size();
-
-    if (size_x == size_y)
-    {
-        return x == y;
-    }
-
-    if (size_x < size_y)
-    {
-        return equal_shape(y, x);
-    }
-
-    int diff = size_x - size_y;
-
-    for (std::size_t i = 0; i < size_y; ++i)
-    {
-        if (x[i + diff] != y[i] && x[i + diff] != 1 && y[i] != 1)
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
 
 template<class _Tp>
 inline bool tensor<_Tp>::is_cuda_device() const {
