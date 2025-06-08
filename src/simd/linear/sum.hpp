@@ -3,7 +3,7 @@
 #include "tensorbase.hpp"
 
 template<class _Tp>
-tensor<_Tp> internal::neon::sum(tensor<_Tp>& t, const _u64 axis) {
+tensor<_Tp> internal::neon::sum(const tensor<_Tp>& t, const _u64 axis) {
     if (axis < 0 || axis >= static_cast<_u64>(t.shape().size()))
     {
         throw std::invalid_argument("Invalid axis for sum");
