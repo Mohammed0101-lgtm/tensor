@@ -4,7 +4,7 @@
 
 
 template<class _Tp>
-tensor<_s16> internal::neon::int16_(tensor<_Tp>& t) {
+tensor<_s16> internal::neon::int16_(const tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _s16>)
     {
         throw error::type_error("Type must be convertible to 16 bit signed int");
@@ -12,7 +12,7 @@ tensor<_s16> internal::neon::int16_(tensor<_Tp>& t) {
 
     if (t.empty())
     {
-        return tensor<_s16>(t.shape_);
+        return tensor<_s16>(t.shape());
     }
 
     std::vector<_Tp>& data_ = t.storage_();
@@ -44,12 +44,12 @@ tensor<_s16> internal::neon::int16_(tensor<_Tp>& t) {
         d[i] = static_cast<_s16>(data_[i]);
     }
 
-    return tensor<_s16>(t.shape_, d);
+    return tensor<_s16>(t.shape(), d);
 }
 
 
 template<class _Tp>
-tensor<_s32> internal::neon::int32_(tensor<_Tp>& t) {
+tensor<_s32> internal::neon::int32_(const tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _s32>)
     {
         throw error::type_error("Type must be convertible to 32 bit signed int");
@@ -57,7 +57,7 @@ tensor<_s32> internal::neon::int32_(tensor<_Tp>& t) {
 
     if (t.empty())
     {
-        return tensor<_s32>(t.shape_);
+        return tensor<_s32>(t.shape());
     }
 
     std::vector<_Tp>& data_ = t.storage_();
@@ -89,11 +89,11 @@ tensor<_s32> internal::neon::int32_(tensor<_Tp>& t) {
         d[i] = static_cast<_s32>(data_[i]);
     }
 
-    return tensor<_s32>(t.shape_, d);
+    return tensor<_s32>(t.shape(), d);
 }
 
 template<class _Tp>
-tensor<_u32> internal::neon::uint32_(tensor<_Tp>& t) {
+tensor<_u32> internal::neon::uint32_(const tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _u32>)
     {
         throw error::type_error("Type must be convertible to unsigned 32 bit int");
@@ -101,7 +101,7 @@ tensor<_u32> internal::neon::uint32_(tensor<_Tp>& t) {
 
     if (t.empty())
     {
-        return tensor<_u32>(t.shape_);
+        return tensor<_u32>(t.shape());
     }
 
     std::vector<_Tp>& data_ = t.storage_();
@@ -133,11 +133,11 @@ tensor<_u32> internal::neon::uint32_(tensor<_Tp>& t) {
         d[i] = static_cast<_u32>(data_[i]);
     }
 
-    return tensor<_u32>(t.shape_, d);
+    return tensor<_u32>(t.shape(), d);
 }
 
 template<class _Tp>
-tensor<_f32> internal::neon::float32_(tensor<_Tp>& t) {
+tensor<_f32> internal::neon::float32_(const tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _f32>)
     {
         throw error::type_error("Type must be convertible to 32 bit float");
@@ -145,7 +145,7 @@ tensor<_f32> internal::neon::float32_(tensor<_Tp>& t) {
 
     if (t.empty())
     {
-        return tensor<_f32>(t.shape_);
+        return tensor<_f32>(t.shape());
     }
 
     std::vector<_Tp>& data_ = t.storage_();
@@ -185,11 +185,11 @@ tensor<_f32> internal::neon::float32_(tensor<_Tp>& t) {
         d[i] = static_cast<_f32>(data_[i]);
     }
 
-    return tensor<_f32>(t.shape_, d);
+    return tensor<_f32>(t.shape(), d);
 }
 
 template<class _Tp>
-tensor<_f64> internal::neon::float64_(tensor<_Tp>& t) {
+tensor<_f64> internal::neon::float64_(const tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _f64>)
     {
         throw error::type_error("Type must be convertible to 64 bit float");
@@ -197,7 +197,7 @@ tensor<_f64> internal::neon::float64_(tensor<_Tp>& t) {
 
     if (t.empty())
     {
-        return tensor<_f64>(t.shape_);
+        return tensor<_f64>(t.shape());
     }
 
     std::vector<_Tp>& data_ = t.storage_();
@@ -216,11 +216,11 @@ tensor<_f64> internal::neon::float64_(tensor<_Tp>& t) {
         d[i] = static_cast<_f64>(data_[i]);
     }
 
-    return tensor<_f64>(t.shape_, d);
+    return tensor<_f64>(t.shape(), d);
 }
 
 template<class _Tp>
-tensor<_u64> internal::neon::uint64_(tensor<_Tp>& t) {
+tensor<_u64> internal::neon::uint64_(const tensor<_Tp>& t) {
     if (!std::is_convertible_v<_Tp, _u64>)
     {
         throw error::type_error("Type must be convertible to unsigned 64 bit int");
@@ -228,7 +228,7 @@ tensor<_u64> internal::neon::uint64_(tensor<_Tp>& t) {
 
     if (t.empty())
     {
-        return tensor<_u64>(t.shape_);
+        return tensor<_u64>(t.shape());
     }
 
     std::vector<_Tp>& data_ = t.storage_();
