@@ -3,7 +3,7 @@
 #include "tensorbase.hpp"
 
 template<class _Tp>
-tensor<_Tp> internal::neon::cross_product(tensor<_Tp>& t, const tensor<_Tp>& other) {
+tensor<_Tp> internal::neon::cross_product(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     if (!std::is_arithmetic_v<_Tp>)
     {
         throw error::type_error("Type must be arithmetic");
@@ -34,7 +34,7 @@ tensor<_Tp> internal::neon::cross_product(tensor<_Tp>& t, const tensor<_Tp>& oth
 }
 
 template<class _Tp>
-tensor<_Tp> internal::neon::dot(tensor<_Tp>& t, const tensor<_Tp>& other) {
+tensor<_Tp> internal::neon::dot(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     if (!std::is_arithmetic_v<_Tp>)
     {
         throw error::type_error("Type must be arithmetic");
