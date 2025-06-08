@@ -32,7 +32,7 @@ tensor<_Tp> internal::neon::operator_plus(const tensor<_Tp>& t, const tensor<_Tp
         d[i] = data_[i] + other[i];
     }
 
-    return tensor<_Tp>(t.shape_, d);
+    return tensor<_Tp>(t.shape(), d);
 }
 
 template<class _Tp>
@@ -91,7 +91,7 @@ tensor<_Tp>& internal::neon::operator_plus_eq(tensor<_Tp>& t, const _Tp& value) 
 }
 
 template<class _Tp>
-tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const tensor<_Tp>& other) {
+tensor<_Tp> internal::neon::operator_minus(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     if constexpr (!internal::types::has_minus_operator_v<_Tp>)
     {
         throw error::operator_error("Value type must have a minus operator");
@@ -120,11 +120,11 @@ tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const tensor<_Tp>& ot
         d[i] = data_[i] - other[i];
     }
 
-    return tensor<_Tp>(t.shape_, d);
+    return tensor<_Tp>(t.shape(), d);
 }
 
 template<class _Tp>
-tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const _Tp value) {
+tensor<_Tp> internal::neon::operator_minus(const tensor<_Tp>& t, const _Tp value) {
     if constexpr (!internal::types::has_minus_operator_v<_Tp>)
     {
         throw error::operator_error("Value type must have a minus operator");
@@ -148,7 +148,7 @@ tensor<_Tp> internal::neon::operator_minus(tensor<_Tp>& t, const _Tp value) {
         d[i] = data_[i] - value;
     }
 
-    return tensor<_Tp>(*this);
+    return tensor<_Tp>(t.shape(), d);
 }
 
 template<class _Tp>
