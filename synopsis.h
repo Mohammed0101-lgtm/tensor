@@ -553,7 +553,6 @@ class tensor
     [[nodiscard]] static _f32       frac(const_reference value) noexcept;
     // where the aten::tensor is stored
     bool is_cuda_device() const;
-    bool equal_shape(const shape_type& x, const shape_type& y) const;
 
 };  // aten::tensor class
 
@@ -665,7 +664,6 @@ class tensor<bool>
     void                      print() const;
 
    private:
-    bool equal_shape(const shape_type& x, const shape_type& y) const;
     [[nodiscard]]
     inline std::size_t computeStride(std::size_t dimension, const shape_type& shape) const noexcept;
     void               printRecursive(std::size_t index, std::size_t depth, const shape_type& shape) const;
