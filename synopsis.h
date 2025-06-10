@@ -546,7 +546,6 @@ class tensor
    private:
     [[nodiscard]] std::size_t       computeStride(std::size_t dimension, const shape_type& shape) const noexcept;
     void                            printRecursive(std::size_t index, std::size_t depth, const shape_type& shape) const;
-    void                            compute_strides();
     [[nodiscard]] index_type        compute_index(const std::vector<index_type>& idx) const;
     [[nodiscard]] static index_type computeSize(const shape_type& dims) noexcept;
     index_type                      compute_outer_size(const index_type dimension) const;
@@ -667,7 +666,6 @@ class tensor<bool>
     [[nodiscard]]
     inline std::size_t computeStride(std::size_t dimension, const shape_type& shape) const noexcept;
     void               printRecursive(std::size_t index, std::size_t depth, const shape_type& shape) const;
-    void               compute_strides();
     [[nodiscard]]
     index_type compute_index(const std::vector<index_type>& idx) const;
     [[nodiscard]]
