@@ -99,7 +99,10 @@ template<class _Tp>
 tensor<_Tp> operator_divide_eq(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<_Tp> fill_(const tensor<_Tp>& t, const _Tp& other);
+tensor<_Tp>& fill_(tensor<_Tp>& t, const _Tp& value);
+
+template<class _Tp>
+tensor<_Tp>& fill_(tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
 tensor<_s16> int16_(const tensor<_Tp>& t);
@@ -389,7 +392,7 @@ template<class _Tp>
 tensor<_Tp> absolute(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<_Tp>& clamp_min_(const _Tp& min_val);
+tensor<_Tp>& clamp_min_(tensor<_Tp>& t, const _Tp& min_val);
 
 }  // namespace neon
 }  // namespace internal
@@ -1662,7 +1665,6 @@ class tensor
    private:
     [[nodiscard]] std::size_t       computeStride(std::size_t dimension, const shape_type& shape) const noexcept;
     void                            printRecursive(std::size_t index, std::size_t depth, const shape_type& shape) const;
-    void                            compute_strides();
     [[nodiscard]] index_type        compute_index(const std::vector<index_type>& idx) const;
     [[nodiscard]] static index_type computeSize(const shape_type& dims) noexcept;
     index_type                      compute_outer_size(const index_type dimension) const;
