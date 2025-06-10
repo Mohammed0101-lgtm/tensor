@@ -20,13 +20,13 @@ TEST(TensorTest, DataTypeConversionTest) {
     tensor<int16_t>   t_short     = t.int16_();
     tensor<int64_t>   t_long_long = t.int64_();
 
-    EXPECT_EQ(t_int.storage(), (std::vector<int>{1, 2, 3}));
-    EXPECT_EQ(t_uint.storage(), (std::vector<unsigned int>{1, 2, 3}));
-    EXPECT_EQ(t_ulong.storage(), (std::vector<unsigned long>{1, 2, 3}));
-    EXPECT_EQ(t_float.storage(), (std::vector<float>{1.0, 2.0, 3.0}));
-    EXPECT_EQ(t_double.storage(), (std::vector<double>{1.0, 2.0, 3.0}));
-    EXPECT_EQ(t_short.storage(), std::vector<short>({1, 2, 3}));
-    EXPECT_EQ(t_long_long.storage(), std::vector<long long>({1, 2, 3}));
+    EXPECT_EQ(t_int.storage(), (std::vector<int32_t>{1, 2, 3}));
+    EXPECT_EQ(t_uint.storage(), (std::vector<uint32_t>{1, 2, 3}));
+    EXPECT_EQ(t_ulong.storage(), (std::vector<uint64_t>{1, 2, 3}));
+    EXPECT_EQ(t_float.storage(), (std::vector<float32_t>{1.0, 2.0, 3.0}));
+    EXPECT_EQ(t_double.storage(), (std::vector<float64_t>{1.0, 2.0, 3.0}));
+    EXPECT_EQ(t_short.storage(), std::vector<int16_t>({1, 2, 3}));
+    EXPECT_EQ(t_long_long.storage(), std::vector<int64_t>({1, 2, 3}));
 }
 
 TEST(TensorTest, ShapeTest) {
