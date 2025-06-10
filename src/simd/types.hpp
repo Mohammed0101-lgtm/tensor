@@ -25,7 +25,7 @@ tensor<_s16> internal::neon::int16_(const tensor<_Tp>& t) {
         for (; i < simd_end; i += t.simd_width)
         {
             neon_f32 data_vec = vld1q_f32(reinterpret_cast<const _f32*>(&data_[i]));
-            neon_s16 int_vec  = vcvtq_s16_f32(data_vec);
+            neon_s16 int_vec = vcvtq_f16_s16(data_vec);
             vst1q_s16(reinterpret_cast<_s16*>(&d[i]), int_vec);
         }
     }
