@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
+
 TEST(TensorTest, StorageTest) {
     tensor<int> t({5}, {1, 2, 3, 4, 5});
 
@@ -38,7 +39,7 @@ TEST(TensorTest, ShapeTest) {
 TEST(TensorTest, StridesTest) {
     tensor<int> t({2, 2}, {1, 2, 3, 4});
 
-    EXPECT_EQ(t.shape().strides(), (std::vector<unsigned long long>{2, 1}));
+    EXPECT_EQ(t.shape().strides().get(), (std::vector<uint64_t>{2, 1}));
 }
 
 TEST(TensorTest, DeviceTest) {
@@ -355,12 +356,10 @@ TEST(TensorTest, NotEqualTest1) {
 }
 
 TEST(TensorTest, LessTest) {
-    tensor<int> t({2, 2}, {1, 2, 3, 4});
-
-    tensor<int> other({2, 2}, {1, 2, 3, 4});
-    tensor<int> other1({2, 2}, {2, 3, 4, 5});
-    tensor<int> other2({2, 2}, {0, 3, 2, 6});
-
+    tensor<int>  t({2, 2}, {1, 2, 3, 4});
+    tensor<int>  other({2, 2}, {1, 2, 3, 4});
+    tensor<int>  other1({2, 2}, {2, 3, 4, 5});
+    tensor<int>  other2({2, 2}, {0, 3, 2, 6});
     tensor<bool> expected({2, 2}, {false, false, false, false});
     tensor<bool> expected1({2, 2}, {true, true, true, true});
     tensor<bool> expected2({2, 2}, {false, true, false, true});
