@@ -149,6 +149,34 @@ constexpr bool has_greater_equal_operator_v = has_greater_equal_operator<_Tp>::v
 }  // namespace internal
 
 template<class _Tp>
+tensor<_s64> tensor<_Tp>::int64_() const {
+    if (internal::types::using_neon())
+    {
+        return internal::neon::int64_(*this);
+    }
+
+    if (!std::is_convertible_v<value_type, _s64>)
+    {
+        throw error::type_error("Type must be convertible to 64 bit signed int");
+    }
+
+    if (empty())
+    {
+        return tensor<_s64>(shape_);
+    }
+
+    std::vector<_s64> d(data_.size());
+    index_type        i = 0;
+
+    for (const auto& elem : data_)
+    {
+        d[i++] = static_cast<_s64>(elem);
+    }
+
+    return tensor<_s64>(shape_, d);
+}
+
+template<class _Tp>
 tensor<_s32> tensor<_Tp>::int32_() const {
     if (internal::types::using_neon())
     {
