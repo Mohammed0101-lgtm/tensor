@@ -1809,14 +1809,15 @@ class tensor<bool>
         data_        = data_t(s);
     }
 
-    explicit tensor(const shape::Shape& shape_, const data_t& d, Device dev = Device::CPU) :
-        shape_(shape_),
+    explicit tensor(const shape::Shape& sh, const data_t& d, Device dev = Device::CPU) :
+        shape_(sh),
         device_(dev) {
-        index_type s = shape_.size();
 
-        if (d.size() != static_cast<std::size_t>(s))
+        if (d.size() != static_cast<std::size_t>(shape_.flatten_size()))
         {
-            throw std::invalid_argument("Initial data vector must match the tensor");
+            throw std::invalid_argument("Initial data vector must match the tensor size : " +
+                                        std::to_string(d.size()) + " != " +
+                                        std::to_string(shape_.flatten_size()));
         }
 
         data_ = d;
@@ -1832,12 +1833,11 @@ class tensor<bool>
         shape_(std::move(t.shape())),
         device_(std::move(t.device())) {}
 
-    tensor(const shape::Shape& shape_, std::initializer_list<value_type> init_list, Device d = Device::CPU) :
-        shape_(shape_),
+    tensor(const shape::Shape& sh, std::initializer_list<value_type> init_list, Device d = Device::CPU) :
+        shape_(sh),
         device_(d) {
-        index_type s = shape_.size();
 
-        if (init_list.size() != static_cast<std::size_t>(s))
+        if (init_list.size() != static_cast<std::size_t>(shape_.flatten_size()))
         {
             throw std::invalid_argument("Initializer list size must match tensor size");
         }
@@ -1851,13 +1851,33 @@ class tensor<bool>
         device_(other.device()) {}
 
     data_t         storage() const noexcept { return data_; }
+    
     shape::Shape   shape() const noexcept { return shape_; }
+    
     shape::Strides strides() const noexcept { return shape_.strides_; }
+    
     Device         device() const noexcept { return device_; }
+
     bool operator==(const tensor& other) const { return shape_.equal(other.shape()) && data_ == other.storage(); }
 
     bool          operator!=(const tensor& other) const { return !(*this == other); }
-    tensor<bool>& operator=(const tensor<bool>& other) const noexcept;
+
+    inline tensor<bool>& operator=(const tensor<bool>& other) {
+        shape_ = other.shape();
+        data_  = other.storage();
+        shape_.compute_strides();
+        return *this;
+    }
+
+    tensor<bool>& operator=(tensor<bool>&& other) noexcept {
+        if (this != &other)
+        {
+            data_  = std::move(other.storage());
+            shape_ = std::move(other.shape());
+        }
+
+        return *this;
+    }
 
     reference at(shape_type idx) {
         if (idx.empty())
