@@ -241,3 +241,143 @@ tensor<_Tp>& internal::neon::operator_minus_eq(tensor<_Tp>& t, const _Tp& value)
 
     return t;
 }
+
+template<class _Tp>
+tensor<_Tp> internal::neon::operator_divide(const tensor<_Tp>& t, const _Tp& value) {
+    if (!internal::types::has_divide_operator_v<_Tp>)
+    {
+        throw error::operator_error("Value type must have a divide operator");
+    }
+
+    if (value == 0)
+    {
+        throw std::logic_error("Cannot divide by zero : undefined operation");
+    }
+
+    std::vector<_Tp>& data_    = t.storage_();
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+    std::vector<_Tp>  d(data_.size());
+    neon_type<_Tp>    val_vec = neon_dup<_Tp>(value);
+    _u64              i       = 0;
+
+    for (; i < simd_end; i += t.simd_width)
+    {
+        neon_type<_Tp> vec1   = neon_load<_Tp>(&data_[i]);
+        neon_type<_Tp> result = neon_div<_Tp>(vec1, val_vec);
+        neon_store<_Tp>(&d[i], result);
+    }
+
+    for (; i < data_.size(); ++i)
+    {
+        d[i] = data_[i] / value;
+    }
+
+    return tensor<_Tp>(t.shape(), d);
+}
+
+template<class _Tp>
+tensor<_Tp> internal::neon::operator_divide(const tensor<_Tp>& t, const tensor<_Tp>& other) {
+    if (!internal::types::has_divide_operator_v<_Tp>)
+    {
+        throw error::operator_error("Value type must have a divide operator");
+    }
+
+    if (!t.shape().equal(other.shape()))
+    {
+        throw error::shape_error("Tensors shapes must be equal");
+    }
+
+    if (other.count_nonzero(0) != other.size(0))
+    {
+        throw std::logic_error("Cannot divide by zero : undefined operation");
+    }
+    
+    std::vector<_Tp>& data_    = t.storage_();
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+    std::vector<_Tp>  d(data_.size());
+    _u64              i = 0;
+    
+    for (; i < simd_end; i += t.simd_width)
+    {
+        neon_type<_Tp> vec1   = neon_load<_Tp>(&data_[i]);
+        neon_type<_Tp> vec2   = neon_load<_Tp>(&other[i]);
+        neon_type<_Tp> result = neon_div<_Tp>(vec1, vec2);
+        neon_store<_Tp>(&d[i], result);
+    }
+    
+    for (; i < data_.size(); ++i)
+    {
+        d[i] = data_[i] / other[i];
+    }
+    
+    return tensor<_Tp>(t.shape(), d);
+}
+
+template<class _Tp>
+tensor<_Tp> internal::neon::operator_divide_eq(const tensor<_Tp>& t, const _Tp& value) {
+    if (!internal::types::has_divide_operator_v<_Tp>)
+    {
+        throw error::operator_error("Value type must have a divide operator");
+    }
+
+    if (value == 0)
+    {
+        throw std::logic_error("Cannot divide by zero : undefined operation");
+    }
+
+    std::vector<_Tp>& data_    = t.storage_();
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+    neon_type<_Tp>    val_vec  = neon_dup<_Tp>(value);
+    _u64              i        = 0;
+
+    for (; i < simd_end; i += t.simd_width)
+    {
+        neon_type<_Tp> vec1   = neon_load<_Tp>(&data_[i]);
+        neon_type<_Tp> result = neon_div<_Tp>(vec1, val_vec);
+        neon_store<_Tp>(&data_[i], result);
+    }
+
+    for (; i < data_.size(); ++i)
+    {
+        data_[i] = data_[i] / value;
+    }
+
+    return t;
+}
+
+template<class _Tp>
+tensor<_Tp> internal::neon::operator_divide_eq(const tensor<_Tp>& t, const tensor<_Tp>& other) {
+    if (!internal::types::has_divide_operator_v<_Tp>)
+    {
+        throw error::operator_error("Value type must have a divide operator");
+    }
+
+    if (!t.shape().equal(other.shape()))
+    {
+        throw error::shape_error("Tensors shapes must be equal");
+    }
+
+    if (other.count_nonzero(0) != other.size(0))
+    {
+        throw std::logic_error("Cannot divide by zero : undefined operation");
+    }
+
+    std::vector<_Tp>& data_    = t.storage_();
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+    _u64              i        = 0;
+
+    for (; i < simd_end; i += t.simd_width)
+    {
+        neon_type<_Tp> vec1   = neon_load<_Tp>(&data_[i]);
+        neon_type<_Tp> vec2   = neon_load<_Tp>(&other[i]);
+        neon_type<_Tp> result = neon_div<_Tp>(vec1, vec2);
+        neon_store<_Tp>(&data_[i], result);
+    }
+
+    for (; i < data_.size(); ++i)
+    {
+        data_[i] = data_[i] / other[i];
+    }
+
+    return t;   
+}
