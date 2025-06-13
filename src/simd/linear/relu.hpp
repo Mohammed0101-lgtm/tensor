@@ -1,6 +1,8 @@
 #pragma once
 
 #include "tensorbase.hpp"
+#include "../alias.hpp"
+#include "clamp.hpp"
 
 
 template<class _Tp>
@@ -52,8 +54,6 @@ tensor<_Tp>& internal::neon::clipped_relu_(tensor<_Tp>& t, const _Tp clip_limit)
         return t;
     }
 
-    internal::neon::clamp_(_Tp(0), std::numeric_limits<_Tp>::max());
-    internal::neon::clamp_(std::numeric_limits<_Tp>::lowest(), clip_limit);
-
+    t = internal::neon::clamp_(t, _Tp(0), clip_limit);
     return t;
 }
