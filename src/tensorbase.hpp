@@ -431,6 +431,16 @@ class tensor
     bool                 is_cuda_tensor_ = false;
 
    public:
+    void compute_strides() const {
+        if (shape_.empty())
+        {
+            throw error::shape_error("Shape must be initialized before computing strides");
+        }
+
+        shape_.compute_strides();
+    }
+
+   public:
     tensor() = default;
     tensor(const tensor& t);
     tensor(tensor&& t) noexcept;
@@ -1795,7 +1805,11 @@ class tensor<bool>
     bool                 is_cuda_tensor_ = false;
 
    public:
-    tensor() = default;
+    tensor() {
+        shape_ = shape::Shape();
+        device_ = Device::CPU;
+        data_ = data_t();
+    }
 
     explicit tensor(const shape::Shape& shape_, value_type v, Device d = Device::CPU) :
         shape_(shape_),
@@ -1933,42 +1947,77 @@ class tensor<bool>
     index_type capacity() const noexcept { return data_.capacity(); }
 
     tensor<bool> logical_not() const {
+        if (empty())
+        {
+            return self({0});
+        }
+
         self t = clone();
         t.logical_not_();
         return t;
     }
 
     tensor<bool> logical_or(const value_type value) const {
+        if (empty())
+        {
+            return self({0});
+        }
+
         self t = clone();
         t.logical_or_(value);
         return t;
     }
 
     tensor<bool> logical_or(const tensor& other) const {
+        if (empty())
+        {
+            return self({0});
+        }
+
         self t = clone();
         t.logical_or_(other);
         return t;
     }
 
     tensor<bool> logical_and(const value_type value) const {
+        if (empty())
+        {
+            return self({0});
+        }
+
         self t = clone();
         t.logical_and_(value);
         return t;
     }
 
     tensor<bool> logical_and(const tensor& other) const {
+        if (empty())
+        {
+            return self({0});
+        }
+
         self t = clone();
         t.logical_and_(other);
         return t;
     }
 
     tensor<bool> logical_xor(const value_type value) const {
+        if (empty())
+        {
+            return self({0});
+        }
+
         self t = clone();
         t.logical_and_(value);
         return t;
     }
 
     tensor<bool> logical_xor(const tensor& other) const {
+        if (empty())
+        {
+            return self({0});
+        }
+        
         self t = clone();
         t.logical_xor_(other);
         return t;
