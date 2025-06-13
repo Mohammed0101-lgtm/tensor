@@ -4,7 +4,7 @@
 #include <vector>
 
 template<class _Tp>
-tensor<_Tp> internal::neon::matmul(tensor<_Tp>& t, const tensor<_Tp>& other) {
+tensor<_Tp> internal::neon::matmul(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     if (!std::is_arithmetic_v<_Tp>)
     {
         throw error::type_error("Type must be arithmetic");
