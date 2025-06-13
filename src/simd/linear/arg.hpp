@@ -4,7 +4,7 @@
 
 
 template<class _Tp>
-tensor<_u64> internal::neon::argmax_(tensor<_Tp>& t, _u64 dimension) {
+tensor<_u64> internal::neon::argmax_(const tensor<_Tp>& t, const _u64 dimension) {
     if (dimension < 0 || dimension >= t.shape().size())
     {
         throw error::index_error("Dimension out of range in argmax");
@@ -89,7 +89,7 @@ tensor<_u64> internal::neon::argmax_(tensor<_Tp>& t, _u64 dimension) {
 }
 
 template<class _Tp>
-tensor<_Tp> internal::neon::argmax(tensor<_Tp>& t, _u64 dimension) {
+tensor<_Tp> internal::neon::argmax(const tensor<_Tp>& t, _u64 dimension) {
     if (dimension < 0 || dimension >= t.shape().size())
     {
         throw error::index_error("Dimension out of range in argmax");
@@ -148,7 +148,7 @@ tensor<_Tp> internal::neon::argmax(tensor<_Tp>& t, _u64 dimension) {
 }
 
 template<class _Tp>
-tensor<_u64> internal::neon::argsort(tensor<_Tp>& t, _u64 d, bool ascending) {
+tensor<_u64> internal::neon::argsort(const tensor<_Tp>& t, _u64 d, bool ascending) {
     std::vector<_Tp>& data_    = t.storage_();
     _u64              adjusted = (d < 0) ? d + data_.size() : d;
 
