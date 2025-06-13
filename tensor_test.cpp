@@ -640,7 +640,7 @@ TEST(TensorTest, EmptyTensorOps) {
     EXPECT_NO_THROW(t.sin());
     EXPECT_NO_THROW(t.tanh());
     EXPECT_EQ(t.sin().size(0), 0);
-}
+} 
 
 TEST(TensorTest, AsinBasic) {
     tensor<double> t({3}, {0.0, 0.5, 1.0});
@@ -907,7 +907,7 @@ TEST(TensorTest, ResizeAs) {
 TEST(TensorTest, AllTrue) {
     tensor<int> t({3}, {1, 2, 3});
     auto        result = t.all();
-    EXPECT_EQ(result.shape(), std::vector<unsigned long long>{});
+    EXPECT_TRUE(result.shape().equal(std::vector<unsigned long long>{1}));
     EXPECT_TRUE(result[0]);
 }
 
