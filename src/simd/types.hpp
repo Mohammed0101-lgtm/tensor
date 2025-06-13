@@ -264,3 +264,35 @@ tensor<_u64> internal::neon::uint64_(const tensor<_Tp>& t) {
 
     return tensor<_u64>(t.shape(), d);
 }
+
+
+template<class _Tp>
+tensor<_s64> internal::neon::int64_(const tensor<_Tp>& t) {
+    if (!std::is_convertible_v<_Tp, _s64>)
+    {
+        throw error::type_error("Type must be convertible to 64 bit signed int");
+    }
+
+    if (t.empty())
+    {
+        return tensor<_s64>(t.shape());
+    }
+
+    std::vector<_Tp>& data_ = t.storage_();
+    std::vector<_s64> d(data_.size());
+    const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+    _u64              i        = 0;
+
+    for (; i < simd_end; i += t.simd_width)
+    {
+        auto data_vec = vld1q_s64(reinterpret_cast<const _s64*>(&data_[i]));
+        vst1q_s64(reinterpret_cast<_s64*>(&d[i]), data_vec);
+    }
+
+    for (; i < data_.size(); ++i)
+    {
+        d[i] = static_cast<_s64>(data_[i]);
+    }
+
+    return tensor<_s64>(t.shape(), d);
+}
