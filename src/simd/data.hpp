@@ -21,12 +21,13 @@ _u64 internal::neon::count_nonzero(const tensor<_Tp>& t, _u64 dimension) {
     {
         for (; i < simd_end; i += t.simd_width)
         {
-            neon_type<_Tp> vec          = neon_load<_Tp>(&data_[i]);
-            neon_type<_Tp> zero_vec     = neon_dup<_Tp>(_Tp(0.0f));
-            neon_u32       nonzero_mask = neon_cgt<_Tp>(vec, zero_vec);
-            neon_type nonzero_mask_ = reinterpret_cast<neon_type<_Tp>>(nonzero_mask);
-            local_count +=
-              neon_addv<_Tp>(neon_and<_Tp>(nonzero_mask_, neon_dup<_Tp>(_Tp(1.0f))));
+            neon_type<_Tp> vec           = neon_load<_Tp>(&data_[i]);
+            neon_type<_Tp> zero_vec      = neon_dup<_Tp>(_Tp(0.0f));
+            neon_type<_Tp> one_vec       = neon_dup<_Tp>(_Tp(0.0f));
+            neon_u32       nonzero_mask  = neon_cgt<_Tp>(vec, zero_vec);
+            neon_type<_Tp> nonzero_mask_ = reinterpret_cast<neon_type<_Tp>>(nonzero_mask);
+            neon_type<_Tp> temp          = neon_and<_Tp>(nonzero_mask_, one_vec);
+            local_count += neon_addv<_Tp>(temp);
         }
 
         for (_u64 j = i; j < data_.size(); ++j)
@@ -266,6 +267,67 @@ tensor<_Tp>& internal::neon::negative_(tensor<_Tp>& t) {
     for (; i < data_.size(); ++i)
     {
         data_[i] = -data_[i];
+    }
+
+    return t;
+}
+
+template<class _Tp>
+tensor<_Tp>& internal::neon::fill_(tensor<_Tp>& t, const _Tp& value) {
+    if (!std::is_arithmetic_v<_Tp>)
+    {
+        throw error::type_error("Type must be arithmetic");
+    }
+
+    std::vector<_Tp>& data_ = t.storage_();
+    const _u64        s     = t.shape().flatten_size();
+    data_.resize(s);
+    t.compute_strides();
+    const _u64     simd_end = s - (s % t.simd_width);
+    neon_type<_Tp> fill_vec = neon_dup<_Tp>(value);
+    _u64           i        = 0;
+
+    for (; i < simd_end; i += t.simd_width)
+    {
+        neon_store<_Tp>(&data_[i], fill_vec);
+    }
+
+    for (; i < s; ++i)
+    {
+        data_[i] = value;
+    }
+
+    return t;
+}
+
+template<class _Tp>
+tensor<_Tp>& internal::neon::fill_(tensor<_Tp>& t, const tensor<_Tp>& other) {
+    if (!std::is_arithmetic_v<_Tp>)
+    {
+        throw error::type_error("Type must be arithmetic");
+    }
+
+    if (!t.shape().equal(other.shape()))
+    {
+        throw error::shape_error("Shapes of tensors must match for fill operation");
+    }
+
+    std::vector<_Tp>& data_ = t.storage_();
+    const _u64        s     = t.shape().flatten_size();
+    data_.resize(s);
+    t.compute_strides();
+    const _u64     simd_end = s - (s % t.simd_width);
+    _u64           i        = 0;
+
+    for (; i < simd_end; i += t.simd_width)
+    {
+        neon_type<_Tp> vec = neon_load<_Tp>(&other[i]);
+        neon_store<_Tp>(&data_[i], vec);
+    }
+
+    for (; i < s; ++i)
+    {
+        data_[i] = other[i];
     }
 
     return t;
