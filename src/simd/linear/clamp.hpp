@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tensorbase.hpp"
+#include "../alias.hpp"
 
 template<class _Tp>
 tensor<_Tp>& internal::neon::clamp_(tensor<_Tp>& t, const _Tp& min_val, const _Tp& max_val) {
@@ -18,7 +19,8 @@ tensor<_Tp>& internal::neon::clamp_(tensor<_Tp>& t, const _Tp& min_val, const _T
     for (; i < simd_end; i += t.simd_width)
     {
         neon_type<_Tp> data_vec = neon_load<_Tp>(&data_[i]);
-        neon_type<_Tp> clamped  = neon_min<_Tp>(neon_max<_Tp>(data_vec, min_vec), max_vec);
+        neon_type<_Tp> max_vec_ = neon_max<_Tp>(data_vec, min_vec);
+        neon_type<_Tp> clamped  = neon_min<_Tp>(max_vec_, max_vec);
         neon_store<_Tp>(&data_[i], clamped);
     }
 
@@ -28,8 +30,9 @@ tensor<_Tp>& internal::neon::clamp_(tensor<_Tp>& t, const _Tp& min_val, const _T
         data_[i] = std::min(max_val, data_[i]);
     }
 
-    return *this;
+    return t;
 }
+
 
 template<class _Tp>
 tensor<_Tp>& internal::neon::ceil_(tensor<_Tp>& t) {
@@ -56,7 +59,7 @@ tensor<_Tp>& internal::neon::ceil_(tensor<_Tp>& t) {
         data_[i] = static_cast<_Tp>(std::ceil(static_cast<_f32>(data_[i])));
     }
 
-    return *this;
+    return t;
 }
 
 template<class _Tp>
@@ -84,5 +87,5 @@ tensor<_Tp>& internal::neon::floor_(tensor<_Tp>& t) {
         data_[i] = static_cast<_Tp>(std::floor(static_cast<_f32>(data_[i])));
     }
 
-    return *this;
+    return t;
 }
