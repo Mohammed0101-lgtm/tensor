@@ -291,12 +291,12 @@ tensor<_Tp> internal::neon::operator_divide(const tensor<_Tp>& t, const tensor<_
     {
         throw std::logic_error("Cannot divide by zero : undefined operation");
     }
-    
+
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
     std::vector<_Tp>  d(data_.size());
     _u64              i = 0;
-    
+
     for (; i < simd_end; i += t.simd_width)
     {
         neon_type<_Tp> vec1   = neon_load<_Tp>(&data_[i]);
@@ -304,12 +304,12 @@ tensor<_Tp> internal::neon::operator_divide(const tensor<_Tp>& t, const tensor<_
         neon_type<_Tp> result = neon_div<_Tp>(vec1, vec2);
         neon_store<_Tp>(&d[i], result);
     }
-    
+
     for (; i < data_.size(); ++i)
     {
         d[i] = data_[i] / other[i];
     }
-    
+
     return tensor<_Tp>(t.shape(), d);
 }
 
@@ -379,5 +379,5 @@ tensor<_Tp> internal::neon::operator_divide_eq(const tensor<_Tp>& t, const tenso
         data_[i] = data_[i] / other[i];
     }
 
-    return t;   
+    return t;
 }
