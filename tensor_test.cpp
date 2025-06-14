@@ -640,7 +640,7 @@ TEST(TensorTest, EmptyTensorOps) {
     EXPECT_NO_THROW(t.sin());
     EXPECT_NO_THROW(t.tanh());
     EXPECT_EQ(t.sin().size(0), 0);
-} 
+}
 
 TEST(TensorTest, AsinBasic) {
     tensor<double> t({3}, {0.0, 0.5, 1.0});
