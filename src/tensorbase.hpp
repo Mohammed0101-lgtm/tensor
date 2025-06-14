@@ -338,7 +338,8 @@ template<class _Tp>
 tensor<_Tp> sum(const tensor<_Tp>& t, const _u64 axis);
 
 template<class _Tp>
-tensor<_Tp> slice(const tensor<_Tp>& t, const _u64 dimension, std::optional<_u64> start, std::optional<_u64> end, const _u64 step);
+tensor<_Tp>
+slice(const tensor<_Tp>& t, const _u64 dimension, std::optional<_u64> start, std::optional<_u64> end, const _u64 step);
 
 template<class _Tp>
 tensor<bool> equal(const tensor<_Tp>& t, const tensor<_Tp>& other);
@@ -482,7 +483,7 @@ class tensor
     index_type      capacity() const noexcept;
     index_type      count_nonzero(index_type dimension = 0) const;
     index_type      lcm() const;
-    tensor<_Tp> lcm(const tensor& other) const;
+    tensor<_Tp>     lcm(const tensor& other) const;
     index_type      hash() const;
     reference       at(shape::Shape idx);
     reference       operator[](const index_type idx);
@@ -1806,9 +1807,9 @@ class tensor<bool>
 
    public:
     tensor() {
-        shape_ = shape::Shape();
+        shape_  = shape::Shape();
         device_ = Device::CPU;
-        data_ = data_t();
+        data_   = data_t();
     }
 
     explicit tensor(const shape::Shape& shape_, value_type v, Device d = Device::CPU) :
@@ -1829,9 +1830,8 @@ class tensor<bool>
 
         if (d.size() != static_cast<std::size_t>(shape_.flatten_size()))
         {
-            throw std::invalid_argument("Initial data vector must match the tensor size : " +
-                                        std::to_string(d.size()) + " != " +
-                                        std::to_string(shape_.flatten_size()));
+            throw std::invalid_argument("Initial data vector must match the tensor size : " + std::to_string(d.size())
+                                        + " != " + std::to_string(shape_.flatten_size()));
         }
 
         data_ = d;
@@ -1864,17 +1864,17 @@ class tensor<bool>
         shape_(shape_),
         device_(other.device()) {}
 
-    data_t         storage() const noexcept { return data_; }
-    
-    shape::Shape   shape() const noexcept { return shape_; }
-    
+    data_t storage() const noexcept { return data_; }
+
+    shape::Shape shape() const noexcept { return shape_; }
+
     shape::Strides strides() const noexcept { return shape_.strides_; }
-    
-    Device         device() const noexcept { return device_; }
+
+    Device device() const noexcept { return device_; }
 
     bool operator==(const tensor& other) const { return shape_.equal(other.shape()) && data_ == other.storage(); }
 
-    bool          operator!=(const tensor& other) const { return !(*this == other); }
+    bool operator!=(const tensor& other) const { return !(*this == other); }
 
     inline tensor<bool>& operator=(const tensor<bool>& other) {
         shape_ = other.shape();
@@ -2017,7 +2017,7 @@ class tensor<bool>
         {
             return self({0});
         }
-        
+
         self t = clone();
         t.logical_xor_(other);
         return t;
