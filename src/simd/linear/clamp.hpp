@@ -1,7 +1,7 @@
 #pragma once
 
-#include "tensorbase.hpp"
 #include "../alias.hpp"
+#include "tensorbase.hpp"
 
 template<class _Tp>
 tensor<_Tp>& internal::neon::clamp_(tensor<_Tp>& t, const _Tp& min_val, const _Tp& max_val) {
