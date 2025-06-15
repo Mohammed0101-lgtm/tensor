@@ -316,8 +316,8 @@ tensor<_Tp>& internal::neon::fill_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     const _u64        s     = t.shape().flatten_size();
     data_.resize(s);
     t.compute_strides();
-    const _u64     simd_end = s - (s % t.simd_width);
-    _u64           i        = 0;
+    const _u64 simd_end = s - (s % t.simd_width);
+    _u64       i        = 0;
 
     for (; i < simd_end; i += t.simd_width)
     {
