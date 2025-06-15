@@ -5,7 +5,9 @@
 template<class _Tp>
 tensor<_Tp>& internal::neon::fmod_(tensor<_Tp>& t, const _Tp value) {
     if constexpr (!std::is_floating_point_v<_Tp>)
+    {
         throw error::type_error("Type must be floating point");
+    }
 
     std::vector<_Tp>& data_ = t.storage_();
     _u64              i     = 0;
@@ -28,7 +30,9 @@ tensor<_Tp>& internal::neon::fmod_(tensor<_Tp>& t, const _Tp value) {
     }
 
     for (; i < data_.size(); ++i)
+    {
         data_[i] = static_cast<_Tp>(std::fmod(static_cast<_f32>(data_[i]), static_cast<_f32>(value)));
+    }
 
     return t;
 }
@@ -36,7 +40,9 @@ tensor<_Tp>& internal::neon::fmod_(tensor<_Tp>& t, const _Tp value) {
 template<class _Tp>
 tensor<_Tp>& internal::neon::fmod_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     if (!t.shape().equal(other.shape()))
+    {
         throw error::shape_error("Cannot divide two tensors of different shapes : fmax");
+    }
 
     std::vector<_Tp>& data_ = t.storage_();
     _u64              i     = 0;
@@ -59,7 +65,9 @@ tensor<_Tp>& internal::neon::fmod_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     }
 
     for (; i < data_.size(); ++i)
+    {
         data_[i] = static_cast<_Tp>(std::fmod(static_cast<_f32>(data_[i]), static_cast<_f32>(other[i])));
+    }
 
     return t;
 }
