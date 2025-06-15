@@ -1,8 +1,8 @@
 #pragma once
 
-#include "tensorbase.hpp"
 #include "../alias.hpp"
 #include "clamp.hpp"
+#include "tensorbase.hpp"
 
 
 template<class _Tp>
