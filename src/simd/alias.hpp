@@ -807,50 +807,82 @@ T neon_get_lane(neon_type<T>& a, T& b) {
 }
 
 template<typename T>
-neon_type<T> neon_shl(neon_type<T>& a, neon_type<T>& b) {
-    if constexpr (std::is_same_v<T, _f16>)
+neon_type<T> neon_shr(neon_type<T> a, const int& b) {
+    if constexpr (std::is_same_v<T, _s8>)
     {
-        return vshlq_f16(a, b);
-    }
-    else if constexpr (std::is_same_v<T, _f32>)
-    {
-        return vshlq_f32(a, b);
-    }
-    else if constexpr (std::is_same_v<T, _f64>)
-    {
-        return vshlq_f64(a, b);
-    }
-    else if constexpr (std::is_same_v<T, _s8>)
-    {
-        return vshlq_s8(a, b);
+        return vshlq_s8(a, vdupq_n_s8(-b));
     }
     else if constexpr (std::is_same_v<T, _s16>)
     {
-        return vshlq_s16(a, b);
+        return vshlq_s16(a, vdupq_n_s16(-b));
     }
     else if constexpr (std::is_same_v<T, _s32>)
     {
-        return vshlq_s32(a, b);
+        return vshlq_s32(a, vdupq_n_s32(-b));
     }
     else if constexpr (std::is_same_v<T, _s64>)
     {
-        return vshlq_s64(a, b);
+        return vshlq_s64(a, vdupq_n_s64(-b));
     }
     else if constexpr (std::is_same_v<T, _u8>)
     {
-        return vshlq_u8(a, b);
+        return vshlq_u8(a, vdupq_n_s8(-b));
     }
     else if constexpr (std::is_same_v<T, _u16>)
     {
-        return vshlq_u16(a, b);
+        return vshlq_u16(a, vdupq_n_s16(-b));
     }
     else if constexpr (std::is_same_v<T, _u32>)
     {
-        return vshlq_u32(a, b);
+        return vshlq_u32(a, vdupq_n_s32(-b));
     }
     else if constexpr (std::is_same_v<T, _u64>)
     {
-        return vshlq_u64(a, b);
+        return vshlq_u64(a, vdupq_n_s64(-b));
+    }
+    else
+    {
+        static_assert(std::is_same_v<T, void>, "Unsupported type for neon_shr()");
+    }
+}
+
+template<typename T>
+neon_type<T> neon_shl(const neon_type<T>& a, const int& b) {
+    if constexpr (std::is_same_v<T, _s8>)
+    {
+        return vshlq_s8(a, vdupq_n_s8(b));
+    }
+    else if constexpr (std::is_same_v<T, _s16>)
+    {
+        return vshlq_s16(a, vdupq_n_s16(b));
+    }
+    else if constexpr (std::is_same_v<T, _s32>)
+    {
+        return vshlq_s32(a, vdupq_n_s32(b));
+    }
+    else if constexpr (std::is_same_v<T, _s64>)
+    {
+        return vshlq_s64(a, vdupq_n_s64(b));
+    }
+    else if constexpr (std::is_same_v<T, _u8>)
+    {
+        return vshlq_u8(a, vdupq_n_s8(b));  // use signed shift vector
+    }
+    else if constexpr (std::is_same_v<T, _u16>)
+    {
+        return vshlq_u16(a, vdupq_n_s16(b));
+    }
+    else if constexpr (std::is_same_v<T, _u32>)
+    {
+        return vshlq_u32(a, vdupq_n_s32(b));
+    }
+    else if constexpr (std::is_same_v<T, _u64>)
+    {
+        return vshlq_u64(a, vdupq_n_s64(b));
+    }
+    else
+    {
+        static_assert(std::is_same_v<T, void>, "Unsupported type for neon_shl()");
     }
 }
 
@@ -1235,5 +1267,79 @@ neon_type<T> neon_cleq(neon_type<T>& a, neon_type<T>& b) {
     else if constexpr (std::is_same_v<T, _u64>)
     {
         return vcleq_u64(a, b);
+    }
+}
+
+template<typename T>
+neon_type<T> neon_div(neon_type<T>& a, neon_type<T>& b) {
+    if (!std::is_floating_point_v<T>)
+    {
+        throw error::type_error("neon_div is only supported for floating point types.");
+    }
+    else if constexpr (std::is_same_v<T, _f16>)
+    {
+        return vdivq_f16(a, b);
+    }
+    else if constexpr (std::is_same_v<T, _f32>)
+    {
+        return vdivq_f32(a, b);
+    }
+    else if constexpr (std::is_same_v<T, _f64>)
+    {
+        return vdivq_f64(a, b);
+    }
+}
+
+template<typename T>
+neon_type<_u32> neon_cgeq(neon_type<T>& a, neon_type<T>& b) {
+    if constexpr (std::is_same_v<T, _f16>)
+    {
+        return vcgeq_f16(a, b);
+    }
+    else if constexpr (std::is_same_v<T, _f32>)
+    {
+        return vcgeq_f32(a, b);
+    }
+    else if constexpr (std::is_same_v<T, _f64>)
+    {
+        return vcgeq_f64(a, b);
+    }
+    else if constexpr (std::is_same_v<T, _s8>)
+    {
+        return vcgeq_s8(a, b);
+    }
+    else if constexpr (std::is_same_v<T, _s16>)
+    {
+        return vcgeq_s16(a, b);
+    }
+    else if constexpr (std::is_same_v<T, _s32>)
+    {
+        return vcgeq_s32(a, b);
+    }
+    else if constexpr (std::is_same_v<T, _s64>)
+    {
+        return vcgeq_s64(a, b);
+    }
+    else if constexpr (std::is_same_v<T, _u8>)
+    {
+        return vcgeq_u8(a, b);
+    }
+    else if constexpr (std::is_same_v<T, _u16>)
+    {
+        return vcgeq_u16(a, b);
+    }
+    else if constexpr (std::is_same_v<T, _u32>)
+    {
+        return vcgeq_u32(a, b);
+    }
+    else if constexpr (std::is_same_v<T, _u64>)
+    {
+        return vcgeq_u64(a, b);
+    }
+    else
+    {
+        throw error::type_error("neon_cgeq is not supported for this type.");
+        // Consider this related information:
+        // The neon_cgeq function is designed to compare two NEON vectors and return a vector of unsigned integers indicating whether each element in the first vector is greater than or equal to the corresponding element in the second vector.
     }
 }
