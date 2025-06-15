@@ -5,7 +5,9 @@
 template<class _Tp>
 tensor<_Tp>& internal::neon::sin_(tensor<_Tp>& t) {
     if (!std::is_arithmetic_v<_Tp>)
+    {
         throw error::type_error("Type must be arithmetic");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -15,17 +17,21 @@ tensor<_Tp>& internal::neon::sin_(tensor<_Tp>& t) {
     {
         neon_type<_Tp>  data_vec = neon_load<_Tp>(&data_[i]);
         alignas(16) _Tp vals[t.simd_width];
-        neon_load<_Tp>(vals, data_vec);
+        neon_store<_Tp>(vals, data_vec);
 
         for (int j = 0; j < t.simd_width; ++j)
+        {
             vals[j] = static_cast<_Tp>(std::sin(vals[j]));
+        }
 
         neon_type<_Tp> sin_vec = neon_load<_Tp>(vals);
         neon_store(&data_[i], sin_vec);
     }
 
     for (; i < data_.size(); ++i)
+    {
         data_[i] = static_cast<_Tp>(std::sin(data_[i]));
+    }
 
     return t;
 }
@@ -38,7 +44,9 @@ inline neon_f32 vsinq_f32(neon_f32 x) {
 template<class _Tp>
 tensor<_Tp>& internal::neon::sinc_(tensor<_Tp>& t) {
     if (!std::is_arithmetic_v<_Tp>)
+    {
         throw error::type_error("Type must be arithmetic");
+    }
 
     std::vector<_Tp>& data_ = t.storage_();
     _u64              i     = 0;
@@ -60,16 +68,20 @@ tensor<_Tp>& internal::neon::sinc_(tensor<_Tp>& t) {
     }
 
     for (; i < data_.size(); ++i)
+    {
         data_[i] = (std::abs(data_[i]) < 1e-6) ? static_cast<_Tp>(1.0)
-                                               : static_cast<_Tp>(std::sin(M_PI * data_[i]) / (M_PI * data_[i]));
 
+                                               : static_cast<_Tp>(std::sin(M_PI * data_[i]) / (M_PI * data_[i]));
+    }
     return t;
 }
 
 template<class _Tp>
 tensor<_Tp>& internal::neon::sinh_(tensor<_Tp>& t) {
     if (!std::is_arithmetic_v<_Tp>)
+    {
         throw error::type_error("Type must be arithmetic");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -79,17 +91,21 @@ tensor<_Tp>& internal::neon::sinh_(tensor<_Tp>& t) {
     {
         neon_type<_Tp>  data_vec = neon_load<_Tp>(&data_[i]);
         alignas(16) _Tp vals[t.simd_width];
-        neon_load<_Tp>(vals, data_vec);
+        neon_store<_Tp>(vals, data_vec);
 
         for (int j = 0; j < t.simd_width; ++j)
+        {
             vals[j] = static_cast<_Tp>(std::sinh(vals[j]));
+        }
 
         neon_type<_Tp> sinh_vec = neon_load<_Tp>(vals);
         neon_store(&data_[i], sinh_vec);
     }
 
     for (; i < data_.size(); ++i)
+    {
         data_[i] = static_cast<_Tp>(std::sinh(data_[i]));
+    }
 
     return t;
 }
@@ -97,7 +113,9 @@ tensor<_Tp>& internal::neon::sinh_(tensor<_Tp>& t) {
 template<class _Tp>
 tensor<_Tp>& internal::neon::asinh_(tensor<_Tp>& t) {
     if (!std::is_arithmetic_v<_Tp>)
+    {
         throw error::type_error("Type must be arithmetic");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -105,15 +123,12 @@ tensor<_Tp>& internal::neon::asinh_(tensor<_Tp>& t) {
 
     for (; i < simd_end; i += t.simd_width)
     {
-        neon_type<_Tp>  data_vec = neon_load<_Tp>(&data_[i]);
-        alignas(16) _Tp vals[t.simd_width];
-        neon_load<_Tp>(vals, data_vec);
+        neon_type<_Tp>           data_vec = neon_load<_Tp>(&data_[i]);
+        alignas(sizeof(_Tp)) _Tp vals[t.simd_width];
+        neon_store<_Tp>(vals, data_vec);
 
         for (int j = 0; j < t.simd_width; ++j)
         {
-            if (vals[j] < -1 || vals[j] > 1)
-                throw std::domain_error("Input value is out of domain dor asinh()");
-
             vals[j] = static_cast<_Tp>(std::asinh(vals[j]));
         }
 
@@ -122,7 +137,9 @@ tensor<_Tp>& internal::neon::asinh_(tensor<_Tp>& t) {
     }
 
     for (; i < data_.size(); ++i)
+    {
         data_[i] = static_cast<_Tp>(std::asinh(data_[i]));
+    }
 
     return t;
 }
@@ -130,7 +147,9 @@ tensor<_Tp>& internal::neon::asinh_(tensor<_Tp>& t) {
 template<class _Tp>
 tensor<_Tp>& internal::neon::asin_(tensor<_Tp>& t) {
     if (!std::is_arithmetic_v<_Tp>)
+    {
         throw error::type_error("Type must be arithmetic");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -140,12 +159,14 @@ tensor<_Tp>& internal::neon::asin_(tensor<_Tp>& t) {
     {
         neon_type<_Tp>  data_vec = neon_load<_Tp>(&data_[i]);
         alignas(16) _Tp vals[t.simd_width];
-        neon_load<_Tp>(vals, data_vec);
+        neon_store<_Tp>(vals, data_vec);
 
         for (int j = 0; j < t.simd_width; ++j)
         {
-            if (vals[j] < static_cast<_Tp>(-1) || vals[j] > static_cast<_Tp>(1))
+            if (vals[j] < static_cast<_Tp>(-1.0) || vals[j] > static_cast<_Tp>(1.0))
+            {
                 throw std::domain_error("Input value is out of domain for asin()");
+            }
 
             vals[j] = static_cast<_Tp>(std::asin(vals[j]));
         }
@@ -155,7 +176,14 @@ tensor<_Tp>& internal::neon::asin_(tensor<_Tp>& t) {
     }
 
     for (; i < data_.size(); ++i)
+    {
+        if (data_[i] < static_cast<_Tp>(-1.0) || data_[i] > static_cast<_Tp>(1.0))
+        {
+            throw std::domain_error("Input value is out of domain for asin()");
+        }
+
         data_[i] = static_cast<_Tp>(std::asin(data_[i]));
+    }
 
     return t;
 }
