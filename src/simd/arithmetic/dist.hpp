@@ -6,10 +6,14 @@
 template<class _Tp>
 tensor<_Tp>& internal::neon::dist_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     if (!std::is_arithmetic_v<_Tp>)
+    {
         throw error::type_error("Type must be arithmetic");
+    }
 
     if (!t.shape().equal(other.shape()))
+    {
         throw error::shape_error("Tensors shapes must be equal");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -30,7 +34,9 @@ tensor<_Tp>& internal::neon::dist_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     }
 
     for (; i < data_.size(); ++i)
+    {
         data_[i] = static_cast<_Tp>(std::abs(static_cast<_f64>(data_[i] - other.data_[i])));
+    }
 
     return t;
 }
@@ -38,7 +44,9 @@ tensor<_Tp>& internal::neon::dist_(tensor<_Tp>& t, const tensor<_Tp>& other) {
 template<class _Tp>
 tensor<_Tp>& internal::neon::dist_(tensor<_Tp>& t, const _Tp value) {
     if (!std::is_arithmetic_v<_Tp>)
+    {
         throw error::type_error("Type must be arithmetic");
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -53,7 +61,9 @@ tensor<_Tp>& internal::neon::dist_(tensor<_Tp>& t, const _Tp value) {
     }
 
     for (; i < data_.size(); ++i)
+    {
         data_[i] = static_cast<_Tp>(std::abs(static_cast<_f64>(data_[i] - value)));
+    }
 
     return t;
 }
