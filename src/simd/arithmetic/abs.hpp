@@ -6,10 +6,14 @@
 template<class _Tp>
 tensor<_Tp>& internal::neon::abs_(tensor<_Tp>& t) {
     if (!std::is_arithmetic_v<_Tp>)
+    {
         throw error::type_error("Type must be arithmetic");
+    }
 
     if (std::is_unsigned_v<_Tp>)
+    {
         return t;
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -23,7 +27,9 @@ tensor<_Tp>& internal::neon::abs_(tensor<_Tp>& t) {
     }
 
     for (; i < data_.size(); ++i)
+    {
         data_[i] = static_cast<_Tp>(std::abs(data_[i]));
+    }
 
     return t;
 }
