@@ -4,11 +4,13 @@
 
 
 template<class _Tp>
-double internal::neon::mean(tensor<_Tp>& t) {
+double internal::neon::mean(const tensor<_Tp>& t) {
     double m = 0.0;
 
     if (t.empty())
+    {
         return m;
+    }
 
     std::vector<_Tp>& data_    = t.storage_();
     const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
@@ -25,10 +27,14 @@ double internal::neon::mean(tensor<_Tp>& t) {
     neon_store<_Tp>(partial_sum, sum_vec);
 
     for (std::size_t j = 0; j < t.simd_width; ++j)
+    {
         m += partial_sum[j];
+    }
 
     for (; i < data_.size(); ++i)
+    {
         m += data_[i];
+    }
 
     return m / static_cast<double>(data_.size());
 }
