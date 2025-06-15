@@ -5,12 +5,12 @@
 
 template<class _Tp>
 typename tensor<_Tp>::reference tensor<_Tp>::operator()(std::initializer_list<index_type> index_list) {
-    return data_[compute_index(shape_type(index_list))];
+    return data_[shape_.compute_index(shape_type(index_list))];
 }
 
 template<class _Tp>
 typename tensor<_Tp>::const_reference tensor<_Tp>::operator()(std::initializer_list<index_type> index_list) const {
-    return data_[compute_index(shape_type(index_list))];
+    return data_[shape_.compute_index(shape_type(index_list))];
 }
 
 template<class _Tp>
@@ -111,7 +111,7 @@ tensor<_Tp> tensor<_Tp>::operator*(const tensor& other) const {
         throw error::operator_error("Value type must have a times operator");
     }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (!shape().equal(other.shape()))
     {
         throw error::shape_error("Tensors shapes must be equal");
     }
@@ -138,7 +138,7 @@ tensor<_Tp>& tensor<_Tp>::operator+=(const tensor& other) const {
         throw error::operator_error("Value type must have a plus equal to operator");
     }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (!shape().equal(other.shape()))
     {
         throw error::shape_error("Tensors shapes must be equal");
     }
@@ -190,7 +190,7 @@ tensor<_Tp> tensor<_Tp>::operator-(const tensor& other) const {
         throw error::operator_error("Value type must have a minus operator");
     }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (!shape().equal(other.shape()))
     {
         throw error::shape_error("Tensors shapes must be equal");
     }
@@ -239,7 +239,7 @@ tensor<_Tp>& tensor<_Tp>::operator-=(const tensor& other) const {
         throw error::operator_error("Value type must have a minus operator");
     }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (!shape().equal(other.shape()))
     {
         throw error::shape_error("Tensors shapes must be equal");
     }
@@ -266,7 +266,7 @@ tensor<_Tp>& tensor<_Tp>::operator*=(const tensor& other) const {
         throw error::operator_error("Value type must have a times operator");
     }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (!shape().equal(other.shape()))
     {
         throw error::shape_error("Tensors shapes must be equal");
     }
@@ -283,9 +283,9 @@ tensor<_Tp>& tensor<_Tp>::operator*=(const tensor& other) const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator/(const_reference value) const {
-    if (internal::types::using_neon())
+    if (internal::types::using_neon() && std::is_floating_point_v<value_type>)
     {
-        return internal::neon::operator_divide(value);
+        return internal::neon::operator_divide(*this, value);
     }
 
     if constexpr (!internal::types::has_divide_operator_v<value_type>)
@@ -333,13 +333,13 @@ template<class _Tp>
 inline tensor<_Tp>& tensor<_Tp>::operator=(const tensor& other) const {
     shape_ = other.shape();
     data_  = other.storage();
-    compute_strides();
+    shape_.compute_strides();
     return *this;
 }
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator/=(const tensor& other) const {
-    if (internal::types::using_neon())
+    if (internal::types::using_neon() && std::is_floating_point_v<value_type>)
     {
         return internal::neon::operator_divide_eq(other);
     }
@@ -349,7 +349,7 @@ tensor<_Tp>& tensor<_Tp>::operator/=(const tensor& other) const {
         throw error::operator_error("Value type must have a divide operator");
     }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (!shape().equal(other.shape()))
     {
         throw error::shape_error("Tensors shapes must be equal");
     }
@@ -371,7 +371,7 @@ tensor<_Tp>& tensor<_Tp>::operator/=(const tensor& other) const {
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator/=(const_reference value) const {
-    if (internal::types::using_neon())
+    if (internal::types::using_neon() && std::is_floating_point_v<value_type>)
     {
         return internal::neon::operator_divide_eq(value);
     }
@@ -396,9 +396,9 @@ tensor<_Tp>& tensor<_Tp>::operator/=(const_reference value) const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator/(const tensor& other) const {
-    if (internal::types::using_neon())
+    if (internal::types::using_neon() && std::is_floating_point_v<value_type>)
     {
-        return internal::neon::operator_divide(other);
+        return internal::neon::operator_divide(*this, other);
     }
 
     if constexpr (!internal::types::has_divide_operator_v<value_type>)
@@ -406,7 +406,7 @@ tensor<_Tp> tensor<_Tp>::operator/(const tensor& other) const {
         throw error::operator_error("Value type must have a divide operator");
     }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (!shape().equal(other.shape()))
     {
         throw error::shape_error("Tensors shapes must be equal");
     }
