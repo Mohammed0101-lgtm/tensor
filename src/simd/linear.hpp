@@ -4,7 +4,6 @@
 #include "types.hpp"
 
 
-
 template<class _Tp>
 tensor<_Tp> internal::neon::absolute(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     if (!std::is_arithmetic_v<_Tp>)
