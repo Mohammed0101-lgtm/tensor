@@ -2,6 +2,7 @@
 
 #include "tensorbase.hpp"
 
+
 template<class _Tp>
 tensor<_Tp> internal::neon::transpose(const tensor<_Tp>& t) {
     if (!t.shape().equal(shape::Shape({t.shape()[0], t.shape()[1]})))
