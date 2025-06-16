@@ -25,6 +25,11 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type value) {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::logical_and(const tensor& other) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.logical_and_(other);
     return ret;
@@ -32,6 +37,11 @@ tensor<_Tp> tensor<_Tp>::logical_and(const tensor& other) const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::logical_and(const value_type value) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.logical_and_(value);
     return ret;
@@ -49,7 +59,7 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const tensor& other) {
         throw error::type_error("Cannot get the element-wise and of non-integral and non-boolean value");
     }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (!shape().equal(other.shape()))
     {
         throw error::shape_error("Tensors shapes must be equal");
     }
