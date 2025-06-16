@@ -33,6 +33,11 @@ tensor<_Tp>& tensor<_Tp>::unsqueeze_(index_type dimension) {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::squeeze(index_type dimension) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.squeeze_(dimension);
     return ret;
