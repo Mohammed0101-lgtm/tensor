@@ -19,6 +19,11 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type value) {
 
 template<class _Tp>
 tensor<bool> tensor<_Tp>::logical_or(const value_type value) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     tensor<bool> ret = clone().bool_();
     ret.logical_or_(value);
     return ret;
@@ -26,6 +31,11 @@ tensor<bool> tensor<_Tp>::logical_or(const value_type value) const {
 
 template<class _Tp>
 tensor<bool> tensor<_Tp>::logical_or(const tensor& other) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     tensor<bool> ret = clone().bool_();
     ret.logical_or_(other);
     return ret;
@@ -38,7 +48,7 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& other) {
         throw error::type_error("Cannot get the element wise not of non-integral and non-boolean value");
     }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (!shape().equal(other.shape()))
     {
         throw error::shape_error("Tensors shapes must be equal");
     }
