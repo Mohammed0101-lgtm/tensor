@@ -16,7 +16,7 @@ template<class _Tp>
 inline tensor<_Tp>& tensor<_Tp>::clipped_relu_(const value_type clip_limit) {
     if (internal::types::using_neon())
     {
-        return internal::neon::clipped_relu_(clip_limit);
+        return internal::neon::clipped_relu_(*this, clip_limit);
     }
 
     if (!std::is_arithmetic_v<value_type>)
@@ -32,6 +32,11 @@ inline tensor<_Tp>& tensor<_Tp>::clipped_relu_(const value_type clip_limit) {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::clipped_relu(const value_type clip_limit) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.clipped_relu_(clip_limit);
     return ret;
