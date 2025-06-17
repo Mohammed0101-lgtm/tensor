@@ -6,14 +6,14 @@ template<class _Tp>
 tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type dimension) const {
     if (dimension < 0 || dimension >= shape_.size())
     {
-        throw index_error("Dimension out of range in argmax");
+        throw error::index_error("Dimension out of range in argmax");
     }
 
     tensor<index_type> ret;
-    shape_type         ret_sh = shape_;
-    ret_sh.erase(ret_sh.begin() + dimension);
+    shape::Shape       ret_sh = shape_;
+    ret_sh.value_.erase(ret_sh.value_.begin() + dimension);
     ret.shape_ = ret_sh;
-    ret.data_.resize(computeSize(ret_sh), 0);
+    ret.data_.resize(ret_sh.flatten_size(), 0);
 
     index_type outer_size = 1;
     index_type inner_size = 1;
@@ -32,6 +32,7 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type dimensi
     for (i = 0; i < outer_size; ++i)
     {
         index_type j = 0;
+
         for (; j < inner_size; ++j)
         {
             index_type max_index = 0;
@@ -48,6 +49,7 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type dimensi
                     max_index = k;
                 }
             }
+
             ret.data_[i * inner_size + j] = max_index;
         }
     }
@@ -59,15 +61,15 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::argmax(index_type dimension) const {
     if (dimension < 0 || dimension >= shape_.size())
     {
-        throw index_error("Dimension out of range in argmax");
+        throw error::index_error("Dimension out of range in argmax");
     }
 
-    tensor     ret;
-    shape_type ret_sh = shape_;
+    tensor       ret;
+    shape::Shape ret_sh = shape_;
 
-    ret_sh.erase(ret_sh.begin() + dimension);
+    ret_sh.value_.erase(ret_sh.value_.begin() + dimension);
     ret.shape_ = ret_sh;
-    ret.data_.resize(computeSize(ret_sh), value_type(0));
+    ret.data_.resize(ret_sh.flatten_size(), value_type(0));
 
     index_type outer_size = 1;
     index_type inner_size = 1;
@@ -86,10 +88,12 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type dimension) const {
     for (i = 0; i < outer_size; ++i)
     {
         index_type j = 0;
+
         for (; j < inner_size; ++j)
         {
             value_type max_value = data_[i * shape_[dimension] * inner_size + j];
             index_type k         = 1;
+
             for (; k < shape_[dimension]; ++k)
             {
                 value_type v = data_[(i * shape_[dimension] + k) * inner_size + j];
@@ -99,6 +103,7 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type dimension) const {
                     max_value = v;
                 }
             }
+
             ret.data_[i * inner_size + j] = max_value;
         }
     }
@@ -112,7 +117,7 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argsort(index_type d, bool
 
     if (adjusted != 0)
     {
-        throw index_error("Invalid dimension for argsort: only 1D tensors are supported");
+        throw error::index_error("Invalid dimension for argsort: only 1D tensors are supported");
     }
 
     index_type size = static_cast<index_type>(data_.size());
