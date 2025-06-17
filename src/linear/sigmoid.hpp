@@ -4,6 +4,11 @@
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::sigmoid() const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.sigmoid_();
     return ret;
