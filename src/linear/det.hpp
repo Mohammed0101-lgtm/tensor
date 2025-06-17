@@ -6,10 +6,11 @@ template<class _Tp>
 tensor<_Tp> tensor<_Tp>::det() const {
     if (shape_.size() < 2)
     {
-        throw shape_error("det: tensor must be at least 2D");
+        throw error::shape_error("det: tensor must be at least 2D");
     }
 
     index_type h, w;
+
     if (shape_.size() == 2)
     {
         h = shape_[0];
@@ -39,7 +40,7 @@ tensor<_Tp> tensor<_Tp>::det() const {
 
     if (h != w)
     {
-        throw shape_error("det: tensor must be a square matrix (n x n)");
+        throw error::shape_error("det: tensor must be a square matrix (n x n)");
     }
 
     index_type n = h;
