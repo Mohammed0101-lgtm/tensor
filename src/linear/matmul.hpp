@@ -4,12 +4,14 @@
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::matmul(const tensor& other) const {
-    static_assert(has_times_operator_v<value_type>, "Error: value_type must support multiplication (*) for matmul");
-    static_assert(has_plus_operator_v<value_type>, "Error: value_type must support addition (+) for matmul");
+    static_assert(internal::types::has_times_operator_v<value_type>,
+                  "Error: value_type must support multiplication (*) for matmul");
+    static_assert(internal::types::has_plus_operator_v<value_type>,
+                  "Error: value_type must support addition (+) for matmul");
 
     if (n_dims() < 2 || other.n_dims() < 2)
     {
-        throw shape_error("matmul is only supported for tensors with at least 2 dimensions");
+        throw error::shape_error("matmul is only supported for tensors with at least 2 dimensions");
     }
 
     // Helper lambda to extract effective matrix dimensions
@@ -29,6 +31,7 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& other) const {
         {
             return {shape[second_last - 1], shape[second_last]};
         }
+
         if (shape[second_last] == 1)
         {
             return {shape[last - 1], shape[last]};
@@ -43,12 +46,12 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& other) const {
 
     if (w != h1)
     {
-        throw shape_error("Shape mismatch in matmul: "
-                          "lhs = ["
-                          + std::to_string(h) + ", " + std::to_string(w)
-                          + "], "
-                            "rhs = ["
-                          + std::to_string(h1) + ", " + std::to_string(w1) + "]");
+        throw error::shape_error("Shape mismatch in matmul: "
+                                 "lhs = ["
+                                 + std::to_string(h) + ", " + std::to_string(w)
+                                 + "], "
+                                   "rhs = ["
+                                 + std::to_string(h1) + ", " + std::to_string(w1) + "]");
     }
 
     shape_type result_shape = {h, w1};
@@ -59,10 +62,12 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& other) const {
         for (int64_t j = 0; j < w1; ++j)
         {
             value_type sum = value_type(0);
+
             for (int64_t k = 0; k < w; ++k)
             {
                 sum += data_[i * w + k] * other.data_[k * w1 + j];
             }
+
             result_data[i * w1 + j] = sum;
         }
     }
@@ -79,6 +84,7 @@ global void matmul_kernel(_Tp* a, _Tp* b, _Tp* c, int m, int n, int k) {
     if (row < m && col < k)
     {
         _Tp sum = 0;
+
         for (int i = 0; i < n; ++i)
         {
             sum += a[row * n + i] * b[i * k + col];
