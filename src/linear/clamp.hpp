@@ -16,20 +16,12 @@ tensor<_Tp>& tensor<_Tp>::clamp_(const_reference min_val, const_reference max_va
 }
 
 template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::clamp_(const_reference min_val, const_reference max_val) const {
-    index_type i = 0;
-
-    for (auto& elem : data_)
+tensor<_Tp> tensor<_Tp>::clamp(const_reference min_val, const_reference max_val) const {
+    if (empty())
     {
-        elem = std::max(min_val, elem);
-        elem = std::min(max_val, elem);
+        return self({0});
     }
 
-    return *this;
-}
-
-template<class _Tp>
-tensor<_Tp> tensor<_Tp>::clamp(const_reference min_val, const_reference max_val) const {
     self ret = clone();
     ret.clamp_(min_val, max_val);
     return ret;
@@ -37,6 +29,11 @@ tensor<_Tp> tensor<_Tp>::clamp(const_reference min_val, const_reference max_val)
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::floor() const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.floor_();
     return ret;
@@ -46,25 +43,10 @@ template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::floor_() {
     if (!std::is_floating_point_v<value_type>)
     {
-        throw type_error("Type must be floating point");
+        throw error::type_error("Type must be floating point");
     }
 
     index_type i = 0;
-
-    for (auto& elem : data_)
-    {
-        elem = std::floor(elem);
-    }
-
-    return *this;
-}
-
-template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::floor_() const {
-    if (!std::is_floating_point_v<value_type>)
-    {
-        throw type_error("Type must be floating point");
-    }
 
     for (auto& elem : data_)
     {
@@ -78,7 +60,7 @@ template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::ceil_() {
     if (!std::is_floating_point_v<value_type>)
     {
-        throw type_error("Type must be floating point");
+        throw error::type_error("Type must be floating point");
     }
 
     for (auto& elem : data_)
@@ -89,23 +71,14 @@ tensor<_Tp>& tensor<_Tp>::ceil_() {
     return *this;
 }
 
-template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::ceil_() const {
-    if (!std::is_floating_point_v<value_type>)
-    {
-        throw type_error("Type must be floating point");
-    }
-
-    for (auto& elem : data_)
-    {
-        elem = std::ceil(elem);
-    }
-
-    return *this;
-}
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::ceil() const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.ceil_();
     return ret;
@@ -122,21 +95,11 @@ inline tensor<_Tp>& tensor<_Tp>::clamp_min_(const_reference min_val) {
 }
 
 template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::clamp_min_(const_reference min_val) const {
-    return clamp_(min_val);
-}
-//
-template<class _Tp>
 tensor<_Tp> tensor<_Tp>::clamp_max(const_reference max_val) const {
     return clamp(std::numeric_limits<value_type>::lowest(), max_val);
 }
 
 template<class _Tp>
 inline tensor<_Tp>& tensor<_Tp>::clamp_max_(const_reference max_val) {
-    return clamp_(std::numeric_limits<value_type>::lowest(), max_val);
-}
-
-template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::clamp_max_(const_reference max_val) const {
     return clamp_(std::numeric_limits<value_type>::lowest(), max_val);
 }
