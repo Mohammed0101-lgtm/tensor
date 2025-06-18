@@ -13,13 +13,8 @@ inline typename tensor<_Tp>::data_t& tensor<_Tp>::storage_() const {
 }
 
 template<class _Tp>
-inline typename tensor<_Tp>::shape_type tensor<_Tp>::shape() const noexcept {
+inline shape::Shape tensor<_Tp>::shape() const noexcept {
     return shape_;
-}
-
-template<class _Tp>
-inline typename tensor<_Tp>::shape_type tensor<_Tp>::strides() const noexcept {
-    return strides_;
 }
 
 template<class _Tp>
