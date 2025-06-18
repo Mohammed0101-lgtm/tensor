@@ -2,6 +2,7 @@
 
 #include "tensorbase.hpp"
 
+
 template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::reshape_as(const tensor& other) const {
     return reshape(other.shape());
@@ -10,44 +11,59 @@ inline tensor<_Tp> tensor<_Tp>::reshape_as(const tensor& other) const {
 template<class _Tp>
 inline typename tensor<_Tp>::index_type tensor<_Tp>::size(const index_type dimension) const {
     if (dimension < 0 || dimension > static_cast<index_type>(shape_.size()))
-        throw index_error("dimension input is out of range");
+    {
+        throw error::index_error("dimension input is out of range");
+    }
 
     if (!dimension)
+    {
         return data_.size();
+    }
 
     return shape()[dimension - 1];
 }
 
 template<class _Tp>
-inline typename tensor<_Tp>::reference tensor<_Tp>::at(tensor<_Tp>::shape_type idx) {
+inline typename tensor<_Tp>::reference tensor<_Tp>::at(shape::Shape idx) {
     if (idx.empty())
+    {
         throw std::invalid_argument("Passing an empty vector as indices for a tensor");
+    }
 
-    index_type i = compute_index(idx);
+    index_type i = shape().compute_index(idx.get());
+
     if (i < 0 || i >= data_.size())
-        throw index_error("input indices are out of bounds");
+    {
+        throw error::index_error("input indices are out of bounds");
+    }
 
     return data_[i];
 }
 
 template<class _Tp>
-inline typename tensor<_Tp>::const_reference tensor<_Tp>::at(const tensor<_Tp>::shape_type idx) const {
+inline typename tensor<_Tp>::const_reference tensor<_Tp>::at(const shape::Shape idx) const {
     if (idx.empty())
+    {
         throw std::invalid_argument("Passing an empty vector as indices for a tensor");
+    }
 
-    index_type i = compute_index(idx);
+    index_type i = idx.compute_index(idx.get());
 
     if (i < 0 || i >= data_.size())
-        throw index_error("input indices are out of bounds");
+    {
+        throw error::index_error("input indices are out of bounds");
+    }
 
     return data_[i];
 }
 
 template<class _Tp>
 typename tensor<_Tp>::index_type tensor<_Tp>::count_nonzero(index_type dimension) const {
-#if defined(__ARM_NEON)
-    return neon_count_nonzero(dimension);
-#endif
+    if (internal::types::using_neon())
+    {
+        return internal::neon::count_nonzero(*this, dimension);
+    }
+
     index_type c           = 0;
     index_type local_count = 0;
     index_type i           = 0;
@@ -55,15 +71,22 @@ typename tensor<_Tp>::index_type tensor<_Tp>::count_nonzero(index_type dimension
     if (dimension == 0)
     {
         for (const auto& elem : data_)
+        {
             if (elem)
+            {
                 ++local_count;
+            }
+        }
 
         c += local_count;
     }
     else
     {
         if (dimension < 0 || dimension >= static_cast<index_type>(shape_.size()))
-            throw index_error("Invalid dimension provided.");
+        {
+            throw error::index_error("Invalid dimension provided.");
+        }
+
         throw std::runtime_error("Dimension-specific non-zero counting is not implemented yet.");
     }
 
@@ -73,97 +96,96 @@ typename tensor<_Tp>::index_type tensor<_Tp>::count_nonzero(index_type dimension
 template<class _Tp>
 inline tensor<_Tp>& tensor<_Tp>::push_back(value_type v) const {
     if (shape_.size() != 1)
+    {
         throw std::range_error("push_back is only supported for one dimensional tensors");
+    }
 
     data_.push_back(v);
     ++shape_[0];
-    compute_strides();
+    shape_.compute_strides();
     return *this;
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::zeros(const shape_type& shape_) {
+inline tensor<_Tp> tensor<_Tp>::zeros(const shape::Shape& shape_) {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.zeros_(shape_);
     return ret;
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::zeros_(shape_type shape_) {
-#if defined(__ARM_NEON)
-    return neon_zeros_(shape_);
-#endif
-    if (shape_.empty())
-        shape_ = shape();
-    else
-        shape_ = shape_;
+tensor<_Tp>& tensor<_Tp>::zeros_(shape::Shape sh) {
+    if (empty())
+    {
+        return *this;
+    }
 
-    std::size_t s = computeSize(shape());
+    if (internal::types::using_neon())
+    {
+        return internal::neon::zeros_(*this, sh);
+    }
+
+    if (!sh.empty())
+    {
+        shape_ = sh;
+    }
+
+    std::size_t s = shape_.flatten_size();
     data_.resize(s);
-    compute_strides();
+    shape_.compute_strides();
 
     for (auto& elem : data_)
+    {
         elem = value_type(0.0);
+    }
 
     return *this;
 }
 
 template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::zeros_(shape_type shape_) const {
-#if defined(__ARM_NEON)
-    return neon_zeros_(shape_);
-#endif
-    if (shape_.empty())
-        shape_ = shape();
-    else
-        shape_ = shape_;
+tensor<_Tp>& tensor<_Tp>::ones_(shape::Shape sh) {
+    if (empty())
+    {
+        return self({0});
+    }
 
-    std::size_t s = computeSize(shape());
-    data_.resize(s);
-    compute_strides();
+    if (internal::types::using_neon())
+    {
+        return internal::neon::ones_(*this, sh);
+    }
+
+    if (sh.empty())
+    {
+        sh = shape();
+    }
+    else
+    {
+        shape_ = sh;
+    }
+
+    data_.resize(shape().flatten_size());
+    shape_.compute_strides();
 
     for (auto& elem : data_)
-        elem = value_type(0.0);
-
-    return *this;
-}
-
-template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::ones_(shape_type shape_) {
-    if (shape_.empty())
-        shape_ = shape();
-    else
-        shape_ = shape_;
-
-    std::size_t s = computeSize(shape());
-    data_.resize(s);
-    compute_strides();
-
-    for (auto& elem : data_)
+    {
         elem = value_type(1.0);
+    }
 
     return *this;
 }
 
 template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::ones_(shape_type shape_) const {
-    if (shape_.empty())
-        shape_ = shape();
-    else
-        shape_ = shape_;
+inline tensor<_Tp> tensor<_Tp>::ones(const shape::Shape& shape_) {
+    if (empty())
+    {
+        return self({0});
+    }
 
-    std::size_t s = computeSize(shape());
-    data_.resize(s);
-    compute_strides();
-
-    for (auto& elem : data_)
-        elem = value_type(1.0);
-
-    return *this;
-}
-
-template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::ones(const shape_type& shape_) {
     self ret = clone();
     ret.ones_(shape_);
     return ret;
@@ -175,64 +197,93 @@ inline typename tensor<_Tp>::index_type tensor<_Tp>::hash() const {
     std::hash<value_type> hasher;
 
     for (const auto& elem : data_)
+    {
         hash_val ^= hasher(elem) + 0x9e3779b9 + (hash_val << 6) + (hash_val >> 2);
+    }
 
     return hash_val;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::row(const index_type index) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     if (shape_.size() != 2)
-        throw shape_error("Cannot get a row from a non two-dimensional tensor");
+    {
+        throw error::shape_error("Cannot get a row from a non two-dimensional tensor");
+    }
 
     if (index < 0 || index >= shape_[0])
-        throw index_error("Index is out of range");
+    {
+        throw error::index_error("Index is out of range");
+    }
 
     data_t row_data;
     row_data.reserve(shape_[1]);
-
     const index_type offset = index * shape_[1];
+
     for (index_type j = 0; j < shape_[1]; ++j)
+    {
         row_data.push_back(data_[offset + j]);
+    }
 
     return tensor<_Tp>({shape_[1]}, row_data);
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::col(const index_type index) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     if (shape_.size() != 2)
-        throw shape_error("Cannot get a column from a non two-dimensional tensor");
+    {
+        throw error::shape_error("Cannot get a column from a non two-dimensional tensor");
+    }
 
     if (index < 0 || index >= shape_[1])
-        throw index_error("Index is out of range");
+    {
+        throw error::index_error("Index is out of range");
+    }
 
     data_t col_data;
     col_data.reserve(shape_[0]);
 
     for (index_type i = 0; i < shape_[0]; ++i)
-        col_data.push_back(data_[compute_index({i, index})]);
+    {
+        col_data.push_back(data_[shape_.compute_index({i, index})]);
+    }
 
     return tensor<_Tp>({shape_[0]}, col_data);
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::view(std::initializer_list<index_type> shape_) {
-    index_type s = computeSize(shape_);
+tensor<_Tp>& tensor<_Tp>::view(std::initializer_list<index_type> sh) {
+    shape::Shape sh_(sh);
+    index_type   s = sh_.flatten_size();
 
     if (s != data_.size())
+    {
         throw std::invalid_argument("Total elements do not match for new shape");
+    }
 
-    shape_ = shape_;
-    compute_strides();
+    shape_ = sh_;
+    shape_.compute_strides();
+
+    return *this;
 }
 
 template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::view(std::initializer_list<index_type> new_shape) const {
-    return view(new_shape);
-}
+inline tensor<_Tp> tensor<_Tp>::randomize(const shape::Shape& shape_, bool bounded) {
+    if (empty())
+    {
+        return self({0});
+    }
 
-template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::randomize(const shape_type& shape_, bool bounded) {
     self ret = clone();
     ret.randomize_(shape_, bounded);
     return ret;
@@ -245,81 +296,73 @@ inline tensor<_Tp> tensor<_Tp>::get_minor(index_type a, index_type b) const {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::randomize_(const shape_type& shape_, bool bounded) {
+tensor<_Tp>& tensor<_Tp>::randomize_(const shape::Shape& sh, bool bounded) {
+    if (empty())
+    {
+        return self({0});
+    }
+
     if (bounded && !std::is_floating_point_v<value_type>)
-        throw type_error("Cannot bound non floating point data type");
+    {
+        throw error::type_error("Cannot bound non floating point data type");
+    }
 
-    if (shape_.empty() && shape_.empty())
-        throw shape_error("randomize_ : Shape must be initialized");
+    if (sh.empty() && sh.empty())
+    {
+        throw error::shape_error("randomize_ : Shape must be initialized");
+    }
 
-    if (shape_.empty() && shape_ != shape_)
-        shape_ = shape_;
+    if (sh.empty() && sh.equal(shape_))
+    {
+        shape_ = sh;
+    }
 
-    index_type s = computeSize(shape());
+    index_type s = shape_.flatten_size();
     data_.resize(s);
-    compute_strides();
+    shape_.compute_strides();
     std::random_device                   rd;
     std::mt19937                         gen(rd());
     std::uniform_real_distribution<_f32> unbounded_dist(1.0f, static_cast<_f32>(RAND_MAX));
     std::uniform_real_distribution<_f32> bounded_dist(0.0f, 1.0f);
 
     for (auto& elem : data_)
+    {
         elem = value_type(bounded ? bounded_dist(gen) : unbounded_dist(gen));
-
-    return *this;
-}
-
-template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::randomize_(const shape_type& shape_, bool bounded) const {
-    if (bounded && !std::is_floating_point_v<value_type>)
-        throw type_error("Cannot bound non floating point data type");
-
-    if (shape_.empty() && shape_.empty())
-        throw shape_error("randomize_ : Shape must be initialized");
-
-    if (shape_.empty() && shape_ != shape_)
-        shape_ = shape_;
-
-    index_type s = computeSize(shape());
-    data_.resize(s);
-    compute_strides();
-
-    std::random_device                   rd;
-    std::mt19937                         gen(rd());
-    std::uniform_real_distribution<_f32> unbounded_dist(1.0f, static_cast<_f32>(RAND_MAX));
-    std::uniform_real_distribution<_f32> bounded_dist(0.0f, 1.0f);
-
-    for (auto& elem : data_)
-        elem = value_type(bounded ? bounded_dist(gen) : unbounded_dist(gen));
+    }
 
     return *this;
 }
 
 template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::clone() const {
-    data_t     d = data_;
-    shape_type s = shape();
-    return self(s, d);
+    self ret(shape_, data_, device_);
+    ret.is_cuda_tensor_ = is_cuda_tensor_;
+    ret.compute_strides();
+    return ret;
 }
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::negative_() {
-    for (auto& elem : data_)
-        elem = -elem;
+    if (empty())
+    {
+        return self({0});
+    }
 
-    return *this;
-}
-
-template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::negative_() const {
     for (auto& elem : data_)
+    {
         elem = -elem;
+    }
 
     return *this;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::negative() const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.negative_();
     return ret;
@@ -350,10 +393,14 @@ void _nextPermutation(std::vector<int>& arr) {
         if (ret[i] == arr)
         {
             if (i < ret.size() - 1)
+            {
                 arr = ret[i + 1];
+            }
 
             if (i == ret.size() - 1)
+            {
                 arr = ret[0];
+            }
 
             break;
         }
@@ -362,8 +409,15 @@ void _nextPermutation(std::vector<int>& arr) {
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::permute_(const index_type dimension) {
+    if (empty())
+    {
+        return *this;
+    }
+
     if (dimension < 0 || dimension > n_dims())
-        throw index_error("Dimension index is out of range");
+    {
+        throw error::index_error("Dimension index is out of range");
+    }
 
     if (dimension == 0)
     {
@@ -371,94 +425,52 @@ tensor<_Tp>& tensor<_Tp>::permute_(const index_type dimension) {
         return *this;
     }
 
-    index_type start = strides_[dimension - 1];
-    index_type end   = strides_[dimension];
+    index_type start = shape_.strides_[dimension - 1];
+    index_type end   = shape_.strides_[dimension];
 
     data_t p(data_.begin() + start, data_.begin() + end);
     _nextPermutation(p);
 
     for (index_type i = start, pi = 0; i < end && pi < p.size(); ++i, ++pi)
-        data_[i] = p[pi];
-
-    return *this;
-}
-
-template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::permute_(const index_type dimension) const {
-    if (dimension < 0 || dimension > n_dims())
-        throw index_error("Dimension index is out of range");
-
-    if (dimension == 0)
     {
-        _nextPermutation(data_);
-        return *this;
-    }
-
-    index_type start = strides_[dimension - 1];
-    index_type end   = strides_[dimension];
-
-    data_t p(data_.begin() + start, data_.begin() + end);
-    _nextPermutation(p);
-
-    for (index_type i = start, pi = 0; i < end && pi < p.size(); ++i, ++pi)
         data_[i] = p[pi];
+    }
 
     return *this;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::permute(const index_type dimension) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.permute_(dimension);
     return ret;
 }
 
 template<class _Tp>
-const tensor<_Tp>& tensor<_Tp>::repeat_(const data_t& d, int dimension) const {
-    if (d.empty())
-        throw std::invalid_argument("Cannot repeat an empty data tensor.");
-
-    if (size(0) < d.size())
-        data_ = data_t(d.begin(), d.end());
-
-    index_type start      = 0;
-    index_type end        = d.size();
-    index_type total_size = size(0);
-
-    if (total_size < d.size())
-        return *this;
-
-    unsigned int nbatches  = total_size / d.size();
-    index_type   remainder = total_size % d.size();
-
-    for (unsigned int i = 0; i < nbatches; ++i)
-    {
-        for (index_type j = start, k = 0; k < d.size(); ++j, ++k)
-            data_[j] = d[k];
-
-        start += d.size();
-    }
-
-    for (index_type j = start, k = 0; j < total_size && k < remainder; ++j, ++k)
-        data_[j] = d[k];
-
-    return *this;
-}
-
-template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::repeat_(const data_t& d, int dimension) {
     if (d.empty())
+    {
         throw std::invalid_argument("Cannot repeat an empty data tensor.");
+    }
 
     if (size(0) < d.size())
+    {
         data_ = data_t(d.begin(), d.end());
+    }
 
     index_type start      = 0;
     index_type end        = d.size();
     index_type total_size = size(0);
 
     if (total_size < d.size())
+    {
         return *this;
+    }
 
     unsigned int nbatches  = total_size / d.size();
     index_type   remainder = total_size % d.size();
@@ -466,13 +478,17 @@ tensor<_Tp>& tensor<_Tp>::repeat_(const data_t& d, int dimension) {
     for (unsigned int i = 0; i < nbatches; ++i)
     {
         for (index_type j = start, k = 0; k < d.size(); ++j, ++k)
+        {
             data_[j] = d[k];
+        }
 
         start += d.size();
     }
 
     for (index_type j = start, k = 0; j < total_size && k < remainder; ++j, ++k)
+    {
         data_[j] = d[k];
+    }
 
     return *this;
 }
@@ -485,10 +501,44 @@ inline tensor<_Tp> tensor<_Tp>::repeat(const data_t& d, int dimension) const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::sort(index_type dimension, bool descending) const {}
+tensor<_Tp> tensor<_Tp>::sort(index_type dimension, bool descending) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
+    if (dimension < 0 || dimension >= n_dims())
+    {
+        throw error::index_error("Dimension index is out of range");
+    }
+
+    if (dimension == 0)
+    {
+        std::sort(data_.begin(), data_.end(), descending ? std::greater<value_type>() : std::less<value_type>());
+        return *this;
+    }
+
+    index_type start = shape_.strides_[dimension - 1];
+    index_type end   = shape_.strides_[dimension];
+
+    data_t p(data_.begin() + start, data_.begin() + end);
+    std::sort(p.begin(), p.end(), descending ? std::greater<value_type>() : std::less<value_type>());
+
+    for (index_type i = start, pi = 0; i < end && pi < p.size(); ++i, ++pi)
+    {
+        data_[i] = p[pi];
+    }
+
+    return *this;
+}
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::fill(const value_type value) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.fill_(value);
     return ret;
@@ -496,13 +546,23 @@ tensor<_Tp> tensor<_Tp>::fill(const value_type value) const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::fill(const tensor& other) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.fill_(other);
     return ret;
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::resize_as(const shape_type shape_) const {
+tensor<_Tp> tensor<_Tp>::resize_as(const shape::Shape shape_) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.resize_as_(shape_);
     return ret;
@@ -549,8 +609,15 @@ tensor<_Tp> tensor<_Tp>::any() const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::gcd(const tensor& other) const {
-    if (!equal_shape(shape(), other.shape()))
-        throw shape_error("Tensors shapes must be equal");
+    if (empty())
+    {
+        return self({0});
+    }
+
+    if (!shape().equal(other.shape()))
+    {
+        throw error::shape_error("Tensors shapes must be equal");
+    }
 
     tensor     ret = clone();
     index_type i   = 0;
@@ -569,6 +636,11 @@ tensor<_Tp> tensor<_Tp>::gcd(const tensor& other) const {
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::gcd(const value_type value) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     tensor     ret = clone();
     index_type i   = 0;
 
