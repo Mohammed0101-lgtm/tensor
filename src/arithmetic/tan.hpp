@@ -3,10 +3,20 @@
 #include "tensorbase.hpp"
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::tan_() {
+inline tensor<_Tp>& tensor<_Tp>::tan_() {
+    if (empty())
+    {
+        return *this;
+    }
+
+    if (internal::types::using_neon())
+    {
+        return internal::neon::tan_(*this);
+    }
+
     if (!std::is_arithmetic_v<value_type>)
     {
-        throw type_error("Type must be arithmetic");
+        throw error::type_error("Type must be arithmetic");
     }
 
     for (auto& elem : data_)
@@ -18,25 +28,20 @@ tensor<_Tp>& tensor<_Tp>::tan_() {
 }
 
 template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::tan_() const {
-    if (!std::is_arithmetic_v<value_type>)
+inline tensor<_Tp>& tensor<_Tp>::tanh_() {
+    if (empty())
     {
-        throw type_error("Type must be arithmetic");
+        return *this;
     }
 
-    for (auto& elem : data_)
+    if (internal::types::using_neon())
     {
-        elem = std::tan(elem);
+        return internal::neon::tanh_(*this);
     }
 
-    return *this;
-}
-
-template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::tanh_() {
     if (!std::is_arithmetic_v<value_type>)
     {
-        throw type_error("Type must be arithmetic");
+        throw error::type_error("Type must be arithmetic");
     }
 
     for (auto& elem : data_)
@@ -48,40 +53,20 @@ tensor<_Tp>& tensor<_Tp>::tanh_() {
 }
 
 template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::tanh_() const {
+inline tensor<_Tp>& tensor<_Tp>::atan_() {
+    if (empty())
+    {
+        return *this;
+    }
+
+    if (internal::types::using_neon())
+    {
+        return internal::neon::atan_(*this);
+    }
+
     if (!std::is_arithmetic_v<value_type>)
     {
-        throw type_error("Type must be arithmetic");
-    }
-
-    for (auto& elem : data_)
-    {
-        elem = std::tanh(elem);
-    }
-
-    return *this;
-}
-
-template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::atan_() {
-    if (!std::is_arithmetic_v<value_type>)
-    {
-        throw type_error("Type must be arithmetic");
-    }
-
-    for (auto& elem : data_)
-    {
-        elem = std::atan(elem);
-    }
-
-    return *this;
-}
-
-template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::atan_() const {
-    if (!std::is_arithmetic_v<value_type>)
-    {
-        throw type_error("Type must be arithmetic");
+        throw error::type_error("Type must be arithmetic");
     }
 
     for (auto& elem : data_)
@@ -94,29 +79,19 @@ inline const tensor<_Tp>& tensor<_Tp>::atan_() const {
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::atanh_() {
-    if (!std::is_arithmetic_v<value_type>)
+    if (empty())
     {
-        throw type_error("Type must be arithmetic");
+        return *this;
     }
 
-    for (auto& elem : data_)
+    if (internal::types::using_neon())
     {
-        if (elem < -1 || elem > 1)
-        {
-            throw std::domain_error("Input data is out of domain for atanh()");
-        }
-
-        elem = std::atanh(elem);
+        return internal::neon::atanh_(*this);
     }
 
-    return *this;
-}
-
-template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::atanh_() const {
     if (!std::is_arithmetic_v<value_type>)
     {
-        throw type_error("Type must be arithmetic");
+        throw error::type_error("Type must be arithmetic");
     }
 
     for (auto& elem : data_)
@@ -134,6 +109,11 @@ inline const tensor<_Tp>& tensor<_Tp>::atanh_() const {
 
 template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::atanh() const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.atanh_();
     return ret;
@@ -141,6 +121,11 @@ inline tensor<_Tp> tensor<_Tp>::atanh() const {
 
 template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::tanh() const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.tanh_();
     return ret;
@@ -148,6 +133,11 @@ inline tensor<_Tp> tensor<_Tp>::tanh() const {
 
 template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::tan() const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.tan_();
     return ret;
