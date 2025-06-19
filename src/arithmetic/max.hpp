@@ -4,6 +4,11 @@
 
 template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::fmax(const tensor& other) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.fmax_(other);
     return ret;
@@ -11,31 +16,31 @@ inline tensor<_Tp> tensor<_Tp>::fmax(const tensor& other) const {
 
 template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::fmax(const value_type value) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.fmax_(value);
     return ret;
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::fmax_(const value_type value) {
-    if (!std::is_floating_point_v<value_type>)
+inline tensor<_Tp>& tensor<_Tp>::fmax_(const value_type value) {
+    if (empty())
     {
-        throw type_error("Type must be floating point");
+        return *this;
     }
 
-    for (auto& elem : data_)
+    if (internal::types::using_neon())
     {
-        elem = std::fmax(elem, value);
+        return internal::neon::fmax_(*this, value);
     }
 
-    return *this;
-}
-
-template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::fmax_(const value_type value) const {
     if (!std::is_floating_point_v<value_type>)
     {
-        throw type_error("Type must be floating point");
+        throw error::type_error("Type must be floating point");
     }
 
     for (auto& elem : data_)
@@ -48,38 +53,28 @@ inline const tensor<_Tp>& tensor<_Tp>::fmax_(const value_type value) const {
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::fmax_(const tensor& other) {
-    if (!std::is_floating_point_v<value_type>)
+    if (empty())
     {
-        throw type_error("Type must be floating point");
+        return *this;
     }
 
-    if (!equal_shape(shape(), other.shape()))
+    if (internal::types::using_neon())
     {
-        throw shape_error("Tensors shapes must be equal");
+        return internal::neon::fmax_(*this, other);
+    }
+
+    if (!std::is_floating_point_v<value_type>)
+    {
+        throw error::type_error("Type must be floating point");
+    }
+
+    if (!shape().equal(other.shape()))
+    {
+        throw error::shape_error("Tensors shapes must be equal");
     }
 
     index_type i = 0;
-    for (auto& elem : data_)
-    {
-        elem = std::fmax(elem, other[i++]);
-    }
 
-    return *this;
-}
-
-template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::fmax_(const tensor& other) const {
-    if (!std::is_floating_point_v<value_type>)
-    {
-        throw type_error("Type must be floating point");
-    }
-
-    if (!equal_shape(shape(), other.shape()))
-    {
-        throw shape_error("Tensors shapes must be equal");
-    }
-
-    index_type i = 0;
     for (auto& elem : data_)
     {
         elem = std::fmax(elem, other[i++]);
@@ -90,6 +85,11 @@ inline const tensor<_Tp>& tensor<_Tp>::fmax_(const tensor& other) const {
 
 template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::maximum(const tensor& other) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.maximum_(other);
     return ret;
@@ -97,35 +97,35 @@ inline tensor<_Tp> tensor<_Tp>::maximum(const tensor& other) const {
 
 template<class _Tp>
 inline tensor<_Tp> tensor<_Tp>::maximum(const_reference value) const {
+    if (empty())
+    {
+        return self({0});
+    }
+
     self ret = clone();
     ret.maximum_(value);
     return ret;
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::maximum_(const tensor& other) {
-    if (!equal_shape(shape(), other.shape()))
+inline tensor<_Tp>& tensor<_Tp>::maximum_(const tensor& other) {
+    if (empty())
     {
-        throw shape_error("Tensors shapes must be equal");
+        return *this;
+    }
+
+    if (internal::types::using_neon())
+    {
+        return internal::neon::maximum_(*this, other);
+    }
+
+    if (!shape().equal(other.shape()))
+    {
+        throw error::shape_error("Tensors shapes must be equal");
     }
 
     index_type i = 0;
-    for (auto& elem : data_)
-    {
-        elem = std::max(elem, other[i++]);
-    }
 
-    return *this;
-}
-
-template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::maximum_(const tensor& other) const {
-    if (!equal_shape(shape(), other.shape()))
-    {
-        throw shape_error("Tensors shapes must be equal");
-    }
-
-    index_type i = 0;
     for (auto& elem : data_)
     {
         elem = std::max(elem, other[i++]);
@@ -136,16 +136,16 @@ inline const tensor<_Tp>& tensor<_Tp>::maximum_(const tensor& other) const {
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::maximum_(const value_type value) {
-    for (auto& elem : data_)
+    if (empty())
     {
-        elem = std::max(elem, value);
+        return *this;
     }
 
-    return *this;
-}
+    if (internal::types::using_neon())
+    {
+        return internal::neon::maximum_(*this, value);
+    }
 
-template<class _Tp>
-inline const tensor<_Tp>& tensor<_Tp>::maximum_(const value_type value) const {
     for (auto& elem : data_)
     {
         elem = std::max(elem, value);
