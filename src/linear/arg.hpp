@@ -9,11 +9,10 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type dimensi
         throw error::index_error("Dimension out of range in argmax");
     }
 
-    tensor<index_type> ret;
     shape::Shape       ret_sh = shape_;
     ret_sh.value_.erase(ret_sh.value_.begin() + dimension);
-    ret.shape_ = ret_sh;
-    ret.data_.resize(ret_sh.flatten_size(), 0);
+    tensor<index_type> ret(ret_sh);
+    ret.storage_().resize(ret_sh.flatten_size(), 0);
 
     index_type outer_size = 1;
     index_type inner_size = 1;
@@ -50,7 +49,7 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type dimensi
                 }
             }
 
-            ret.data_[i * inner_size + j] = max_index;
+            ret[i * inner_size + j] = max_index;
         }
     }
 
