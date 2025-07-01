@@ -759,7 +759,7 @@ neon_type<T> neon_min(neon_type<T>& a, neon_type<T>& b) {
 }
 
 template<typename T>
-T neon_get_lane(neon_type<T>& a, T& b) {
+T neon_get_lane(neon_type<T>& a, const T b) {
     if constexpr (std::is_same_v<T, _f16>)
     {
         return vgetq_lane_f16(a, b);
