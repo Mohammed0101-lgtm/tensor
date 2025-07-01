@@ -2,6 +2,7 @@
 
 #include "tensorbase.hpp"
 
+
 template<class _Tp>
 tensor<_Tp> internal::neon::operator_plus(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     if constexpr (!internal::types::has_plus_operator_v<_Tp>)
