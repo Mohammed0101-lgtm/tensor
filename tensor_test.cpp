@@ -1029,6 +1029,155 @@ TEST(TensorTest, ClippedReLU) {
     }
 }
 
+TEST(TensorTest, SortTest) {
+    tensor<int> t({5}, {3, 1, 4, 2, 5});
+    auto        sorted = t.sort(0);
+
+    tensor<int> expected({5}, {1, 2, 3, 4, 5});
+    EXPECT_EQ(sorted.shape(), expected.shape());
+
+    for (std::size_t i = 0; i < sorted.size(0); ++i)
+    {
+        EXPECT_EQ(sorted[i], expected[i]);
+    }
+}
+
+TEST(TensorTest, RemainderTest) {
+    tensor<int> t({5}, {10, 20, 30, 40, 50});
+    int         divisor = 7;
+    auto        result  = t.remainder(divisor);
+
+    tensor<int> expected({5}, {3, 6, 2, 5, 1});
+    EXPECT_EQ(result.shape(), expected.shape());
+    for (std::size_t i = 0; i < result.size(0); ++i)
+    {
+        EXPECT_EQ(result[i], expected[i]);
+    }
+}
+
+TEST(TensorTest, MaximumTest) {
+    tensor<int> t({5}, {1, 3, 2, 5, 4});
+    tensor<int> other({5}, {2, 3, 1, 4, 5});
+    auto        result = t.maximum(other);
+
+    tensor<int> expected({5}, {2, 3, 2, 5, 5});
+    EXPECT_EQ(result.shape(), expected.shape());
+    for (std::size_t i = 0; i < result.size(0); ++i)
+    {
+        EXPECT_EQ(result[i], expected[i]);      
+    }
+}
+
+TEST(TensorTest, DistTest) {
+    tensor<float> t1({3}, {1.0f, 2.0f, 3.0f});
+    tensor<float> t2({3}, {4.0f, 5.0f, 6.0f});
+    tensor<float> expected_distance({3}, {3.0f, 3.0f, 3.0f}); // Euclidean distance
+    auto result = t1.dist(t2);
+
+    EXPECT_EQ(result, expected_distance);
+}
+
+TEST(TensorTest, SqueezeTest) {
+    tensor<int> t({1, 3, 1, 5});
+    auto        squeezed = t.squeeze(0);
+
+    EXPECT_EQ(squeezed.shape(), std::vector<unsigned long long>({3, 5}));
+    for (std::size_t i = 0; i < squeezed.size(0); ++i)
+    {
+        EXPECT_EQ(squeezed[i], t[i]);
+    }
+}
+
+TEST(TensorTest, NegativeTest) {
+    tensor<int> t({3}, {1, -2, 3});
+    auto        negated = t.negative();
+
+    tensor<int> expected({3}, {-1, 2, -3});
+    EXPECT_EQ(negated.shape(), expected.shape());
+    for (std::size_t i = 0; i < negated.size(0); ++i)
+    {
+        EXPECT_EQ(negated[i], expected[i]);
+    }
+}
+
+TEST(TensorTest, RepeatTest101) {
+    tensor<int> t({2}, {1, 2});
+    auto        repeated = t.repeat(std::vector<int>(1, 3));
+
+    tensor<int> expected({6}, {1, 2, 1, 2, 1, 2});
+    EXPECT_EQ(repeated.shape(), expected.shape());
+    for (std::size_t i = 0; i < repeated.size(0); ++i)
+    {
+        EXPECT_EQ(repeated[i], expected[i]);
+    }
+}
+
+TEST(TensorTest, PermuteTest) {
+    tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+    auto        permuted = t.permute(0);
+
+    tensor<int> expected({3, 2}, {1, 4, 2, 5, 3, 6});
+    EXPECT_EQ(permuted.shape(), expected.shape());
+    for (std::size_t i = 0; i < permuted.size(0); ++i)
+    {
+        EXPECT_EQ(permuted[i], expected[i]);
+    }
+}
+
+TEST(TensorTest, LogSoftmaxTest) {
+    tensor<float> t({2, 3}, {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f});
+    auto          result = t.log_softmax(1);
+
+    // Expected log softmax values
+    tensor<float> expected({2, 3}, {-2.407606f, -1.407606f, -0.407606f,
+                                     -2.407606f, -1.407606f, -0.407606f});
+
+    EXPECT_EQ(result.shape(), expected.shape());
+    for (std::size_t i = 0; i < result.size(0); ++i)
+    {
+        EXPECT_FLOAT_EQ(result[i], expected[i]);
+    }
+}
+
+TEST(TensorTest, GCDTest) {
+    tensor<int> t1({3}, {48, 64, 80});
+    tensor<int> t2({3}, {18, 24, 30});
+    auto        result = t1.gcd(t2);
+
+    tensor<int> expected({3}, {6, 8, 10});
+    EXPECT_EQ(result.shape(), expected.shape());
+    for (std::size_t i = 0; i < result.size(0); ++i)
+    {
+        EXPECT_EQ(result[i], expected[i]);
+    }
+}
+
+TEST(TensorTest, POWTest) {
+    tensor<int> t({3}, {2, 3, 4});
+    int         exponent = 2;
+    auto        result   = t.pow(exponent);
+
+    tensor<int> expected({3}, {4, 9, 16});
+    EXPECT_EQ(result.shape(), expected.shape());
+    for (std::size_t i = 0; i < result.size(0); ++i)
+    {
+        EXPECT_EQ(result[i], expected[i]);
+    }
+}
+
+TEST(TensorTest, POWTensorTest) {
+    tensor<int> t1({3}, {2, 3, 4});
+    tensor<int> t2({3}, {2, 3, 4});
+    auto        result = t1.pow(t2);
+
+    tensor<int> expected({3}, {4, 27, 256});
+    EXPECT_EQ(result.shape(), expected.shape());
+    for (std::size_t i = 0; i < result.size(0); ++i)
+    {
+        EXPECT_EQ(result[i], expected[i]);
+    }
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
