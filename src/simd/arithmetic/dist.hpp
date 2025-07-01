@@ -29,13 +29,13 @@ tensor<_Tp>& internal::neon::dist_(tensor<_Tp>& t, const tensor<_Tp>& other) {
 
         neon_load<_Tp>(&data_[i], &a);
         neon_load<_Tp>(&other[i], &b);
-        neon_vabdq<_Tp>(&a, &b, &diff);
-        neon_store<_Tp>(&data_[i], &diff);
+        diff = neon_vabdq<_Tp>(&a, &b);
+        neon_store<_Tp>(&data_[i], diff);
     }
 
     for (; i < data_.size(); ++i)
     {
-        data_[i] = static_cast<_Tp>(std::abs(static_cast<_f64>(data_[i] - other.data_[i])));
+        data_[i] = static_cast<_Tp>(std::abs(static_cast<_f64>(data_[i] - other[i])));
     }
 
     return t;
