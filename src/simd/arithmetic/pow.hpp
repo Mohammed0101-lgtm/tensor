@@ -58,10 +58,10 @@ tensor<_Tp>& internal::neon::pow_(tensor<_Tp>& t, const tensor<_Tp>& other) {
         neon_type<_Tp> base_vec   = neon_load<_Tp>(&data_[i]);
         neon_type<_Tp> exp_vec    = neon_load<_Tp>(&other[i]);
         neon_type<_Tp> result_vec = {
-          static_cast<_Tp>(std::pow(neon_get_lane<_Tp>(base_vec, 0), neon_get_lane<_Tp>(exp_vec, 0))),
-          static_cast<_Tp>(std::pow(neon_get_lane<_Tp>(base_vec, 1), neon_get_lane<_Tp>(exp_vec, 1))),
-          static_cast<_Tp>(std::pow(neon_get_lane<_Tp>(base_vec, 2), neon_get_lane<_Tp>(exp_vec, 2))),
-          static_cast<_Tp>(std::pow(neon_get_lane<_Tp>(base_vec, 3), neon_get_lane<_Tp>(exp_vec, 3))),
+          static_cast<_Tp>(std::pow(neon_get_lane<_Tp, 0>(base_vec), neon_get_lane<_Tp, 0>(exp_vec))),
+          static_cast<_Tp>(std::pow(neon_get_lane<_Tp, 1>(base_vec), neon_get_lane<_Tp, 1>(exp_vec))),
+          static_cast<_Tp>(std::pow(neon_get_lane<_Tp, 2>(base_vec), neon_get_lane<_Tp, 2>(exp_vec))),
+          static_cast<_Tp>(std::pow(neon_get_lane<_Tp, 3>(base_vec), neon_get_lane<_Tp, 3>(exp_vec))),
         };
         neon_store<_Tp>(&data_[i], result_vec);
     }
