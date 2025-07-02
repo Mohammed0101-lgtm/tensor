@@ -492,6 +492,20 @@ class tensor
     reference       operator()(std::initializer_list<index_type> index_list);
     const_reference operator()(std::initializer_list<index_type> index_list) const;
     bool            empty() const;
+    
+    template<typename TargetType>
+    tensor<TargetType> to() const {
+        data_t result;
+        
+        for (const auto& val : this->storage_()) 
+        {
+            result.push_back(static_cast<TargetType>(val));
+        }
+
+        tensor<TargetType> ret(shape_, result, device_);
+
+        return ret;
+    }
 
     /// @brief Converts the tensor elements to boolean values.
     /// @return A tensor of boolean values.
