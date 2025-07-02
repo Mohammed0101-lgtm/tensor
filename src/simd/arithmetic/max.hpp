@@ -90,7 +90,7 @@ tensor<_Tp>& internal::neon::maximum_(tensor<_Tp>& t, const tensor<_Tp>& other) 
 
     for (; i < data_.size(); ++i)
     {
-        data_[i] = std::max(data_[i], other.data_[i]);
+        data_[i] = std::max(data_[i], other[i]);
     }
 
     return t;
