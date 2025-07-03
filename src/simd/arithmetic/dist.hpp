@@ -27,9 +27,9 @@ tensor<_Tp>& internal::neon::dist_(tensor<_Tp>& t, const tensor<_Tp>& other) {
         neon_type<decltype(dummy)> b;
         neon_type<decltype(dummy)> diff;
 
-        neon_load<_Tp>(&data_[i], &a);
-        neon_load<_Tp>(&other[i], &b);
-        diff = neon_vabdq<_Tp>(&a, &b);
+        a = neon_load<_Tp>(&data_[i]);
+        b = neon_load<_Tp>(&other[i]);
+        diff = neon_vabdq<_Tp>(a, b);
         neon_store<_Tp>(&data_[i], diff);
     }
 
