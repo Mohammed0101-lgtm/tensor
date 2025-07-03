@@ -758,51 +758,57 @@ neon_type<T> neon_min(neon_type<T>& a, neon_type<T>& b) {
     }
 }
 
-template<typename T>
-T neon_get_lane(neon_type<T>& a, const T b) {
+template<typename T, int lane>
+T neon_get_lane(const neon_type<T>& a) {
+    static_assert(lane >= 0 && lane < 4, "Lane index must be a compile-time constant in range 0..3");
+
     if constexpr (std::is_same_v<T, _f16>)
     {
-        return vgetq_lane_f16(a, b);
+        return vgetq_lane_f16(a, lane);
     }
     else if constexpr (std::is_same_v<T, _f32>)
     {
-        return vgetq_lane_f32(a, b);
+        return vgetq_lane_f32(a, lane);
     }
     else if constexpr (std::is_same_v<T, _f64>)
     {
-        return vgetq_lane_f64(a, b);
+        return vgetq_lane_f64(a, lane);
     }
     else if constexpr (std::is_same_v<T, _s8>)
     {
-        return vgetq_lane_s8(a, b);
+        return vgetq_lane_s8(a, lane);
     }
     else if constexpr (std::is_same_v<T, _s16>)
     {
-        return vgetq_lane_s16(a, b);
+        return vgetq_lane_s16(a, lane);
     }
     else if constexpr (std::is_same_v<T, _s32>)
     {
-        return vgetq_lane_s32(a, b);
+        return vgetq_lane_s32(a, lane);
     }
     else if constexpr (std::is_same_v<T, _s64>)
     {
-        return vgetq_lane_s64(a, b);
+        return vgetq_lane_s64(a, lane);
     }
     else if constexpr (std::is_same_v<T, _u8>)
     {
-        return vgetq_lane_u8(a, b);
+        return vgetq_lane_u8(a, lane);
     }
     else if constexpr (std::is_same_v<T, _u16>)
     {
-        return vgetq_lane_u16(a, b);
+        return vgetq_lane_u16(a, lane);
     }
     else if constexpr (std::is_same_v<T, _u32>)
     {
-        return vgetq_lane_u32(a, b);
+        return vgetq_lane_u32(a, lane);
     }
     else if constexpr (std::is_same_v<T, _u64>)
     {
-        return vgetq_lane_u64(a, b);
+        return vgetq_lane_u64(a, lane);
+    } 
+    else 
+    {
+        static_assert(sizeof(T) == 0, "Unsupported NEON type for lane extraction");
     }
 }
 
