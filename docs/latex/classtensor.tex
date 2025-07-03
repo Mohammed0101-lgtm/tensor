@@ -40,11 +40,11 @@ typedef data\+\_\+t\+::const\+\_\+reverse\+\_\+iterator \mbox{\hyperlink{classte
 \item 
 \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor}} ()=default
 \item 
-\mbox{\hyperlink{classtensor_ad22a32030600f96df9fc5a7e2b0ab392}{tensor}} (const std\+::vector$<$ int64\+\_\+t $>$ \+\_\+\+\_\+sh, const \+\_\+\+Tp val)
+\mbox{\hyperlink{classtensor_ad22a32030600f96df9fc5a7e2b0ab392}{tensor}} (const std\+::vector$<$ int64\+\_\+t $>$ \+\_\+\+\_\+shape_, const \+\_\+\+Tp value)
 \item 
-\mbox{\hyperlink{classtensor_add431218c82f5859a13e30022cb2933d}{tensor}} (const std\+::vector$<$ int64\+\_\+t $>$ \+\_\+\+\_\+sh)
+\mbox{\hyperlink{classtensor_add431218c82f5859a13e30022cb2933d}{tensor}} (const std\+::vector$<$ int64\+\_\+t $>$ \+\_\+\+\_\+shape_)
 \item 
-\mbox{\hyperlink{classtensor_a5e09dbab50ebd24cc3d9cc35657c165d}{tensor}} (const std\+::vector$<$ \+\_\+\+Tp $>$ \+\_\+\+\_\+d, const std\+::vector$<$ int64\+\_\+t $>$ \+\_\+\+\_\+sh)
+\mbox{\hyperlink{classtensor_a5e09dbab50ebd24cc3d9cc35657c165d}{tensor}} (const std\+::vector$<$ \+\_\+\+Tp $>$ \+\_\+\+\_\+d, const std\+::vector$<$ int64\+\_\+t $>$ \+\_\+\+\_\+shape_)
 \item 
 \+\_\+\+Tp \& \mbox{\hyperlink{classtensor_a52d5b20bef2ffe824342736d731f1002}{begin}} () const
 \item 
@@ -112,7 +112,7 @@ void \mbox{\hyperlink{classtensor_a0e71c49ca5485d2407842ee72c1e5aad}{relu\+\_\+}
 \item 
 \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_ad7baf3a8a2c4a9ad44ba04132454590e}{transpose}} () const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}}$<$ int64\+\_\+t $>$ \mbox{\hyperlink{classtensor_a841f49974f95a3e39c71b04f8a748218}{argsort}} (int64\+\_\+t \+\_\+dim=-\/1LL, bool \+\_\+ascending=true) const
+\mbox{\hyperlink{classtensor}{tensor}}$<$ int64\+\_\+t $>$ \mbox{\hyperlink{classtensor_a841f49974f95a3e39c71b04f8a748218}{argsort}} (int64\+\_\+t \+\_\+dimension=-\/1LL, bool \+\_\+ascending=true) const
 \item 
 \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_abc7217706d712a42cd634db812ae766b}{bitwise\+\_\+not}} () const
 \item 
@@ -216,9 +216,9 @@ void \mbox{\hyperlink{classtensor_a6318a92fdf6474f9b2f8cde820f2230d}{floor\+\_\+
 \item 
 \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_ad36b019cc3d3e5b34d437a3155d9dac7}{clone}} () const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_ae3c45dc71c1090025661005112a1f834}{clamp}} (const \+\_\+\+Tp \texorpdfstring{$\ast$}{*}\+\_\+min\+\_\+val=nullptr, const \+\_\+\+Tp \texorpdfstring{$\ast$}{*}\+\_\+max\+\_\+val=nullptr) const
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_ae3c45dc71c1090025661005112a1f834}{clamp}} (const \+\_\+\+Tp \texorpdfstring{$\ast$}{*}\+\_\+min\+\_\+value=nullptr, const \+\_\+\+Tp \texorpdfstring{$\ast$}{*}\+\_\+max\+\_\+value=nullptr) const
 \item 
-void \mbox{\hyperlink{classtensor_a611871f79215f582779adbea1a661882}{clamp\+\_\+}} (const \+\_\+\+Tp \texorpdfstring{$\ast$}{*}\+\_\+min\+\_\+val=nullptr, const \+\_\+\+Tp \texorpdfstring{$\ast$}{*}\+\_\+max\+\_\+val=nullptr)
+void \mbox{\hyperlink{classtensor_a611871f79215f582779adbea1a661882}{clamp\+\_\+}} (const \+\_\+\+Tp \texorpdfstring{$\ast$}{*}\+\_\+min\+\_\+value=nullptr, const \+\_\+\+Tp \texorpdfstring{$\ast$}{*}\+\_\+max\+\_\+value=nullptr)
 \item 
 \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_a8fa5f80cbf67d5ca587a465864dee9c2}{cos}} () const
 \item 
@@ -244,7 +244,7 @@ void \mbox{\hyperlink{classtensor_a6be46341930fb272ae132eb81cb78e99}{cosh\+\_\+}
 \item 
 void \mbox{\hyperlink{classtensor_aa7466d7c1c7eac81e1500964807c6a87}{cos\+\_\+}} ()
 \item 
-size\+\_\+t \mbox{\hyperlink{classtensor_a45218616edeefdc8558691ad83ebe1bc}{count\+\_\+nonzero}} (int64\+\_\+t dim=-\/1LL) const
+size\+\_\+t \mbox{\hyperlink{classtensor_a45218616edeefdc8558691ad83ebe1bc}{count\+\_\+nonzero}} (int64\+\_\+t dimension=-\/1LL) const
 \item 
 \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_a58d80942a05a2ccd93a1ae69b0c3812e}{fmax}} (const \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \&\+\_\+other) const
 \item 
@@ -278,41 +278,41 @@ void \mbox{\hyperlink{classtensor_af157a541d53f179a11390a5150c8616c}{exp\+\_\+}}
 \item 
 void \mbox{\hyperlink{classtensor_a5558b4bd06c2493e3fff919f7bcf3f28}{sqrt\+\_\+}} ()
 \item 
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_a76c0a553a8d693702352808474007f50}{slice}} (int64\+\_\+t \+\_\+dim, std\+::optional$<$ int64\+\_\+t $>$ \+\_\+start, std\+::optional$<$ int64\+\_\+t $>$ \+\_\+end, int64\+\_\+t \+\_\+step) const
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_a76c0a553a8d693702352808474007f50}{slice}} (int64\+\_\+t \+\_\+dimension, std\+::optional$<$ int64\+\_\+t $>$ \+\_\+start, std\+::optional$<$ int64\+\_\+t $>$ \+\_\+end, int64\+\_\+t \+\_\+step) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_a949fa89abc9832f91f7ba551dd641d22}{cumprod}} (int64\+\_\+t \+\_\+dim=-\/1) const
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_a949fa89abc9832f91f7ba551dd641d22}{cumprod}} (int64\+\_\+t \+\_\+dimension=-\/1) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_ac40335f8961d05a0a4c4ec306dcd0dbd}{cat}} (const std\+::vector$<$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ $>$ \&\+\_\+others, int64\+\_\+t \+\_\+dim) const
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_ac40335f8961d05a0a4c4ec306dcd0dbd}{cat}} (const std\+::vector$<$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ $>$ \&\+\_\+others, int64\+\_\+t \+\_\+dimension) const
 \item 
-void \mbox{\hyperlink{classtensor_a763bcc5fef28ac840b848b65d63ca1ed}{view}} (std\+::initializer\+\_\+list$<$ int64\+\_\+t $>$ \+\_\+new\+\_\+sh)
+void \mbox{\hyperlink{classtensor_a763bcc5fef28ac840b848b65d63ca1ed}{view}} (std\+::initializer\+\_\+list$<$ int64\+\_\+t $>$ \+\_\+new\+\_\+shape_)
 \item 
 void \mbox{\hyperlink{classtensor_a98ff9eb7aa9a40b88c9a64397238bb5a}{print}} () const
 \item 
 bool \mbox{\hyperlink{classtensor_ab1dc32444636d6005543f47cd07aee56}{empty}} () const noexcept
 \item 
-size\+\_\+t \mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}} (const int64\+\_\+t \+\_\+dim) const
+size\+\_\+t \mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size}} (const int64\+\_\+t \+\_\+dimension) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}}$<$ int64\+\_\+t $>$ \mbox{\hyperlink{classtensor_ad56d35a65d0417510a087e55fd35ab0a}{argmax\+\_\+}} (int64\+\_\+t \+\_\+dim) const
+\mbox{\hyperlink{classtensor}{tensor}}$<$ int64\+\_\+t $>$ \mbox{\hyperlink{classtensor_ad56d35a65d0417510a087e55fd35ab0a}{argmax\+\_\+}} (int64\+\_\+t \+\_\+dimension) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_af8ff9002a615c25b587b2de6d75dc206}{argmax}} (int64\+\_\+t \+\_\+dim) const
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_af8ff9002a615c25b587b2de6d75dc206}{argmax}} (int64\+\_\+t \+\_\+dimension) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_adf1ab2fa12dbb55524289f2de928ad35}{unsqueeze}} (int64\+\_\+t \+\_\+dim) const
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_adf1ab2fa12dbb55524289f2de928ad35}{unsqueeze}} (int64\+\_\+t \+\_\+dimension) const
 \item 
 \mbox{\hyperlink{classtensor_aa3049f7ce6b011e9037add3d9881bd83}{tensor}} ()=default
 \item 
-\mbox{\hyperlink{classtensor_afaa30cca2bb4d8d5bbbe5de06e8e77e2}{tensor}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+sh, const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \&\+\_\+\+\_\+v, \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}} \+\_\+\+\_\+d=\mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{Device\+::\+CPU}})
+\mbox{\hyperlink{classtensor_afaa30cca2bb4d8d5bbbe5de06e8e77e2}{tensor}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+shape_, const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \&\+\_\+\+\_\+v, \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}} \+\_\+\+\_\+d=\mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{Device\+::\+CPU}})
 \item 
-\mbox{\hyperlink{classtensor_aa2ae9879255d3be01327fcc27cd9ab94}{tensor}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+sh, \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}} \+\_\+\+\_\+d=\mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{Device\+::\+CPU}})
+\mbox{\hyperlink{classtensor_aa2ae9879255d3be01327fcc27cd9ab94}{tensor}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+shape_, \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}} \+\_\+\+\_\+d=\mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{Device\+::\+CPU}})
 \item 
-\mbox{\hyperlink{classtensor_ab7c9217e98f8ccf9c366a65474faded7}{tensor}} (const \mbox{\hyperlink{classtensor_a1248d808ef5c7b0f868bfa7c0cc25f59}{data\+\_\+t}} \&\+\_\+\+\_\+d, const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+sh, \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}} \+\_\+\+\_\+dev=\mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{Device\+::\+CPU}})
+\mbox{\hyperlink{classtensor_ab7c9217e98f8ccf9c366a65474faded7}{tensor}} (const \mbox{\hyperlink{classtensor_a1248d808ef5c7b0f868bfa7c0cc25f59}{data\+\_\+t}} \&\+\_\+\+\_\+d, const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+shape_, \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}} \+\_\+\+\_\+dev=\mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{Device\+::\+CPU}})
 \item 
 \mbox{\hyperlink{classtensor_ab22c24a7f5afa3635a7ba8c4940e95ed}{tensor}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+t)
 \item 
 \mbox{\hyperlink{classtensor_a4f8fd95536e28ab3176a64268f2e2e70}{tensor}} (\mbox{\hyperlink{classtensor}{tensor}} \&\&\+\_\+\+\_\+t) noexcept
 \item 
-\mbox{\hyperlink{classtensor_a70819bf3c928f595299389d5e0605aeb}{tensor}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+sh, std\+::initializer\+\_\+list$<$ \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} $>$ init\+\_\+list, \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}} \+\_\+\+\_\+d=\mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{Device\+::\+CPU}})
+\mbox{\hyperlink{classtensor_a70819bf3c928f595299389d5e0605aeb}{tensor}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+shape_, std\+::initializer\+\_\+list$<$ \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} $>$ init\+\_\+list, \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}} \+\_\+\+\_\+d=\mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{Device\+::\+CPU}})
 \item 
-\mbox{\hyperlink{classtensor_a9d51a6b554af18e91501016b2d57b41a}{tensor}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+sh, const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other)
+\mbox{\hyperlink{classtensor_a9d51a6b554af18e91501016b2d57b41a}{tensor}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+shape_, const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other)
 \item 
 \mbox{\hyperlink{classtensor_ae13b340184f9059a7b7cab926baee14c}{\texorpdfstring{$\sim$}{\string~}tensor}} ()
 \item 
@@ -338,7 +338,7 @@ size\+\_\+t \mbox{\hyperlink{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}{size
 \item 
 size\+\_\+t \mbox{\hyperlink{classtensor_a5ca3eb4e8f9e1fb6a12a84bb2ea8a88c}{n\+\_\+dims}} () const noexcept
 \item 
-size\+\_\+t \mbox{\hyperlink{classtensor_aea1ca9c0bbcbfc682b0f533c435ca9e9}{size}} (const \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+dim) const
+size\+\_\+t \mbox{\hyperlink{classtensor_aea1ca9c0bbcbfc682b0f533c435ca9e9}{size}} (const \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+dimension) const
 \item 
 size\+\_\+t \mbox{\hyperlink{classtensor_ab39a76ae4819e472970b6238a701e3cd}{capacity}} () const noexcept
 \item 
@@ -384,37 +384,37 @@ double \mbox{\hyperlink{classtensor_ad42a4223b51afd28b81182034b0abe1d}{mean}} ()
 \item 
 \mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor_a96c722c8d9061c254da18c193a158014}{logical\+\_\+not}} () const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor_a3ac04456abf5a11ea70c1d87d8f75f13}{logical\+\_\+or}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val) const
+\mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor_a3ac04456abf5a11ea70c1d87d8f75f13}{logical\+\_\+or}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value) const
 \item 
 \mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor_a0dc360aa827e1525156c4b4a5de011c8}{logical\+\_\+or}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other) const
 \item 
 \mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor_a373dc75f35870b9e2c6a9f3531ac951f}{less\+\_\+equal}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor_a602d92df2b3622eee910a65021789821}{less\+\_\+equal}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val) const
+\mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor_a602d92df2b3622eee910a65021789821}{less\+\_\+equal}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value) const
 \item 
 \mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor_a3037229a04911fdb49bf3d630d2ff9e8}{greater\+\_\+equal}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor_a617bac518334dd51278fb4bc02a2b300}{greater\+\_\+equal}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val) const
+\mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor_a617bac518334dd51278fb4bc02a2b300}{greater\+\_\+equal}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value) const
 \item 
 \mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor_a8c769dc59060620bd81c9e3b3846f694}{equal}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor_aa4e11be82e26420084e5c631a6ac877c}{equal}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val) const
+\mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor_aa4e11be82e26420084e5c631a6ac877c}{equal}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value) const
 \item 
-size\+\_\+t \mbox{\hyperlink{classtensor_a9e5024764efa18a9e882706d0d778821}{count\+\_\+nonzero}} (\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+dim=-\/1LL) const
+size\+\_\+t \mbox{\hyperlink{classtensor_a9e5024764efa18a9e882706d0d778821}{count\+\_\+nonzero}} (\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+dimension=-\/1LL) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a4b4e2d39e238aa3593cf23ca2f26e718}{slice}} (\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+dim, std\+::optional$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$ \+\_\+\+\_\+start, std\+::optional$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$ \+\_\+\+\_\+end, \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+step) const
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a4b4e2d39e238aa3593cf23ca2f26e718}{slice}} (\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+dimension, std\+::optional$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$ \+\_\+\+\_\+start, std\+::optional$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$ \+\_\+\+\_\+end, \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+step) const
 \item 
 \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a52752e0a9df45ae4789a7aeffb5a3886}{fmax}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a1c3108b4cad07a15a99e58528116343e}{fmax}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val) const
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a1c3108b4cad07a15a99e58528116343e}{fmax}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value) const
 \item 
 void \mbox{\hyperlink{classtensor_a50fcf3eb344fc6566d95db639681cada}{fmax\+\_\+}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other)
 \item 
-void \mbox{\hyperlink{classtensor_af61ec49da947866f6915bb41808d330a}{fmax\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val)
+void \mbox{\hyperlink{classtensor_af61ec49da947866f6915bb41808d330a}{fmax\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value)
 \item 
 \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_afc4bd671a73337612886d180e1474a3d}{fmod}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_afa2f0c4c6400b7cd96830278cd0ab80d}{fmod}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val) const
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_afa2f0c4c6400b7cd96830278cd0ab80d}{fmod}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value) const
 \item 
 \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a5160fd8a033949c11118968da884dc7b}{frac}} () const
 \item 
@@ -440,7 +440,7 @@ void \mbox{\hyperlink{classtensor_af61ec49da947866f6915bb41808d330a}{fmax\+\_\+}
 \item 
 \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_af4d9ed02c039debcba0c7ce99197d08a}{clone}} () const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a42dbfd5d5303b0e6950abe5284c54e89}{clamp}} (\mbox{\hyperlink{classtensor_a39d9b723cbcc4fbc18d2d655d1148166}{const\+\_\+pointer}} \+\_\+\+\_\+min\+\_\+val=nullptr, \mbox{\hyperlink{classtensor_a39d9b723cbcc4fbc18d2d655d1148166}{const\+\_\+pointer}} \+\_\+\+\_\+max\+\_\+val=nullptr) const
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a42dbfd5d5303b0e6950abe5284c54e89}{clamp}} (\mbox{\hyperlink{classtensor_a39d9b723cbcc4fbc18d2d655d1148166}{const\+\_\+pointer}} \+\_\+\+\_\+min\+\_\+value=nullptr, \mbox{\hyperlink{classtensor_a39d9b723cbcc4fbc18d2d655d1148166}{const\+\_\+pointer}} \+\_\+\+\_\+max\+\_\+value=nullptr) const
 \item 
 \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a1bf5fc465f680a3b33fb1c509bc4dc93}{cos}} () const
 \item 
@@ -456,23 +456,23 @@ void \mbox{\hyperlink{classtensor_af61ec49da947866f6915bb41808d330a}{fmax\+\_\+}
 \item 
 \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a62d6154a5e082732a9f42327d071f09d}{logical\+\_\+xor}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_af8daceec856815ac882af82b0fbc84dc}{logical\+\_\+xor}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val) const
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_af8daceec856815ac882af82b0fbc84dc}{logical\+\_\+xor}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value) const
 \item 
 \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a5a320fd86b0e479a6795cc4b61179a4b}{logical\+\_\+and}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_ac75503b9ffe82e9f4e705b56fbdf4431}{logical\+\_\+and}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val) const
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_ac75503b9ffe82e9f4e705b56fbdf4431}{logical\+\_\+and}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value) const
 \item 
 \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_abd4feb2e4a8ea40a2aebb1c71a7d4ff1}{bitwise\+\_\+not}} () const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a570fd42df92c758794f7e723d63eee44}{bitwise\+\_\+and}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val) const
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a570fd42df92c758794f7e723d63eee44}{bitwise\+\_\+and}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value) const
 \item 
 \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_ab97fa0c42bda04f0d6472c385ebad3df}{bitwise\+\_\+and}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a40250679b04095915146fef202c9ad0d}{bitwise\+\_\+or}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val) const
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a40250679b04095915146fef202c9ad0d}{bitwise\+\_\+or}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value) const
 \item 
 \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_aa44e1727908dcde0b489636d39a9d36c}{bitwise\+\_\+or}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a200275c2657717c819dd999ed3cb9227}{bitwise\+\_\+xor}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val) const
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a200275c2657717c819dd999ed3cb9227}{bitwise\+\_\+xor}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value) const
 \item 
 \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_ae10f9eaae862dc5d2310cd724cc2f8ac}{bitwise\+\_\+xor}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other) const
 \item 
@@ -498,15 +498,15 @@ void \mbox{\hyperlink{classtensor_af61ec49da947866f6915bb41808d330a}{fmax\+\_\+}
 \item 
 \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a3a1c379f02eb70c79bf377ad66e179de}{pow}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a0f48db22414046cc753f29b2c200668f}{pow}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val) const
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a0f48db22414046cc753f29b2c200668f}{pow}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a70e4695eb515074f90a7bdc0e44cff6d}{cumprod}} (\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+dim=-\/1) const
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a70e4695eb515074f90a7bdc0e44cff6d}{cumprod}} (\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+dimension=-\/1) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a7f8ce161d42ac5aaec8a1c9a461e21f7}{cat}} (const std\+::vector$<$ \mbox{\hyperlink{classtensor}{tensor}} $>$ \&\+\_\+others, \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+dim) const
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a7f8ce161d42ac5aaec8a1c9a461e21f7}{cat}} (const std\+::vector$<$ \mbox{\hyperlink{classtensor}{tensor}} $>$ \&\+\_\+others, \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+dimension) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a6a468a01a82f881e6adb610bd87bb127}{argmax}} (\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+dim) const
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a6a468a01a82f881e6adb610bd87bb127}{argmax}} (\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+dimension) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a1610887cad5d2ea8a0eef6fb5e38fd9f}{unsqueeze}} (\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+dim) const
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a1610887cad5d2ea8a0eef6fb5e38fd9f}{unsqueeze}} (\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+dimension) const
 \item 
 \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \mbox{\hyperlink{classtensor_a81394901132a9eaf23d2b8750ef0b064}{lcm}} () const
 \item 
@@ -524,7 +524,7 @@ void \mbox{\hyperlink{classtensor_affbb069c3c362649a62f1a71c33a9a21}{frac\+\_\+}
 \item 
 void \mbox{\hyperlink{classtensor_a55144a057c60a4feae1c4a5d884a6e08}{fmod\+\_\+}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other)
 \item 
-void \mbox{\hyperlink{classtensor_ac4331c20cac1dbf424b13ababdb6240e}{fmod\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val)
+void \mbox{\hyperlink{classtensor_ac4331c20cac1dbf424b13ababdb6240e}{fmod\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value)
 \item 
 void \mbox{\hyperlink{classtensor_aa7466d7c1c7eac81e1500964807c6a87}{cos\+\_\+}} ()
 \item 
@@ -544,72 +544,72 @@ void \mbox{\hyperlink{classtensor_a5d175d2c6884b43e1530fead8df35aed}{sin\+\_\+}}
 \item 
 void \mbox{\hyperlink{classtensor_a0e71c49ca5485d2407842ee72c1e5aad}{relu\+\_\+}} ()
 \item 
-void \mbox{\hyperlink{classtensor_a12e4f4d8e8117a4ab263ca0182d801d0}{clamp\+\_\+}} (\mbox{\hyperlink{classtensor_a39d9b723cbcc4fbc18d2d655d1148166}{const\+\_\+pointer}} \+\_\+\+\_\+min\+\_\+val=nullptr, \mbox{\hyperlink{classtensor_a39d9b723cbcc4fbc18d2d655d1148166}{const\+\_\+pointer}} \+\_\+\+\_\+max\+\_\+val=nullptr)
+void \mbox{\hyperlink{classtensor_a12e4f4d8e8117a4ab263ca0182d801d0}{clamp\+\_\+}} (\mbox{\hyperlink{classtensor_a39d9b723cbcc4fbc18d2d655d1148166}{const\+\_\+pointer}} \+\_\+\+\_\+min\+\_\+value=nullptr, \mbox{\hyperlink{classtensor_a39d9b723cbcc4fbc18d2d655d1148166}{const\+\_\+pointer}} \+\_\+\+\_\+max\+\_\+value=nullptr)
 \item 
 void \mbox{\hyperlink{classtensor_ac57983dd6df8f7ca1928e163617e3f39}{logical\+\_\+not\+\_\+}} () const
 \item 
 void \mbox{\hyperlink{classtensor_ac8252b697b080ee7a46df90d49a71cd2}{logical\+\_\+or\+\_\+}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other)
 \item 
-void \mbox{\hyperlink{classtensor_ab32cb8d651eff3944a937a5a44475fa9}{logical\+\_\+or\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val)
+void \mbox{\hyperlink{classtensor_ab32cb8d651eff3944a937a5a44475fa9}{logical\+\_\+or\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value)
 \item 
 void \mbox{\hyperlink{classtensor_a49863ae3e46368e7608cfbcc7a6457b4}{logical\+\_\+xor\+\_\+}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other)
 \item 
-void \mbox{\hyperlink{classtensor_a1a295718e73e075331e2b06d666bc134}{logical\+\_\+xor\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val)
+void \mbox{\hyperlink{classtensor_a1a295718e73e075331e2b06d666bc134}{logical\+\_\+xor\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value)
 \item 
 void \mbox{\hyperlink{classtensor_ac353f80c126101bd565874c2e0f23dfc}{logical\+\_\+and\+\_\+}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other)
 \item 
-void \mbox{\hyperlink{classtensor_a415f1ec4d32aea3314f67b8f33d3e7a2}{logical\+\_\+and\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val)
+void \mbox{\hyperlink{classtensor_a415f1ec4d32aea3314f67b8f33d3e7a2}{logical\+\_\+and\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value)
 \item 
 void \mbox{\hyperlink{classtensor_aa15e56eab9d8b11d43850d01fdd092f3}{pow\+\_\+}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other) const
 \item 
-void \mbox{\hyperlink{classtensor_a1a3d2d15c484dfbc9c059466f39b2fcb}{pow\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val) const
+void \mbox{\hyperlink{classtensor_a1a3d2d15c484dfbc9c059466f39b2fcb}{pow\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value) const
 \item 
 void \mbox{\hyperlink{classtensor_a588b233c0544bd96ccadd31159965819}{bitwise\+\_\+left\+\_\+shift\+\_\+}} (const int \+\_\+\+\_\+amount)
 \item 
 void \mbox{\hyperlink{classtensor_a01b4a1e84d5c98b0e318ba0e6e760a5f}{bitwise\+\_\+right\+\_\+shift\+\_\+}} (const int \+\_\+\+\_\+amount)
 \item 
-void \mbox{\hyperlink{classtensor_a4133a204312218f5808198d560ef5fd9}{bitwise\+\_\+and\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val)
+void \mbox{\hyperlink{classtensor_a4133a204312218f5808198d560ef5fd9}{bitwise\+\_\+and\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value)
 \item 
 void \mbox{\hyperlink{classtensor_a7c6bc045229a0721f2ba1e4807fb9fc1}{bitwise\+\_\+and\+\_\+}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other)
 \item 
-void \mbox{\hyperlink{classtensor_aee01d672a9e2a64a5d0b448e51c5b9e6}{bitwise\+\_\+or\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val)
+void \mbox{\hyperlink{classtensor_aee01d672a9e2a64a5d0b448e51c5b9e6}{bitwise\+\_\+or\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value)
 \item 
 void \mbox{\hyperlink{classtensor_a316a87bcf02f171ec2c51b06490dd9b1}{bitwise\+\_\+or\+\_\+}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other)
 \item 
-void \mbox{\hyperlink{classtensor_aa739b2a5c0e940507c890bdd44f6de61}{bitwise\+\_\+xor\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+val)
+void \mbox{\hyperlink{classtensor_aa739b2a5c0e940507c890bdd44f6de61}{bitwise\+\_\+xor\+\_\+}} (const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \+\_\+\+\_\+value)
 \item 
 void \mbox{\hyperlink{classtensor_a46542542550e40fa48d8436b570a0bea}{bitwise\+\_\+xor\+\_\+}} (const \mbox{\hyperlink{classtensor}{tensor}} \&\+\_\+\+\_\+other)
 \item 
 void \mbox{\hyperlink{classtensor_a094082f2e570f061d5ab0286deefd28b}{bitwise\+\_\+not\+\_\+}} ()
 \item 
-void \mbox{\hyperlink{classtensor_a3acb46cbe6fef2c976377230ac7f55af}{view}} (std\+::initializer\+\_\+list$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$ \+\_\+\+\_\+new\+\_\+sh)
+void \mbox{\hyperlink{classtensor_a3acb46cbe6fef2c976377230ac7f55af}{view}} (std\+::initializer\+\_\+list$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$ \+\_\+\+\_\+new\+\_\+shape_)
 \item 
 void \mbox{\hyperlink{classtensor_a8450490717c0f64e904eb184ea3f95e1}{print}} () const noexcept
 \item 
-void \mbox{\hyperlink{classtensor_ade1cbb40531ba39910276a996ac71171}{zeros\+\_\+}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+sh=\{\})
+void \mbox{\hyperlink{classtensor_ade1cbb40531ba39910276a996ac71171}{zeros\+\_\+}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+shape_=\{\})
 \item 
-void \mbox{\hyperlink{classtensor_af85d365f1742ecfeb53d45078c6bb175}{ones\+\_\+}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+sh=\{\})
+void \mbox{\hyperlink{classtensor_af85d365f1742ecfeb53d45078c6bb175}{ones\+\_\+}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+shape_=\{\})
 \item 
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a20863590cea81232510fe488796db83d}{randomize}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+sh, bool \+\_\+\+\_\+bounded=false)
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a20863590cea81232510fe488796db83d}{randomize}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+shape_, bool \+\_\+\+\_\+bounded=false)
 \item 
-void \mbox{\hyperlink{classtensor_a43f96a71e4140f306bfc89519496b56c}{randomize\+\_\+}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+sh, bool \+\_\+\+\_\+bounded=false)
+void \mbox{\hyperlink{classtensor_a43f96a71e4140f306bfc89519496b56c}{randomize\+\_\+}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+shape_, bool \+\_\+\+\_\+bounded=false)
 \item 
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$ \mbox{\hyperlink{classtensor_a203dab98de49051f7b975d4ce9b13061}{argmax\+\_\+}} (\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+dim) const
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$ \mbox{\hyperlink{classtensor_a203dab98de49051f7b975d4ce9b13061}{argmax\+\_\+}} (\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+dimension) const
 \item 
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$ \mbox{\hyperlink{classtensor_a03ecdc6c4d5aa8e4574db454cc5222f9}{argsort}} (\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+dim=-\/1LL, bool \+\_\+\+\_\+ascending=true) const
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$ \mbox{\hyperlink{classtensor_a03ecdc6c4d5aa8e4574db454cc5222f9}{argsort}} (\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} \+\_\+\+\_\+dimension=-\/1LL, bool \+\_\+\+\_\+ascending=true) const
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Static Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-static \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_a208ccff9884d31ed1039902622e9472e}{zeros}} (const std\+::vector$<$ int64\+\_\+t $>$ \&\+\_\+sh)
+static \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_a208ccff9884d31ed1039902622e9472e}{zeros}} (const std\+::vector$<$ int64\+\_\+t $>$ \&\+\_\+shape_)
 \item 
-static \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_aa873303356fcce38e3f762c325e33920}{ones}} (const std\+::vector$<$ int64\+\_\+t $>$ \&\+\_\+sh)
+static \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_aa873303356fcce38e3f762c325e33920}{ones}} (const std\+::vector$<$ int64\+\_\+t $>$ \&\+\_\+shape_)
 \item 
-static \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_a0206a53b82db00a90635877556a9b987}{randomize}} (const std\+::vector$<$ int64\+\_\+t $>$ \&\+\_\+sh, bool \+\_\+bounded=false)
+static \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor_a0206a53b82db00a90635877556a9b987}{randomize}} (const std\+::vector$<$ int64\+\_\+t $>$ \&\+\_\+shape_, bool \+\_\+bounded=false)
 \item 
-static \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_add986e2ab92d708e16defa9daa14555f}{zeros}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+sh)
+static \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_add986e2ab92d708e16defa9daa14555f}{zeros}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+shape_)
 \item 
-static \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a6fde11f54df73f6cf14224471f38f72b}{ones}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+sh)
+static \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor_a6fde11f54df73f6cf14224471f38f72b}{ones}} (const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&\+\_\+\+\_\+shape_)
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Public Attributes}
 \begin{DoxyCompactItemize}
@@ -732,21 +732,21 @@ template$<$typename \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{tensor()}{tensor()}\hspace{0.1cm}{\footnotesize\ttfamily [2/12]}}
 {\footnotesize\ttfamily \label{classtensor_ad22a32030600f96df9fc5a7e2b0ab392} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor}{\+::tensor}} (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ int64\+\_\+t $>$}]{\+\_\+\+\_\+sh}{, }\item[{const \+\_\+\+Tp}]{val}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor}{\+::tensor}} (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ int64\+\_\+t $>$}]{\+\_\+\+\_\+shape_}{, }\item[{const \+\_\+\+Tp}]{value}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_add431218c82f5859a13e30022cb2933d}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!tensor@{tensor}}
 \index{tensor@{tensor}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{tensor()}{tensor()}\hspace{0.1cm}{\footnotesize\ttfamily [3/12]}}
 {\footnotesize\ttfamily \label{classtensor_add431218c82f5859a13e30022cb2933d} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor}{\+::tensor}} (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ int64\+\_\+t $>$}]{\+\_\+\+\_\+sh}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor}{\+::tensor}} (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ int64\+\_\+t $>$}]{\+\_\+\+\_\+shape_}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_a5e09dbab50ebd24cc3d9cc35657c165d}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!tensor@{tensor}}
 \index{tensor@{tensor}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{tensor()}{tensor()}\hspace{0.1cm}{\footnotesize\ttfamily [4/12]}}
 {\footnotesize\ttfamily \label{classtensor_a5e09dbab50ebd24cc3d9cc35657c165d} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor}{\+::tensor}} (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \+\_\+\+Tp $>$}]{\+\_\+\+\_\+d}{, }\item[{const std\+::vector$<$ int64\+\_\+t $>$}]{\+\_\+\+\_\+sh}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor}{\+::tensor}} (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \+\_\+\+Tp $>$}]{\+\_\+\+\_\+d}{, }\item[{const std\+::vector$<$ int64\+\_\+t $>$}]{\+\_\+\+\_\+shape_}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_aa3049f7ce6b011e9037add3d9881bd83}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!tensor@{tensor}}
 \index{tensor@{tensor}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -760,21 +760,21 @@ template$<$typename \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{tensor()}{tensor()}\hspace{0.1cm}{\footnotesize\ttfamily [6/12]}}
 {\footnotesize\ttfamily \label{classtensor_afaa30cca2bb4d8d5bbbe5de06e8e77e2} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor}{\+::tensor}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+sh}{, }\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \&}]{\+\_\+\+\_\+v}{, }\item[{\mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}}}]{\+\_\+\+\_\+d}{ = {\ttfamily \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{Device\+::\+CPU}}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor}{\+::tensor}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+shape_}{, }\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} \&}]{\+\_\+\+\_\+v}{, }\item[{\mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}}}]{\+\_\+\+\_\+d}{ = {\ttfamily \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{Device\+::\+CPU}}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
 
 \Hypertarget{classtensor_aa2ae9879255d3be01327fcc27cd9ab94}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!tensor@{tensor}}
 \index{tensor@{tensor}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{tensor()}{tensor()}\hspace{0.1cm}{\footnotesize\ttfamily [7/12]}}
 {\footnotesize\ttfamily \label{classtensor_aa2ae9879255d3be01327fcc27cd9ab94} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor}{\+::tensor}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+sh}{, }\item[{\mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}}}]{\+\_\+\+\_\+d}{ = {\ttfamily \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{Device\+::\+CPU}}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor}{\+::tensor}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+shape_}{, }\item[{\mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}}}]{\+\_\+\+\_\+d}{ = {\ttfamily \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{Device\+::\+CPU}}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
 
 \Hypertarget{classtensor_ab7c9217e98f8ccf9c366a65474faded7}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!tensor@{tensor}}
 \index{tensor@{tensor}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{tensor()}{tensor()}\hspace{0.1cm}{\footnotesize\ttfamily [8/12]}}
 {\footnotesize\ttfamily \label{classtensor_ab7c9217e98f8ccf9c366a65474faded7} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor}{\+::tensor}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a1248d808ef5c7b0f868bfa7c0cc25f59}{data\+\_\+t}} \&}]{\+\_\+\+\_\+d}{, }\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+sh}{, }\item[{\mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}}}]{\+\_\+\+\_\+dev}{ = {\ttfamily \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{Device\+::\+CPU}}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor}{\+::tensor}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a1248d808ef5c7b0f868bfa7c0cc25f59}{data\+\_\+t}} \&}]{\+\_\+\+\_\+d}{, }\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+shape_}{, }\item[{\mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}}}]{\+\_\+\+\_\+dev}{ = {\ttfamily \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{Device\+::\+CPU}}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
 
 \Hypertarget{classtensor_ab22c24a7f5afa3635a7ba8c4940e95ed}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!tensor@{tensor}}
 \index{tensor@{tensor}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -795,14 +795,14 @@ template$<$typename \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{tensor()}{tensor()}\hspace{0.1cm}{\footnotesize\ttfamily [11/12]}}
 {\footnotesize\ttfamily \label{classtensor_a70819bf3c928f595299389d5e0605aeb} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor}{\+::tensor}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+sh}{, }\item[{std\+::initializer\+\_\+list$<$ \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} $>$}]{init\+\_\+list}{, }\item[{\mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}}}]{\+\_\+\+\_\+d}{ = {\ttfamily \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{Device\+::\+CPU}}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor}{\+::tensor}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+shape_}{, }\item[{std\+::initializer\+\_\+list$<$ \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}} $>$}]{init\+\_\+list}{, }\item[{\mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8}{Device}}}]{\+\_\+\+\_\+d}{ = {\ttfamily \mbox{\hyperlink{tensor_8hpp_adb53a8cc97236ca207c035241a5b7fb8a2b55387dd066c5bac646ac61543d152d}{Device\+::\+CPU}}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_a9d51a6b554af18e91501016b2d57b41a}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!tensor@{tensor}}
 \index{tensor@{tensor}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{tensor()}{tensor()}\hspace{0.1cm}{\footnotesize\ttfamily [12/12]}}
 {\footnotesize\ttfamily \label{classtensor_a9d51a6b554af18e91501016b2d57b41a} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor}{\+::tensor}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+sh}{, }\item[{const \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \&}]{\+\_\+\+\_\+other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor}{\+::tensor}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+shape_}{, }\item[{const \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \&}]{\+\_\+\+\_\+other}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_ae13b340184f9059a7b7cab926baee14c}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!````~tensor@{\texorpdfstring{$\sim$}{\string~}tensor}}
 \index{````~tensor@{\texorpdfstring{$\sim$}{\string~}tensor}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -861,42 +861,42 @@ void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::acosh\+\_\+ (\b
 \doxysubsubsection{\texorpdfstring{argmax()}{argmax()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \label{classtensor_a6a468a01a82f881e6adb610bd87bb127} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::argmax (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+dim}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::argmax (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+dimension}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_af8ff9002a615c25b587b2de6d75dc206}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!argmax@{argmax}}
 \index{argmax@{argmax}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{argmax()}{argmax()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{classtensor_af8ff9002a615c25b587b2de6d75dc206} 
 template$<$class \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::argmax (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{\+\_\+dim}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::argmax (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{\+\_\+dimension}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_a203dab98de49051f7b975d4ce9b13061}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!argmax\_@{argmax\_}}
 \index{argmax\_@{argmax\_}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{argmax\_()}{argmax\_()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \label{classtensor_a203dab98de49051f7b975d4ce9b13061} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::argmax\+\_\+ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+dim}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::argmax\+\_\+ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+dimension}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_ad56d35a65d0417510a087e55fd35ab0a}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!argmax\_@{argmax\_}}
 \index{argmax\_@{argmax\_}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{argmax\_()}{argmax\_()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{classtensor_ad56d35a65d0417510a087e55fd35ab0a} 
 template$<$class \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ typename \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{\+::index\+\_\+type}} $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::argmax\+\_\+ (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{\+\_\+dim}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ typename \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{\+::index\+\_\+type}} $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::argmax\+\_\+ (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{\+\_\+dimension}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_a03ecdc6c4d5aa8e4574db454cc5222f9}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!argsort@{argsort}}
 \index{argsort@{argsort}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{argsort()}{argsort()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \label{classtensor_a03ecdc6c4d5aa8e4574db454cc5222f9} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::argsort (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+dim}{ = {\ttfamily -\/1LL}, }\item[{bool}]{\+\_\+\+\_\+ascending}{ = {\ttfamily true}}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::argsort (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+dimension}{ = {\ttfamily -\/1LL}, }\item[{bool}]{\+\_\+\+\_\+ascending}{ = {\ttfamily true}}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_a841f49974f95a3e39c71b04f8a748218}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!argsort@{argsort}}
 \index{argsort@{argsort}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{argsort()}{argsort()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{classtensor_a841f49974f95a3e39c71b04f8a748218} 
 template$<$class \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ typename \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{\+::index\+\_\+type}} $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::argsort (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{\+\_\+dim}{ = {\ttfamily -\/1LL}, }\item[{bool}]{\+\_\+ascending}{ = {\ttfamily true}}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ typename \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{\+::index\+\_\+type}} $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::argsort (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{\+\_\+dimension}{ = {\ttfamily -\/1LL}, }\item[{bool}]{\+\_\+ascending}{ = {\ttfamily true}}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_adfe7048b3f768e46ed347d50161c0dae}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!asinh@{asinh}}
 \index{asinh@{asinh}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -994,7 +994,7 @@ template$<$typename \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{bitwise\_and()}{bitwise\_and()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_a570fd42df92c758794f7e723d63eee44} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::bitwise\+\_\+and (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::bitwise\+\_\+and (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_addc040f1f7b20849180f04bcfac0a77c}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!bitwise\_and\_@{bitwise\_and\_}}
 \index{bitwise\_and\_@{bitwise\_and\_}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1022,7 +1022,7 @@ void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::bitwise\+\_\+an
 \doxysubsubsection{\texorpdfstring{bitwise\_and\_()}{bitwise\_and\_()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_a4133a204312218f5808198d560ef5fd9} 
 template$<$typename \+\_\+\+Tp $>$ \\
-void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::bitwise\+\_\+and\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption})}
+void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::bitwise\+\_\+and\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption})}
 
 \Hypertarget{classtensor_a2936dc04429a63739592064ea98880fb}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!bitwise\_left\_shift@{bitwise\_left\_shift}}
 \index{bitwise\_left\_shift@{bitwise\_left\_shift}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1106,7 +1106,7 @@ template$<$typename \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{bitwise\_or()}{bitwise\_or()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_a40250679b04095915146fef202c9ad0d} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::bitwise\+\_\+or (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::bitwise\+\_\+or (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_aa40e092a039ef0ad7c7354b7afd093a2}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!bitwise\_or\_@{bitwise\_or\_}}
 \index{bitwise\_or\_@{bitwise\_or\_}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1134,7 +1134,7 @@ void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::bitwise\+\_\+or
 \doxysubsubsection{\texorpdfstring{bitwise\_or\_()}{bitwise\_or\_()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_aee01d672a9e2a64a5d0b448e51c5b9e6} 
 template$<$typename \+\_\+\+Tp $>$ \\
-void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::bitwise\+\_\+or\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption})}
+void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::bitwise\+\_\+or\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption})}
 
 \Hypertarget{classtensor_a947c9bfcbd602caa26a4d95530d70aa6}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!bitwise\_right\_shift@{bitwise\_right\_shift}}
 \index{bitwise\_right\_shift@{bitwise\_right\_shift}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1190,7 +1190,7 @@ template$<$class \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{bitwise\_xor()}{bitwise\_xor()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_a200275c2657717c819dd999ed3cb9227} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::bitwise\+\_\+xor (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::bitwise\+\_\+xor (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_a9f73f1a3264e3f3ca69755b68ec1d0df}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!bitwise\_xor\_@{bitwise\_xor\_}}
 \index{bitwise\_xor\_@{bitwise\_xor\_}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1218,7 +1218,7 @@ void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::bitwise\+\_\+xo
 \doxysubsubsection{\texorpdfstring{bitwise\_xor\_()}{bitwise\_xor\_()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_aa739b2a5c0e940507c890bdd44f6de61} 
 template$<$typename \+\_\+\+Tp $>$ \\
-void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::bitwise\+\_\+xor\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption})}
+void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::bitwise\+\_\+xor\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption})}
 
 \Hypertarget{classtensor_ab39a76ae4819e472970b6238a701e3cd}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!capacity@{capacity}}
 \index{capacity@{capacity}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1232,14 +1232,14 @@ size\+\_\+t \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::capacity
 \doxysubsubsection{\texorpdfstring{cat()}{cat()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \label{classtensor_a7f8ce161d42ac5aaec8a1c9a461e21f7} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::cat (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ $>$ \&}]{\+\_\+others}{, }\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+dim}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::cat (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ $>$ \&}]{\+\_\+others}{, }\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+dimension}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_ac40335f8961d05a0a4c4ec306dcd0dbd}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!cat@{cat}}
 \index{cat@{cat}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{cat()}{cat()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{classtensor_ac40335f8961d05a0a4c4ec306dcd0dbd} 
 template$<$class \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::cat (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ $>$ \&}]{\+\_\+others}{, }\item[{int64\+\_\+t}]{\+\_\+dim}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::cat (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ $>$ \&}]{\+\_\+others}{, }\item[{int64\+\_\+t}]{\+\_\+dimension}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_a3062f36e627469c71bce1a4e268cdf95}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!ceil@{ceil}}
 \index{ceil@{ceil}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1274,28 +1274,28 @@ void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::ceil\+\_\+ (\be
 \doxysubsubsection{\texorpdfstring{clamp()}{clamp()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \label{classtensor_ae3c45dc71c1090025661005112a1f834} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::clamp (\begin{DoxyParamCaption}\item[{const \+\_\+\+Tp \texorpdfstring{$\ast$}{*}}]{\+\_\+min\+\_\+val}{ = {\ttfamily nullptr}, }\item[{const \+\_\+\+Tp \texorpdfstring{$\ast$}{*}}]{\+\_\+max\+\_\+val}{ = {\ttfamily nullptr}}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::clamp (\begin{DoxyParamCaption}\item[{const \+\_\+\+Tp \texorpdfstring{$\ast$}{*}}]{\+\_\+min\+\_\+value}{ = {\ttfamily nullptr}, }\item[{const \+\_\+\+Tp \texorpdfstring{$\ast$}{*}}]{\+\_\+max\+\_\+value}{ = {\ttfamily nullptr}}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_a42dbfd5d5303b0e6950abe5284c54e89}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!clamp@{clamp}}
 \index{clamp@{clamp}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{clamp()}{clamp()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{classtensor_a42dbfd5d5303b0e6950abe5284c54e89} 
 template$<$class \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::clamp (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_a39d9b723cbcc4fbc18d2d655d1148166}{const\+\_\+pointer}}}]{\+\_\+\+\_\+min\+\_\+val}{ = {\ttfamily nullptr}, }\item[{\mbox{\hyperlink{classtensor_a39d9b723cbcc4fbc18d2d655d1148166}{const\+\_\+pointer}}}]{\+\_\+\+\_\+max\+\_\+val}{ = {\ttfamily nullptr}}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::clamp (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_a39d9b723cbcc4fbc18d2d655d1148166}{const\+\_\+pointer}}}]{\+\_\+\+\_\+min\+\_\+value}{ = {\ttfamily nullptr}, }\item[{\mbox{\hyperlink{classtensor_a39d9b723cbcc4fbc18d2d655d1148166}{const\+\_\+pointer}}}]{\+\_\+\+\_\+max\+\_\+value}{ = {\ttfamily nullptr}}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_a611871f79215f582779adbea1a661882}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!clamp\_@{clamp\_}}
 \index{clamp\_@{clamp\_}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{clamp\_()}{clamp\_()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \label{classtensor_a611871f79215f582779adbea1a661882} 
 template$<$typename \+\_\+\+Tp $>$ \\
-void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::clamp\+\_\+ (\begin{DoxyParamCaption}\item[{const \+\_\+\+Tp \texorpdfstring{$\ast$}{*}}]{\+\_\+min\+\_\+val}{ = {\ttfamily nullptr}, }\item[{const \+\_\+\+Tp \texorpdfstring{$\ast$}{*}}]{\+\_\+max\+\_\+val}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::clamp\+\_\+ (\begin{DoxyParamCaption}\item[{const \+\_\+\+Tp \texorpdfstring{$\ast$}{*}}]{\+\_\+min\+\_\+value}{ = {\ttfamily nullptr}, }\item[{const \+\_\+\+Tp \texorpdfstring{$\ast$}{*}}]{\+\_\+max\+\_\+value}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_a12e4f4d8e8117a4ab263ca0182d801d0}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!clamp\_@{clamp\_}}
 \index{clamp\_@{clamp\_}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{clamp\_()}{clamp\_()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{classtensor_a12e4f4d8e8117a4ab263ca0182d801d0} 
 template$<$class \+\_\+\+Tp $>$ \\
-void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::clamp\+\_\+ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_a39d9b723cbcc4fbc18d2d655d1148166}{const\+\_\+pointer}}}]{\+\_\+\+\_\+min\+\_\+val}{ = {\ttfamily nullptr}, }\item[{\mbox{\hyperlink{classtensor_a39d9b723cbcc4fbc18d2d655d1148166}{const\+\_\+pointer}}}]{\+\_\+\+\_\+max\+\_\+val}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})}
+void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::clamp\+\_\+ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_a39d9b723cbcc4fbc18d2d655d1148166}{const\+\_\+pointer}}}]{\+\_\+\+\_\+min\+\_\+value}{ = {\ttfamily nullptr}, }\item[{\mbox{\hyperlink{classtensor_a39d9b723cbcc4fbc18d2d655d1148166}{const\+\_\+pointer}}}]{\+\_\+\+\_\+max\+\_\+value}{ = {\ttfamily nullptr}}\end{DoxyParamCaption})}
 
 \Hypertarget{classtensor_ad36b019cc3d3e5b34d437a3155d9dac7}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!clone@{clone}}
 \index{clone@{clone}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1386,14 +1386,14 @@ void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::cosh\+\_\+ (\be
 \doxysubsubsection{\texorpdfstring{count\_nonzero()}{count\_nonzero()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \label{classtensor_a9e5024764efa18a9e882706d0d778821} 
 template$<$typename \+\_\+\+Tp $>$ \\
-size\+\_\+t \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::count\+\_\+nonzero (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+dim}{ = {\ttfamily -\/1LL}}\end{DoxyParamCaption}) const}
+size\+\_\+t \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::count\+\_\+nonzero (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+dimension}{ = {\ttfamily -\/1LL}}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_a45218616edeefdc8558691ad83ebe1bc}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!count\_nonzero@{count\_nonzero}}
 \index{count\_nonzero@{count\_nonzero}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{count\_nonzero()}{count\_nonzero()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{classtensor_a45218616edeefdc8558691ad83ebe1bc} 
 template$<$class \+\_\+\+Tp $>$ \\
-size\+\_\+t \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::count\+\_\+nonzero (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{dim}{ = {\ttfamily -\/1LL}}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+size\+\_\+t \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::count\+\_\+nonzero (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{dimension}{ = {\ttfamily -\/1LL}}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_a387313f030fd5a23bf15e9995d0adc17}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!cross\_product@{cross\_product}}
 \index{cross\_product@{cross\_product}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1414,14 +1414,14 @@ template$<$class \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{cumprod()}{cumprod()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \label{classtensor_a70e4695eb515074f90a7bdc0e44cff6d} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::cumprod (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+dim}{ = {\ttfamily -\/1}}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::cumprod (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+dimension}{ = {\ttfamily -\/1}}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_a949fa89abc9832f91f7ba551dd641d22}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!cumprod@{cumprod}}
 \index{cumprod@{cumprod}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{cumprod()}{cumprod()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{classtensor_a949fa89abc9832f91f7ba551dd641d22} 
 template$<$class \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::cumprod (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{\+\_\+dim}{ = {\ttfamily -\/1}}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::cumprod (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{\+\_\+dimension}{ = {\ttfamily -\/1}}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_a1ee059dcb01e158f4975fc692b0ce497}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!device@{device}}
 \index{device@{device}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1498,7 +1498,7 @@ template$<$class \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{equal()}{equal()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_aa4e11be82e26420084e5c631a6ac877c} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::equal (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::equal (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_a9966cc57b6cabfd62fc620ff13c7040b}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!exp@{exp}}
 \index{exp@{exp}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1575,7 +1575,7 @@ template$<$class \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{fmax()}{fmax()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
 {\footnotesize\ttfamily \label{classtensor_a1c3108b4cad07a15a99e58528116343e} 
 template$<$class \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::fmax (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::fmax (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_a50fcf3eb344fc6566d95db639681cada}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!fmax\_@{fmax\_}}
 \index{fmax\_@{fmax\_}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1589,7 +1589,7 @@ void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::fmax\+\_\+ (\be
 \doxysubsubsection{\texorpdfstring{fmax\_()}{fmax\_()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{classtensor_af61ec49da947866f6915bb41808d330a} 
 template$<$class \+\_\+\+Tp $>$ \\
-void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::fmax\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption})}
+void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::fmax\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption})}
 
 \Hypertarget{classtensor_afc4bd671a73337612886d180e1474a3d}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!fmod@{fmod}}
 \index{fmod@{fmod}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1610,7 +1610,7 @@ template$<$class \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{fmod()}{fmod()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
 {\footnotesize\ttfamily \label{classtensor_afa2f0c4c6400b7cd96830278cd0ab80d} 
 template$<$class \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::fmod (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::fmod (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_a55144a057c60a4feae1c4a5d884a6e08}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!fmod\_@{fmod\_}}
 \index{fmod\_@{fmod\_}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1631,7 +1631,7 @@ void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::fmod\+\_\+ (\be
 \doxysubsubsection{\texorpdfstring{fmod\_()}{fmod\_()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
 {\footnotesize\ttfamily \label{classtensor_ac4331c20cac1dbf424b13ababdb6240e} 
 template$<$class \+\_\+\+Tp $>$ \\
-void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::fmod\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption})}
+void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::fmod\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption})}
 
 \Hypertarget{classtensor_a8143b6d554738a2476e4ec9f77b0724a}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!frac@{frac}}
 \index{frac@{frac}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1687,7 +1687,7 @@ template$<$class \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{greater\_equal()}{greater\_equal()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_a617bac518334dd51278fb4bc02a2b300} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::greater\+\_\+equal (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::greater\+\_\+equal (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_a2110f98d54f02024c7c591fec2967b0e}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!lcm@{lcm}}
 \index{lcm@{lcm}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1729,7 +1729,7 @@ template$<$class \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{less\_equal()}{less\_equal()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_a602d92df2b3622eee910a65021789821} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::less\+\_\+equal (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::less\+\_\+equal (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_a4abdae5ad99250f19b77be41b4dc23af}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!log@{log}}
 \index{log@{log}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1841,7 +1841,7 @@ template$<$class \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{logical\_and()}{logical\_and()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_ac75503b9ffe82e9f4e705b56fbdf4431} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::logical\+\_\+and (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::logical\+\_\+and (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_ac17ec90d10443b37d8618c9cf6049a72}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!logical\_and\_@{logical\_and\_}}
 \index{logical\_and\_@{logical\_and\_}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1869,7 +1869,7 @@ void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::logical\+\_\+an
 \doxysubsubsection{\texorpdfstring{logical\_and\_()}{logical\_and\_()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_a415f1ec4d32aea3314f67b8f33d3e7a2} 
 template$<$typename \+\_\+\+Tp $>$ \\
-void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::logical\+\_\+and\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption})}
+void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::logical\+\_\+and\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption})}
 
 \Hypertarget{classtensor_a96c722c8d9061c254da18c193a158014}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!logical\_not@{logical\_not}}
 \index{logical\_not@{logical\_not}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1925,7 +1925,7 @@ template$<$class \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{logical\_or()}{logical\_or()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_a3ac04456abf5a11ea70c1d87d8f75f13} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::logical\+\_\+or (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ bool $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::logical\+\_\+or (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_a75504ffaf44992c9fa0767d595471094}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!logical\_or\_@{logical\_or\_}}
 \index{logical\_or\_@{logical\_or\_}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1953,7 +1953,7 @@ void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::logical\+\_\+or
 \doxysubsubsection{\texorpdfstring{logical\_or\_()}{logical\_or\_()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_ab32cb8d651eff3944a937a5a44475fa9} 
 template$<$typename \+\_\+\+Tp $>$ \\
-void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::logical\+\_\+or\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption})}
+void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::logical\+\_\+or\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption})}
 
 \Hypertarget{classtensor_ab4305d0a0f432af184efcaf62ab0b612}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!logical\_xor@{logical\_xor}}
 \index{logical\_xor@{logical\_xor}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -1981,7 +1981,7 @@ template$<$class \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{logical\_xor()}{logical\_xor()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_af8daceec856815ac882af82b0fbc84dc} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::logical\+\_\+xor (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::logical\+\_\+xor (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_ab9d9440c1065958e733f1ee3e02d3624}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!logical\_xor\_@{logical\_xor\_}}
 \index{logical\_xor\_@{logical\_xor\_}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -2009,7 +2009,7 @@ void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::logical\+\_\+xo
 \doxysubsubsection{\texorpdfstring{logical\_xor\_()}{logical\_xor\_()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_a1a295718e73e075331e2b06d666bc134} 
 template$<$typename \+\_\+\+Tp $>$ \\
-void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::logical\+\_\+xor\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption})}
+void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::logical\+\_\+xor\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption})}
 
 \Hypertarget{classtensor_aaad2cf47c11950f3eadb37e979f80915}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!matmul@{matmul}}
 \index{matmul@{matmul}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -2058,21 +2058,21 @@ size\+\_\+t \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::n\+\_\+d
 \doxysubsubsection{\texorpdfstring{ones()}{ones()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \label{classtensor_a6fde11f54df73f6cf14224471f38f72b} 
 template$<$typename \+\_\+\+Tp $>$ \\
-static \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::ones (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+sh}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+static \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::ones (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+shape_}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
 
 \Hypertarget{classtensor_aa873303356fcce38e3f762c325e33920}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!ones@{ones}}
 \index{ones@{ones}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{ones()}{ones()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{classtensor_aa873303356fcce38e3f762c325e33920} 
 template$<$typename \+\_\+\+Tp $>$ \\
-static \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::ones (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ int64\+\_\+t $>$ \&}]{\+\_\+sh}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+static \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::ones (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ int64\+\_\+t $>$ \&}]{\+\_\+shape_}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
 
 \Hypertarget{classtensor_af85d365f1742ecfeb53d45078c6bb175}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!ones\_@{ones\_}}
 \index{ones\_@{ones\_}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{ones\_()}{ones\_()}}
 {\footnotesize\ttfamily \label{classtensor_af85d365f1742ecfeb53d45078c6bb175} 
 template$<$typename \+\_\+\+Tp $>$ \\
-void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::ones\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+sh}{ = {\ttfamily \{\}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::ones\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+shape_}{ = {\ttfamily \{\}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_a52525f73888a2a980485aae22a4a3cb6}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!operator"!=@{operator"!=}}
 \index{operator"!=@{operator"!=}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -2338,7 +2338,7 @@ template$<$class \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{pow()}{pow()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_a0f48db22414046cc753f29b2c200668f} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::pow (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::pow (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_a9b1063d7a15f2b92042982d0cf61fac0}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!pow\_@{pow\_}}
 \index{pow\_@{pow\_}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -2366,7 +2366,7 @@ void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::pow\+\_\+ (\beg
 \doxysubsubsection{\texorpdfstring{pow\_()}{pow\_()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
 {\footnotesize\ttfamily \label{classtensor_a1a3d2d15c484dfbc9c059466f39b2fcb} 
 template$<$typename \+\_\+\+Tp $>$ \\
-void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::pow\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+val}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::pow\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_a12614e7ef399b40d0eca22d10360149f}{value\+\_\+type}}}]{\+\_\+\+\_\+value}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_a98ff9eb7aa9a40b88c9a64397238bb5a}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!print@{print}}
 \index{print@{print}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -2387,21 +2387,21 @@ void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::print (\begin{D
 \doxysubsubsection{\texorpdfstring{randomize()}{randomize()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \label{classtensor_a20863590cea81232510fe488796db83d} 
 template$<$class \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::randomize (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+sh}{, }\item[{bool}]{\+\_\+\+\_\+bounded}{ = {\ttfamily false}}\end{DoxyParamCaption})}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::randomize (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+shape_}{, }\item[{bool}]{\+\_\+\+\_\+bounded}{ = {\ttfamily false}}\end{DoxyParamCaption})}
 
 \Hypertarget{classtensor_a0206a53b82db00a90635877556a9b987}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!randomize@{randomize}}
 \index{randomize@{randomize}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{randomize()}{randomize()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{classtensor_a0206a53b82db00a90635877556a9b987} 
 template$<$typename \+\_\+\+Tp $>$ \\
-static \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::randomize (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ int64\+\_\+t $>$ \&}]{\+\_\+sh}{, }\item[{bool}]{\+\_\+bounded}{ = {\ttfamily false}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+static \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::randomize (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ int64\+\_\+t $>$ \&}]{\+\_\+shape_}{, }\item[{bool}]{\+\_\+bounded}{ = {\ttfamily false}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
 
 \Hypertarget{classtensor_a43f96a71e4140f306bfc89519496b56c}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!randomize\_@{randomize\_}}
 \index{randomize\_@{randomize\_}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{randomize\_()}{randomize\_()}}
 {\footnotesize\ttfamily \label{classtensor_a43f96a71e4140f306bfc89519496b56c} 
 template$<$class \+\_\+\+Tp $>$ \\
-void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::randomize\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+sh}{, }\item[{bool}]{\+\_\+\+\_\+bounded}{ = {\ttfamily false}}\end{DoxyParamCaption})}
+void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::randomize\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+shape_}{, }\item[{bool}]{\+\_\+\+\_\+bounded}{ = {\ttfamily false}}\end{DoxyParamCaption})}
 
 \Hypertarget{classtensor_a9a79e5c47052ce93e492ba4e98efc34e}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!rbegin@{rbegin}}
 \index{rbegin@{rbegin}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -2562,28 +2562,28 @@ void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::sinh\+\_\+ (\be
 \doxysubsubsection{\texorpdfstring{size()}{size()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \label{classtensor_aea1ca9c0bbcbfc682b0f533c435ca9e9} 
 template$<$typename \+\_\+\+Tp $>$ \\
-size\+\_\+t \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::size (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+dim}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+size\+\_\+t \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::size (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+dimension}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!size@{size}}
 \index{size@{size}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{size()}{size()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{classtensor_a119a24ebef8a13cd8fd262a1c00b48b7} 
 template$<$typename \+\_\+\+Tp $>$ \\
-size\+\_\+t \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::size (\begin{DoxyParamCaption}\item[{const int64\+\_\+t}]{\+\_\+dim}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+size\+\_\+t \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::size (\begin{DoxyParamCaption}\item[{const int64\+\_\+t}]{\+\_\+dimension}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_a4b4e2d39e238aa3593cf23ca2f26e718}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!slice@{slice}}
 \index{slice@{slice}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{slice()}{slice()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \label{classtensor_a4b4e2d39e238aa3593cf23ca2f26e718} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::slice (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+dim}{, }\item[{std\+::optional$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$}]{\+\_\+\+\_\+start}{, }\item[{std\+::optional$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$}]{\+\_\+\+\_\+end}{, }\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+step}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::slice (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+dimension}{, }\item[{std\+::optional$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$}]{\+\_\+\+\_\+start}{, }\item[{std\+::optional$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$}]{\+\_\+\+\_\+end}{, }\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+step}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_a76c0a553a8d693702352808474007f50}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!slice@{slice}}
 \index{slice@{slice}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{slice()}{slice()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{classtensor_a76c0a553a8d693702352808474007f50} 
 template$<$class \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::slice (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{\+\_\+dim}{, }\item[{std\+::optional$<$ int64\+\_\+t $>$}]{\+\_\+start}{, }\item[{std\+::optional$<$ int64\+\_\+t $>$}]{\+\_\+end}{, }\item[{int64\+\_\+t}]{\+\_\+step}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::slice (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{\+\_\+dimension}{, }\item[{std\+::optional$<$ int64\+\_\+t $>$}]{\+\_\+start}{, }\item[{std\+::optional$<$ int64\+\_\+t $>$}]{\+\_\+end}{, }\item[{int64\+\_\+t}]{\+\_\+step}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_a5ca28d9559d416be2e480bb0b5faf71d}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!sqrt@{sqrt}}
 \index{sqrt@{sqrt}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
@@ -2674,49 +2674,49 @@ template$<$typename \+\_\+\+Tp $>$ \\
 \doxysubsubsection{\texorpdfstring{unsqueeze()}{unsqueeze()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \label{classtensor_a1610887cad5d2ea8a0eef6fb5e38fd9f} 
 template$<$typename \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::unsqueeze (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+dim}{}\end{DoxyParamCaption}) const}
+\mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::unsqueeze (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}}}]{\+\_\+\+\_\+dimension}{}\end{DoxyParamCaption}) const}
 
 \Hypertarget{classtensor_adf1ab2fa12dbb55524289f2de928ad35}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!unsqueeze@{unsqueeze}}
 \index{unsqueeze@{unsqueeze}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{unsqueeze()}{unsqueeze()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{classtensor_adf1ab2fa12dbb55524289f2de928ad35} 
 template$<$class \+\_\+\+Tp $>$ \\
-\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::unsqueeze (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{\+\_\+dim}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::unsqueeze (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{\+\_\+dimension}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_a3acb46cbe6fef2c976377230ac7f55af}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!view@{view}}
 \index{view@{view}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \label{classtensor_a3acb46cbe6fef2c976377230ac7f55af} 
 template$<$typename \+\_\+\+Tp $>$ \\
-void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::view (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$}]{\+\_\+\+\_\+new\+\_\+sh}{}\end{DoxyParamCaption})}
+void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::view (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ \mbox{\hyperlink{classtensor_aae15c34415ce3896c43cb656ee7e6059}{index\+\_\+type}} $>$}]{\+\_\+\+\_\+new\+\_\+shape_}{}\end{DoxyParamCaption})}
 
 \Hypertarget{classtensor_a763bcc5fef28ac840b848b65d63ca1ed}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!view@{view}}
 \index{view@{view}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{view()}{view()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{classtensor_a763bcc5fef28ac840b848b65d63ca1ed} 
 template$<$class \+\_\+\+Tp $>$ \\
-void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::view (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ int64\+\_\+t $>$}]{\+\_\+new\+\_\+sh}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::view (\begin{DoxyParamCaption}\item[{std\+::initializer\+\_\+list$<$ int64\+\_\+t $>$}]{\+\_\+new\+\_\+shape_}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 \Hypertarget{classtensor_add986e2ab92d708e16defa9daa14555f}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!zeros@{zeros}}
 \index{zeros@{zeros}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{zeros()}{zeros()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
 {\footnotesize\ttfamily \label{classtensor_add986e2ab92d708e16defa9daa14555f} 
 template$<$typename \+\_\+\+Tp $>$ \\
-static \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::zeros (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+sh}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+static \mbox{\hyperlink{classtensor}{tensor}} \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::zeros (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+shape_}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
 
 \Hypertarget{classtensor_a208ccff9884d31ed1039902622e9472e}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!zeros@{zeros}}
 \index{zeros@{zeros}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{zeros()}{zeros()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily \label{classtensor_a208ccff9884d31ed1039902622e9472e} 
 template$<$typename \+\_\+\+Tp $>$ \\
-static \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::zeros (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ int64\+\_\+t $>$ \&}]{\+\_\+sh}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+static \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$ \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::zeros (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ int64\+\_\+t $>$ \&}]{\+\_\+shape_}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
 
 \Hypertarget{classtensor_ade1cbb40531ba39910276a996ac71171}\index{tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}!zeros\_@{zeros\_}}
 \index{zeros\_@{zeros\_}!tensor$<$ \_Tp $>$@{tensor$<$ \_Tp $>$}}
 \doxysubsubsection{\texorpdfstring{zeros\_()}{zeros\_()}}
 {\footnotesize\ttfamily \label{classtensor_ade1cbb40531ba39910276a996ac71171} 
 template$<$typename \+\_\+\+Tp $>$ \\
-void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::zeros\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+sh}{ = {\ttfamily \{\}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+void \mbox{\hyperlink{classtensor}{tensor}}$<$ \+\_\+\+Tp $>$\+::zeros\+\_\+ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classtensor_ab96aa71f8b92cb531a7e258f47315f45}{shape\+\_\+type}} \&}]{\+\_\+\+\_\+shape_}{ = {\ttfamily \{\}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
