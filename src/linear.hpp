@@ -92,12 +92,12 @@ tensor<_Tp>& tensor<_Tp>::log_softmax_(const index_type dimension) {
         throw std::invalid_argument("Dimension out of range for log_softmax");
     }
 
-    tensor max_values  = argmax_(dimension);
-    tensor shifted     = *this - max_values.expand_as(shape_, dimension);
+    tensor<index_type> max_values  = argmax_(dimension);
+    tensor shifted     = *this - self(max_values.expand_as(shape_, dimension).to<_Tp>());
     tensor exp_values  = shifted.exp();
     tensor sum_exp     = exp_values.sum(dimension);
     tensor log_sum_exp = sum_exp.log();
-    *this              = shifted - log_sum_exp.expand_as(shape_, dimension);
+    *this              = shifted - log_sum_exp.expand_as(shape_, dimension).template to<_Tp>();
     return *this;
 }
 
