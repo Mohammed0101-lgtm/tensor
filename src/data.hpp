@@ -345,7 +345,7 @@ template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::negative_() {
     if (empty())
     {
-        return self({0});
+        return *this;
     }
 
     for (auto& elem : data_)
@@ -625,7 +625,7 @@ tensor<_Tp> tensor<_Tp>::gcd(const tensor& other) const {
     for (auto& elem : data_)
     {
         index_type gcd  = static_cast<index_type>(elem * other[i]);
-        index_type _lcm = lcm(static_cast<index_type>(elem), static_cast<index_type>(other[i]));
+        index_type _lcm = __lcm(static_cast<index_type>(elem), static_cast<index_type>(other[i]));
         gcd /= _lcm;
         ret[i] = gcd;
         i++;
