@@ -12,7 +12,7 @@ var searchData=
   ['cos_5f_9',['cos_',['../classtensor.html#aa7466d7c1c7eac81e1500964807c6a87',1,'tensor::cos_()'],['../classtensor.html#aa7466d7c1c7eac81e1500964807c6a87',1,'tensor::cos_()']]],
   ['cosh_10',['cosh',['../classtensor.html#a05c63c610aa4fa8f3aabe57e5662477e',1,'tensor::cosh() const'],['../classtensor.html#a929e7852fcd3caeefe513545d27037b3',1,'tensor::cosh() const']]],
   ['cosh_5f_11',['cosh_',['../classtensor.html#a6be46341930fb272ae132eb81cb78e99',1,'tensor::cosh_()'],['../classtensor.html#a6be46341930fb272ae132eb81cb78e99',1,'tensor::cosh_()']]],
-  ['count_5fnonzero_12',['count_nonzero',['../classtensor.html#a45218616edeefdc8558691ad83ebe1bc',1,'tensor::count_nonzero(int64_t dim=-1LL) const'],['../classtensor.html#a9e5024764efa18a9e882706d0d778821',1,'tensor::count_nonzero(index_type __dim=-1LL) const']]],
+  ['count_5fnonzero_12',['count_nonzero',['../classtensor.html#a45218616edeefdc8558691ad83ebe1bc',1,'tensor::count_nonzero(int64_t dimension=-1LL) const'],['../classtensor.html#a9e5024764efa18a9e882706d0d778821',1,'tensor::count_nonzero(index_type __dim=-1LL) const']]],
   ['cross_5fproduct_13',['cross_product',['../classtensor.html#a8ec46219b01d394ec7fb5f1e4af168c2',1,'tensor::cross_product(const tensor&lt; _Tp &gt; &amp;_other) const'],['../classtensor.html#a387313f030fd5a23bf15e9995d0adc17',1,'tensor::cross_product(const tensor &amp;__other) const']]],
   ['cumprod_14',['cumprod',['../classtensor.html#a949fa89abc9832f91f7ba551dd641d22',1,'tensor::cumprod(int64_t _dim=-1) const'],['../classtensor.html#a70e4695eb515074f90a7bdc0e44cff6d',1,'tensor::cumprod(index_type __dim=-1) const']]]
 ];
