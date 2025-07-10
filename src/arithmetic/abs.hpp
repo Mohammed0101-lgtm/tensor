@@ -1,7 +1,7 @@
 #pragma once
 
+#include "../tensorbase.hpp"
 #include "../types.hpp"
-#include "tensorbase.hpp"
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::abs() const {
