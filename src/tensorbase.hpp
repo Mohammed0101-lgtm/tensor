@@ -38,6 +38,7 @@
 #include <valarray>
 #include <vector>
 #include <version>
+#include <tensorbase_.hpp>
 
 #include "error.hpp"
 #include "shape.hpp"
@@ -396,9 +397,8 @@ tensor<_Tp>& clamp_min_(tensor<_Tp>& t, const _Tp& min_val);
 }  // namespace neon
 }  // namespace internal
 
-
 template<class _Tp>
-class tensor
+class tensor : public TensorBase<_Tp>
 {
    public:
     using self                   = tensor;
@@ -420,7 +420,6 @@ class tensor
         CUDA
     };
 
-   public:
     static constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
