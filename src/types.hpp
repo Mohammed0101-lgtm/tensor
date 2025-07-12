@@ -8,10 +8,13 @@ namespace types {
 
 // this should be probablu moved to a separate file for routing the neon code
 bool using_neon() {
+    /*
 #ifdef __ARM_NEON
-    return true;
+return true;
 #endif
-    return false;
+return false;
+*/
+    return true;
 }
 
 template<class, class = std::void_t<>>
