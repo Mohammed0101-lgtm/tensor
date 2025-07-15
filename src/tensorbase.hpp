@@ -39,6 +39,10 @@ using neon_f64 = float64x2_t;
 
 constexpr int _ARM64_REG_WIDTH = 128;  // 128 bit wide register
 
+enum class Device : int {
+  CPU,
+  CUDA
+};
 
 template<class _Tp>
 class TensorBase
@@ -50,12 +54,7 @@ class TensorBase
   using index_type      = uint64_t;
   using shape_type      = std::vector<index_type>;
   using reference       = value_type&;
-  using const_reference = const reference;
-
-  enum class Device : int {
-    CPU,
-    CUDA
-  };
+  using const_reference = const value_type&;
 
   static constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
   static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
@@ -63,105 +62,109 @@ class TensorBase
   TensorBase() = default;
 
   TensorBase(const TensorBase& t) :
-      data_(t.storage()),
-      shape_(t.shape()),
-      device_(t.device()) {}
+      __data_(t.storage()),
+      __shape_(t.shape()),
+      __device_(t.device()) {}
 
   TensorBase(TensorBase&& t) noexcept :
-      data_(std::move(t.storage())),
-      shape_(std::move(t.shape())),
-      device_(std::move(t.device())) {}
+      __data_(std::move(t.storage())),
+      __shape_(std::move(t.shape())),
+      __device_(std::move(t.device())) {}
 
-  TensorBase(const shape::Shape& shape_, const TensorBase& other) :
-      data_(other.storage()),
-      shape_(shape_),
-      device_(other.device()) {}
+  TensorBase(const shape::Shape& sh, const TensorBase& other) :
+      __data_(other.storage()),
+      __shape_(__shape_),
+      __device_(other.device()) {}
 
-  TensorBase(const shape::Shape& shape_, std::initializer_list<value_type> init_list, Device d = Device::CPU) :
-      shape_(sh),
-      device_(d) {
-    if (init_list.size() != static_cast<std::size_t>(shape_.flatten_size()))
+  TensorBase(const shape::Shape& sh, std::initializer_list<value_type> init_list, Device d = Device::CPU) :
+      __shape_(sh),
+      __device_(d) {
+    if (init_list.size() != static_cast<std::size_t>(__shape_.flatten_size()))
     {
       throw std::invalid_argument("Initializer list size must match tensor size");
     }
 
-    data_ = data_t(init_list);
+    __data_ = data_t(init_list);
   }
 
-  explicit TensorBase(const shape::Shape& shape_, const_reference v, Device d = Device::CPU) :
-      shape_(sh),
-      data_(sh.flatten_size(), v),
-      device_(d) {
-    shape_.compute_strides();
+  explicit TensorBase(const shape::Shape& sh, const_reference v, Device d = Device::CPU) :
+      __shape_(sh),
+      __data_(sh.flatten_size(), v),
+      __device_(d) {
+    __shape_.compute_strides();
   }
 
-  explicit TensorBase(const shape::Shape& shape_, Device d = Device::CPU) :
-      shape_(sh),
-      device_(d) {
-    data_ = data_t(shape_.flatten_size());
-    shape_.compute_strides();
+  explicit TensorBase(const shape::Shape& sh, Device d = Device::CPU) :
+      __shape_(sh),
+      __device_(d) {
+    __data_ = data_t(__shape_.flatten_size());
+    __shape_.compute_strides();
   }
 
-  explicit TensorBase(const shape::Shape& shape_, const data_t& d, Device dev = Device::CPU) :
-      shape_(sh),
-      device_(dev) {
+  explicit TensorBase(shape::Shape& sh, const data_t& d, Device dev = Device::CPU) :
+      __shape_(sh),
+      __device_(dev) {
 
-    if (d.size() != static_cast<std::size_t>(shape_.flatten_size()))
+    if (d.size() != static_cast<std::size_t>(__shape_.flatten_size()))
     {
       throw std::invalid_argument("Initial data vector must match the tensor size : " + std::to_string(d.size())
-                                  + " != " + std::to_string(shape_.flatten_size()));
+                                  + " != " + std::to_string(__shape_.flatten_size()));
     }
 
-    data_ = d;
-    shape_.compute_strides();
+    __data_ = d;
+    __shape_.compute_strides();
   }
 
  protected:
   void compute_strides() const {
-    if (shape_.empty())
+    if (__shape_.empty())
     {
       throw error::shape_error("Shape must be initialized before computing strides");
     }
 
-    shape_.compute_strides();
+    __shape_.compute_strides();
   }
 
-  mutable data_t       data_;
-  mutable shape::Shape shape_;
-  Device               device_;
+  mutable data_t       __data_;
+  mutable shape::Shape __shape_;
+  Device               __device_;
   bool                 is_cuda_tensor_ = false;
 
  public:
-  data_t storage() const noexcept { return data_; }
+  data_t storage() const noexcept { return __data_; }
 
-  data_t& storage_() const { return std::ref<data_t>(data_); }
+  shape::Shape shape() const noexcept { return __shape_; }
 
-  shape::Shape shape() const noexcept { return shape_; }
+  Device device() const noexcept { return __device_; }
 
-  Device device() const noexcept { return device_; }
+  data_t& storage_() const { return std::ref<data_t>(__data_); }
+  
+  shape::Shape& shape_() const { return std::ref<shape::Shape>(__shape_); }
 
-  std::size_t n_dims() const noexcept { return shape_.size(); }
+  // Device& device_() const { return std::ref<Device>(__device_); }
+
+  std::size_t n_dims() const noexcept { return __shape_.size(); }
 
   index_type size(const index_type dimension) const {
-    if (dimension < 0 || dimension > static_cast<index_type>(shape_.size()))
+    if (dimension < 0 || dimension > static_cast<index_type>(n_dims()))
     {
       throw std::invalid_argument("dimension input is out of range");
     }
 
     if (dimension == 0)
     {
-      return data_.size();
+      return __data_.size();
     }
 
-    return shape_[dimension - 1];
+    return __shape_[dimension - 1];
   }
 
-  index_type capacity() const noexcept { return data_.capacity(); }
+  index_type capacity() const noexcept { return __data_.capacity(); }
 
   index_type hash() const {
     index_type            hash_v = 0;
     std::hash<value_type> hasher;
-    for (const auto& elem : data_)
+    for (const auto& elem : __data_)
     {
       hash_v ^= hasher(elem) + 0x9e3779b9 + (hash_v << 6) + (hash_v >> 2);
     }
@@ -174,25 +177,25 @@ class TensorBase
       throw error::index_error("Passing an empty vector as indices for a tensor");
     }
 
-    index_type i = shape_.compute_index(idx);
+    index_type i = this->shape().compute_index(idx);
 
-    if (i < 0 || i >= data_.size())
+    if (i < 0 || i >= __data_.size())
     {
       throw error::index_error("input indices are out of bounds");
     }
 
-    return data_[i];
+    return __data_[i];
   }
 
   const_reference at(const shape::Shape idx) const { return at_(idx); }
 
   reference operator[](const index_type idx) {
-    if (idx < 0 || idx >= data_.size())
+    if (idx < 0 || idx >= __data_.size())
     {
       throw error::index_error("input index is out of bounds");
     }
 
-    return data_[idx];
+    return __data_[idx];
   }
 
   const_reference operator[](const index_type idx) const { return (*this)[idx]; }
@@ -203,7 +206,7 @@ class TensorBase
     return at(shape::Shape(index_list));
   }
 
-  bool empty() const { return data_.empty(); }
+  bool empty() const { return __data_.empty(); }
 
   TensorBase<bool> bool_() const {
     if (!std::is_convertible_v<value_type, bool>)
@@ -211,19 +214,19 @@ class TensorBase
       throw error::type_error("Type must be convertible to bool");
     }
 
-    std::vector<bool> d(data_.size());
+    std::vector<bool> d(__data_.size());
     index_type        i = 0;
 
-    for (const auto& elem : data_)
+    for (const auto& elem : __data_)
     {
       d[i++] = bool(elem);
     }
 
-    return tensor<bool>(shape_, d);
+    return tensor<bool>(this->shape(), d);
   }
 
   void print() const {
-    printRecursive(0, 0, shape_);
+    printRecursive(0, 0, this->shape());
     std::cout << std::endl;
   }
 };  // class TensorBase
