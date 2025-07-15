@@ -63,6 +63,8 @@ class tensor: public TensorBase<_Tp>
   using const_reverse_iterator = typename data_t::const_reverse_iterator;
 
  public:
+
+
   tensor() = default;
   tensor(const tensor& t);
   tensor(tensor&& t) noexcept;
@@ -1204,7 +1206,7 @@ class tensor: public TensorBase<_Tp>
   tensor& ones_(shape::Shape shape_ = {});
 
   void print() const {
-    printRecursive(0, 0, shape_);
+    printRecursive(0, 0, this->shape());
     std::cout << std::endl;
   }
 
@@ -1226,7 +1228,7 @@ class tensor: public TensorBase<_Tp>
 
 template<class _Tp>
 inline bool tensor<_Tp>::is_cuda_device() const {
-  return (device_ == Device::CUDA);
+  return (this->device() == Device::CUDA);
 }
 
 template<class _Tp>
@@ -1251,11 +1253,11 @@ void tensor<_Tp>::printRecursive(std::size_t index, std::size_t depth, const sha
     {
       if constexpr (std::is_floating_point_v<_Tp>)
       {
-        std::cout << std::fixed << std::setprecision(4) << data_[index + i];
+        std::cout << std::fixed << std::setprecision(4) << (*this)[index + i];
       }
       else
       {
-        std::cout << data_[index + i];
+        std::cout << (*this)[index + i];
       }
 
       if (i < shape[depth] - 1)
