@@ -1,6 +1,7 @@
 #pragma once
 
-#include "tensorbase.hpp"
+#include "internal/simd/neon/func.hpp"
+#include "tensor.hpp"
 
 
 namespace internal {
@@ -163,20 +164,21 @@ tensor<_s64> tensor<_Tp>::int64_() const {
     throw error::type_error("Type must be convertible to 64 bit signed int");
   }
 
-  if (empty())
+  if (this->empty())
   {
-    return tensor<_s64>(shape_);
+    return tensor<_s64>(this->shape());
   }
 
-  std::vector<_s64> d(data_.size());
+  std::vector<_s64> d(this->size(0));
+  const data_t&     a = this->storage_();
   index_type        i = 0;
 
-  for (const auto& elem : data_)
+  for (const auto& elem : a)
   {
     d[i++] = static_cast<_s64>(elem);
   }
 
-  return tensor<_s64>(shape_, d);
+  return tensor<_s64>(this->shape(), d);
 }
 
 template<class _Tp>
@@ -191,20 +193,21 @@ tensor<_s32> tensor<_Tp>::int32_() const {
     throw error::type_error("Type must be convertible to 32 bit signed int");
   }
 
-  if (empty())
+  if (this->empty())
   {
-    return tensor<int>(shape_);
+    return tensor<int>(this->shape());
   }
 
-  std::vector<int> d(data_.size());
+  std::vector<int> d(this->size(0));
+  const data_t&    a = this->storage_();
   index_type       i = 0;
 
-  for (const auto& elem : data_)
+  for (const auto& elem : a)
   {
-    d[i++] = int(elem);
+    d[i++] = static_cast<_s32>(elem);
   }
 
-  return tensor<int>(shape_, d);
+  return tensor<_s32>(this->shape(), d);
 }
 
 template<class _Tp>
@@ -219,20 +222,21 @@ tensor<_u32> tensor<_Tp>::uint32_() const {
     throw error::type_error("Type must be convertible to 32 bit unsigned int");
   }
 
-  if (empty())
+  if (this->empty())
   {
-    return tensor<unsigned int>(shape_);
+    return tensor<unsigned int>(this->shape());
   }
 
-  std::vector<unsigned int> d(data_.size());
+  std::vector<unsigned int> ret(this->size(0));
+  const data_t&             a = this->storage_();
   index_type                i = 0;
 
-  for (const auto& elem : data_)
+  for (const auto& elem : a)
   {
-    d[i++] = (unsigned int) (elem);
+    ret[i++] = static_cast<unsigned int>(elem);
   }
 
-  return tensor<unsigned int>(shape_, d);
+  return tensor<unsigned int>(this->shape(), std::move(ret));
 }
 
 template<class _Tp>
@@ -247,20 +251,21 @@ tensor<_f32> tensor<_Tp>::float32_() const {
     throw error::type_error("Type must be convertible to 32 bit float");
   }
 
-  if (empty())
+  if (this->empty())
   {
-    return tensor<_f32>(shape_);
+    return tensor<_f32>(this->shape());
   }
 
-  std::vector<_f32> d(data_.size());
+  std::vector<_f32> d(this->size(0));
+  const data_t&     a = this->storage_();
   index_type        i = 0;
 
-  for (const auto& elem : data_)
+  for (const auto& elem : a)
   {
     d[i++] = static_cast<_f32>(elem);
   }
 
-  return tensor<_f32>(shape_, d);
+  return tensor<_f32>(this->shape(), d);
 }
 
 template<class _Tp>
@@ -275,20 +280,21 @@ tensor<double> tensor<_Tp>::float64_() const {
     throw error::type_error("Type must be convertible to 64 bit float");
   }
 
-  if (empty())
+  if (this->empty())
   {
-    return tensor<double>(shape_);
+    return tensor<double>(this->shape());
   }
 
-  std::vector<double> d(data_.size());
+  std::vector<double> d(this->size(0));
+  const data_t&       a = this->storage_();
   index_type          i = 0;
 
-  for (const auto& elem : data_)
+  for (const auto& elem : a)
   {
     d[i++] = double(elem);
   }
 
-  return tensor<double>(shape_, d);
+  return tensor<double>(this->shape(), d);
 }
 
 template<class _Tp>
@@ -303,20 +309,21 @@ tensor<_u64> tensor<_Tp>::uint64_() const {
     throw error::type_error("Type must be convertible to unsigned 64 bit int");
   }
 
-  if (empty())
+  if (this->empty())
   {
-    return tensor<_u64>(shape_);
+    return tensor<_u64>(this->shape());
   }
 
-  std::vector<_u64> d(data_.size());
+  std::vector<_u64> ret(this->size(0));
+  const data_t&     a = this->storage_();
   index_type        i = 0;
 
-  for (const auto& elem : data_)
+  for (const auto& elem : a)
   {
-    d[i++] = (_u64) (elem);
+    ret[i++] = static_cast<_u64>(elem);
   }
 
-  return tensor<_u64>(shape_, d);
+  return tensor<_u64>(this->shape(), std::move(ret));
 }
 
 template<class _Tp>
@@ -331,20 +338,21 @@ tensor<short> tensor<_Tp>::int16_() const {
     throw error::type_error("Type must be convertible to short (aka 16 bit int)");
   }
 
-  if (empty())
+  if (this->empty())
   {
-    return tensor<short>(shape_);
+    return tensor<short>(this->shape());
   }
 
-  std::vector<short> d(data_.size());
+  std::vector<short> d(this->size(0));
+  const data_t&      a = this->storage_();
   index_type         i = 0;
 
-  for (const auto& elem : data_)
+  for (const auto& elem : a)
   {
     d[i++] = short(elem);
   }
 
-  return tensor<short>(shape_, d);
+  return tensor<short>(this->shape(), d);
 }
 
 template<class _Tp>
@@ -354,13 +362,14 @@ tensor<bool> tensor<_Tp>::bool_() const {
     throw error::type_error("Type must be convertible to bool");
   }
 
-  std::vector<bool> d(data_.size());
+  std::vector<bool> d(this->size(0));
+  const data_t&     a = this->storage_();
   index_type        i = 0;
 
-  for (const auto& elem : data_)
+  for (const auto& elem : a)
   {
     d[i++] = bool(elem);
   }
 
-  return tensor<bool>(shape_, d);
+  return tensor<bool>(this->shape(), d);
 }
