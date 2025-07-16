@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tensorbase.hpp"
+#include "tensor.hpp"
 
 
 using namespace internal;
