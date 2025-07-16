@@ -30,7 +30,7 @@ ContinuationIndentWidth: 2
 Cpp11BracedListStyle: true
 IndentGotoLabels: false
 IndentPPDirectives: BeforeHash
-IndentWidth: 4
+IndentWidth: 2
 MaxEmptyLinesToKeep: 2
 NamespaceIndentation: None
 PackConstructorInitializers: Never
