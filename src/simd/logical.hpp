@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tensorbase.hpp"
+#include "tensor.hpp"
 
 template<class _Tp>
 tensor<_Tp>& internal::neon::logical_or_(tensor<_Tp>& t, const _Tp value) {
