@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tensorbase.hpp"
+#include "tensor.hpp"
 
 template<class _Tp>
 tensor<_Tp> internal::neon::sum(const tensor<_Tp>& t, const _u64 axis) {
