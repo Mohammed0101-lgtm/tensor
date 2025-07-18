@@ -128,7 +128,7 @@ class TensorBase
   mutable data_t       __data_;
   mutable shape::Shape __shape_;
   Device               __device_;
-  bool                 is_cuda_tensor_ = false;
+  bool                 __is_cuda_tensor_ = false;
 
  public:
   data_t storage() const noexcept { return __data_; }
@@ -137,8 +137,13 @@ class TensorBase
 
   Device device() const noexcept { return __device_; }
 
+  void set_device(const Device d) noexcept {
+    __device_         = d;
+    __is_cuda_tensor_ = __device_ == Device::CUDA;
+  }
+
   data_t& storage_() const { return std::ref<data_t>(__data_); }
-  
+
   shape::Shape& shape_() const { return std::ref<shape::Shape>(__shape_); }
 
   // Device& device_() const { return std::ref<Device>(__device_); }
