@@ -2,7 +2,7 @@
 
 #include "../alias.hpp"
 #include "clamp.hpp"
-#include "tensorbase.hpp"
+#include "tensor.hpp"
 
 
 template<class _Tp>
