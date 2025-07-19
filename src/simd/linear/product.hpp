@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tensorbase.hpp"
+#include "tensor.hpp"
 
 template<class _Tp>
 tensor<_Tp> internal::neon::cross_product(const tensor<_Tp>& t, const tensor<_Tp>& other) {
