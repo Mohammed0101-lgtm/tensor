@@ -51,6 +51,8 @@ struct Strides
 
   strides_type get() const { return value_; }
 
+  index n_dims() const noexcept { return value_.size(); }
+
   void compute_strides(const std::vector<index>& shape_) noexcept {
     if (shape_.empty())
     {
@@ -58,8 +60,8 @@ struct Strides
       return;
     }
 
-    value_ = strides_type(shape_.size(), 1);
-    int st = 1, i = static_cast<int>(shape_.size() - 1);
+    value_ = strides_type(this->n_dims(), 1);
+    int st = 1, i = static_cast<int>(this->n_dims() - 1);
 
     for (; i >= 0; i--)
     {
