@@ -7,7 +7,6 @@
 #include <stdint.h>
 #include <vector>
 
-
 using _s8  = int8_t;
 using _s16 = int16_t;
 using _s32 = int32_t;
@@ -101,7 +100,7 @@ class TensorBase
     __shape_.compute_strides();
   }
 
-  explicit TensorBase(shape::Shape& sh, const data_t& d, Device dev = Device::CPU) :
+  explicit TensorBase(const shape::Shape& sh, const data_t& d, Device dev = Device::CPU) :
       __shape_(sh),
       __device_(dev) {
 
@@ -176,13 +175,13 @@ class TensorBase
     return hash_v;
   }
 
-  reference at_(shape::Shape idx) {
+  reference at_(shape::Shape idx) const {
     if (idx.empty())
     {
       throw error::index_error("Passing an empty vector as indices for a tensor");
     }
 
-    index_type i = this->shape().compute_index(idx);
+    index_type i = this->shape().compute_index(idx.get());
 
     if (i < 0 || i >= __data_.size())
     {
@@ -192,7 +191,7 @@ class TensorBase
     return __data_[i];
   }
 
-  const_reference at(const shape::Shape idx) const { return at_(idx); }
+  const_reference at(const shape::Shape idx) const { return this->at_(idx); }
 
   reference operator[](const index_type idx) {
     if (idx < 0 || idx >= __data_.size())
@@ -203,7 +202,14 @@ class TensorBase
     return __data_[idx];
   }
 
-  const_reference operator[](const index_type idx) const { return (*this)[idx]; }
+  const_reference operator[](const index_type idx) const  {
+    if (idx < 0 || idx >= __data_.size())
+    {
+      throw error::index_error("input index is out of bounds");
+    }
+
+    return __data_[idx];
+  }
 
   reference operator()(std::initializer_list<index_type> index_list) { return at_(shape::Shape(index_list)); }
 
