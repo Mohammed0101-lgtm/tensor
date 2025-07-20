@@ -37,7 +37,7 @@ tensor<_Tp> neon::operator_plus(const tensor<_Tp>& t, const tensor<_Tp>& other) 
   }
 
 #pragma omp parallel for
-  for (std::size_t; i < size; ++i)
+  for (std::size_t i = simd_end; i < size; ++i)
   {
     r_ptr[i] = a_ptr[i] + b_ptr[i];
   }
@@ -58,7 +58,7 @@ tensor<_Tp> neon::operator_plus(const tensor<_Tp>& t, const _Tp value) {
   std::vector<_Tp>        ret(size);
   neon_type<_Tp>          v_vec = neon_dup<_Tp>(value);
 
-  _Tp* __restrict d_ptr       = ret.data();
+  _Tp* __restrict r_ptr       = ret.data();
   const _Tp* __restrict a_ptr = a.data();
 
 #pragma omp parallel for
@@ -160,10 +160,9 @@ tensor<_Tp> neon::operator_minus(const tensor<_Tp>& t, const _Tp value) {
   const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
   std::vector<_Tp>  d(data_.size());
   neon_type<_Tp>    val_vec = neon_dup<_Tp>(value);
-  _u64              i       = 0;
 
 #pragma omp parallel for
-  for (; i < simd_end; i += t.simd_width)
+  for (std::size_t i = 0; i < simd_end; i += t.simd_width)
   {
     neon_type<_Tp> vec1   = neon_load<_Tp>(&data_[i]);
     neon_type<_Tp> result = neon_sub<_Tp>(vec1, val_vec);
@@ -171,7 +170,7 @@ tensor<_Tp> neon::operator_minus(const tensor<_Tp>& t, const _Tp value) {
   }
 
 #pragma omp parallel for
-  for (; i < data_.size(); ++i)
+  for (std::size_t i = simd_end; i < data_.size(); ++i)
   {
     d[i] = data_[i] - value;
   }
@@ -202,7 +201,7 @@ tensor<_Tp>& neon::operator_minus_eq(tensor<_Tp>& t, const tensor<_Tp>& other) {
   const _Tp __restrict b_ptr = b.data();
 
 #pragma omp parallel for
-  for (std::size_t i = 0;; i < simd_end; i += t.simd_width)
+  for (std::size_t i = 0; i < simd_end; i += t.simd_width)
   {
     neon_type<_Tp> va = neon_load<_Tp>(a_ptr + i);
     neon_type<_Tp> vb = neon_load<_Tp>(b_ptr + i);
@@ -451,7 +450,7 @@ tensor<_Tp> neon::operator_divide(const tensor<_Tp>& t, const tensor<_Tp>& other
     neon_type<_Tp> va = neon_load<_Tp>(a_ptr + i);
     neon_type<_Tp> vb = neon_load<_Tp>(b_ptr + i);
     neon_type<_Tp> vr = neon_div<_Tp>(va, vb);
-    neon_store<_Tp>(r_ptr + i, ret);
+    neon_store<_Tp>(r_ptr + i, vr);
   }
 
 #pragma omp parallel for
