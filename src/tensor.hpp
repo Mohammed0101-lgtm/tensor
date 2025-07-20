@@ -63,8 +63,6 @@ class tensor: public TensorBase<_Tp>
   using const_reverse_iterator = typename data_t::const_reverse_iterator;
 
  public:
-
-
   tensor() = default;
   tensor(const tensor& t);
   tensor(tensor&& t) noexcept;
@@ -1210,727 +1208,55 @@ class tensor: public TensorBase<_Tp>
     std::cout << std::endl;
   }
 
-  tensor<index_type> argmax_(index_type dimension) const;
-  tensor<index_type> argsort(index_type dimension = -1, bool ascending = true) const;
+    tensor<index_type> argmax_(index_type dimension) const;
+    tensor<index_type> argsort(index_type dimension = -1, bool ascending = true) const;
 
 
- private:
-  [[nodiscard]] std::size_t       computeStride(std::size_t dimension, const shape_type& shape) const noexcept;
-  void                            printRecursive(std::size_t index, std::size_t depth, const shape_type& shape) const;
-  [[nodiscard]] index_type        compute_index(const std::vector<index_type>& idx) const;
-  [[nodiscard]] static index_type computeSize(const shape_type& dims) noexcept;
-  index_type                      compute_outer_size(const index_type dimension) const;
-  [[nodiscard]] static _f32       frac(const_reference value) noexcept;
-  // where the tensor is stored
-  bool is_cuda_device() const;
+   private:
+    [[nodiscard]] std::size_t       computeStride(std::size_t dimension, const shape_type& shape) const noexcept;
+    void                            printRecursive(std::size_t index, std::size_t depth, const shape_type& shape) const;
+    [[nodiscard]] index_type        compute_index(const std::vector<index_type>& idx) const;
+    [[nodiscard]] static index_type computeSize(const shape_type& dims) noexcept;
+    index_type                      compute_outer_size(const index_type dimension) const;
+    [[nodiscard]] static _f32       frac(const_reference value) noexcept;
+    // where the tensor is stored
+    bool is_cuda_device() const;
 
-};  // tensor class
+  };  // tensor class
 
-template<class _Tp>
-inline bool tensor<_Tp>::is_cuda_device() const {
-  return (this->device() == Device::CUDA);
-}
-
-template<class _Tp>
-[[nodiscard]]
-inline _f32 tensor<_Tp>::frac(const_reference value) noexcept {
-  return std::fmod(static_cast<float32_t>(value), 1.0f);
-}
-
-template<class _Tp>
-inline typename tensor<_Tp>::index_type tensor<_Tp>::compute_outer_size(const index_type dimension) const {
-  // just a placeholder for now
-  return 0;
-}
-
-template<class _Tp>
-void tensor<_Tp>::printRecursive(std::size_t index, std::size_t depth, const shape_type& shape) const {
-  if (depth == shape.size() - 1)
-  {
-    std::cout << "[";
-
-    for (std::size_t i = 0; i < shape[depth]; ++i)
-    {
-      if constexpr (std::is_floating_point_v<_Tp>)
-      {
-        std::cout << std::fixed << std::setprecision(4) << (*this)[index + i];
-      }
-      else
-      {
-        std::cout << (*this)[index + i];
-      }
-
-      if (i < shape[depth] - 1)
-      {
-        std::cout << ", ";
-      }
-    }
-    std::cout << "]";
-  }
-  else
-  {
-    std::cout << "[\n";
-    std::size_t stride = computeStride(depth + 1, shape);
-
-    for (std::size_t i = 0; i < shape[depth]; ++i)
-    {
-      if (i > 0)
-      {
-        std::cout << "\n";
-      }
-
-      for (std::size_t j = 0; j < depth + 1; ++j)
-      {
-        std::cout << " ";
-      }
-
-      printRecursive(index + i * stride, depth + 1, shape);
-
-      if (i < shape[depth] - 1)
-      {
-        std::cout << ",";
-      }
-    }
-
-    std::cout << "\n";
-
-    for (std::size_t j = 0; j < depth; ++j)
-    {
-      std::cout << " ";
-    }
-
-    std::cout << "]";
-  }
-}
-
-template<class _Tp>
-[[nodiscard]]
-inline std::size_t tensor<_Tp>::computeStride(std::size_t dimension, const shape_type& shape) const noexcept {
-  std::size_t stride = 1;
-
-  for (const auto& elem : shape)
-  {
-    stride *= elem;
+  template<class _Tp>
+  inline bool tensor<_Tp>::is_cuda_device() const {
+    return (this->device() == Device::CUDA);
   }
 
-  return stride;
-}
-
-template<>
-class tensor<bool>;  // explicit instantiation
-
-template<>
-class tensor<bool>: public TensorBase<bool>
-{
- public:
-  using self                   = tensor;
-  using value_type             = bool;
-  using data_t                 = std::vector<bool>;
-  using index_type             = uint64_t;
-  using shape_type             = std::vector<index_type>;
-  using reference              = typename data_t::reference;
-  using iterator               = typename data_t::iterator;
-  using reverse_iterator       = typename data_t::reverse_iterator;
-  using const_iterator         = typename data_t::const_iterator;
-  using const_reference        = typename data_t::const_reference;
-  using const_reverse_iterator = typename data_t::const_reverse_iterator;
-
-  enum class Device {
-    CPU,
-    CUDA
-  };
-
- private:
-  mutable data_t       data_;
-  mutable shape::Shape shape_;
-  Device               device_;
-  bool                 is_cuda_tensor_ = false;
-
- public:
-  tensor() {
-    shape_  = shape::Shape();
-    device_ = Device::CPU;
-    data_   = data_t();
+  template<class _Tp>
+  [[nodiscard]]
+  inline _f32 tensor<_Tp>::frac(const_reference value) noexcept {
+    return std::fmod(static_cast<float32_t>(value), 1.0f);
   }
 
-  explicit tensor(const shape::Shape& shape_, value_type v, Device d = Device::CPU) :
-      shape_(shape_),
-      data_(shape_.size(), v),
-      device_(d) {}
-
-  explicit tensor(const shape::Shape& shape_, Device d = Device::CPU) :
-      shape_(shape_),
-      device_(d) {
-    index_type s = shape_.size();
-    data_        = data_t(s);
+  template<class _Tp>
+  inline typename tensor<_Tp>::index_type tensor<_Tp>::compute_outer_size(const index_type dimension) const {
+    // just a placeholder for now
+    return 0;
   }
 
-  explicit tensor(const shape::Shape& sh, const data_t& d, Device dev = Device::CPU) :
-      shape_(sh),
-      device_(dev) {
-
-    if (d.size() != static_cast<std::size_t>(shape_.flatten_size()))
-    {
-      throw std::invalid_argument("Initial data vector must match the tensor size : " + std::to_string(d.size())
-                                  + " != " + std::to_string(shape_.flatten_size()));
-    }
-
-    data_ = d;
-  }
-
-  tensor(const tensor& t) :
-      data_(t.storage()),
-      shape_(t.shape()),
-      device_(t.device()) {}
-
-  tensor(tensor&& t) noexcept :
-      data_(std::move(t.storage())),
-      shape_(std::move(t.shape())),
-      device_(std::move(t.device())) {}
-
-  tensor(const shape::Shape& sh, std::initializer_list<value_type> init_list, Device d = Device::CPU) :
-      shape_(sh),
-      device_(d) {
-
-    if (init_list.size() != static_cast<std::size_t>(shape_.flatten_size()))
-    {
-      throw std::invalid_argument("Initializer list size must match tensor size");
-    }
-
-    data_ = data_t(init_list);
-  }
-
-  tensor(const shape::Shape& shape_, const tensor& other) :
-      data_(other.storage()),
-      shape_(shape_),
-      device_(other.device()) {}
-
-  data_t storage() const noexcept { return data_; }
-
-  shape::Shape shape() const noexcept { return shape_; }
-
-  shape::Strides strides() const noexcept { return shape_.strides_; }
-
-  Device device() const noexcept { return device_; }
-
-  bool operator==(const tensor& other) const { return shape_.equal(other.shape()) && data_ == other.storage(); }
-
-  bool operator!=(const tensor& other) const { return !(*this == other); }
-
-  inline tensor<bool>& operator=(const tensor<bool>& other) {
-    shape_ = other.shape();
-    data_  = other.storage();
-    shape_.compute_strides();
-    return *this;
-  }
-
-  tensor<bool>& operator=(tensor<bool>&& other) noexcept {
-    if (this != &other)
-    {
-      data_  = std::move(other.storage());
-      shape_ = std::move(other.shape());
-    }
-
-    return *this;
-  }
-
-  reference at(shape_type idx) {
-    if (idx.empty())
-    {
-      throw error::index_error("Passing an empty vector as indices for a tensor");
-    }
-
-    index_type i = shape_.compute_index(idx);
-
-    if (i < 0 || i >= data_.size())
-    {
-      throw error::index_error("input indices are out of bounds");
-    }
-
-    return data_[i];
-  }
-
-  reference operator[](const index_type idx) {
-    if (idx < 0 || idx >= data_.size())
-    {
-      throw error::index_error("input index is out of bounds");
-    }
-
-    return data_[idx];
-  }
-
-  const_reference at(const shape::Shape idx) const { return at(idx); }
-
-  const_reference operator[](const index_type idx) const { return (*this)[idx]; }
-
-  reference operator()(std::initializer_list<index_type> index_list) { return at(index_list); }
-
-  const_reference operator()(std::initializer_list<index_type> index_list) const { return at(index_list); }
-
-  bool empty() const { return data_.empty(); }
-
-  std::size_t n_dims() const noexcept { return shape_.size(); }
-
-  index_type size(const index_type dimension) const {
-    if (dimension < 0 || dimension > static_cast<index_type>(shape_.size()))
-    {
-      throw std::invalid_argument("dimension input is out of range");
-    }
-
-    if (dimension == 0)
-    {
-      return data_.size();
-    }
-
-    return shape_[dimension - 1];
-  }
-
-  index_type capacity() const noexcept { return data_.capacity(); }
-
-  tensor<bool> logical_not() const {
-    if (empty())
-    {
-      return self({0});
-    }
-
-    self t = clone();
-    t.logical_not_();
-    return t;
-  }
-
-  tensor<bool> logical_or(const value_type value) const {
-    if (empty())
-    {
-      return self({0});
-    }
-
-    self t = clone();
-    t.logical_or_(value);
-    return t;
-  }
-
-  tensor<bool> logical_or(const tensor& other) const {
-    if (empty())
-    {
-      return self({0});
-    }
-
-    self t = clone();
-    t.logical_or_(other);
-    return t;
-  }
-
-  tensor<bool> logical_and(const value_type value) const {
-    if (empty())
-    {
-      return self({0});
-    }
-
-    self t = clone();
-    t.logical_and_(value);
-    return t;
-  }
-
-  tensor<bool> logical_and(const tensor& other) const {
-    if (empty())
-    {
-      return self({0});
-    }
-
-    self t = clone();
-    t.logical_and_(other);
-    return t;
-  }
-
-  tensor<bool> logical_xor(const value_type value) const {
-    if (empty())
-    {
-      return self({0});
-    }
-
-    self t = clone();
-    t.logical_and_(value);
-    return t;
-  }
-
-  tensor<bool> logical_xor(const tensor& other) const {
-    if (empty())
-    {
-      return self({0});
-    }
-
-    self t = clone();
-    t.logical_xor_(other);
-    return t;
-  }
-
-  tensor<bool>& logical_not_() {
-    for (index_type i = 0; i < data_.size(); ++i)
-    {
-      data_[i] = ~(data_[i]);
-    }
-
-    return *this;
-  }
-
-  tensor<bool>& logical_or_(const value_type value) {
-    for (index_type i = 0; i < data_.size(); ++i)
-    {
-      data_[i] = (data_[i] || value);
-    }
-
-    return *this;
-  }
-
-  tensor<bool>& logical_or_(const tensor& other) {
-    for (index_type i = 0; i < data_.size(); ++i)
-    {
-      data_[i] = (data_[i] || other[i]);
-    }
-
-    return *this;
-  }
-
-  tensor<bool>& logical_and_(const value_type value) {
-    for (index_type i = 0; i < data_.size(); ++i)
-    {
-      data_[i] = (data_[i] && value);
-    }
-
-    return *this;
-  }
-
-  tensor<bool>& logical_and_(const tensor& other) {
-    for (index_type i = 0; i < data_.size(); ++i)
-    {
-      data_[i] = (data_[i] && other[i]);
-    }
-
-    return *this;
-  }
-
-  tensor<bool>& logical_xor_(const value_type value) {
-    for (index_type i = 0; i < data_.size(); ++i)
-    {
-      data_[i] = (data_[i] xor value);
-    }
-
-    return *this;
-  }
-
-  tensor<bool>& logical_xor_(const tensor& other) {
-    for (index_type i = 0; i < data_.size(); ++i)
-    {
-      data_[i] = (data_[i] xor other[i]);
-    }
-
-    return *this;
-  }
-
-  tensor<bool>& operator!() {
-    for (index_type i = 0; i < data_.size(); ++i)
-    {
-      data_[i] = !(data_[i]);
-    }
-
-    return *this;
-  }
-
-  tensor<bool>
-  slice(index_type dimension, std::optional<index_type> start, std::optional<index_type> end, index_type step) const {
-    if (dimension < 0 || dimension >= static_cast<index_type>(data_.size()))
-    {
-      throw error::shape_error("Dimension out of range");
-    }
-
-    tensor<bool> ret;
-    index_type   s       = shape_[dimension];
-    index_type   start_i = start.value_or(0);
-    index_type   end_i   = end.value_or(0);
-
-    if (start_i < 0)
-    {
-      start_i += s;
-    }
-
-    if (end_i < 0)
-    {
-      end_i += s;
-    }
-
-    start_i = std::max(index_type(0), std::min(start_i, s));
-    end_i   = std::max(index_type(0), std::min(end_i, s));
-
-    index_type   slice_size = (end_i - start_i + step - 1) / step;
-    shape::Shape ret_dims   = shape_;
-    ret_dims[-dimension]    = slice_size;
-    ret                     = self(ret_dims);
-
-    index_type i = start_i, j = 0;
-
-    for (; i < end_i; i += step, ++j)
-    {
-      ret[j] = data_[j];
-    }
-
-    return ret;
-  }
-
-  tensor<bool> row(const index_type index) const {
-    if (shape_.size() != 2)
-    {
-      throw error::shape_error("Cannot get a row from a non two dimensional tensor");
-    }
-
-    if (shape_[0] <= index || index < 0)
-    {
-      throw error::index_error("Index input is out of range");
-    }
-
-    index_type start = shape_[1] * index;
-    index_type end   = shape_[1] * index + shape_[1];
-    index_type i     = start;
-    data_t     r(end);
-
-    for (; i < end; ++i)
-    {
-      r[i] = data_[i];
-    }
-
-    return self(shape::Shape({shape_[1]}), r);
-  }
-
-  tensor<bool> col(const index_type index) const {
-    if (shape_.size() != 2)
-    {
-      throw error::index_error("Cannot get a column from a non two dimensional tensor");
-    }
-
-    if (shape_[1] <= index || index < 0)
-    {
-      throw error::index_error("Index input out of range");
-    }
-
-    data_t     c(shape_[0]);
-    index_type i = 0;
-
-    for (; i < shape_[0]; ++i)
-    {
-      c[i] = data_[shape_.compute_index({i, index})];
-    }
-
-    return self(shape::Shape({shape_[0]}), c);
-  }
-
-  tensor<bool> clone() const {
-    data_t       d = data_;
-    shape::Shape s = shape_;
-    return self(s, d);
-  }
-
-  tensor<bool> reshape(const shape::Shape shape_) const {
-    data_t     d = data_;
-    index_type s = shape_.size();
-
-    if (s != data_.size())
-    {
-      throw error::shape_error("input shape must have size of element equal to the current number of elements in "
-                               "the"
-                               "tensor data");
-    }
-
-    return self(shape_, d);
-  }
-
-  tensor<bool> reshape_as(const tensor& other) const { return reshape(other.shape()); }
-
-  tensor<bool> transpose() const {
-    if (shape_.equal(shape::Shape({shape_[0], shape_[1], 1})) || shape_.equal(shape::Shape({1, shape_[0], shape_[1]})))
-    {
-      throw error::shape_error("Matrix transposition can only be done on 2D tensors");
-    }
-
-    tensor           ret(shape::Shape({shape_[1], shape_[0]}));
-    const index_type rows = shape_[0];
-    const index_type cols = shape_[1];
-
-
-    for (index_type i = 0; i < rows; ++i)
-    {
-      for (index_type j = 0; j < cols; ++j)
-      {
-        ret.at({j, i}) = at({i, j});
-      }
-    }
-
-    return ret;
-  }
-
-  tensor<bool>& transpose_() {
-    if (shape_.size() != 2)
-    {
-      throw error::shape_error("Transpose operation is only valid for 2D tensors");
-    }
-
-    const index_type r = shape_[0];
-    const index_type c = shape_[1];
-
-    if (r != c)
-    {
-      throw error::shape_error("In-place transpose is only supported for square tensors");
-    }
-
-    for (index_type i = 0; i < r; ++i)
-    {
-      for (index_type j = i + 1; j < c; ++j)
-      {
-        std::swap(data_[i * c + j], data_[j * c + i]);
-      }
-    }
-
-    return *this;
-  }
-
-  tensor<bool>& resize_as_(const shape_type shape_) { return *this; }
-
-  tensor<bool> squeeze(const index_type dimension) const {
-    self ret = clone();
-    ret.squeeze_(dimension);
-    return ret;
-  }
-
-  tensor<bool>& squeeze_(const index_type dimension) { return *this; }
-
-  tensor<bool> cat(const std::vector<tensor<value_type>>& others, index_type dimension) const {
-    for (const tensor& t : others)
-    {
-      index_type i = 0;
-
-      for (; i < shape_.size(); ++i)
-      {
-        if (i != dimension && shape_[i] != t.shape_[i])
-        {
-          throw error::shape_error("Cannot concatenate tensors with different shapes along non-concatenation "
-
-                                   "dimensions");
-        }
-      }
-    }
-
-    shape::Shape ret_sh = shape_;
-
-    for (const tensor& t : others)
-    {
-      ret_sh[dimension] += t.shape_[dimension];
-    }
-
-    data_t c;
-    c.reserve(data_.size());
-    c.insert(c.end(), data_.begin(), data_.end());
-
-    for (const tensor& t : others)
-    {
-      c.insert(c.end(), t.data_.begin(), t.data_.end());
-    }
-
-    return self(ret_sh, c);
-  }
-
-  tensor<bool> unsqueeze(const index_type dimension) const {
-    if (dimension < 0 || dimension > static_cast<index_type>(shape_.size()))
-    {
-      throw error::index_error("Dimension out of range in unsqueeze");
-    }
-
-    shape::Shape new_shape = shape_;
-    new_shape[dimension]   = 1;
-    new_shape.value_.insert(new_shape.value_.begin() + dimension, 1);
-
-    tensor ret;
-    ret.shape_ = new_shape;
-    ret.data_  = data_;
-
-    return ret;
-  }
-
-  tensor<bool>& randomize_(const shape::Shape& sh = {}) {
-    if (shape_.empty() && sh.empty())
-    {
-      throw error::shape_error("Shape must be initialized");
-    }
-
-    if (sh.empty() || sh.equal(shape_))
-    {
-      shape_ = sh;
-    }
-
-    index_type s = shape_.size();
-    data_.resize(s);
-    shape_.compute_strides();
-    std::random_device                 rd;
-    std::mt19937                       gen(rd());
-    std::uniform_int_distribution<int> dist(0, 1);
-
-    for (index_type i = 0; i < data_.size(); ++i)
-    {
-      data_[i] = (dist(gen) == 0);
-    }
-
-    return *this;
-  }
-
-  tensor<bool>& push_back(value_type v) {
-    if (shape_.size() != 1)
-    {
-      throw error::shape_error("push_back is only supported for one dimensional tensors");
-    }
-
-    data_.push_back(v);
-    ++(shape_[0]);
-    shape_.compute_strides();
-    return *this;
-  }
-
-  tensor<bool>& pop_back(value_type v) {
-    if (shape_.size() != 1)
-    {
-      throw error::shape_error("push_back is only supported for one dimensional tensors");
-    }
-
-    data_.pop_back();
-    --(shape_[0]);
-    shape_.compute_strides();
-    return *this;
-  }
-
-  tensor<bool>& view(std::initializer_list<index_type> sh) {
-    shape::Shape new_shape(sh);
-    index_type   s = new_shape.flatten_size();
-
-    if (s != data_.size())
-    {
-      throw std::invalid_argument("Total elements do not match for new shape");
-    }
-
-    new_shape.compute_strides();
-    this->shape_ = new_shape;
-    return *this;
-  }
-
-  void print() const {
-    printRecursive(0, 0, shape_);
-    std::cout << std::endl;
-  }
-
- private:
-  void printRecursive(std::size_t index, std::size_t depth, const shape::Shape& shape) const {
+  template<class _Tp>
+  void tensor<_Tp>::printRecursive(std::size_t index, std::size_t depth, const shape_type& shape) const {
     if (depth == shape.size() - 1)
     {
       std::cout << "[";
 
       for (std::size_t i = 0; i < shape[depth]; ++i)
       {
-        std::cout << (data_[index + i] ? "true" : "false");
+        if constexpr (std::is_floating_point_v<_Tp>)
+        {
+          std::cout << std::fixed << std::setprecision(4) << (*this)[index + i];
+        }
+        else
+        {
+          std::cout << (*this)[index + i];
+        }
 
         if (i < shape[depth] - 1)
         {
@@ -1942,7 +1268,7 @@ class tensor<bool>: public TensorBase<bool>
     else
     {
       std::cout << "[\n";
-      std::size_t stride = shape_.computeStride(depth + 1, shape);
+      std::size_t stride = computeStride(depth + 1, shape);
 
       for (std::size_t i = 0; i < shape[depth]; ++i)
       {
@@ -1951,7 +1277,7 @@ class tensor<bool>: public TensorBase<bool>
           std::cout << "\n";
         }
 
-        for (std::size_t j = 0; j < depth + 1; j++)
+        for (std::size_t j = 0; j < depth + 1; ++j)
         {
           std::cout << " ";
         }
@@ -1966,7 +1292,7 @@ class tensor<bool>: public TensorBase<bool>
 
       std::cout << "\n";
 
-      for (std::size_t j = 0; j < depth; j++)
+      for (std::size_t j = 0; j < depth; ++j)
       {
         std::cout << " ";
       }
@@ -1975,21 +1301,689 @@ class tensor<bool>: public TensorBase<bool>
     }
   }
 
-  index_type compute_outer_size(const index_type dimension) const {
-    // just a placeholder for now
-    return 0;
-  }
-
+  template<class _Tp>
   [[nodiscard]]
-  static _f32 frac(const_reference value) noexcept {
-    return std::fmod(static_cast<float32_t>(value), 1.0f);
+  inline std::size_t tensor<_Tp>::computeStride(std::size_t dimension, const shape_type& shape) const noexcept {
+    std::size_t stride = 1;
+
+    for (const auto& elem : shape)
+    {
+      stride *= elem;
+    }
+
+    return stride;
   }
 
-  bool is_cuda_device() const { return (device_ == Device::CUDA); }
-};  // tensor<bool>
+  template<>
+  class tensor<bool>;  // explicit instantiation
+
+  template<>
+  class tensor<bool>: public TensorBase<bool>
+  {
+   public:
+    using self                   = tensor;
+    using value_type             = bool;
+    using data_t                 = std::vector<bool>;
+    using index_type             = uint64_t;
+    using shape_type             = std::vector<index_type>;
+    using reference              = typename data_t::reference;
+    using iterator               = typename data_t::iterator;
+    using reverse_iterator       = typename data_t::reverse_iterator;
+    using const_iterator         = typename data_t::const_iterator;
+    using const_reference        = typename data_t::const_reference;
+    using const_reverse_iterator = typename data_t::const_reverse_iterator;
+
+   private:
+    mutable data_t       data_;
+    mutable shape::Shape shape_;
+    Device               device_;
+    bool                 is_cuda_tensor_ = false;
+
+   public:
+    tensor() {
+      shape_  = shape::Shape();
+      device_ = Device::CPU;
+      data_   = data_t();
+    }
+
+    explicit tensor(const shape::Shape& shape_, value_type v, Device d = Device::CPU) :
+        shape_(shape_),
+        data_(shape_.size(), v),
+        device_(d) {}
+
+    explicit tensor(const shape::Shape& shape_, Device d = Device::CPU) :
+        shape_(shape_),
+        device_(d) {
+      index_type s = shape_.size();
+      data_        = data_t(s);
+    }
+
+    explicit tensor(const shape::Shape& sh, const data_t& d, Device dev = Device::CPU) :
+        shape_(sh),
+        device_(dev) {
+
+      if (d.size() != static_cast<std::size_t>(shape_.flatten_size()))
+      {
+        throw std::invalid_argument("Initial data vector must match the tensor size : " + std::to_string(d.size())
+                                    + " != " + std::to_string(shape_.flatten_size()));
+      }
+
+      data_ = d;
+    }
+
+    tensor(const tensor& t) :
+        data_(t.storage()),
+        shape_(t.shape()),
+        device_(t.device()) {}
+
+    tensor(tensor&& t) noexcept :
+        data_(std::move(t.storage())),
+        shape_(std::move(t.shape())),
+        device_(std::move(t.device())) {}
+
+    tensor(const shape::Shape& sh, std::initializer_list<value_type> init_list, Device d = Device::CPU) :
+        shape_(sh),
+        device_(d) {
+
+      if (init_list.size() != static_cast<std::size_t>(shape_.flatten_size()))
+      {
+        throw std::invalid_argument("Initializer list size must match tensor size");
+      }
+
+      data_ = data_t(init_list);
+    }
+
+    tensor(const shape::Shape& shape_, const tensor& other) :
+        data_(other.storage()),
+        shape_(shape_),
+        device_(other.device()) {}
+
+    data_t storage() const noexcept { return data_; }
+
+    shape::Shape shape() const noexcept { return shape_; }
+
+    shape::Strides strides() const noexcept { return shape_.strides_; }
+
+    Device device() const noexcept { return device_; }
+
+    bool operator==(const tensor& other) const { return shape_.equal(other.shape()) && data_ == other.storage(); }
+
+    bool operator!=(const tensor& other) const { return !(*this == other); }
+
+    inline tensor<bool>& operator=(const tensor<bool>& other) {
+      shape_ = other.shape();
+      data_  = other.storage();
+      shape_.compute_strides();
+      return *this;
+    }
+
+    tensor<bool>& operator=(tensor<bool>&& other) noexcept {
+      if (this != &other)
+      {
+        data_  = std::move(other.storage());
+        shape_ = std::move(other.shape());
+      }
+
+      return *this;
+    }
+
+    reference at(shape_type idx) {
+      if (idx.empty())
+      {
+        throw error::index_error("Passing an empty vector as indices for a tensor");
+      }
+
+      index_type i = shape_.compute_index(idx);
+
+      if (i < 0 || i >= data_.size())
+      {
+        throw error::index_error("input indices are out of bounds");
+      }
+
+      return data_[i];
+    }
+
+    reference operator[](const index_type idx) {
+      if (idx < 0 || idx >= data_.size())
+      {
+        throw error::index_error("input index is out of bounds");
+      }
+
+      return data_[idx];
+    }
+
+    const_reference at(const shape::Shape idx) const { return at(idx); }
+
+    const_reference operator[](const index_type idx) const { return (*this)[idx]; }
+
+    reference operator()(std::initializer_list<index_type> index_list) { return at(index_list); }
+
+    const_reference operator()(std::initializer_list<index_type> index_list) const { return at(index_list); }
+
+    bool empty() const { return data_.empty(); }
+
+    std::size_t n_dims() const noexcept { return shape_.size(); }
+
+    index_type size(const index_type dimension) const {
+      if (dimension < 0 || dimension > static_cast<index_type>(shape_.size()))
+      {
+        throw std::invalid_argument("dimension input is out of range");
+      }
+
+      if (dimension == 0)
+      {
+        return data_.size();
+      }
+
+      return shape_[dimension - 1];
+    }
+
+    index_type capacity() const noexcept { return data_.capacity(); }
+
+    tensor<bool> logical_not() const {
+      if (empty())
+      {
+        return self({0});
+      }
+
+      self t = clone();
+      t.logical_not_();
+      return t;
+    }
+
+    tensor<bool> logical_or(const value_type value) const {
+      if (empty())
+      {
+        return self({0});
+      }
+
+      self t = clone();
+      t.logical_or_(value);
+      return t;
+    }
+
+    tensor<bool> logical_or(const tensor& other) const {
+      if (empty())
+      {
+        return self({0});
+      }
+
+      self t = clone();
+      t.logical_or_(other);
+      return t;
+    }
+
+    tensor<bool> logical_and(const value_type value) const {
+      if (empty())
+      {
+        return self({0});
+      }
+
+      self t = clone();
+      t.logical_and_(value);
+      return t;
+    }
+
+    tensor<bool> logical_and(const tensor& other) const {
+      if (empty())
+      {
+        return self({0});
+      }
+
+      self t = clone();
+      t.logical_and_(other);
+      return t;
+    }
+
+    tensor<bool> logical_xor(const value_type value) const {
+      if (empty())
+      {
+        return self({0});
+      }
+
+      self t = clone();
+      t.logical_and_(value);
+      return t;
+    }
+
+    tensor<bool> logical_xor(const tensor& other) const {
+      if (empty())
+      {
+        return self({0});
+      }
+
+      self t = clone();
+      t.logical_xor_(other);
+      return t;
+    }
+
+    tensor<bool>& logical_not_() {
+      for (index_type i = 0; i < data_.size(); ++i)
+      {
+        data_[i] = ~(data_[i]);
+      }
+
+      return *this;
+    }
+
+    tensor<bool>& logical_or_(const value_type value) {
+      for (index_type i = 0; i < data_.size(); ++i)
+      {
+        data_[i] = (data_[i] || value);
+      }
+
+      return *this;
+    }
+
+    tensor<bool>& logical_or_(const tensor& other) {
+      for (index_type i = 0; i < data_.size(); ++i)
+      {
+        data_[i] = (data_[i] || other[i]);
+      }
+
+      return *this;
+    }
+
+    tensor<bool>& logical_and_(const value_type value) {
+      for (index_type i = 0; i < data_.size(); ++i)
+      {
+        data_[i] = (data_[i] && value);
+      }
+
+      return *this;
+    }
+
+    tensor<bool>& logical_and_(const tensor& other) {
+      for (index_type i = 0; i < data_.size(); ++i)
+      {
+        data_[i] = (data_[i] && other[i]);
+      }
+
+      return *this;
+    }
+
+    tensor<bool>& logical_xor_(const value_type value) {
+      for (index_type i = 0; i < data_.size(); ++i)
+      {
+        data_[i] = (data_[i] xor value);
+      }
+
+      return *this;
+    }
+
+    tensor<bool>& logical_xor_(const tensor& other) {
+      for (index_type i = 0; i < data_.size(); ++i)
+      {
+        data_[i] = (data_[i] xor other[i]);
+      }
+
+      return *this;
+    }
+
+    tensor<bool>& operator!() {
+      for (index_type i = 0; i < data_.size(); ++i)
+      {
+        data_[i] = !(data_[i]);
+      }
+
+      return *this;
+    }
+
+    tensor<bool>
+    slice(index_type dimension, std::optional<index_type> start, std::optional<index_type> end, index_type step) const {
+      if (dimension < 0 || dimension >= static_cast<index_type>(data_.size()))
+      {
+        throw error::shape_error("Dimension out of range");
+      }
+
+      tensor<bool> ret;
+      index_type   s       = shape_[dimension];
+      index_type   start_i = start.value_or(0);
+      index_type   end_i   = end.value_or(0);
+
+      if (start_i < 0)
+      {
+        start_i += s;
+      }
+
+      if (end_i < 0)
+      {
+        end_i += s;
+      }
+
+      start_i = std::max(index_type(0), std::min(start_i, s));
+      end_i   = std::max(index_type(0), std::min(end_i, s));
+
+      index_type   slice_size = (end_i - start_i + step - 1) / step;
+      shape::Shape ret_dims   = shape_;
+      ret_dims[-dimension]    = slice_size;
+      ret                     = self(ret_dims);
+
+      index_type i = start_i, j = 0;
+
+      for (; i < end_i; i += step, ++j)
+      {
+        ret[j] = data_[j];
+      }
+
+      return ret;
+    }
+
+    tensor<bool> row(const index_type index) const {
+      if (shape_.size() != 2)
+      {
+        throw error::shape_error("Cannot get a row from a non two dimensional tensor");
+      }
+
+      if (shape_[0] <= index || index < 0)
+      {
+        throw error::index_error("Index input is out of range");
+      }
+
+      index_type start = shape_[1] * index;
+      index_type end   = shape_[1] * index + shape_[1];
+      index_type i     = start;
+      data_t     r(end);
+
+      for (; i < end; ++i)
+      {
+        r[i] = data_[i];
+      }
+
+      return self(shape::Shape({shape_[1]}), r);
+    }
+
+    tensor<bool> col(const index_type index) const {
+      if (shape_.size() != 2)
+      {
+        throw error::index_error("Cannot get a column from a non two dimensional tensor");
+      }
+
+      if (shape_[1] <= index || index < 0)
+      {
+        throw error::index_error("Index input out of range");
+      }
+
+      data_t     c(shape_[0]);
+      index_type i = 0;
+
+      for (; i < shape_[0]; ++i)
+      {
+        c[i] = data_[shape_.compute_index({i, index})];
+      }
+
+      return self(shape::Shape({shape_[0]}), c);
+    }
+
+    tensor<bool> clone() const {
+      data_t       d = data_;
+      shape::Shape s = shape_;
+      return self(s, d);
+    }
+
+    tensor<bool> reshape(const shape::Shape shape_) const {
+      data_t     d = data_;
+      index_type s = shape_.size();
+
+      if (s != data_.size())
+      {
+        throw error::shape_error("input shape must have size of element equal to the current number of elements in "
+                                 "the"
+                                 "tensor data");
+      }
+
+      return self(shape_, d);
+    }
+
+    tensor<bool> reshape_as(const tensor& other) const { return reshape(other.shape()); }
+
+    tensor<bool> transpose() const {
+      if (shape_.equal(shape::Shape({shape_[0], shape_[1], 1}))
+          || shape_.equal(shape::Shape({1, shape_[0], shape_[1]})))
+      {
+        throw error::shape_error("Matrix transposition can only be done on 2D tensors");
+      }
+
+      tensor           ret(shape::Shape({shape_[1], shape_[0]}));
+      const index_type rows = shape_[0];
+      const index_type cols = shape_[1];
 
 
-/*------includes-------*/
+      for (index_type i = 0; i < rows; ++i)
+      {
+        for (index_type j = 0; j < cols; ++j)
+        {
+          ret.at({j, i}) = at({i, j});
+        }
+      }
+
+      return ret;
+    }
+
+    tensor<bool>& transpose_() {
+      if (shape_.size() != 2)
+      {
+        throw error::shape_error("Transpose operation is only valid for 2D tensors");
+      }
+
+      const index_type r = shape_[0];
+      const index_type c = shape_[1];
+
+      if (r != c)
+      {
+        throw error::shape_error("In-place transpose is only supported for square tensors");
+      }
+
+      for (index_type i = 0; i < r; ++i)
+      {
+        for (index_type j = i + 1; j < c; ++j)
+        {
+          std::swap(data_[i * c + j], data_[j * c + i]);
+        }
+      }
+
+      return *this;
+    }
+
+    tensor<bool>& resize_as_(const shape_type shape_) { return *this; }
+
+    tensor<bool> squeeze(const index_type dimension) const {
+      self ret = clone();
+      ret.squeeze_(dimension);
+      return ret;
+    }
+
+    tensor<bool>& squeeze_(const index_type dimension) { return *this; }
+
+    tensor<bool> cat(const std::vector<tensor<value_type>>& others, index_type dimension) const {
+      for (const tensor& t : others)
+      {
+        index_type i = 0;
+
+        for (; i < shape_.size(); ++i)
+        {
+          if (i != dimension && shape_[i] != t.shape_[i])
+          {
+            throw error::shape_error("Cannot concatenate tensors with different shapes along non-concatenation "
+
+                                     "dimensions");
+          }
+        }
+      }
+
+      shape::Shape ret_sh = shape_;
+
+      for (const tensor& t : others)
+      {
+        ret_sh[dimension] += t.shape_[dimension];
+      }
+
+      data_t c;
+      c.reserve(data_.size());
+      c.insert(c.end(), data_.begin(), data_.end());
+
+      for (const tensor& t : others)
+      {
+        c.insert(c.end(), t.data_.begin(), t.data_.end());
+      }
+
+      return self(ret_sh, c);
+    }
+
+    tensor<bool> unsqueeze(const index_type dimension) const {
+      if (dimension < 0 || dimension > static_cast<index_type>(shape_.size()))
+      {
+        throw error::index_error("Dimension out of range in unsqueeze");
+      }
+
+      shape::Shape new_shape = shape_;
+      new_shape[dimension]   = 1;
+      new_shape.value_.insert(new_shape.value_.begin() + dimension, 1);
+
+      tensor ret;
+      ret.shape_ = new_shape;
+      ret.data_  = data_;
+
+      return ret;
+    }
+
+    tensor<bool>& randomize_(const shape::Shape& sh = {}) {
+      if (shape_.empty() && sh.empty())
+      {
+        throw error::shape_error("Shape must be initialized");
+      }
+
+      if (sh.empty() || sh.equal(shape_))
+      {
+        shape_ = sh;
+      }
+
+      index_type s = shape_.size();
+      data_.resize(s);
+      shape_.compute_strides();
+      std::random_device                 rd;
+      std::mt19937                       gen(rd());
+      std::uniform_int_distribution<int> dist(0, 1);
+
+      for (index_type i = 0; i < data_.size(); ++i)
+      {
+        data_[i] = (dist(gen) == 0);
+      }
+
+      return *this;
+    }
+
+    tensor<bool>& push_back(value_type v) {
+      if (shape_.size() != 1)
+      {
+        throw error::shape_error("push_back is only supported for one dimensional tensors");
+      }
+
+      data_.push_back(v);
+      ++(shape_[0]);
+      shape_.compute_strides();
+      return *this;
+    }
+
+    tensor<bool>& pop_back(value_type v) {
+      if (shape_.size() != 1)
+      {
+        throw error::shape_error("push_back is only supported for one dimensional tensors");
+      }
+
+      data_.pop_back();
+      --(shape_[0]);
+      shape_.compute_strides();
+      return *this;
+    }
+
+    tensor<bool>& view(std::initializer_list<index_type> sh) {
+      shape::Shape new_shape(sh);
+      index_type   s = new_shape.flatten_size();
+
+      if (s != data_.size())
+      {
+        throw std::invalid_argument("Total elements do not match for new shape");
+      }
+
+      new_shape.compute_strides();
+      this->shape_ = new_shape;
+      return *this;
+    }
+
+    void print() const {
+      printRecursive(0, 0, shape_);
+      std::cout << std::endl;
+    }
+
+   private:
+    void printRecursive(std::size_t index, std::size_t depth, const shape::Shape& shape) const {
+      if (depth == shape.size() - 1)
+      {
+        std::cout << "[";
+
+        for (std::size_t i = 0; i < shape[depth]; ++i)
+        {
+          std::cout << (data_[index + i] ? "true" : "false");
+
+          if (i < shape[depth] - 1)
+          {
+            std::cout << ", ";
+          }
+        }
+        std::cout << "]";
+      }
+      else
+      {
+        std::cout << "[\n";
+        std::size_t stride = shape_.computeStride(depth + 1, shape);
+
+        for (std::size_t i = 0; i < shape[depth]; ++i)
+        {
+          if (i > 0)
+          {
+            std::cout << "\n";
+          }
+
+          for (std::size_t j = 0; j < depth + 1; j++)
+          {
+            std::cout << " ";
+          }
+
+          printRecursive(index + i * stride, depth + 1, shape);
+
+          if (i < shape[depth] - 1)
+          {
+            std::cout << ",";
+          }
+        }
+
+        std::cout << "\n";
+
+        for (std::size_t j = 0; j < depth; j++)
+        {
+          std::cout << " ";
+        }
+
+        std::cout << "]";
+      }
+    }
+
+    index_type compute_outer_size(const index_type dimension) const {
+      // just a placeholder for now
+      return 0;
+    }
+
+    [[nodiscard]]
+    static _f32 frac(const_reference value) noexcept {
+      return std::fmod(static_cast<float32_t>(value), 1.0f);
+    }
+
+    bool is_cuda_device() const { return (device_ == Device::CUDA); }
+  };  // tensor<bool>
+
+
+  /*------includes-------*/
 
 #include "arithmetic/abs.hpp"
 #include "arithmetic/cos.hpp"
@@ -2059,4 +2053,4 @@ class tensor<bool>: public TensorBase<bool>
 #include "simd/types.hpp"
 #include "types.hpp"
 
-/*----end_includes-----*/
+  /*----end_includes-----*/
