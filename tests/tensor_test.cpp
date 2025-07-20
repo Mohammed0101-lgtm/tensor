@@ -48,10 +48,10 @@ TEST(TensorTest, StridesTest) {
 
 TEST(TensorTest, DeviceTest) {
   tensor<int> t({4}, {1, 2, 3, 4});
-  tensor<int> q({4}, {1, 2, 3, 4}, tensor<int>::Device::CUDA);
+  tensor<int> q({4}, {1, 2, 3, 4}, Device::CUDA);
 
-  EXPECT_EQ(t.device(), tensor<int>::Device::CPU);
-  EXPECT_EQ(q.device(), tensor<int>::Device::CUDA);
+  EXPECT_EQ(t.device(), Device::CPU);
+  EXPECT_EQ(q.device(), Device::CUDA);
 }
 
 TEST(TensorTest, NdimsTest) {
