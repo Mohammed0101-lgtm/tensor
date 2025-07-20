@@ -19,6 +19,32 @@ return false;
 }
 
 template<class, class = std::void_t<>>
+struct has_left_shift_operator: std::false_type 
+{
+};
+
+template<class _Tp>
+struct has_left_shift_operator<_Tp, std::void_t<decltype(std::declval<_Tp>() + std::declval<_Tp>())>>: std::true_type
+{
+};
+
+template<class _Tp>
+constexpr bool has_left_shift_operator_v = has_left_shift_operator<_Tp>::value;
+
+template<class, class = std::void_t<>>
+struct has_right_shift_operator: std::false_type
+{
+};
+
+template<class _Tp>
+struct has_right_shift_operator<_Tp, std::void_t<decltype(std::declval<_Tp>() + std::declval<_Tp>())>>: std::true_type
+{
+};
+
+template<class _Tp>
+constexpr bool has_right_shift_operator_v = has_right_shift_operator<_Tp>::value;
+
+template<class, class = std::void_t<>>
 struct has_plus_operator: std::false_type
 {
 };
