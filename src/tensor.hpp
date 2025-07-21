@@ -74,8 +74,8 @@ class tensor: public TensorBase<_Tp>
 
  public:
   tensor<_s16> int16_() const;
-  tensor<_s64> int64_() const;
   tensor<_s32> int32_() const;
+  tensor<_s64> int64_() const;
   tensor<_u32> uint32_() const;
   tensor<_u64> uint64_() const;
   tensor<_f32> float32_() const;
@@ -216,43 +216,43 @@ class tensor: public TensorBase<_Tp>
   /// updates the current tensor.
   /// @param other The tensor to subtract.
   /// @return A \ref to the current tensor after the subtraction.
-  tensor& operator-=(const tensor& other) const;
+  tensor& operator-=(const tensor& other);
 
   /// @brief Adds the elements of another tensor to this tensor and updates the
   /// current tensor.
   /// @param other The tensor to add.
   /// @return A \ref to the current tensor after the addition.
-  tensor& operator+=(const tensor& other) const;
+  tensor& operator+=(const tensor& other);
 
   /// @brief Multiplies the elements of this tensor by the elements of another
   /// tensor and updates the current tensor.
   /// @param other The tensor to multiply with.
   /// @return A \ref to the current tensor after the multiplication.
-  tensor& operator*=(const tensor& other) const;
+  tensor& operator*=(const tensor& other);
 
   /// @brief Divides the elements of this tensor by the elements of another
   /// tensor and updates the current tensor.
   /// @param other The tensor to divide by.
   /// @return A \ref to the current tensor after the division.
-  tensor& operator/=(const tensor& other) const;
+  tensor& operator/=(const tensor& other);
 
   /// @brief Adds a scalar value to each element of the tensor and updates the
   /// current tensor.
   /// @param value The scalar value to add.
   /// @return A \ref to the current tensor after the addition.
-  tensor& operator+=(const_reference value) const;
+  tensor& operator+=(const_reference value);
 
   /// @brief Subtracts a scalar value from each element of the tensor and
   /// updates the current tensor.
   /// @param value The scalar value to subtract.
   /// @return A \ref to the current tensor after the subtraction.
-  tensor& operator-=(const_reference value) const;
+  tensor& operator-=(const_reference value);
 
   /// @brief Divides each element of the tensor by a scalar value and updates
   /// the current tensor.
   /// @param value The scalar value to divide by.
   /// @return A \ref to the current tensor after the division.
-  tensor& operator/=(const_reference value) const;
+  tensor& operator/=(const_reference value);
 
   /// @brief Divides each element of the tensor by the corresponding element of
   /// the other tensor
@@ -269,7 +269,7 @@ class tensor: public TensorBase<_Tp>
   /// the current tensor.
   /// @param value The scalar value to multiply with.
   /// @return A \ref to the current tensor after the multiplication.
-  tensor& operator*=(const_reference value) const;
+  tensor& operator*=(const_reference value);
 
   /// @brief Assigns the values of another tensor to this tensor.
   /// @param other The tensor to assign from.
