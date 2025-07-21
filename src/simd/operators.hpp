@@ -75,7 +75,7 @@ tensor<_Tp> neon::operator_plus(const tensor<_Tp>& t, const _Tp value) {
     r_ptr[i] = a_ptr[i] + value;
   }
 
-  return tensor<_Tp>(t.shape_, std::move(ret));
+  return tensor<_Tp>(t.shape(), std::move(ret));
 }
 
 template<class _Tp>
@@ -198,7 +198,7 @@ tensor<_Tp>& neon::operator_minus_eq(tensor<_Tp>& t, const tensor<_Tp>& other) {
   const _u64              simd_end = size - (size % t.simd_width);
 
   _Tp* __restrict a_ptr      = a.data();
-  const _Tp __restrict b_ptr = b.data();
+  const _Tp* __restrict b_ptr = b.data();
 
 #pragma omp parallel for
   for (std::size_t i = 0; i < simd_end; i += t.simd_width)
@@ -365,7 +365,7 @@ tensor<_Tp>& neon::operator_minus_eq(tensor<_Tp>& t, const _Tp& value) {
 #pragma omp parallel for
   for (std::size_t i = simd_end; i < size; ++i)
   {
-    a_ptr[i] = a_ptr - value;
+    a_ptr[i] = a_ptr[i] - value;
   }
 
   return t;
@@ -486,7 +486,7 @@ tensor<_Tp> neon::operator_divide_eq(const tensor<_Tp>& t, const _Tp& value) {
   std::vector<_Tp>  ret(size);
 
   _Tp* __restrict r_ptr       = ret.data();
-  const _Tp* __restrict a_ptr = a.data();
+  _Tp* __restrict a_ptr = a.data();
 
 #pragma omp parallel for
   for (std::size_t i = 0; i < simd_end; i += t.simd_width)
@@ -534,7 +534,7 @@ tensor<_Tp> neon::operator_divide_eq(const tensor<_Tp>& t, const tensor<_Tp>& ot
   std::vector<_Tp>  ret(size);
 
   _Tp* __restrict a_ptr       = a.data();
-  const _Tp* __restrict b_ptr = other.data();
+  const _Tp* __restrict b_ptr = other.storage_().data();
 
 #pragma omp parallel for
   for (std::size_t i = 0; i < simd_end; i += t.simd_width)
