@@ -18,11 +18,11 @@ TEST(TensorTest, StorageTest) {
 TEST(TensorTest, DataTypeConversionTest) {
   tensor<int>       t({3}, {1, 2, 3});
   tensor<int32_t>   t_int       = t.int32_();
+  tensor<int16_t>   t_short     = t.int16_();
   tensor<uint32_t>  t_uint      = t.uint32_();
   tensor<uint64_t>  t_ulong     = t.uint64_();
   tensor<float32_t> t_float     = t.float32_();
   tensor<float64_t> t_double    = t.float64_();
-  tensor<int16_t>   t_short     = t.int16_();
   tensor<int64_t>   t_long_long = t.int64_();
 
   EXPECT_EQ(t_int.storage(), (std::vector<int32_t>{1, 2, 3}));
@@ -199,6 +199,36 @@ TEST(TensorTest, PlusOperatorTest) {
   EXPECT_EQ(t + q, expected);
 }
 
+TEST(TensorTest, PlusValueOperatorTest) {
+  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  tensor<int> expected({2, 3}, {2, 3, 4, 5, 6, 7});
+
+  int q = 1;
+
+  EXPECT_EQ(t + q, expected);
+}
+
+TEST(TensorTest, PlusEqualOperatorTest) {
+  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+
+  tensor<int> expected({2, 3}, {2, 4, 6, 8, 10, 12});
+
+  t += q;
+
+  EXPECT_EQ(t, expected);
+}
+
+TEST(TensorTest, PlusEqualValueOperatorTest) {
+  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  tensor<int> expected({2, 3}, {2, 3, 4, 5, 6, 7});
+
+  int q = 1;
+  t += q;
+
+  EXPECT_EQ(t, expected);
+}
+
 TEST(TensorTest, MinusOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
@@ -206,6 +236,35 @@ TEST(TensorTest, MinusOperatorTest) {
   tensor<int> expected({2, 3}, {0, 0, 0, 0, 0, 0});
 
   EXPECT_EQ(t - q, expected);
+}
+
+TEST(TensorTest, MinusValueOperatorTest) {
+  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  tensor<int> expected({2, 3}, {0, 1, 2, 3, 4, 5});
+  int         q = 1;
+
+  EXPECT_EQ(t - q, expected);
+}
+
+TEST(TensorTest, MinusEqualOperatorTest) {
+  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+
+  tensor<int> expected({2, 3}, {0, 0, 0, 0, 0, 0});
+
+  t -= q;
+
+  EXPECT_EQ(t, expected);
+}
+
+TEST(TensorTest, MinusEqualValueOperatorTest) {
+  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  tensor<int> expected({2, 3}, {0, 1, 2, 3, 4, 5});
+
+  int q = 1;
+  t -= q;
+
+  EXPECT_EQ(t, expected);
 }
 
 TEST(TensorTest, TimesOperatorTest) {
@@ -217,6 +276,36 @@ TEST(TensorTest, TimesOperatorTest) {
   EXPECT_EQ(t * q, expected);
 }
 
+TEST(TensorTest, TimesValueOperatorTest) {
+  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  int         q = 2;
+
+  tensor<int> expected({2, 3}, {1, 4, 6, 8, 10, 12});
+
+  EXPECT_EQ(t * q, expected);
+}
+
+TEST(TensorTest, TimesEqualOperatorTest) {
+  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+
+  tensor<int> expected({2, 3}, {1, 4, 9, 16, 25, 36});
+
+  t *= q;
+
+  EXPECT_EQ(t, expected);
+}
+
+TEST(TensorTest, TimesEqualValueOperatorTest) {
+  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  tensor<int> expected({2, 3}, {1, 4, 6, 8, 10, 12});
+
+  int q = 2;
+  t *= q;
+
+  EXPECT_EQ(t, expected);
+}
+
 TEST(TensorTest, DivideOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
@@ -224,6 +313,57 @@ TEST(TensorTest, DivideOperatorTest) {
   tensor<int> expected({2, 3}, {1, 1, 1, 1, 1, 1});
 
   EXPECT_EQ(t / q, expected);
+}
+
+TEST(TensorTest, DivideValueOperatorTest) {
+  tensor<float> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  tensor<float> expected({2, 3}, {0.5, 1, 1.5, 2, 2.5, 3});
+
+  float q = 2;
+
+  EXPECT_EQ(t / q, expected);
+}
+
+TEST(TensorTest, DivideValueOperatorExceptionTest) {
+  tensor<float> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  float         q = 0;
+
+  EXPECT_THROW(t / q, std::logic_error);
+}
+
+TEST(TensorTest, DivideEqualOperatorTest) {
+  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+
+  tensor<int> expected({2, 3}, {1, 1, 1, 1, 1, 1});
+
+  t /= q;
+
+  EXPECT_EQ(t, expected);
+}
+
+TEST(TensorTest, DivideEqualValueOperatorTest) {
+  tensor<float> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  tensor<float> expected({2, 3}, {0.5, 1, 1.5, 2, 2.5, 3});
+
+  float q = 2;
+  t /= q;
+
+  EXPECT_EQ(t, expected);
+}
+
+TEST(TensorTest, DivideEqualValueOperatorExceptionTest) {
+  tensor<float> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  float         q = 0;
+
+  EXPECT_THROW(t /= q, std::logic_error);
+}
+
+TEST(TensorTest, NotBoolTest) {
+  tensor<bool> t({2, 3}, {true, true, true, true, true, true, true});
+  tensor<int> expected({2, 3}, {false, false, false, false, false, false});
+
+  EXPECT_EQ(!t, expected);
 }
 
 TEST(TensorTest, BoolTest) {
