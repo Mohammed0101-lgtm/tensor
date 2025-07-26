@@ -1,9 +1,8 @@
 #include "tensor.hpp"
 #include <gtest/gtest.h>
-#include <iostream>
 
 
-TEST(TensorTest, LinearAccessOperatorTest) {
+TEST(OperatorsTest, LinearAccessOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
 
   int expected = 4;
@@ -11,7 +10,7 @@ TEST(TensorTest, LinearAccessOperatorTest) {
   EXPECT_EQ(t[3], expected);
 }
 
-TEST(TensorTest, MultiDimensionalAccessOperator) {
+TEST(OperatorsTest, MultiDimensionalAccessOperator) {
   tensor<int> ten({2, 3}, {1, 2, 3, 4, 5, 6});
 
   int expected  = 6;
@@ -21,7 +20,7 @@ TEST(TensorTest, MultiDimensionalAccessOperator) {
   EXPECT_EQ(ten({1, 2}), expected);
 }
 
-TEST(TensorTest, EmptyTest) {
+TEST(OperatorsTest, EmptyTest) {
   tensor<int> t;
   tensor<int> q({1, 2}, {1, 2});
 
@@ -29,7 +28,7 @@ TEST(TensorTest, EmptyTest) {
   EXPECT_FALSE(q.empty());
 }
 
-TEST(TensorTest, EqualOperatorTest) {
+TEST(OperatorsTest, EqualOperatorTest) {
   tensor<int> t;
   tensor<int> q;
 
@@ -43,7 +42,7 @@ TEST(TensorTest, EqualOperatorTest) {
   EXPECT_FALSE(a == b);
 }
 
-TEST(TensorTest, NotEqualOperatorTest) {
+TEST(OperatorsTest, NotEqualOperatorTest) {
   tensor<int> t;
   tensor<int> q;
 
@@ -57,7 +56,7 @@ TEST(TensorTest, NotEqualOperatorTest) {
   EXPECT_FALSE(a != c);
 }
 
-TEST(TensorTest, PlusOperatorTest) {
+TEST(OperatorsTest, PlusOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
 
@@ -66,7 +65,7 @@ TEST(TensorTest, PlusOperatorTest) {
   EXPECT_EQ(t + q, expected);
 }
 
-TEST(TensorTest, PlusValueOperatorTest) {
+TEST(OperatorsTest, PlusValueOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> expected({2, 3}, {2, 3, 4, 5, 6, 7});
 
@@ -75,7 +74,7 @@ TEST(TensorTest, PlusValueOperatorTest) {
   EXPECT_EQ(t + q, expected);
 }
 
-TEST(TensorTest, PlusEqualOperatorTest) {
+TEST(OperatorsTest, PlusEqualOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
 
@@ -86,7 +85,7 @@ TEST(TensorTest, PlusEqualOperatorTest) {
   EXPECT_EQ(t, expected);
 }
 
-TEST(TensorTest, PlusEqualValueOperatorTest) {
+TEST(OperatorsTest, PlusEqualValueOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> expected({2, 3}, {2, 3, 4, 5, 6, 7});
 
@@ -96,7 +95,7 @@ TEST(TensorTest, PlusEqualValueOperatorTest) {
   EXPECT_EQ(t, expected);
 }
 
-TEST(TensorTest, MinusOperatorTest) {
+TEST(OperatorsTest, MinusOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
 
@@ -105,7 +104,7 @@ TEST(TensorTest, MinusOperatorTest) {
   EXPECT_EQ(t - q, expected);
 }
 
-TEST(TensorTest, MinusValueOperatorTest) {
+TEST(OperatorsTest, MinusValueOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> expected({2, 3}, {0, 1, 2, 3, 4, 5});
   int         q = 1;
@@ -113,7 +112,7 @@ TEST(TensorTest, MinusValueOperatorTest) {
   EXPECT_EQ(t - q, expected);
 }
 
-TEST(TensorTest, MinusEqualOperatorTest) {
+TEST(OperatorsTest, MinusEqualOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
 
@@ -124,7 +123,7 @@ TEST(TensorTest, MinusEqualOperatorTest) {
   EXPECT_EQ(t, expected);
 }
 
-TEST(TensorTest, MinusEqualValueOperatorTest) {
+TEST(OperatorsTest, MinusEqualValueOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> expected({2, 3}, {0, 1, 2, 3, 4, 5});
 
@@ -134,7 +133,7 @@ TEST(TensorTest, MinusEqualValueOperatorTest) {
   EXPECT_EQ(t, expected);
 }
 
-TEST(TensorTest, TimesOperatorTest) {
+TEST(OperatorsTest, TimesOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
 
@@ -143,7 +142,7 @@ TEST(TensorTest, TimesOperatorTest) {
   EXPECT_EQ(t * q, expected);
 }
 
-TEST(TensorTest, TimesValueOperatorTest) {
+TEST(OperatorsTest, TimesValueOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   int         q = 2;
 
@@ -152,7 +151,7 @@ TEST(TensorTest, TimesValueOperatorTest) {
   EXPECT_EQ(t * q, expected);
 }
 
-TEST(TensorTest, TimesEqualOperatorTest) {
+TEST(OperatorsTest, TimesEqualOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
 
@@ -163,7 +162,7 @@ TEST(TensorTest, TimesEqualOperatorTest) {
   EXPECT_EQ(t, expected);
 }
 
-TEST(TensorTest, TimesEqualValueOperatorTest) {
+TEST(OperatorsTest, TimesEqualValueOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> expected({2, 3}, {2, 4, 6, 8, 10, 12});
 
@@ -173,7 +172,7 @@ TEST(TensorTest, TimesEqualValueOperatorTest) {
   EXPECT_EQ(t, expected);
 }
 
-TEST(TensorTest, DivideOperatorTest) {
+TEST(OperatorsTest, DivideOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
 
@@ -182,7 +181,7 @@ TEST(TensorTest, DivideOperatorTest) {
   EXPECT_EQ(t / q, expected);
 }
 
-TEST(TensorTest, DivideValueOperatorTest) {
+TEST(OperatorsTest, DivideValueOperatorTest) {
   tensor<float> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<float> expected({2, 3}, {0.5, 1, 1.5, 2, 2.5, 3});
 
@@ -191,14 +190,14 @@ TEST(TensorTest, DivideValueOperatorTest) {
   EXPECT_EQ(t / q, expected);
 }
 
-TEST(TensorTest, DivideValueOperatorExceptionTest) {
+TEST(OperatorsTest, DivideValueOperatorExceptionTest) {
   tensor<float> t({2, 3}, {1, 2, 3, 4, 5, 6});
   float         q = 0;
 
   EXPECT_THROW(t / q, std::logic_error);
 }
 
-TEST(TensorTest, DivideEqualOperatorTest) {
+TEST(OperatorsTest, DivideEqualOperatorTest) {
   tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
 
@@ -209,7 +208,7 @@ TEST(TensorTest, DivideEqualOperatorTest) {
   EXPECT_EQ(t, expected);
 }
 
-TEST(TensorTest, DivideEqualValueOperatorTest) {
+TEST(OperatorsTest, DivideEqualValueOperatorTest) {
   tensor<float> t({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<float> expected({2, 3}, {0.5, 1, 1.5, 2, 2.5, 3});
 
@@ -222,7 +221,7 @@ TEST(TensorTest, DivideEqualValueOperatorTest) {
   }
 }
 
-TEST(TensorTest, DivideEqualValueOperatorExceptionTest) {
+TEST(OperatorsTest, DivideEqualValueOperatorExceptionTest) {
   tensor<float> t({2, 3}, {1, 2, 3, 4, 5, 6});
   float         q = 0;
 

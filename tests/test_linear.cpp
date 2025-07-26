@@ -1,28 +1,28 @@
 #include "tensor.hpp"
 #include <gtest/gtest.h>
-#include <iostream>
 
-TEST(TensorTest, ClampWithinRange) {
+
+TEST(LinearTest, ClampWithinRange) {
   tensor<float> t({3}, {-2.0, 0.5, 3.0});
   tensor<float> result = t.clamp(0.0, 2.0);
   tensor<float> expected({3}, {0.0, 0.5, 2.0});
   EXPECT_EQ(result, expected);
 }
 
-TEST(TensorTest, ClampWithDefaultMinMax) {
+TEST(LinearTest, ClampWithDefaultMinMax) {
   tensor<float> t({3}, {-100.0, 0.0, 100.0});
   tensor<float> result = t.clamp();
   EXPECT_EQ(result, t);
 }
 
-TEST(TensorTest, ClampNegativeOnly) {
+TEST(LinearTest, ClampNegativeOnly) {
   tensor<float> t({3}, {-5.0, -1.0, 0.0});
   tensor<float> result = t.clamp(-2.0, 0.0);
   tensor<float> expected({3}, {-2.0, -1.0, 0.0});
   EXPECT_EQ(result, expected);
 }
 
-TEST(TensorTest, MatmulBasic) {
+TEST(LinearTest, MatmulBasic) {
   tensor<int> A({2, 3}, {1, 2, 3, 4, 5, 6});
   tensor<int> B({3, 2}, {7, 8, 9, 10, 11, 12});
 
@@ -37,7 +37,7 @@ TEST(TensorTest, MatmulBasic) {
   }
 }
 
-TEST(TensorTest, CrossProduct3D) {
+TEST(LinearTest, CrossProduct3D) {
   tensor<int> A({3}, {1, 2, 3});
   tensor<int> B({3}, {4, 5, 6});
   tensor<int> expected({3}, {2 * 6 - 3 * 5, 3 * 4 - 1 * 6, 1 * 5 - 2 * 4});
@@ -49,7 +49,7 @@ TEST(TensorTest, CrossProduct3D) {
   }
 }
 
-TEST(TensorTest, DotProduct) {
+TEST(LinearTest, DotProduct) {
   tensor<int> A({3}, {1, 3, -5});
   tensor<int> B({3}, {4, -2, -1});
   int         dot_result = 1 * 4 + 3 * (-2) + (-5) * (-1);
@@ -59,7 +59,7 @@ TEST(TensorTest, DotProduct) {
   EXPECT_EQ(result[0], dot_result);
 }
 
-TEST(TensorTest, Relu) {
+TEST(LinearTest, Relu) {
   tensor<float> t({4}, {-1.0, 0.0, 2.5, -3.3});
   tensor<float> expected({4}, {0.0, 0.0, 2.5, 0.0});
   tensor<float> result = t.relu();
@@ -70,25 +70,27 @@ TEST(TensorTest, Relu) {
   }
 }
 
-TEST(TensorTest, Determinant2x2) {
+TEST(LinearTest, Determinant2x2) {
   tensor<float> t({2, 2}, {4, 6, 3, 8});
   auto          result = t.det();
+
   EXPECT_NEAR(result[0], 4 * 8 - 6 * 3, 1e-5);
 }
 
-TEST(TensorTest, Sigmoid) {
+TEST(LinearTest, Sigmoid) {
   tensor<float> t({2}, {0.0f, 2.0f});
   auto          result = t.sigmoid();
+
   EXPECT_NEAR(result[0], 0.5f, 1e-5);
   EXPECT_NEAR(result[1], 1.0f / (1.0f + std::exp(-2.0f)), 1e-5);
 }
 
-TEST(TensorTest, ClippedReLU) {
-  tensor<float> t({6}, {-3.0f, -1.0f, 0.0f, 2.5f, 5.0f, 10.0f});
-  float         clip_limit = 4.0f;
-  tensor<float> result     = t.clipped_relu(clip_limit);
+TEST(LinearTest, ClippedReLU) {
+  tensor<float>      t({6}, {-3.0f, -1.0f, 0.0f, 2.5f, 5.0f, 10.0f});
+  float              clip_limit = 4.0f;
+  std::vector<float> expected   = {0.0f, 0.0f, 0.0f, 2.5f, 4.0f, 4.0f};
+  tensor<float>      result     = t.clipped_relu(clip_limit);
 
-  std::vector<float> expected = {0.0f, 0.0f, 0.0f, 2.5f, 4.0f, 4.0f};
   for (std::size_t i = 0; i < result.size(0); ++i)
   {
     EXPECT_FLOAT_EQ(result[i], expected[i]);

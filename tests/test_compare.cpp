@@ -1,13 +1,14 @@
 #include "tensor.hpp"
 #include <gtest/gtest.h>
-#include <iostream>
 
 
-TEST(TensorTest, LessTest) {
-  tensor<int>  t({2, 2}, {1, 2, 3, 4});
-  tensor<int>  other({2, 2}, {1, 2, 3, 4});
-  tensor<int>  other1({2, 2}, {2, 3, 4, 5});
-  tensor<int>  other2({2, 2}, {0, 3, 2, 6});
+TEST(CompareTest, LessTest) {
+  tensor<int> t({2, 2}, {1, 2, 3, 4});
+
+  tensor<int> other({2, 2}, {1, 2, 3, 4});
+  tensor<int> other1({2, 2}, {2, 3, 4, 5});
+  tensor<int> other2({2, 2}, {0, 3, 2, 6});
+
   tensor<bool> expected({2, 2}, {false, false, false, false});
   tensor<bool> expected1({2, 2}, {true, true, true, true});
   tensor<bool> expected2({2, 2}, {false, true, false, true});
@@ -17,7 +18,7 @@ TEST(TensorTest, LessTest) {
   EXPECT_EQ(t.less(other2), expected2);
 }
 
-TEST(TensorTest, LessTest1) {
+TEST(CompareTest, LessTest1) {
   tensor<int> t({2, 2}, {1, 2, 3, 4});
 
   int other  = 1;
@@ -33,7 +34,7 @@ TEST(TensorTest, LessTest1) {
   EXPECT_EQ(t.less(other2), expected2);
 }
 
-TEST(TensorTest, EqualTest) {
+TEST(CompareTest, EqualTest) {
   tensor<int> t({2, 2}, {1, 2, 3, 4});
 
   tensor<int> other({2, 2}, {1, 2, 3, 4});
@@ -49,7 +50,7 @@ TEST(TensorTest, EqualTest) {
   EXPECT_EQ(t.equal(other2), expected2);
 }
 
-TEST(TensorTest, EqualTest1) {
+TEST(CompareTest, EqualTest1) {
   tensor<int> t({2, 2}, {1, 2, 3, 4});
 
   int other  = 1;
@@ -65,7 +66,7 @@ TEST(TensorTest, EqualTest1) {
   EXPECT_EQ(t.equal(other2), expected2);
 }
 
-TEST(TensorTest, NotEqualTest) {
+TEST(CompareTest, NotEqualTest) {
   tensor<int> t({2, 2}, {1, 2, 3, 4});
 
   tensor<int> other({2, 2}, {1, 2, 3, 4});
@@ -81,7 +82,7 @@ TEST(TensorTest, NotEqualTest) {
   EXPECT_EQ(t.not_equal(other2), expected2);
 }
 
-TEST(TensorTest, NotEqualTest1) {
+TEST(CompareTest, NotEqualTest1) {
   tensor<int> t({2, 2}, {1, 2, 3, 4});
 
   int other  = 1;
@@ -97,7 +98,7 @@ TEST(TensorTest, NotEqualTest1) {
   EXPECT_EQ(t.not_equal(other2), expected2);
 }
 
-TEST(TensorTest, GreaterTest) {
+TEST(CompareTest, GreaterTest) {
   tensor<int> t({2, 2}, {1, 2, 3, 4});
 
   tensor<int> other({2, 2}, {1, 2, 3, 4});
@@ -113,7 +114,7 @@ TEST(TensorTest, GreaterTest) {
   EXPECT_EQ(t.greater(other2), expected2);
 }
 
-TEST(TensorTest, GreaterTest1) {
+TEST(CompareTest, GreaterTest1) {
   tensor<int> t({2, 2}, {1, 2, 3, 4});
 
   int other  = 1;
@@ -129,7 +130,7 @@ TEST(TensorTest, GreaterTest1) {
   EXPECT_EQ(t.greater(other2), expected2);
 }
 
-TEST(TensorTest, LessEqualTest) {
+TEST(CompareTest, LessEqualTest) {
   tensor<int> t({2, 2}, {1, 2, 3, 4});
 
   tensor<int> other({2, 2}, {1, 2, 3, 4});
@@ -145,7 +146,7 @@ TEST(TensorTest, LessEqualTest) {
   EXPECT_EQ(t.less_equal(other2), expected2);
 }
 
-TEST(TensorTest, GreaterEqualTest) {
+TEST(CompareTest, GreaterEqualTest) {
   tensor<int> t({2, 2}, {1, 2, 3, 4});
 
   tensor<int> other({2, 2}, {1, 2, 3, 4});

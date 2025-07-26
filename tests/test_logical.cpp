@@ -1,8 +1,8 @@
 #include "tensor.hpp"
 #include <gtest/gtest.h>
-#include <iostream>
 
-TEST(TensorTest, LogicalTest) {
+
+TEST(LogicalTest, LogicalTest) {
   tensor<int> t({2, 2}, {1, 2, 3, 4});
 
   tensor<bool> bool_       = t.bool_();
