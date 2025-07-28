@@ -24,7 +24,7 @@ TEST(StridesTest, CopyOperatorTest) {
     strides other(univ_shape);
     strides copy = other;
     
-    EXPECT_EQ(other, copy); // this tests the equal operator automatically for free hehe
+    EXPECT_EQ(other, copy); // this tests the equal operator automatically for free
 }
 
 TEST(StridesTest, GetTest) {
@@ -53,11 +53,12 @@ TEST(StridesTest, GetTest) {
         {{4, 2, 2}, {4, 2, 1}},
         {{7, 1, 2}, {2, 2, 1}},
     };
-
+    
     for (const auto& test : test_cases) {
         strides s(test.shape);
+        
         EXPECT_EQ(s.get(), test.expected_strides) << "Failed on shape: "
-                                                  << ::testing::PrintToString(test.shape);
+        << ::testing::PrintToString(test.shape);
     }
 }
 
