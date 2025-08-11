@@ -1,1 +1,0 @@
-find ./src/ -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" \) -print -exec clang-format -i {} \;
