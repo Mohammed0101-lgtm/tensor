@@ -30,7 +30,7 @@ tensor<bool> tensor<_Tp>::not_equal(const tensor& other) const {
     ret[i] = ((*this)[i] != other[i]);
   }
 
-  return tensor<bool>(this->shape(), std::move(ret));
+  return tensor<bool>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -54,7 +54,7 @@ tensor<bool> tensor<_Tp>::not_equal(const value_type value) const {
     ret[i++] = (elem != value);
   }
 
-  return tensor<bool>(this->shape(), std::move(ret));
+  return tensor<bool>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -81,7 +81,7 @@ tensor<bool> tensor<_Tp>::less(const tensor& other) const {
     ret[i] = ((*this)[i] < other[i]);
   }
 
-  return tensor<bool>(this->shape(), std::move(ret));
+  return tensor<bool>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -106,7 +106,7 @@ tensor<bool> tensor<_Tp>::less(const value_type value) const {
     ++i;
   }
 
-  return tensor<bool>(this->shape(), std::move(ret));
+  return tensor<bool>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -135,7 +135,7 @@ tensor<bool> tensor<_Tp>::greater(const value_type value) const {
     ret[i++] = (elem > value);
   }
 
-  return tensor<bool>(this->shape(), std::move(ret));
+  return tensor<bool>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -165,7 +165,7 @@ tensor<bool> tensor<_Tp>::equal(const tensor& other) const {
     ++i;
   }
 
-  return tensor<bool>(this->shape(), std::move(ret));
+  return tensor<bool>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -184,7 +184,7 @@ tensor<bool> tensor<_Tp>::equal(const value_type value) const {
     ret[i++] = (elem == value);
   }
 
-  return tensor<bool>(this->shape(), std::move(ret));
+  return tensor<bool>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -211,7 +211,7 @@ tensor<bool> tensor<_Tp>::less_equal(const tensor& other) const {
     ret[i] = ((*this)[i] <= other[i]);
   }
 
-  return tensor<bool>(this->shape(), std::move(ret), this->device());
+  return tensor<bool>(std::move(this->shape()), std::move(ret), std::move(this->device()));
 }
 
 template<class _Tp>
@@ -235,7 +235,7 @@ tensor<bool> tensor<_Tp>::less_equal(const value_type value) const {
     ret[i++] = (elem <= value);
   }
 
-  return tensor<bool>(this->shape(), std::move(ret));
+  return tensor<bool>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -264,5 +264,5 @@ tensor<bool> tensor<_Tp>::greater_equal(const value_type value) const {
     ret[i++] = (elem >= value);
   }
 
-  return tensor<bool>(this->shape(), std::move(ret));
+  return tensor<bool>(std::move(this->shape()), std::move(ret));
 }
