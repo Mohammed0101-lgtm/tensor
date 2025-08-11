@@ -85,17 +85,17 @@ class tensor
    public:
     using self                   = tensor;
     using value_type             = _Tp;
-    using data_t                 = std::vector<value_type>;
+    using Container                 = std::vector<value_type>;
     using index_type             = uint64_t;
     using shape_type             = std::vector<index_type>;
     using reference              = value_type&;
     using const_reference        = const value_type&;
     using pointer                = value_type*;
     using const_pointer          = const value_type*;
-    using iterator               = typename data_t::iterator;
-    using const_iterator         = typename data_t::const_iterator;
-    using reverse_iterator       = typename data_t::reverse_iterator;
-    using const_reverse_iterator = typename data_t::const_reverse_iterator;
+    using iterator               = typename Container::iterator;
+    using const_iterator         = typename Container::const_iterator;
+    using reverse_iterator       = typename Container::reverse_iterator;
+    using const_reverse_iterator = typename Container::const_reverse_iterator;
 
     enum class Device {
         CPU,
@@ -107,7 +107,7 @@ class tensor
     static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
    private:
-    mutable data_t     data_;
+    mutable Container     data_;
     mutable shape_type shape_;
     mutable shape_type strides_;
     Device             device_;
@@ -117,7 +117,7 @@ class tensor
     tensor() = default;
     explicit tensor(const shape_type& shape_, const_reference v, Device d = Device::CPU);
     explicit tensor(const shape_type& shape_, Device d = Device::CPU);
-    explicit tensor(const shape_type& shape_, const data_t& d, Device dev = Device::CPU);
+    explicit tensor(const shape_type& shape_, const Container& d, Device dev = Device::CPU);
     tensor(const aten::tensor& t);
     tensor(aten::tensor&& t) noexcept;
     tensor(const shape_type& shape_, const aten::tensor& other);
@@ -147,7 +147,7 @@ class tensor
     aten::tensor<unsigned long> unsigned_long_() const;
     aten::tensor<float>         float_() const;
     aten::tensor<double>        double_() const;
-    data_t                      storage() const noexcept;
+    Container                      storage() const noexcept;
     shape_type                  shape() const noexcept;
     shape_type                  strides() const noexcept;
     Device                      device() const noexcept;
@@ -273,7 +273,7 @@ class tensor
     aten::tensor             dist(const value_type value) const;
     aten::tensor             squeeze(index_type dimension) const;
     aten::tensor             negative() const;
-    aten::tensor             repeat(const data_t& d, int dimension = 0) const;
+    aten::tensor             repeat(const Container& d, int dimension = 0) const;
     aten::tensor             permute(const index_type dimension) const;
     aten::tensor             log_softmax(const index_type dimension) const;
     aten::tensor             gcd(const aten::tensor& other) const;
@@ -334,7 +334,7 @@ class tensor
     aten::tensor&            abs_();
     aten::tensor&            log_softmax_(const index_type dimension);
     aten::tensor&            permute_(const index_type dimension);
-    aten::tensor&            repeat_(const data_t& d, int dimension = 0);
+    aten::tensor&            repeat_(const Container& d, int dimension = 0);
     aten::tensor&            negative_();
     aten::tensor&            transpose_();
     aten::tensor&            unsqueeze_(index_type dimension);
@@ -406,7 +406,7 @@ class tensor
     const aten::tensor&      abs_() const;
     const aten::tensor&      log_softmax_(const index_type dimension) const;
     const aten::tensor&      permute_(const index_type dimension) const;
-    const aten::tensor&      repeat_(const data_t& d, int dimension = 0) const;
+    const aten::tensor&      repeat_(const Container& d, int dimension = 0) const;
     const aten::tensor&      negative_() const;
     const aten::tensor&      transpose_() const;
     const aten::tensor&      unsqueeze_(index_type dimension) const;
@@ -565,15 +565,15 @@ class tensor<bool>
    public:
     using self                   = tensor;
     using value_type             = bool;
-    using data_t                 = std::vector<bool>;
+    using Container                 = std::vector<bool>;
     using index_type             = uint64_t;
     using shape_type             = std::vector<index_type>;
-    using reference              = typename data_t::reference;
-    using iterator               = typename data_t::iterator;
-    using reverse_iterator       = typename data_t::reverse_iterator;
-    using const_iterator         = typename data_t::const_iterator;
-    using const_reference        = typename data_t::const_reference;
-    using const_reverse_iterator = typename data_t::const_reverse_iterator;
+    using reference              = typename Container::reference;
+    using iterator               = typename Container::iterator;
+    using reverse_iterator       = typename Container::reverse_iterator;
+    using const_iterator         = typename Container::const_iterator;
+    using const_reference        = typename Container::const_reference;
+    using const_reverse_iterator = typename Container::const_reverse_iterator;
 
     enum class Device {
         CPU,
@@ -581,7 +581,7 @@ class tensor<bool>
     };
 
    private:
-    mutable data_t     data_;
+    mutable Container     data_;
     mutable shape_type shape_;
     mutable shape_type strides_;
     Device             device_;
@@ -591,13 +591,13 @@ class tensor<bool>
     tensor() = default;
     explicit tensor(const shape_type& shape_, value_type v, Device d = Device::CPU);
     explicit tensor(const shape_type& shape_, Device d = Device::CPU);
-    explicit tensor(const shape_type& shape_, const data_t& d, Device dev = Device::CPU);
+    explicit tensor(const shape_type& shape_, const Container& d, Device dev = Device::CPU);
     tensor(const tensor& t);
     tensor(tensor&& t) noexcept;
     tensor(const shape_type& shape_, std::initializer_list<value_type> init_list, Device d = Device::CPU);
     tensor(const shape_type& shape_, const tensor& other);
 
-    data_t                    storage() const noexcept;
+    Container                    storage() const noexcept;
     shape_type                shape() const noexcept;
     shape_type                strides() const noexcept;
     Device                    device() const noexcept;
@@ -651,8 +651,8 @@ class tensor<bool>
     aten::tensor<bool>&       resize_as_(const shape_type shape_);
     aten::tensor<bool>        squeeze(const index_type dimension) const;
     aten::tensor<bool>&       squeeze_(const index_type dimension);
-    aten::tensor<bool>        repeat(const data_t& d, int dimension) const;
-    aten::tensor<bool>&       repeat_(const data_t& d, int dimension);
+    aten::tensor<bool>        repeat(const Container& d, int dimension) const;
+    aten::tensor<bool>&       repeat_(const Container& d, int dimension);
     aten::tensor<bool>        permute(const index_type dimension) const;
     aten::tensor<bool>        cat(const std::vector<tensor<value_type>>& others, index_type dimension) const;
     aten::tensor<bool>        unsqueeze(const index_type dimension) const;

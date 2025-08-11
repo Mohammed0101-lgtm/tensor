@@ -1,4 +1,6 @@
-#include "tensorbase.hpp"
+#pragma once
+
+#include "tensor.hpp"
 
 
 // forward declaration
@@ -7,6 +9,9 @@ class tensor;
 
 namespace internal {
 namespace neon {
+
+template<class _Tp>
+tensor<_Tp>& operator_plus_eq(tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
 tensor<_Tp> operator_times(const tensor<_Tp>& t, const tensor<_Tp>& other);
@@ -18,10 +23,10 @@ template<class _Tp>
 tensor<_Tp> operator_divide(const tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
-tensor<_Tp> operator_divide_eq(const tensor<_Tp>& t, const _Tp& value);
+tensor<_Tp>& operator_divide_eq(tensor<_Tp>& t, const _Tp& value);
 
 template<class _Tp>
-tensor<_Tp> operator_divide_eq(const tensor<_Tp>& t, const tensor<_Tp>& other);
+tensor<_Tp>& operator_divide_eq(tensor<_Tp>& t, const tensor<_Tp>& other);
 
 template<class _Tp>
 tensor<_Tp>& fill_(tensor<_Tp>& t, const _Tp& value);
@@ -133,6 +138,12 @@ tensor<_Tp>& dist_(tensor<_Tp>& t, const _Tp value);
 
 template<class _Tp>
 tensor<_Tp>& maximum_(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp>& operator_times_eq(tensor<_Tp>& t, const tensor<_Tp>& other);
+
+template<class _Tp>
+tensor<_Tp>& operator_times_eq(tensor<_Tp>& t, const _Tp& value);
 
 template<class _Tp>
 tensor<_Tp>& maximum_(tensor<_Tp>& t, const _Tp value);

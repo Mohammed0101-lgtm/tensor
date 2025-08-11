@@ -1,76 +1,81 @@
 #pragma once
 
-#include "tensorbase.hpp"
+#include "internal/simd/neon/logical/and.hpp"
+#include "tensor.hpp"
 
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type value) {
-    if (internal::types::using_neon())
-    {
-        return internal::neon::logical_and_(value);
-    }
+  if (internal::types::using_neon())
+  {
+    return internal::simd::neon::logical_and_(*this, value);
+  }
 
-    if (!std::is_integral_v<value_type>)
-    {
-        throw error::type_error("Cannot get the element wise and of non-integral and non-boolean value");
-    }
+  if (!std::is_integral_v<value_type>)
+  {
+    throw error::type_error("Cannot get the element wise and of non-integral and non-boolean value");
+  }
 
-    for (auto& elem : data_)
-    {
-        elem = (elem && value);
-    }
+  container_type& a = this->storage_();
 
-    return *this;
+  for (auto& elem : a)
+  {
+    elem = (elem && value);
+  }
+
+  return *this;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::logical_and(const tensor& other) const {
-    if (empty())
-    {
-        return self({0});
-    }
+  if (this->empty())
+  {
+    return self({0});
+  }
 
-    self ret = clone();
-    ret.logical_and_(other);
-    return ret;
+  self ret = clone();
+  ret.logical_and_(other);
+  return ret;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::logical_and(const value_type value) const {
-    if (empty())
-    {
-        return self({0});
-    }
+  if (this->empty())
+  {
+    return self({0});
+  }
 
-    self ret = clone();
-    ret.logical_and_(value);
-    return ret;
+  self ret = clone();
+  ret.logical_and_(value);
+  return ret;
 }
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::logical_and_(const tensor& other) {
-    if (internal::types::using_neon())
-    {
-        return internal::neon::logical_and_(other);
-    }
+  if (internal::types::using_neon())
+  {
+    return internal::simd::neon::logical_and_(*this, other);
+  }
 
-    if (!std::is_integral_v<value_type>)
-    {
-        throw error::type_error("Cannot get the element-wise and of non-integral and non-boolean value");
-    }
+  if (!std::is_integral_v<value_type>)
+  {
+    throw error::type_error("Cannot get the element-wise and of non-integral and non-boolean value");
+  }
 
-    if (!shape().equal(other.shape()))
-    {
-        throw error::shape_error("Tensors shapes must be equal");
-    }
+  if (!this->shape_().equal(other.shape()))
+  {
+    throw error::shape_error("Tensors shapes must be equal");
+  }
 
-    index_type i = 0;
+  index_type i = 0;
 
-    for (auto& elem : data_)
+  container_type& a = this->storage_();
 
-    {
-        elem = (elem && other[i++]);
-    }
+  for (auto& elem : a)
 
-    return *this;
+  {
+    elem = (elem && other[i++]);
+  }
+
+  return *this;
 }

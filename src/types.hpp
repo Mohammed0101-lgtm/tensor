@@ -1,25 +1,22 @@
 #pragma once
 
 #include "internal/simd/neon/func.hpp"
+#include "internal/simd/neon/types.hpp"
 #include "tensor.hpp"
 
 
-namespace internal {
-namespace types {
+namespace internal::types {
 
 // this should be probablu moved to a separate file for routing the neon code
-bool using_neon() {
-  /*
+inline bool using_neon() {
 #ifdef __ARM_NEON
-return true;
-#endif
-return false;
-*/
   return true;
+#endif
+  return false;
 }
 
 template<class, class = std::void_t<>>
-struct has_left_shift_operator: std::false_type 
+struct has_left_shift_operator: std::false_type
 {
 };
 
@@ -175,14 +172,13 @@ struct has_greater_equal_operator<_Tp, std::void_t<decltype(std::declval<_Tp>() 
 template<typename _Tp>
 constexpr bool has_greater_equal_operator_v = has_greater_equal_operator<_Tp>::value;
 
-}  // namespace types
 }  // namespace internal
 
 template<class _Tp>
 tensor<_s64> tensor<_Tp>::int64_() const {
   if (internal::types::using_neon())
   {
-    return internal::neon::int64_(*this);
+    return internal::simd::neon::int64_(*this);
   }
 
   if (!std::is_convertible_v<value_type, _s64>)
@@ -195,23 +191,23 @@ tensor<_s64> tensor<_Tp>::int64_() const {
     return tensor<_s64>(this->shape());
   }
 
-  std::vector<_s64> d(this->size(0));
-  const data_t&     a = this->storage_();
-  index_type        i = 0;
+  std::vector<_s64>     ret(this->size(0));
+  const container_type& a = this->storage_();
+  index_type            i = 0;
 
   for (const auto& elem : a)
   {
-    d[i++] = static_cast<_s64>(elem);
+    ret[i++] = static_cast<_s64>(elem);
   }
 
-  return tensor<_s64>(this->shape(), d);
+  return tensor<_s64>(this->shape(), ret);
 }
 
 template<class _Tp>
 tensor<_s32> tensor<_Tp>::int32_() const {
   if (internal::types::using_neon())
   {
-    return internal::neon::int32_(*this);
+    return internal::simd::neon::int32_(*this);
   }
 
   if (!std::is_convertible_v<value_type, int>)
@@ -224,23 +220,23 @@ tensor<_s32> tensor<_Tp>::int32_() const {
     return tensor<int>(this->shape());
   }
 
-  std::vector<int> d(this->size(0));
-  const data_t&    a = this->storage_();
-  index_type       i = 0;
+  std::vector<int>      ret(this->size(0));
+  const container_type& a = this->storage_();
+  index_type            i = 0;
 
   for (const auto& elem : a)
   {
-    d[i++] = static_cast<_s32>(elem);
+    ret[i++] = static_cast<_s32>(elem);
   }
 
-  return tensor<_s32>(this->shape(), d);
+  return tensor<_s32>(this->shape(), ret);
 }
 
 template<class _Tp>
 tensor<_u32> tensor<_Tp>::uint32_() const {
   if (internal::types::using_neon())
   {
-    return internal::neon::uint32_(*this);
+    return internal::simd::neon::uint32_(*this);
   }
 
   if (!std::is_convertible_v<value_type, unsigned int>)
@@ -254,7 +250,7 @@ tensor<_u32> tensor<_Tp>::uint32_() const {
   }
 
   std::vector<unsigned int> ret(this->size(0));
-  const data_t&             a = this->storage_();
+  const container_type&     a = this->storage_();
   index_type                i = 0;
 
   for (const auto& elem : a)
@@ -269,7 +265,7 @@ template<class _Tp>
 tensor<_f32> tensor<_Tp>::float32_() const {
   if (internal::types::using_neon())
   {
-    return internal::neon::float32_(*this);
+    return internal::simd::neon::float32_(*this);
   }
 
   if (!std::is_convertible_v<value_type, _f32>)
@@ -282,23 +278,23 @@ tensor<_f32> tensor<_Tp>::float32_() const {
     return tensor<_f32>(this->shape());
   }
 
-  std::vector<_f32> d(this->size(0));
-  const data_t&     a = this->storage_();
-  index_type        i = 0;
+  std::vector<_f32>     ret(this->size(0));
+  const container_type& a = this->storage_();
+  index_type            i = 0;
 
   for (const auto& elem : a)
   {
-    d[i++] = static_cast<_f32>(elem);
+    ret[i++] = static_cast<_f32>(elem);
   }
 
-  return tensor<_f32>(this->shape(), d);
+  return tensor<_f32>(this->shape(), ret);
 }
 
 template<class _Tp>
 tensor<double> tensor<_Tp>::float64_() const {
   if (internal::types::using_neon())
   {
-    return internal::neon::float64_(*this);
+    return internal::simd::neon::float64_(*this);
   }
 
   if (!std::is_convertible_v<value_type, double>)
@@ -311,23 +307,23 @@ tensor<double> tensor<_Tp>::float64_() const {
     return tensor<double>(this->shape());
   }
 
-  std::vector<double> d(this->size(0));
-  const data_t&       a = this->storage_();
-  index_type          i = 0;
+  std::vector<double>   ret(this->size(0));
+  const container_type& a = this->storage_();
+  index_type            i = 0;
 
   for (const auto& elem : a)
   {
-    d[i++] = double(elem);
+    ret[i++] = double(elem);
   }
 
-  return tensor<double>(this->shape(), d);
+  return tensor<double>(this->shape(), ret);
 }
 
 template<class _Tp>
 tensor<_u64> tensor<_Tp>::uint64_() const {
   if (internal::types::using_neon())
   {
-    return internal::neon::uint64_(*this);
+    return internal::simd::neon::uint64_(*this);
   }
 
   if (!std::is_convertible_v<value_type, _u64>)
@@ -340,9 +336,9 @@ tensor<_u64> tensor<_Tp>::uint64_() const {
     return tensor<_u64>(this->shape());
   }
 
-  std::vector<_u64> ret(this->size(0));
-  const data_t&     a = this->storage_();
-  index_type        i = 0;
+  std::vector<_u64>     ret(this->size(0));
+  const container_type& a = this->storage_();
+  index_type            i = 0;
 
   for (const auto& elem : a)
   {
@@ -356,7 +352,7 @@ template<class _Tp>
 tensor<short> tensor<_Tp>::int16_() const {
   if (internal::types::using_neon())
   {
-    return internal::neon::int16_(*this);
+    return internal::simd::neon::int16_(*this);
   }
 
   if (!std::is_convertible_v<value_type, short>)
@@ -369,16 +365,16 @@ tensor<short> tensor<_Tp>::int16_() const {
     return tensor<short>(this->shape());
   }
 
-  std::vector<short> d(this->size(0));
-  const data_t&      a = this->storage_();
-  index_type         i = 0;
+  std::vector<short>    ret(this->size(0));
+  const container_type& a = this->storage_();
+  index_type            i = 0;
 
   for (const auto& elem : a)
   {
-    d[i++] = short(elem);
+    ret[i++] = short(elem);
   }
 
-  return tensor<short>(this->shape(), d);
+  return tensor<short>(this->shape(), ret);
 }
 
 template<class _Tp>
@@ -388,14 +384,14 @@ tensor<bool> tensor<_Tp>::bool_() const {
     throw error::type_error("Type must be convertible to bool");
   }
 
-  std::vector<bool> d(this->size(0));
-  const data_t&     a = this->storage_();
-  index_type        i = 0;
+  std::vector<bool>     ret(this->size(0));
+  const container_type& a = this->storage_();
+  index_type            i = 0;
 
   for (const auto& elem : a)
   {
-    d[i++] = bool(elem);
+    ret[i++] = bool(elem);
   }
 
-  return tensor<bool>(this->shape(), d);
+  return tensor<bool>(this->shape(), ret);
 }

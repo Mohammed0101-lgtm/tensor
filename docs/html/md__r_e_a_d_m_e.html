@@ -94,7 +94,7 @@ How does it work</h1>
 <p>Internally I thought about making it simple for the user to create a tensor like it was part of the CPP standard library, and providing many usefull methods to add tensors and multiply them, transpose a tensor, retrieve a value from it and so fourth.. The tensor class is a template class that accepts any type of standard or user defined classes, though you have to be carefull, some operations are only supported when the class complies with certain conditions. When you create a tensor the memory is managed by the constructors and the destructors, so you don't have to worry about it.</p>
 <h1><a class="anchor" id="autotoc_md2"></a>
 Usage</h1>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="tensor_8hpp.html">tensor.hpp</a>&quot;</span></div>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="tensor_8hpp.html">#include "tensor.hpp"</a>&quot;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> <a class="code hl_function" href="test_8cpp.html#a840291bc02cba5474a4cb46a9b9566fe">main</a>(<span class="keywordtype">void</span>) {</div>
 <div class="line">    <a class="code hl_class" href="classtensor.html">tensor&lt;int&gt;</a> tens({3}, {1, 3, 4});</div>
@@ -104,7 +104,7 @@ Usage</h1>
 <div class="line">}</div>
 <div class="ttc" id="aclasstensor_html"><div class="ttname"><a href="classtensor.html">tensor</a></div><div class="ttdef"><b>Definition</b> synopsis.h:13</div></div>
 <div class="ttc" id="aclasstensor_html_a98ff9eb7aa9a40b88c9a64397238bb5a"><div class="ttname"><a href="classtensor.html#a98ff9eb7aa9a40b88c9a64397238bb5a">tensor::print</a></div><div class="ttdeci">void print() const</div><div class="ttdef"><b>Definition</b> synopsis.h:1835</div></div>
-<div class="ttc" id="atensor_8hpp_html"><div class="ttname"><a href="tensor_8hpp.html">tensor.hpp</a></div></div>
+<div class="ttc" id="atensor_8hpp_html"><div class="ttname"><a href="tensor_8hpp.html">#include "tensor.hpp"</a></div></div>
 <div class="ttc" id="atest_8cpp_html_a840291bc02cba5474a4cb46a9b9566fe"><div class="ttname"><a href="test_8cpp.html#a840291bc02cba5474a4cb46a9b9566fe">main</a></div><div class="ttdeci">int main(void)</div><div class="ttdef"><b>Definition</b> test.cpp:3</div></div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->

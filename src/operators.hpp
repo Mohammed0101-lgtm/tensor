@@ -1,478 +1,480 @@
 #pragma once
 
-#include "tensorbase.hpp"
+#include "internal/simd/neon/operators.hpp"
+#include "tensor.hpp"
+#include "types.hpp"
 
-
-template<class _Tp>
-typename tensor<_Tp>::reference tensor<_Tp>::operator()(std::initializer_list<index_type> index_list) {
-    return data_[shape_.compute_index(shape_type(index_list))];
-}
-
-template<class _Tp>
-typename tensor<_Tp>::const_reference tensor<_Tp>::operator()(std::initializer_list<index_type> index_list) const {
-    return data_[shape_.compute_index(shape_type(index_list))];
-}
 
 template<class _Tp>
 bool tensor<_Tp>::operator!=(const tensor& other) const {
-    return !(*this == other);
-}
-
-template<class _Tp>
-typename tensor<_Tp>::reference tensor<_Tp>::operator[](const index_type idx) {
-    if (idx >= data_.size() || idx < 0)
-    {
-        throw error::index_error("Access index is out of range");
-    }
-
-    return data_[idx];
-}
-
-template<class _Tp>
-typename tensor<_Tp>::const_reference tensor<_Tp>::operator[](const index_type idx) const {
-    if (idx >= data_.size() || idx < 0)
-    {
-        throw error::index_error("Access index is out of range");
-    }
-
-    return data_[idx];
+  return !(*this == other);
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator+(const tensor& other) const {
-    if (internal::types::using_neon())
-    {
-        return internal::neon::operator_plus(*this, other);
-    }
+  if (internal::types::using_neon())
+  {
+    return internal::simd::neon::operator_plus(*this, other);
+  }
 
-    if constexpr (!internal::types::has_plus_operator_v<value_type>)
-    {
-        throw error::operator_error("Value type must have a plus operator");
-    }
+  if constexpr (!internal::types::has_plus_operator_v<value_type>)
+  {
+    throw error::operator_error("Value type must have a plus operator");
+  }
 
-    if (!shape_.equal(other.shape()))
-    {
-        throw error::shape_error("Tensors shapes must be equal");
-    }
+  if (!this->shape_().equal(other.shape()))
+  {
+    throw error::shape_error("Tensors shapes must be equal");
+  }
 
-    data_t d(data_.size());
+  std::size_t           size = this->size(0);
+  const container_type& b    = other.storage_();
 
-    for (index_type i = 0; i < data_.size(); ++i)
-    {
-        d[i] = data_[i] + other[i];
-    }
+  container_type ret(size);
 
-    return self(shape_, d);
+#pragma omp parallel
+  for (std::size_t i = 0; i < size; ++i)
+  {
+    ret[i] = (*this)[i] + b[i];
+  }
+
+  return self(this->shape(), std::move(ret));
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator+(const value_type value) const {
-    if (internal::types::using_neon())
-    {
-        return internal::neon::operator_plus(value);
-    }
+  if (internal::types::using_neon())
+  {
+    return internal::simd::neon::operator_plus(*this, value);
+  }
 
-    if constexpr (!internal::types::has_plus_operator_v<value_type>)
-    {
-        throw error::operator_error("Value type must have a plus operator");
-    }
+  if constexpr (!internal::types::has_plus_operator_v<value_type>)
+  {
+    throw error::operator_error("Value type must have a plus operator");
+  }
 
-    data_t d(data_.size());
+  container_type ret(this->size(0));
 
-    for (index_type i = 0; i < data_.size(); ++i)
-    {
-        d[i] = data_[i] + value;
-    }
+  for (index_type i = 0; i < this->size(0); ++i)
+  {
+    ret[i] = (*this)[i] + value;
+  }
 
-    return self(d, shape_);
+  return self(this->shape(), std::move(ret));
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator*(const value_type value) const {
-    if constexpr (!internal::types::has_times_operator_v<value_type>)
-    {
-        throw error::operator_error("Value type must have a times operator");
-    }
+  /*
+  if (internal::types::using_neon()) 
+  {
+    return internal::simd::neon::operator_times(*this, value);
+  }
+  */
 
-    data_t d(data_.size());
+  if constexpr (!internal::types::has_times_operator_v<value_type>)
+  {
+    throw error::operator_error("Value type must have a times operator");
+  }
 
-    for (index_type i = 0; i < data_.size(); ++i)
-    {
-        d[i] = data_[i] + value;
-    }
+  container_type ret(this->size(0));
 
-    return self(shape_, d);
+  for (index_type i = 0; i < this->size(0); ++i)
+  {
+    ret[i] = (*this)[i] * value;
+  }
+
+  return self(this->shape(), std::move(ret));
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator*(const tensor& other) const {
-    if constexpr (!internal::types::has_times_operator_v<value_type>)
-    {
-        throw error::operator_error("Value type must have a times operator");
-    }
+  if (internal::types::using_neon())
+  {
+    return internal::simd::neon::operator_times(*this, other);
+  }
 
-    if (!shape().equal(other.shape()))
-    {
-        throw error::shape_error("Tensors shapes must be equal");
-    }
+  if constexpr (!internal::types::has_times_operator_v<value_type>)
+  {
+    throw error::operator_error("Value type must have a times operator");
+  }
 
-    data_t d(data_.size());
+  if (!this->shape_().equal(other.shape()))
+  {
+    throw error::shape_error("Tensors shapes must be equal");
+  }
 
-    for (index_type i = 0; i < data_.size(); ++i)
-    {
-        d[i] = data_[i] * other[i];
-    }
+  container_type ret(this->size(0));
 
-    return self(shape_, d);
+  for (index_type i = 0; i < this->size(0); ++i)
+  {
+    ret[i] = (*this)[i] * other[i];
+  }
+
+  return self(this->shape(), std::move(ret));
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator+=(const tensor& other) const {
-    if (internal::types::using_neon())
-    {
-        return internal::neon::operator_plus_eq(other);
-    }
+tensor<_Tp>& tensor<_Tp>::operator+=(const tensor& other) {
+  if (internal::types::using_neon())
+  {
+    return internal::simd::neon::operator_plus_eq(*this, other);
+  }
 
-    if constexpr (!internal::types::has_plus_operator_v<value_type>)
-    {
-        throw error::operator_error("Value type must have a plus equal to operator");
-    }
+  if constexpr (!internal::types::has_plus_operator_v<value_type>)
+  {
+    throw error::operator_error("Value type must have a plus equal to operator");
+  }
 
-    if (!shape().equal(other.shape()))
-    {
-        throw error::shape_error("Tensors shapes must be equal");
-    }
+  if (!this->shape_().equal(other.shape()))
+  {
+    throw error::shape_error("Tensors shapes must be equal");
+  }
 
-    index_type i = 0;
+  index_type i = 0;
 
-    for (auto& elem : data_)
-    {
-        elem = elem + other[i++];
-    }
+  container_type& a = this->storage_();
 
-    return *this;
+  for (auto& elem : a)
+  {
+    elem = elem + other[i++];
+  }
+
+  return *this;
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator+=(const_reference value) const {
-    if (internal::types::using_neon())
-    {
-        return internal::neon::operator_plus_eq(value);
-    }
+tensor<_Tp>& tensor<_Tp>::operator+=(const_reference value) {
+  if (internal::types::using_neon())
+  {
+    return internal::simd::neon::operator_plus_eq(*this, value);
+  }
 
-    if constexpr (!internal::types::has_plus_operator_v<value_type>)
-    {
-        throw error::operator_error("Value type must have a plus operator");
-    }
+  if constexpr (!internal::types::has_plus_operator_v<value_type>)
+  {
+    throw error::operator_error("Value type must have a plus operator");
+  }
 
-    for (index_type i = 0; i < data_.size(); ++i)
-    {
-        data_[i] = data_[i] + value;
-    }
+  for (index_type i = 0; i < this->size(0); ++i)
+  {
+    (*this)[i] = (*this)[i] + value;
+  }
 
-    for (auto& elem : data_)
-    {
-        elem = elem + value;
-    }
+  container_type& a = this->storage_();
 
-    return *this;
+  for (auto& elem : a)
+  {
+    elem = elem + value;
+  }
+
+  return *this;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator-(const tensor& other) const {
-    if (internal::types::using_neon())
-    {
-        return internal::neon::operator_minus(*this, other);
-    }
+  if (internal::types::using_neon())
+  {
+    return internal::simd::neon::operator_minus(*this, other);
+  }
 
-    if constexpr (!internal::types::has_minus_operator_v<value_type>)
-    {
-        throw error::operator_error("Value type must have a minus operator");
-    }
+  if constexpr (!internal::types::has_minus_operator_v<value_type>)
+  {
+    throw error::operator_error("Value type must have a minus operator");
+  }
 
-    if (!shape().equal(other.shape()))
-    {
-        throw error::shape_error("Tensors shapes must be equal");
-    }
+  if (!this->shape_().equal(other.shape()))
+  {
+    throw error::shape_error("Tensors shapes must be equal");
+  }
 
-    data_t d(data_.size());
+  container_type ret(this->size(0));
 
-    for (index_type i = 0; i < data_[i]; ++i)
-    {
-        d[i] = data_[i] - other[i];
-    }
+  for (index_type i = 0; i < this->size(0); ++i)
+  {
+    ret[i] = (*this)[i] - other[i];
+  }
 
-    return self(shape_, d);
+  return self(this->shape(), std::move(ret));
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator-(const value_type value) const {
-    if (internal::types::using_neon())
-    {
-        return internal::neon::operator_minus(value);
-    }
+  if (internal::types::using_neon())
+  {
+    return internal::simd::neon::operator_minus(*this, value);
+  }
 
-    if constexpr (!internal::types::has_minus_operator_v<value_type>)
-    {
-        throw error::operator_error("Value type must have a minus operator");
-    }
+  if constexpr (!internal::types::has_minus_operator_v<value_type>)
+  {
+    throw error::operator_error("Value type must have a minus operator");
+  }
 
-    data_t d(data_.size());
+  container_type d(this->size(0));
 
-    for (index_type i = 0; i < data_.size(); ++i)
-    {
-        d[i] = data_[i] - value;
-    }
+  for (index_type i = 0; i < this->size(0); ++i)
+  {
+    d[i] = (*this)[i] - value;
+  }
 
-    return self(*this);
+  return self(*this);
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator-=(const tensor& other) const {
-    if (internal::types::using_neon())
-    {
-        return internal::neon::operator_minus_eq(other);
-    }
+tensor<_Tp>& tensor<_Tp>::operator-=(const tensor& other) {
+  if (internal::types::using_neon())
+  {
+    return internal::simd::neon::operator_minus_eq(*this, other);
+  }
 
-    if constexpr (!internal::types::has_minus_operator_v<value_type>)
-    {
-        throw error::operator_error("Value type must have a minus operator");
-    }
+  if constexpr (!internal::types::has_minus_operator_v<value_type>)
+  {
+    throw error::operator_error("Value type must have a minus operator");
+  }
 
-    if (!shape().equal(other.shape()))
-    {
-        throw error::shape_error("Tensors shapes must be equal");
-    }
+  if (!this->shape_().equal(other.shape()))
+  {
+    throw error::shape_error("Tensors shapes must be equal");
+  }
 
-    index_type i = 0;
+  index_type      i = 0;
+  container_type& a = this->storage_();
 
-    for (auto& elem : data_)
-    {
-        elem = elem - other[i++];
-    }
+  for (auto& elem : a)
+  {
+    elem = elem - other[i++];
+  }
 
-    return *this;
+  return *this;
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator*=(const tensor& other) const {
-    if (internal::types::using_neon())
-    {
-        return internal::neon::operator_times_eq(other);
-    }
+tensor<_Tp>& tensor<_Tp>::operator*=(const tensor& other) {
+  if (internal::types::using_neon())
+  {
+    return internal::simd::neon::operator_times_eq(*this, other);
+  }
 
-    if constexpr (!internal::types::has_times_operator_v<value_type>)
-    {
-        throw error::operator_error("Value type must have a times operator");
-    }
+  if constexpr (!internal::types::has_times_operator_v<value_type>)
+  {
+    throw error::operator_error("Value type must have a times operator");
+  }
 
-    if (!shape().equal(other.shape()))
-    {
-        throw error::shape_error("Tensors shapes must be equal");
-    }
+  if (!this->shape_().equal(other.shape()))
+  {
+    throw error::shape_error("Tensors shapes must be equal");
+  }
 
-    index_type i = 0;
+  index_type      i = 0;
+  container_type& a = this->storage_();
 
-    for (auto& elem : data_)
-    {
-        elem = elem * other[i++];
-    }
+  for (auto& elem : a)
+  {
+    elem = elem * other[i++];
+  }
 
-    return *this;
+  return *this;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator/(const_reference value) const {
-    if (internal::types::using_neon() && std::is_floating_point_v<value_type>)
-    {
-        return internal::neon::operator_divide(*this, value);
-    }
+  if (internal::types::using_neon() && std::is_floating_point_v<value_type>)
+  {
+    return internal::simd::neon::operator_divide(*this, value);
+  }
 
-    if constexpr (!internal::types::has_divide_operator_v<value_type>)
-    {
-        throw error::operator_error("Value type must have a divide operator");
-    }
+  if constexpr (!internal::types::has_divide_operator_v<value_type>)
+  {
+    throw error::operator_error("Value type must have a divide operator");
+  }
 
-    if (value == value_type(0))
-    {
-        throw std::logic_error("Cannot divide by zero : undefined operation");
-    }
+  if (value == value_type(0))
+  {
+    throw std::logic_error("Cannot divide by zero : undefined operation");
+  }
 
-    data_t     d(data_.size());
-    index_type i = 0;
+  container_type  ret(this->size(0));
+  index_type      i = 0;
+  container_type& a = this->storage_();
 
-    for (auto& elem : data_)
-    {
-        d[i++] = elem / value;
-    }
+  for (auto& elem : a)
+  {
+    ret[i++] = elem / value;
+  }
 
-    return self(shape_, d);
+  return self(this->shape(), std::move(ret));
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator*=(const_reference value) const {
-    if (internal::types::using_neon())
-    {
-        return internal::neon::operator_times_eq(value);
-    }
+tensor<_Tp>& tensor<_Tp>::operator*=(const_reference value) {
+  if (internal::types::using_neon())
+  {
+    return internal::simd::neon::operator_times_eq(*this, value);
+  }
 
-    if constexpr (!internal::types::has_times_operator_v<value_type>)
-    {
-        throw error::operator_error("Value type must have a times operator");
-    }
+  if constexpr (!internal::types::has_times_operator_v<value_type>)
+  {
+    throw error::operator_error("Value type must have a times operator");
+  }
 
-    for (auto& elem : data_)
-    {
-        elem = elem * value;
-    }
+  container_type& a = this->storage_();
 
-    return *this;
+  for (auto& elem : a)
+  {
+    elem = elem * value;
+  }
+
+  return *this;
 }
 
 template<class _Tp>
 inline tensor<_Tp>& tensor<_Tp>::operator=(const tensor& other) const {
-    shape_ = other.shape();
-    data_  = other.storage();
-    shape_.compute_strides();
-    return *this;
+  this->shape_()   = other.shape();
+  this->storage_() = other.storage();
+  this->shape_().compute_strides();
+  return *this;
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator/=(const tensor& other) const {
-    if (internal::types::using_neon() && std::is_floating_point_v<value_type>)
-    {
-        return internal::neon::operator_divide_eq(other);
-    }
+tensor<_Tp>& tensor<_Tp>::operator/=(const tensor& other) {
+  if (internal::types::using_neon() && std::is_floating_point_v<value_type>)
+  {
+    return internal::simd::neon::operator_divide_eq(*this, other);
+  }
 
-    if constexpr (!internal::types::has_divide_operator_v<value_type>)
-    {
-        throw error::operator_error("Value type must have a divide operator");
-    }
+  if constexpr (!internal::types::has_divide_operator_v<value_type>)
+  {
+    throw error::operator_error("Value type must have a divide operator");
+  }
 
-    if (!shape().equal(other.shape()))
-    {
-        throw error::shape_error("Tensors shapes must be equal");
-    }
+  if (!this->shape_().equal(other.shape()))
+  {
+    throw error::shape_error("Tensors shapes must be equal");
+  }
 
-    if (other.count_nonzero(0) != other.size(0))
-    {
-        throw std::logic_error("Cannot divide by zero : undefined operation");
-    }
+  if (other.count_nonzero(0) != other.size(0))
+  {
+    throw std::logic_error("Cannot divide by zero : undefined operation");
+  }
 
-    index_type i = 0;
+  index_type      i = 0;
+  container_type& a = this->storage_();
 
-    for (auto& elem : data_)
-    {
-        elem = elem / other[i++];
-    }
+  for (auto& elem : a)
+  {
+    elem = elem / other[i++];
+  }
 
-    return *this;
+  return *this;
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator/=(const_reference value) const {
-    if (internal::types::using_neon() && std::is_floating_point_v<value_type>)
-    {
-        return internal::neon::operator_divide_eq(value);
-    }
+tensor<_Tp>& tensor<_Tp>::operator/=(const_reference value) {
+  if (internal::types::using_neon() && std::is_floating_point_v<value_type>)
+  {
+    return internal::simd::neon::operator_divide_eq(*this, value);
+  }
 
-    if constexpr (!internal::types::has_divide_operator_v<value_type>)
-    {
-        throw error::operator_error("Value type must have a divide operator");
-    }
+  if constexpr (!internal::types::has_divide_operator_v<value_type>)
+  {
+    throw error::operator_error("Value type must have a divide operator");
+  }
 
-    if (value == value_type(0))
-    {
-        throw std::invalid_argument("Cannot divide by zero : undefined operation");
-    }
+  if (value == value_type(0))
+  {
+    throw std::invalid_argument("Cannot divide by zero : undefined operation");
+  }
 
-    for (auto& elem : data_)
-    {
-        elem = elem / value;
-    }
+  container_type& a = this->storage_();
 
-    return *this;
+  for (auto& elem : a)
+  {
+    elem = elem / value;
+  }
+
+  return *this;
 }
 
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::operator/(const tensor& other) const {
-    if (internal::types::using_neon() && std::is_floating_point_v<value_type>)
-    {
-        return internal::neon::operator_divide(*this, other);
-    }
+  if (internal::types::using_neon() && std::is_floating_point_v<value_type>)
+  {
+    return internal::simd::neon::operator_divide(*this, other);
+  }
 
-    if constexpr (!internal::types::has_divide_operator_v<value_type>)
-    {
-        throw error::operator_error("Value type must have a divide operator");
-    }
+  if constexpr (!internal::types::has_divide_operator_v<value_type>)
+  {
+    throw error::operator_error("Value type must have a divide operator");
+  }
 
-    if (!shape().equal(other.shape()))
-    {
-        throw error::shape_error("Tensors shapes must be equal");
-    }
+  if (!this->shape_().equal(other.shape()))
+  {
+    throw error::shape_error("Tensors shapes must be equal");
+  }
 
-    if (other.count_nonzero(0) != other.size(0))
-    {
-        throw std::logic_error("Cannot divide by zero : undefined operation");
-    }
+  if (other.count_nonzero(0) != other.size(0))
+  {
+    throw std::logic_error("Cannot divide by zero : undefined operation");
+  }
 
-    data_t d(data_.size());
+  container_type ret(this->size(0));
 
-    for (index_type i = 0; i < data_.size(); ++i)
-    {
-        d[i] = data_[i] / other[i];
-    }
+  for (index_type i = 0; i < this->size(0); ++i)
+  {
+    ret[i] = (*this)[i] / other[i];
+  }
 
-    return self(shape_, d);
+  return self(this->shape(), std::move(ret));
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::operator-=(const_reference value) const {
-    if (internal::types::using_neon())
-    {
-        return internal::neon::operator_minus_eq(value);
-    }
+tensor<_Tp>& tensor<_Tp>::operator-=(const_reference value) {
+  if (internal::types::using_neon())
+  {
+    return internal::simd::neon::operator_minus_eq(*this, value);
+  }
 
-    if constexpr (!internal::types::has_minus_operator_v<value_type>)
-    {
-        throw error::operator_error("Value type must have a minus operator");
-    }
+  if constexpr (!internal::types::has_minus_operator_v<value_type>)
+  {
+    throw error::operator_error("Value type must have a minus operator");
+  }
 
-    for (auto& elem : data_)
-    {
-        elem = elem - value;
-    }
+  container_type& a = this->storage_();
 
-    return *this;
+  for (auto& elem : a)
+  {
+    elem = elem - value;
+  }
+
+  return *this;
 }
 
 template<class _Tp>
 bool tensor<_Tp>::operator==(const tensor& other) const {
-    if (shape_.equal(other.shape()) && data_ == other.storage())
-    {
-        return true;
-    }
+  if (this->shape_().equal(other.shape()) && this->storage_() == other.storage())
+  {
+    return true;
+  }
 
-    return false;
+  return false;
 }
 
 template<class _Tp>
 tensor<_Tp>& tensor<_Tp>::operator=(tensor&& other) const noexcept {
-    if (this != &other)
-    {
-        data_  = std::move(other.storage());
-        shape_ = std::move(other.shape());
-    }
+  if (this != &other)
+  {
+    this->storage_() = std::move(other.storage());
+    this->shape_()   = std::move(other.shape());
+  }
 
-    return *this;
+  return *this;
 }
 
 template<class _Tp>
 const tensor<bool>& tensor<_Tp>::operator!() const {
-    return logical_not_();
+  return logical_not_();
 }
 
 template<class _Tp>
 tensor<bool>& tensor<_Tp>::operator!() {
-    return logical_not_();
+  return logical_not_();
 }

@@ -11,61 +11,68 @@ struct Strides
   using index        = uint64_t;
   using strides_type = std::vector<index>;
 
-  strides_type value_;
+  strides_type __value_;
 
-  Strides() { value_ = strides_type(); }
+  Strides() { __value_ = strides_type(); }
 
   Strides(const std::vector<index>& shape) {
+    /*
+         if (shape.empty())
+         {
+         throw error::shape_error("Shape must be initialized before computing strides");
+         }
+         */
+
     if (shape.empty())
     {
-      throw error::shape_error("Shape must be initialized before computing strides");
+      std::cerr << "[Warning] Empty shape passed to compute strides!" << std::endl;
     }
 
-    value_     = std::vector<index>(shape.size(), 1);
+    __value_     = std::vector<index>(shape.size(), 1);
     int stride = 1;
 
     for (int i = static_cast<int>(shape.size() - 1); i >= 0; i--)
     {
-      value_[i] = stride;
+      __value_[i] = stride;
       stride *= shape[i];
     }
   }
 
   Strides(const Strides& other) noexcept :
-      value_(other.value_) {}
+      __value_(other.__value_) {}
 
   Strides& operator=(const Strides& other) noexcept {
     if (this != &other)
     {
-      value_ = other.value_;
+      __value_ = other.__value_;
     }
 
     return *this;
   }
 
-  bool operator==(const Strides& other) const { return this->value_ == other.value_; }
+  bool operator==(const Strides& other) const { return this->__value_ == other.__value_; }
 
-  index operator[](const index at) const { return value_[at]; }
+  index operator[](const index at) const { return __value_[at]; }
 
-  index& operator[](const index at) { return value_[at]; }
+  index& operator[](const index at) { return __value_[at]; }
 
-  strides_type get() const { return value_; }
+  strides_type get() const { return __value_; }
 
-  index n_dims() const noexcept { return value_.size(); }
+  index n_dims() const noexcept { return __value_.size(); }
 
   void compute_strides(const std::vector<index>& shape_) noexcept {
     if (shape_.empty())
     {
-      value_ = strides_type();
+      __value_ = strides_type();
       return;
     }
 
-    value_ = strides_type(this->n_dims(), 1);
+    __value_ = strides_type(this->n_dims(), 1);
     int st = 1, i = static_cast<int>(this->n_dims() - 1);
 
     for (; i >= 0; i--)
     {
-      value_[i] = st;
+      __value_[i] = st;
       st *= shape_[i];
     }
   }

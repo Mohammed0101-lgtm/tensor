@@ -1,5 +1,6 @@
 #pragma once
 
+#include "macros.hpp"
 #include <arm_neon.h>
 #include <cstdint>
 #include <cstdlib>
@@ -43,13 +44,13 @@ enum class Device : int {
   CUDA
 };
 
-template<class _Tp>
+template<class _Tp, typename Container = std::vector<_Tp>>
 class TensorBase
 {
  public:
   using self            = TensorBase;
   using value_type      = _Tp;
-  using data_t          = std::vector<value_type>;
+  using container_type  = Container;
   using index_type      = uint64_t;
   using shape_type      = std::vector<index_type>;
   using reference       = value_type&;
@@ -65,10 +66,9 @@ class TensorBase
       __shape_(t.shape()),
       __device_(t.device()) {}
 
-  TensorBase(TensorBase&& t) noexcept :
-      __data_(std::move(t.storage())),
-      __shape_(std::move(t.shape())),
-      __device_(std::move(t.device())) {}
+  TensorBase(TensorBase&& t) TENSOR_NOEXCEPT: __data_(std::move(t.storage())),
+                                              __shape_(std::move(t.shape())),
+                                              __device_(std::move(t.device())) {}
 
   TensorBase(const shape::Shape& sh, const TensorBase& other) :
       __data_(other.storage()),
@@ -83,7 +83,7 @@ class TensorBase
       throw std::invalid_argument("Initializer list size must match tensor size");
     }
 
-    __data_ = data_t(init_list);
+    __data_ = Container(init_list);
   }
 
   explicit TensorBase(const shape::Shape& sh, const_reference v, Device d = Device::CPU) :
@@ -96,11 +96,11 @@ class TensorBase
   explicit TensorBase(const shape::Shape& sh, Device d = Device::CPU) :
       __shape_(sh),
       __device_(d) {
-    __data_ = data_t(__shape_.flatten_size());
+    __data_ = Container(__shape_.flatten_size());
     __shape_.compute_strides();
   }
 
-  explicit TensorBase(const shape::Shape& sh, const data_t& d, Device dev = Device::CPU) :
+  explicit TensorBase(const shape::Shape& sh, const Container& d, Device dev = Device::CPU) :
       __shape_(sh),
       __device_(dev) {
 
@@ -124,32 +124,32 @@ class TensorBase
     __shape_.compute_strides();
   }
 
-  mutable data_t       __data_;
+  mutable Container    __data_;
   mutable shape::Shape __shape_;
   Device               __device_;
   bool                 __is_cuda_tensor_ = false;
 
  public:
-  data_t storage() const noexcept { return __data_; }
+  TENSOR_LIBRARY_API Container storage() const TENSOR_NOEXCEPT { return __data_; }
 
-  shape::Shape shape() const noexcept { return __shape_; }
+  TENSOR_LIBRARY_API shape::Shape shape() const TENSOR_NOEXCEPT { return __shape_; }
 
-  Device device() const noexcept { return __device_; }
+  TENSOR_LIBRARY_API Device device() const TENSOR_NOEXCEPT { return __device_; }
 
-  void set_device(const Device d) noexcept {
+  TENSOR_LIBRARY_API void set_device(const Device d) TENSOR_NOEXCEPT {
     __device_         = d;
     __is_cuda_tensor_ = __device_ == Device::CUDA;
   }
 
-  data_t& storage_() const { return std::ref<data_t>(__data_); }
+  TENSOR_LIBRARY_API Container& storage_() const { return std::ref<Container>(__data_); }
 
-  shape::Shape& shape_() const { return std::ref<shape::Shape>(__shape_); }
+  TENSOR_LIBRARY_API shape::Shape& shape_() const { return std::ref<shape::Shape>(__shape_); }
 
   // Device& device_() const { return std::ref<Device>(__device_); }
 
-  std::size_t n_dims() const noexcept { return __shape_.size(); }
+  TENSOR_NODISCARD TENSOR_LIBRARY_API std::size_t n_dims() const TENSOR_NOEXCEPT { return __shape_.size(); }
 
-  index_type size(const index_type dimension) const {
+  TENSOR_NODISCARD TENSOR_LIBRARY_API index_type size(const index_type dimension) const {
     if (dimension < 0 || dimension > static_cast<index_type>(n_dims()))
     {
       throw std::invalid_argument("dimension input is out of range");
@@ -163,9 +163,9 @@ class TensorBase
     return __shape_[dimension - 1];
   }
 
-  index_type capacity() const noexcept { return __data_.capacity(); }
+  TENSOR_NODISCARD TENSOR_LIBRARY_API index_type capacity() const TENSOR_NOEXCEPT { return __data_.capacity(); }
 
-  index_type hash() const {
+  TENSOR_LIBRARY_API index_type hash() const {
     index_type            hash_v = 0;
     std::hash<value_type> hasher;
     for (const auto& elem : __data_)
@@ -175,7 +175,7 @@ class TensorBase
     return hash_v;
   }
 
-  reference at_(shape::Shape idx) const {
+  TENSOR_NODISCARD TENSOR_LIBRARY_API reference at_(shape::Shape idx) const {
     if (idx.empty())
     {
       throw error::index_error("Passing an empty vector as indices for a tensor");
@@ -191,9 +191,9 @@ class TensorBase
     return __data_[i];
   }
 
-  const_reference at(const shape::Shape idx) const { return this->at_(idx); }
+  TENSOR_NODISCARD TENSOR_LIBRARY_API const_reference at(const shape::Shape idx) const { return this->at_(idx); }
 
-  reference operator[](const index_type idx) {
+  TENSOR_LIBRARY_API reference operator[](const index_type idx) {
     if (idx < 0 || idx >= __data_.size())
     {
       throw error::index_error("input index is out of bounds");
@@ -202,7 +202,7 @@ class TensorBase
     return __data_[idx];
   }
 
-  const_reference operator[](const index_type idx) const  {
+  TENSOR_LIBRARY_API const_reference operator[](const index_type idx) const {
     if (idx < 0 || idx >= __data_.size())
     {
       throw error::index_error("input index is out of bounds");
@@ -211,15 +211,17 @@ class TensorBase
     return __data_[idx];
   }
 
-  reference operator()(std::initializer_list<index_type> index_list) { return at_(shape::Shape(index_list)); }
+  TENSOR_LIBRARY_API reference operator()(std::initializer_list<index_type> index_list) {
+    return at_(shape::Shape(index_list));
+  }
 
-  const_reference operator()(std::initializer_list<index_type> index_list) const {
+  TENSOR_LIBRARY_API const_reference operator()(std::initializer_list<index_type> index_list) const {
     return at(shape::Shape(index_list));
   }
 
-  bool empty() const { return __data_.empty(); }
+  TENSOR_LIBRARY_API bool empty() const { return __data_.empty(); }
 
-  TensorBase<bool> bool_() const {
+  TENSOR_LIBRARY_API TensorBase<bool> bool_() const {
     if (!std::is_convertible_v<value_type, bool>)
     {
       throw error::type_error("Type must be convertible to bool");

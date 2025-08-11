@@ -1,16 +1,16 @@
 #pragma once
 
-#include "tensorbase.hpp"
+#include "tensor.hpp"
 /*
 template<class _Tp>
 tensor<_Tp>
 tensor<_Tp>::slice(index_type dimension, std::optional<index_type> start, std::optional<index_type> end, int64_t step) const {
-    if (empty())
+    if (this->empty())
     {
         return self();
     }
 
-    if (dimension < 0 or dimension >= static_cast<index_type>(shape_.size()))
+    if (dimension < 0 or dimension >= static_cast<index_type>(this->n_dims()))
     {
         throw error::index_error("Invalid dimension provided");
     }
@@ -44,7 +44,7 @@ tensor<_Tp>::slice(index_type dimension, std::optional<index_type> start, std::o
 
     shape_type ret_sh     = shape_;
     index_type slice_size = 0;
-    data_t     ret_data;
+    Container     ret_data;
 
     for (index_type idx = start_val; (step > 0 ? idx < end_val : idx > end_val); idx += step)
     {

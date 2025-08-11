@@ -8,133 +8,131 @@ namespace shape {
 
 struct Shape
 {
-   public:
-    using index      = uint64_t;
-    using shape_type = std::vector<index>;
+ public:
+  using index      = uint64_t;
+  using shape_type = std::vector<index>;
 
-    shape_type value_;
-    Strides    strides_;
+  shape_type __value_;
+  Strides    __strides_;
 
-    Shape() {
-        value_   = shape_type();
-        strides_ = Strides();
+  Shape() {
+    __value_   = shape_type();
+    __strides_ = Strides();
+  }
+
+  Shape(const shape_type sh) noexcept :
+      __value_(sh),
+      __strides_(sh) {}
+
+  Shape(std::initializer_list<index> list) noexcept :
+      __value_(list),
+      __strides_(__value_) {}
+
+  explicit Shape(const std::size_t size) noexcept :
+      __value_(size) {}
+
+
+  index size(const index dim) const {
+    if (dim >= __value_.size())
+    {
+      throw error::shape_error("Dimension out of range");
     }
 
-    Shape(const shape_type sh) noexcept :
-        value_(sh),
-        strides_(sh) {}
-
-    Shape(std::initializer_list<index> list) noexcept :
-        value_(list),
-        strides_(value_) {}
-
-    explicit Shape(const std::size_t size) noexcept :
-        value_(size) {}
-
-
-    index size(const index dim) const {
-        if (dim >= value_.size())
-        {
-            throw error::shape_error("Dimension out of range");
-        }
-
-        if (dim == 0)
-        {
-            return compute_size();
-        }
-
-        return value_[dim];
+    if (dim == 0)
+    {
+      return compute_size();
     }
 
-    shape_type get() const { return value_; }
+    return __value_[dim];
+  }
 
-    Strides strides() const { return strides_; }
+  shape_type get() const { return __value_; }
 
-    index size() const { return value_.size(); }
+  Strides strides() const { return __strides_; }
 
-    index flatten_size() const { return compute_size(); }
+  index size() const { return __value_.size(); }
 
-    bool operator==(const Shape& other) const {
-        return this->value_ == other.value_ && this->strides_ == other.strides_;
+  index flatten_size() const { return compute_size(); }
+
+  bool operator==(const Shape& other) const { return this->__value_ == other.__value_ && this->__strides_ == other.__strides_; }
+
+  index operator[](const index at) const { return __value_[at]; }
+
+  index& operator[](const index at) { return __value_[at]; }
+
+  bool empty() const { return __value_.empty(); }
+
+  bool equal(const Shape& other) const {
+    std::size_t size_x = size();
+    std::size_t size_y = other.size();
+
+    if (size_x == size_y)
+    {
+      return __value_ == other.__value_;
     }
 
-    index operator[](const index at) const { return value_[at]; }
-
-    index& operator[](const index at) { return value_[at]; }
-
-    bool empty() const { return value_.empty(); }
-
-    bool equal(const Shape& other) const {
-        std::size_t size_x = size();
-        std::size_t size_y = other.size();
-
-        if (size_x == size_y)
-        {
-            return value_ == other.value_;
-        }
-
-        if (size_x < size_y)
-        {
-            return other.equal(*this);
-        }
-
-        int diff = size_x - size_y;
-
-        for (std::size_t i = 0; i < size_y; ++i)
-        {
-            if (value_[i + diff] != other.value_[i] && value_[i + diff] != 1 && other.value_[i] != 1)
-            {
-                return false;
-            }
-        }
-
-        return true;
+    if (size_x < size_y)
+    {
+      return other.equal(*this);
     }
 
-    void compute_strides() noexcept { strides_.compute_strides(value_); }
+    int diff = size_x - size_y;
 
-    index compute_index(const shape_type& idx) const {
-        if (idx.size() != value_.size())
-        {
-            throw error::index_error("compute_index : input indices does not match the tensor shape");
-        }
-
-        index at = 0;
-        index i  = 0;
-
-        for (; i < value_.size(); ++i)
-        {
-            at += idx[i] * strides_[i];
-        }
-
-        return at;
+    for (std::size_t i = 0; i < size_y; ++i)
+    {
+      if (__value_[i + diff] != other.__value_[i] && __value_[i + diff] != 1 && other.__value_[i] != 1)
+      {
+        return false;
+      }
     }
 
+    return true;
+  }
 
-    inline std::size_t computeStride(std::size_t dimension, const shape::Shape& shape) const noexcept {
-        std::size_t stride = 1;
+  void compute_strides() noexcept { __strides_.compute_strides(__value_); }
 
-        for (const auto& elem : shape.value_)
-        {
-            stride *= elem;
-        }
-
-        return stride;
+  index compute_index(const shape_type& idx) const {
+    if (idx.size() != __value_.size())
+    {
+      throw error::index_error("compute_index : input indices does not match the tensor shape");
     }
 
-    // implicit conversion to std::vector<uint64_t> needed
+    index at = 0;
+    index i  = 0;
 
-   private:
-    int compute_size() const {
-        int size = 1;
-
-        for (const auto& dim : value_)
-        {
-            size *= dim;
-        }
-
-        return size;
+    for (; i < __value_.size(); ++i)
+    {
+      at += idx[i] * __strides_[i];
     }
+
+    return at;
+  }
+
+
+  inline std::size_t computeStride(std::size_t dimension, const shape::Shape& shape) const noexcept {
+    std::size_t stride = 1;
+
+    for (const auto& elem : shape.__value_)
+    {
+      stride *= elem;
+    }
+
+    return stride;
+  }
+
+  // implicit conversion to std::vector<uint64_t> needed
+
+ private:
+  int compute_size() const {
+    int size = 1;
+
+    for (const auto& dim : __value_)
+    {
+      size *= dim;
+    }
+
+    return size;
+  }
 };
 
 }  // namespace tensor
