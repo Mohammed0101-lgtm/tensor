@@ -137,7 +137,7 @@ tensor<_Tp> tensor<_Tp>::row(const index_type index) const {
     row_data.push_back((*this)[offset + j]);
   }
 
-  return tensor<_Tp>({this->shape()[1]}, row_data);
+  return tensor<_Tp>({this->shape()[1]}, std::move(row_data));
 }
 
 template<class _Tp>
@@ -165,7 +165,7 @@ tensor<_Tp> tensor<_Tp>::col(const index_type index) const {
     col_data.push_back((*this)[this->shape().compute_index({i, index})]);
   }
 
-  return tensor<_Tp>({this->shape()[0]}, col_data);
+  return tensor<_Tp>({this->shape()[0]}, std::move(col_data));
 }
 
 template<class _Tp>
