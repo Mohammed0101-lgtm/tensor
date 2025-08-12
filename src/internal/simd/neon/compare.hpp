@@ -42,7 +42,7 @@ tensor<bool> equal(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     ret[i] = (data_[i] == other[i]);
   }
 
-  return tensor<bool>(t.shape(), ret);
+  return tensor<bool>(t.shape(), std::move(ret));
 }
 
 template<class _Tp>
@@ -76,7 +76,7 @@ tensor<bool> equal(const tensor<_Tp>& t, const _Tp value) {
     ret[i] = (data_[i] == value);
   }
 
-  return tensor<bool>(t.shape(), ret);
+  return tensor<bool>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -118,7 +118,7 @@ tensor<bool> less_equal(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     d[i] = (data_[i] <= other[i]);
   }
 
-  return tensor<bool>(t.shape(), d);
+  return tensor<bool>(std::move(t.shape()), std::move(d));
 }
 
 template<class _Tp>
@@ -154,7 +154,7 @@ tensor<bool> less_equal(const tensor<_Tp>& t, const _Tp value) {
     to_bool[i] = ret[i] == 1 ? true : false;
   }
 
-  return tensor<bool>(t.shape(), to_bool);
+  return tensor<bool>(std::move(t.shape()), std::move(to_bool));
 }
 
 template<class _Tp>
@@ -189,7 +189,7 @@ tensor<bool> greater(const tensor<_Tp>& t, const _Tp value) {
     to_bool[j] = ret[j] == 1 ? true : false;
   }
 
-  return tensor<bool>(t.shape(), to_bool);
+  return tensor<bool>(std::move(t.shape()), std::move(to_bool));
 }
 
 template<class _Tp>
@@ -230,7 +230,7 @@ tensor<bool> greater(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     to_bool[i] = ret[i] == 1 ? true : false;
   }
 
-  return tensor<bool>(t.shape(), to_bool);
+  return tensor<bool>(std::move(t.shape()), std::move(to_bool));
 }
 
 template<class _Tp>
@@ -265,7 +265,7 @@ tensor<bool> greater_equal(const tensor<_Tp>& t, const _Tp value) {
     to_bool[j] = ret[j] == 1 ? true : false;
   }
 
-  return tensor<bool>(t.shape(), to_bool);
+  return tensor<bool>(std::move(t.shape()), std::move(to_bool));
 }
 
 template<class _Tp>
@@ -305,7 +305,7 @@ tensor<bool> greater_equal(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     to_bool[j] = ret[j] == 1 ? true : false;
   }
 
-  return tensor<bool>(t.shape(), to_bool);
+  return tensor<bool>(std::move(t.shape()), std::move(to_bool));
 }
 
 
