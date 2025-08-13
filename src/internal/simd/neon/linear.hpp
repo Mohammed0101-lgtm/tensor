@@ -52,7 +52,7 @@ tensor<_Tp> absolute(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     a[i] = static_cast<_Tp>(std::abs(data_[i]));
   }
 
-  return tensor<_Tp>(t.shape(), a);
+  return tensor<_Tp>(std::move(t.shape()), std::move(a));
 }
 
 template<class _Tp>
@@ -96,7 +96,7 @@ tensor<_Tp> absolute_(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     data_[i] = static_cast<_Tp>(std::abs(data_[i]));
   }
 
-  return self(t.shape(), a);
+  return self(std::move(t.shape()), std::move(a));
 }
 
 }
