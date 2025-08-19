@@ -49,7 +49,7 @@ tensor<_Tp> sum(const tensor<_Tp>& t, const _u64 axis) {
     }
   }
 
-  return tensor<_Tp>(ret_data, ret_sh);
+  return tensor<_Tp>(std::move(ret_data), std::move(ret_sh));
 }
 
 }
