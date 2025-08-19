@@ -167,7 +167,7 @@ tensor<_Tp> matmul(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     }
   }
 
-  return self(ret_sh, ret_d);
+  return self(std::move(ret_sh), std::move(ret_d));
 }
 
 }
