@@ -42,7 +42,7 @@ tensor<_Tp> operator_plus(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     r_ptr[i] = a_ptr[i] + b_ptr[i];
   }
 
-  return tensor<_Tp>(t.shape(), std::move(ret));
+  return tensor<_Tp>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -113,7 +113,7 @@ tensor<_Tp> operator_plus(const tensor<_Tp>& t, const _Tp value) {
     r_ptr[i] = a_ptr[i] + value;
   }
 
-  return tensor<_Tp>(t.shape(), std::move(ret));
+  return tensor<_Tp>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -184,7 +184,7 @@ tensor<_Tp> operator_minus(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     r_ptr[i] = a_ptr[i] - b_ptr[i];
   }
 
-  return tensor<_Tp>(t.shape(), std::move(ret));
+  return tensor<_Tp>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -196,7 +196,7 @@ tensor<_Tp> operator_minus(const tensor<_Tp>& t, const _Tp value) {
 
   std::vector<_Tp>& data_    = t.storage_();
   const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  std::vector<_Tp>  d(data_.size());
+  std::vector<_Tp>  ret(data_.size());
   neon_type<_Tp>    val_vec = neon_dup<_Tp>(value);
 
 #pragma omp parallel for
@@ -204,16 +204,16 @@ tensor<_Tp> operator_minus(const tensor<_Tp>& t, const _Tp value) {
   {
     neon_type<_Tp> vec1   = neon_load<_Tp>(&data_[i]);
     neon_type<_Tp> result = neon_sub<_Tp>(vec1, val_vec);
-    neon_store<_Tp>(&d[i], result);
+    neon_store<_Tp>(&ret[i], result);
   }
 
 #pragma omp parallel for
   for (std::size_t i = simd_end; i < data_.size(); ++i)
   {
-    d[i] = data_[i] - value;
+    ret[i] = data_[i] - value;
   }
 
-  return tensor<_Tp>(t.shape(), d);
+  return tensor<_Tp>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -296,7 +296,7 @@ tensor<_Tp> operator_times(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     r_ptr[i] = a_ptr[i] * b_ptr[i];
   }
 
-  return tensor<_Tp>(t.shape(), std::move(result));
+  return tensor<_Tp>(std::move(t.shape()), std::move(result));
 }
 
 /*
@@ -444,7 +444,7 @@ template<class _Tp>
 tensor<_Tp> operator_divide(const tensor<_Tp>& t, const _Tp& value) {
   if (t.empty())
   {
-    return tensor<_Tp>(t.shape(), {});
+    return tensor<_Tp>(std::move(t.shape()), {});
   }
 
   if (!types::has_divide_operator_v<_Tp>)
@@ -478,14 +478,14 @@ tensor<_Tp> operator_divide(const tensor<_Tp>& t, const _Tp& value) {
     r_ptr[i] = a_ptr[i] / value;
   }
 
-  return tensor<_Tp>(t.shape(), std::move(ret));
+  return tensor<_Tp>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
 tensor<_Tp> operator_divide(const tensor<_Tp>& t, const tensor<_Tp>& other) {
   if (t.empty())
   {
-    return tensor<_Tp>(t.shape(), {});
+    return tensor<_Tp>(std::move(t.shape()), {});
   }
 
   if (!types::has_divide_operator_v<_Tp>)
@@ -528,7 +528,7 @@ tensor<_Tp> operator_divide(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     r_ptr[i] = a_ptr[i] / b_ptr[i];
   }
 
-  return tensor<_Tp>(t.shape(), std::move(ret));
+  return tensor<_Tp>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
