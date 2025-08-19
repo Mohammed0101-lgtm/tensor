@@ -14,7 +14,7 @@ tensor<_s16> int16_(const tensor<_Tp>& t) {
 
   if (t.empty())
   {
-    return tensor<_s16>(t.shape());
+    return tensor<_s16>(std::move(t.shape()));
   }
 
   std::vector<_Tp>& a    = t.storage_();
@@ -49,7 +49,7 @@ tensor<_s16> int16_(const tensor<_Tp>& t) {
     r_ptr[i] = static_cast<_s16>(a_ptr[i]);
   }
 
-  return tensor<_s16>(t.shape(), std::move(ret));
+  return tensor<_s16>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -61,7 +61,7 @@ tensor<_s32> int32_(const tensor<_Tp>& t) {
 
   if (t.empty())
   {
-    return tensor<_s32>(t.shape());
+    return tensor<_s32>(std::move(t.shape()));
   }
 
   std::vector<_Tp>& a    = t.storage_();
@@ -96,7 +96,7 @@ tensor<_s32> int32_(const tensor<_Tp>& t) {
     r_ptr[i] = static_cast<_s32>(a_ptr[i]);
   }
 
-  return tensor<_s32>(t.shape(), std::move(ret));
+  return tensor<_s32>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -108,7 +108,7 @@ tensor<_u32> uint32_(const tensor<_Tp>& t) {
 
   if (t.empty())
   {
-    return tensor<_u32>(t.shape());
+    return tensor<_u32>(std::move(t.shape()));
   }
 
   std::vector<_Tp>& a    = t.storage_();
@@ -143,7 +143,7 @@ tensor<_u32> uint32_(const tensor<_Tp>& t) {
     r_ptr[i] = static_cast<_u32>(a_ptr[i]);
   }
 
-  return tensor<_u32>(t.shape(), std::move(ret));
+  return tensor<_u32>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -155,7 +155,7 @@ tensor<_f32> float32_(const tensor<_Tp>& t) {
 
   if (t.empty())
   {
-    return tensor<_f32>(t.shape());
+    return tensor<_f32>(std::move(t.shape()));
   }
 
   std::vector<_Tp>& a    = t.storage_();
@@ -195,7 +195,7 @@ tensor<_f32> float32_(const tensor<_Tp>& t) {
     r_ptr[i] = static_cast<_f32>(a_ptr[i]);
   }
 
-  return tensor<_f32>(t.shape(), std::move(ret));
+  return tensor<_f32>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -207,7 +207,7 @@ tensor<_f64> float64_(const tensor<_Tp>& t) {
 
   if (t.empty())
   {
-    return tensor<_f64>(t.shape());
+    return tensor<_f64>(std::move(t.shape()));
   }
 
   std::vector<_Tp>& a    = t.storage_();
@@ -229,7 +229,7 @@ tensor<_f64> float64_(const tensor<_Tp>& t) {
     r_ptr[i] = static_cast<_f64>(a_ptr[i]);
   }
 
-  return tensor<_f64>(t.shape(), std::move(ret));
+  return tensor<_f64>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -241,7 +241,7 @@ tensor<_u64> uint64_(const tensor<_Tp>& t) {
 
   if (t.empty())
   {
-    return tensor<_u64>(t.shape());
+    return tensor<_u64>(std::move(t.shape()));
   }
 
   std::vector<_Tp>& a    = t.storage_();
@@ -278,7 +278,7 @@ tensor<_u64> uint64_(const tensor<_Tp>& t) {
     r_ptr[i] = static_cast<_u64>(a_ptr[i]);
   }
 
-  return tensor<_u64>(t.shape(), std::move(ret));
+  return tensor<_u64>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -290,7 +290,7 @@ tensor<_s64> int64_(const tensor<_Tp>& t) {
 
   if (t.empty())
   {
-    return tensor<_s64>(t.shape());
+    return tensor<_s64>(std::move(t.shape()));
   }
 
   std::vector<_Tp>& a    = t.storage_();
@@ -312,7 +312,7 @@ tensor<_s64> int64_(const tensor<_Tp>& t) {
     r_ptr[i] = static_cast<_s64>(a_ptr[i]);
   }
 
-  return tensor<_s64>(t.shape(), std::move(ret));
+  return tensor<_s64>(std::move(t.shape()), std::move(ret));
 }
 
 }
