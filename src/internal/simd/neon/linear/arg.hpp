@@ -217,7 +217,7 @@ tensor<_u64> argsort(const tensor<_Tp>& t, _u64 d, bool ascending) {
   std::sort(indices.__value_.begin(), indices.__value_.end(),
             [&](_u64 a, _u64 b) { return ascending ? data_[a] < data_[b] : data_[a] > data_[b]; });
 
-  return tensor<_u64>(indices);
+  return tensor<_u64>(std::move(indices));
 }
 
 }
