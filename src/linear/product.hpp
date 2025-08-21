@@ -30,15 +30,6 @@ tensor<_Tp> tensor<_Tp>::cross_product(const tensor& other) const {
   return ret;
 }
 
-#ifdef CUDACC
-template<class _Tp>
-global void cross_product_kernel(_Tp* a, _Tp* b, _Tp* c) {
-  c[0] = a[1] * b[2] - a[2] * b[1];
-  c[1] = a[2] * b[0] - a[0] * b[2];
-  c[2] = a[0] * b[1] - a[1] * b[0];
-}
-#endif
-
 template<class _Tp>
 tensor<_Tp> tensor<_Tp>::dot(const tensor& other) const {
   if (this->empty() || other.empty())
@@ -118,6 +109,6 @@ tensor<_Tp> tensor<_Tp>::cumprod(index_type dimension) const {
       }
     }
 
-    return self(this->shape(), std::move(ret));
+    return self(std::move(this->shape()), std::move(ret));
   }
 }

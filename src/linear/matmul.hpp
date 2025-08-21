@@ -72,25 +72,5 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& other) const {
     }
   }
 
-  return tensor<_Tp>(result_shape, std::move(result_data));
+  return tensor<_Tp>(std::move(result_shape), std::move(result_data));
 }
-
-#ifdef CUDACC
-template<class _Tp>
-global void matmul_kernel(_Tp* a, _Tp* b, _Tp* c, int m, int n, int k) {
-  int row = blockIdx.y * blockDim.y + threadIdx.y;
-  int col = blockIdx.x * blockDim.x + threadIdx.x;
-
-  if (row < m && col < k)
-  {
-    _Tp sum = 0;
-
-    for (int i = 0; i < n; ++i)
-    {
-      sum += a[row * n + i] * b[i * k + col];
-    }
-
-    c[row * k + col] = sum;
-  }
-}
-#endif

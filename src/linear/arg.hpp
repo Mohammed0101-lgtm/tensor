@@ -125,5 +125,5 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argsort(index_type d, bool
   std::sort(indices.begin(), indices.end(),
             [&](index_type a, index_type b) { return ascending ? (*this)[a]<(*this)[b] : (*this)[a]>(*this)[b]; });
 
-  return tensor<index_type>(indices);
+  return tensor<index_type>(std::move(indices));
 }
