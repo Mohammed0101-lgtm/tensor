@@ -14,7 +14,7 @@ tensor<_Tp> tensor<_Tp>::reshape(const shape::Shape sh) const {
       "input shape must have size of elements equal to the current number of elements in the tensor data");
   }
 
-  return tensor<_Tp>(sh, std::move(d), this->device());
+  return tensor<_Tp>(std::move(sh), std::move(d), std::move(this->device()));
 }
 
 template<class _Tp>
