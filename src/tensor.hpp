@@ -7,7 +7,6 @@
 #include <arm_neon.h>
 #include <omp-tools.h>
 #include <omp.h>
-
 #include <algorithm>
 #include <array>
 #include <atomic>
@@ -41,9 +40,6 @@
 #include "stride.hpp"
 #include "tensorbase.hpp"
 
-#if defined(USE_CUDA)
-  #include <cuda_runtime.h>
-#endif
 
 template<class _Tp>
 class tensor: public TensorBase<_Tp, std::vector<_Tp>>
@@ -1622,7 +1618,7 @@ class tensor<bool>: public TensorBase<bool>
       ret[i] = !data_[i];
     }
 
-    return tensor<bool>(this->shape(), ret);
+    return tensor<bool>(std::move(this->shape()), std::move(ret));
   }
 
   tensor<bool>
@@ -1714,7 +1710,7 @@ class tensor<bool>: public TensorBase<bool>
   tensor<bool> clone() const {
     data_t       d = data_;
     shape::Shape s = shape_;
-    return self(s, d);
+    return self(std::move(s), std::move(d));
   }
 
   tensor<bool> reshape(const shape::Shape shape_) const {
@@ -1728,7 +1724,7 @@ class tensor<bool>: public TensorBase<bool>
                                "tensor data");
     }
 
-    return self(shape_, d);
+    return self(std::move(shape_), std::move(d));
   }
 
   tensor<bool> reshape_as(const tensor& other) const { return reshape(other.shape()); }
@@ -1822,7 +1818,7 @@ class tensor<bool>: public TensorBase<bool>
       c.insert(c.end(), t.data_.begin(), t.data_.end());
     }
 
-    return self(ret_sh, c);
+    return self(std::move(ret_sh), std::move(c));
   }
 
   tensor<bool> unsqueeze(const index_type dimension) const {
