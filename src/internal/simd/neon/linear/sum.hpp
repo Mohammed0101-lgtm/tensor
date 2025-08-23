@@ -15,7 +15,7 @@ tensor<_Tp> sum(const tensor<_Tp>& t, const _u64 axis) {
   std::vector<_Tp>& data_  = t.storage_();
   shape::Shape      ret_sh = t.shape();
   ret_sh[axis]             = 1;
-  _u64         ret_size    = std::accumulate(ret_sh.__value_.begin(), ret_sh.__value_.end(), 1, std::multiplies<_u64>());
+  _u64         ret_size = std::accumulate(ret_sh.__value_.begin(), ret_sh.__value_.end(), 1, std::multiplies<_u64>());
   shape::Shape ret_data(ret_size, _Tp(0.0f));
   const _u64   axis_size  = t.shape()[axis];
   const _u64   outer_size = t.compute_outer_size(axis);
