@@ -13,10 +13,10 @@ tensor<_Tp>& logical_and_(tensor<_Tp>& t, const _Tp value) {
     throw error::type_error("Cannot get the element wise and of non-integral value");
   }
 
-  std::vector<_Tp>&    data_    = t.storage_();
-  const std::size_t    size     = data_.size();
-  const _u64           simd_end = size - (size % t.simd_width);
-  neon_type<_Tp> v_vec    = neon_dup<_Tp>(value);
+  std::vector<_Tp>& data_    = t.storage_();
+  const std::size_t size     = data_.size();
+  const _u64        simd_end = size - (size % t.simd_width);
+  neon_type<_Tp>    v_vec    = neon_dup<_Tp>(value);
 
   _Tp* __restrict a_ptr = data_.data();
 
