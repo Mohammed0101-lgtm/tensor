@@ -14,7 +14,7 @@ tensor<_Tp> tensor<_Tp>::cross_product(const tensor& other) const {
     throw std::logic_error("Cross product can only be performed on 3-element vectors");
   }
 
-  tensor ret({3});
+  tensor          ret({3});
   const_reference a1 = (*this)[0];
   const_reference a2 = (*this)[1];
   const_reference a3 = (*this)[2];
