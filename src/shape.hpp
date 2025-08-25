@@ -54,7 +54,9 @@ struct Shape
 
   index flatten_size() const { return compute_size(); }
 
-  bool operator==(const Shape& other) const { return this->__value_ == other.__value_ && this->__strides_ == other.__strides_; }
+  bool operator==(const Shape& other) const {
+    return this->__value_ == other.__value_ && this->__strides_ == other.__strides_;
+  }
 
   index operator[](const index at) const { return __value_[at]; }
 
