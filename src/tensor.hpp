@@ -4,10 +4,8 @@
 
 #pragma once
 
-#include <arm_neon.h>
-#include <omp-tools.h>
-#include <omp.h>
 #include <algorithm>
+#include <arm_neon.h>
 #include <array>
 #include <atomic>
 #include <bit>
@@ -24,6 +22,8 @@
 #include <limits>
 #include <memory>
 #include <numeric>
+#include <omp-tools.h>
+#include <omp.h>
 #include <optional>
 #include <random>
 #include <stack>
