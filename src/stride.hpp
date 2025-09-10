@@ -28,7 +28,7 @@ struct Strides
       std::cerr << "[Warning] Empty shape passed to compute strides!" << std::endl;
     }
 
-    __value_     = std::vector<index>(shape.size(), 1);
+    __value_   = std::vector<index>(shape.size(), 1);
     int stride = 1;
 
     for (int i = static_cast<int>(shape.size() - 1); i >= 0; i--)
