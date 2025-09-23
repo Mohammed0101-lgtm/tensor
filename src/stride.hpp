@@ -2,6 +2,7 @@
 
 #include "error.hpp"
 #include <vector>
+#include <iostream>
 
 
 namespace shape {
