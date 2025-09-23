@@ -188,7 +188,7 @@ tensor<_s64> tensor<_Tp>::int64_() const {
 
   if (this->empty())
   {
-    return tensor<_s64>(this->shape());
+    return tensor<_s64>(std::move(this->shape()));
   }
 
   std::vector<_s64>     ret(this->size(0));
@@ -200,7 +200,7 @@ tensor<_s64> tensor<_Tp>::int64_() const {
     ret[i++] = static_cast<_s64>(elem);
   }
 
-  return tensor<_s64>(this->shape(), ret);
+  return tensor<_s64>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -217,7 +217,7 @@ tensor<_s32> tensor<_Tp>::int32_() const {
 
   if (this->empty())
   {
-    return tensor<int>(this->shape());
+    return tensor<int>(std::move(this->shape()));
   }
 
   std::vector<int>      ret(this->size(0));
@@ -229,7 +229,7 @@ tensor<_s32> tensor<_Tp>::int32_() const {
     ret[i++] = static_cast<_s32>(elem);
   }
 
-  return tensor<_s32>(this->shape(), ret);
+  return tensor<_s32>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -246,7 +246,7 @@ tensor<_u32> tensor<_Tp>::uint32_() const {
 
   if (this->empty())
   {
-    return tensor<unsigned int>(this->shape());
+    return tensor<unsigned int>(std::move(this->shape()));
   }
 
   std::vector<unsigned int> ret(this->size(0));
@@ -258,7 +258,7 @@ tensor<_u32> tensor<_Tp>::uint32_() const {
     ret[i++] = static_cast<unsigned int>(elem);
   }
 
-  return tensor<unsigned int>(this->shape(), std::move(ret));
+  return tensor<unsigned int>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -275,7 +275,7 @@ tensor<_f32> tensor<_Tp>::float32_() const {
 
   if (this->empty())
   {
-    return tensor<_f32>(this->shape());
+    return tensor<_f32>(std::move(this->shape()));
   }
 
   std::vector<_f32>     ret(this->size(0));
@@ -287,7 +287,7 @@ tensor<_f32> tensor<_Tp>::float32_() const {
     ret[i++] = static_cast<_f32>(elem);
   }
 
-  return tensor<_f32>(this->shape(), ret);
+  return tensor<_f32>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -304,7 +304,7 @@ tensor<double> tensor<_Tp>::float64_() const {
 
   if (this->empty())
   {
-    return tensor<double>(this->shape());
+    return tensor<double>(std::move(this->shape()));
   }
 
   std::vector<double>   ret(this->size(0));
@@ -316,7 +316,7 @@ tensor<double> tensor<_Tp>::float64_() const {
     ret[i++] = double(elem);
   }
 
-  return tensor<double>(this->shape(), ret);
+  return tensor<double>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -333,7 +333,7 @@ tensor<_u64> tensor<_Tp>::uint64_() const {
 
   if (this->empty())
   {
-    return tensor<_u64>(this->shape());
+    return tensor<_u64>(std::move(this->shape()));
   }
 
   std::vector<_u64>     ret(this->size(0));
@@ -345,7 +345,7 @@ tensor<_u64> tensor<_Tp>::uint64_() const {
     ret[i++] = static_cast<_u64>(elem);
   }
 
-  return tensor<_u64>(this->shape(), std::move(ret));
+  return tensor<_u64>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -362,7 +362,7 @@ tensor<short> tensor<_Tp>::int16_() const {
 
   if (this->empty())
   {
-    return tensor<short>(this->shape());
+    return tensor<short>(std::move(this->shape()));
   }
 
   std::vector<short>    ret(this->size(0));
@@ -374,7 +374,7 @@ tensor<short> tensor<_Tp>::int16_() const {
     ret[i++] = short(elem);
   }
 
-  return tensor<short>(this->shape(), ret);
+  return tensor<short>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
@@ -393,5 +393,5 @@ tensor<bool> tensor<_Tp>::bool_() const {
     ret[i++] = bool(elem);
   }
 
-  return tensor<bool>(this->shape(), ret);
+  return tensor<bool>(std::move(this->shape()), std::move(ret));
 }
