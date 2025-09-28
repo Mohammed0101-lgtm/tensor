@@ -29,7 +29,7 @@ Since this is a header-only library, no separate compilation is required. Simply
 
 2. Include the Headers in Your Project
 ```cpp
-#include "tensor.hpp""
+#include "tensor.hpp"
 ```
 
 3. Example Usage
