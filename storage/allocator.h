@@ -44,18 +44,21 @@ struct TENSOR_LIBRARY_API arena_allocator
 
  public:
   explicit arena_allocator(const size_type _s = DEFAULT_BLOCK_SIZE) :
-      __block_size_(_s) {
+      __block_size_(_s)
+  {
     allocate_block();
     __current_block_ = __list_;
     __free_list_     = __list_;
   }
 
-  ~arena_allocator() {
+  ~arena_allocator()
+  {
     free_all();
     free_freelist();
   }
 
-  void* allocate(size_type _s, size_type _alignment = alignof(std::max_align_t)) {
+  void* allocate(size_type _s, size_type _alignment = alignof(std::max_align_t))
+  {
     uintptr_t current = reinterpret_cast<uintptr_t>(__current_block_->next_free());
     uintptr_t aligned = (current + _alignment - 1) & ~(_alignment - 1);
     size_type padding = aligned - current;
@@ -71,7 +74,8 @@ struct TENSOR_LIBRARY_API arena_allocator
     return ret;
   }
 
-  void reset() {
+  void reset()
+  {
     Block* block = __list_;
     while (block)
     {
@@ -103,7 +107,8 @@ struct TENSOR_LIBRARY_API arena_allocator
   void deallocate(std::uintptr_t _begin, std::uintptr_t _size) {}
 
  private:
-  Block* allocate_block(size_type _s = 0) const {
+  Block* allocate_block(size_type _s = 0) const
+  {
     size_type alloc_size = (_s ? _s : __block_size_) + sizeof(Block);
     pointer   raw        = static_cast<pointer>(std::malloc(alloc_size));
     assert(raw && "Memory Allocation (std::malloc) failed");
@@ -134,7 +139,8 @@ struct TENSOR_LIBRARY_API arena_allocator
     return block;
   }
 
-  void free_all() {
+  void free_all()
+  {
     Block* ptr = __list_;
 
     while (ptr)
@@ -148,7 +154,8 @@ struct TENSOR_LIBRARY_API arena_allocator
     __current_block_ = nullptr;
   }
 
-  void free_freelist() {
+  void free_freelist()
+  {
     while (__free_list_)
     {
       Block* next = __free_list_->__next_;
