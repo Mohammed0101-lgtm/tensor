@@ -3,13 +3,14 @@
 #include "tensor.hpp"
 
 template<class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::pow_(const value_type value) {
+inline arch::tensor<_Tp>& arch::tensor<_Tp>::pow_(const value_type value)
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::pow_(*this, value);
   }
@@ -30,7 +31,8 @@ inline tensor<_Tp>& tensor<_Tp>::pow_(const value_type value) {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::pow(const value_type value) const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::pow(const value_type value) const
+{
   if (this->empty())
   {
     return self({0});
@@ -42,13 +44,14 @@ inline tensor<_Tp> tensor<_Tp>::pow(const value_type value) const {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::pow_(const tensor& other) {
+arch::tensor<_Tp>& arch::tensor<_Tp>::pow_(const tensor& other)
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::pow_(*this, other);
   }
@@ -75,7 +78,8 @@ tensor<_Tp>& tensor<_Tp>::pow_(const tensor& other) {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::pow(const tensor& other) const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::pow(const tensor& other) const
+{
   if (this->empty())
   {
     return self({0});
@@ -87,11 +91,13 @@ inline tensor<_Tp> tensor<_Tp>::pow(const tensor& other) const {
 }
 
 template<class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::square_() {
+inline arch::tensor<_Tp>& arch::tensor<_Tp>::square_()
+{
   return pow_(static_cast<value_type>(2.0f));
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::square() const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::square() const
+{
   return pow(static_cast<value_type>(2.0f));
 }

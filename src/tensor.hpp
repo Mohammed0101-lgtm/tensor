@@ -41,6 +41,8 @@
 #include "tensorbase.hpp"
 
 
+namespace arch {
+
 template<class _Tp>
 class tensor: public TensorBase<_Tp, std::vector<_Tp>>
 {
@@ -57,7 +59,7 @@ class tensor: public TensorBase<_Tp, std::vector<_Tp>>
   using const_pointer   = const value_type*;
 
   tensor() = default;
-  tensor(const tensor& t);
+  tensor(const arch::tensor<_Tp>& t);
   tensor(tensor&& t) TENSOR_NOEXCEPT;
   tensor(const shape::Shape& shape_, const tensor& other);
   tensor(const shape::Shape& shape_, std::initializer_list<value_type> init_list, Device d = Device::CPU);
@@ -65,294 +67,294 @@ class tensor: public TensorBase<_Tp, std::vector<_Tp>>
   explicit tensor(const shape::Shape& shape_, Device d = Device::CPU);
   explicit tensor(const shape::Shape& shape_, const container_type& d, Device dev = Device::CPU);
 
-  tensor<_s16> int16_() const;
-  tensor<_s32> int32_() const;
-  tensor<_s64> int64_() const;
-  tensor<_u32> uint32_() const;
-  tensor<_u64> uint64_() const;
-  tensor<_f32> float32_() const;
-  tensor<_f64> float64_() const;
-  index_type   count_nonzero(index_type dimension = 0) const;
-  index_type   lcm() const;
-  tensor<_Tp>  lcm(const tensor& other) const;
+  arch::tensor<_s16> int16_() const;
+  arch::tensor<_s32> int32_() const;
+  arch::tensor<_s64> int64_() const;
+  arch::tensor<_u32> uint32_() const;
+  arch::tensor<_u64> uint64_() const;
+  arch::tensor<_f32> float32_() const;
+  arch::tensor<_f64> float64_() const;
+  index_type         count_nonzero(index_type dimension = 0) const;
+  index_type         lcm() const;
+  arch::tensor<_Tp>  lcm(const arch::tensor<_Tp>& other) const;
 
   /// @brief Converts the tensor elements to boolean values.
   /// @return A tensor of boolean values.
-  TENSOR_LIBRARY_API tensor<bool> bool_() const;
+  TENSOR_LIBRARY_API arch::tensor<bool> bool_() const;
 
   /// @brief Computes the logical NOT operation for each element in the tensor.
   /// @return A tensor of boolean values representing the logical NOT of each
   /// element.
-  TENSOR_LIBRARY_API tensor<bool> logical_not() const;
+  TENSOR_LIBRARY_API arch::tensor<bool> logical_not() const;
 
   /// @brief Computes the logical OR operation between each element and a scalar
   /// value.
   /// @param value The scalar value to compute the logical OR with.
   /// @return A tensor of boolean values.
-  TENSOR_LIBRARY_API tensor<bool> logical_or(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<bool> logical_or(const value_type value) const;
 
   /// @brief Computes the logical OR operation between corresponding elements of
   /// two tensors.
   /// @param other The tensor to compute the logical OR with.
   /// @return A tensor of boolean values.
-  TENSOR_LIBRARY_API tensor<bool> logical_or(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<bool> logical_or(const arch::tensor<_Tp>& other) const;
 
   /// @brief Performs a logical XOR operation between the tensor and another
   /// tensor.
   /// @param other The tensor to apply the logical XOR operation with.
   /// @return A new tensor containing the result of the logical XOR operation.
-  TENSOR_LIBRARY_API tensor logical_xor(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> logical_xor(const arch::tensor<_Tp>& other) const;
 
   /// @brief Performs a logical XOR operation between the tensor and a scalar
   /// value.
   /// @param value The scalar value to apply the logical XOR operation with.
   /// @return A new tensor containing the result of the logical XOR operation.
-  TENSOR_LIBRARY_API tensor logical_xor(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> logical_xor(const value_type value) const;
 
   /// @brief Performs a logical AND operation between the tensor and another
   /// tensor.
-  /// @param other The tensor to apply the logical AND operation with.
+  /// @param other The tensor tow apply the logical AND operation with.
   /// @return A new tensor containing the result of the logical AND operation.
-  TENSOR_LIBRARY_API tensor logical_and(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> logical_and(const arch::tensor<_Tp>& other) const;
 
   /// @brief Performs a logical AND operation between the tensor and a scalar
   /// value.
   /// @param value The scalar value to apply the logical AND operation with.
   /// @return A new tensor containing the result of the logical AND operation.
-  TENSOR_LIBRARY_API tensor logical_and(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> logical_and(const value_type value) const;
 
   /// @brief Applies logical NOT operation to each element in the tensor,
   /// modifying the tensor in place.
   /// @return A \ref to the tensor after the logical NOT operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& logical_not_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& logical_not_();
 
   /// @brief Performs logical OR between the tensor and another tensor,
   /// modifying the tensor in place.
   /// @param other The tensor to perform logical OR with.
   /// @return A \ref to the tensor after the logical OR operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& logical_or_(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& logical_or_(const arch::tensor<_Tp>& other);
 
   /// @brief Performs logical OR between the tensor and a scalar value,
   /// modifying the tensor in place.
   /// @param value The scalar value to perform logical OR with.
   /// @return A \ref to the tensor after the logical OR operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& logical_or_(const value_type value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& logical_or_(const value_type value);
 
   /// @brief Performs logical XOR between the tensor and another tensor,
   /// modifying the tensor in place.
   /// @param other The tensor to perform logical XOR with.
   /// @return A \ref to the tensor after the logical XOR operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& logical_xor_(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& logical_xor_(const arch::tensor<_Tp>& other);
 
   /// @brief Performs logical XOR between the tensor and a scalar value,
   /// modifying the tensor in place.
   /// @param value The scalar value to perform logical XOR with.
   /// @return A \ref to the tensor after the logical XOR operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& logical_xor_(const value_type value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& logical_xor_(const value_type value);
 
   /// @brief Performs logical AND between the tensor and another tensor,
   /// modifying the tensor in place.
   /// @param other The tensor to perform logical AND with.
   /// @return A \ref to the tensor after the logical AND operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& logical_and_(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& logical_and_(const arch::tensor<_Tp>& other);
 
   /// @brief Performs logical AND between the tensor and a scalar value,
   /// modifying the tensor in place.
   /// @param value The scalar value to perform logical AND with.
   /// @return A \ref to the tensor after the logical AND operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& logical_and_(const value_type value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& logical_and_(const value_type value);
 
   /// @brief Checks if each element is less than or equal to the corresponding
   /// element in another tensor.
   /// @param other The tensor to compare with.
   /// @return A tensor of boolean values.
-  TENSOR_LIBRARY_API tensor<bool> less_equal(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<bool> less_equal(const arch::tensor<_Tp>& other) const;
 
   /// @brief Checks if each element is less than or equal to a scalar value.
   /// @param value The scalar value to compare with.
   /// @return A tensor of boolean values.
-  TENSOR_LIBRARY_API tensor<bool> less_equal(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<bool> less_equal(const value_type value) const;
 
   /// @brief Checks if each element is greater than or equal to the
   /// corresponding element in another tensor.
   /// @param other The tensor to compare with.
   /// @return A tensor of boolean values.
-  TENSOR_LIBRARY_API tensor<bool> greater_equal(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<bool> greater_equal(const arch::tensor<_Tp>& other) const;
 
   /// @brief Checks if each element is greater than or equal to a scalar value.
   /// @param value The scalar value to compare with.
   /// @return A tensor of boolean values.
-  TENSOR_LIBRARY_API tensor<bool> greater_equal(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<bool> greater_equal(const value_type value) const;
 
   /// @brief Checks if each element is equal to the corresponding element in
   /// another tensor.
   /// @param other The tensor to compare with.
   /// @return A tensor of boolean values.
-  TENSOR_LIBRARY_API tensor<bool> equal(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<bool> equal(const arch::tensor<_Tp>& other) const;
 
   /// @brief Checks if each element is equal to a scalar value.
   /// @param value The scalar value to compare with.
   /// @return A tensor of boolean values.
-  TENSOR_LIBRARY_API tensor<bool> equal(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<bool> equal(const value_type value) const;
 
   /// @brief Checks if each element is not equal to the corresponding element in
   /// another tensor.
   /// @param other The tensor to compare with.
   /// @return A tensor of boolean values.
-  TENSOR_LIBRARY_API tensor<bool> not_equal(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<bool> not_equal(const arch::tensor<_Tp>& other) const;
 
   /// @brief Checks if each element is not equal to a scalar value.
   /// @param value The scalar value to compare with.
   /// @return A tensor of boolean values.
-  TENSOR_LIBRARY_API tensor<bool> not_equal(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<bool> not_equal(const value_type value) const;
 
   /// @brief Checks if each element is less than the corresponding element in
   /// another tensor.
   /// @param other The tensor to compare with.
   /// @return A tensor of boolean values.
-  TENSOR_LIBRARY_API tensor<bool> less(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<bool> less(const arch::tensor<_Tp>& other) const;
 
   /// @brief Checks if each element is less than a scalar value.
   /// @param value The scalar value to compare with.
   /// @return A tensor of boolean values.
-  TENSOR_LIBRARY_API tensor<bool> less(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<bool> less(const value_type value) const;
 
   /// @brief Checks if each element is greater than the corresponding element in
   /// another tensor.
   /// @param other The tensor to compare with.
   /// @return A tensor of boolean values.
-  TENSOR_LIBRARY_API tensor<bool> greater(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<bool> greater(const arch::tensor<_Tp>& other) const;
 
   /// @brief Checks if each element is greater than a scalar value.
   /// @param value The scalar value to compare with.
   /// @return A tensor of boolean values.
-  TENSOR_LIBRARY_API tensor<bool> greater(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<bool> greater(const value_type value) const;
 
   /// @brief Compares this tensor with another tensor for equality.
   /// @param other The tensor to compare with.
   /// @return True if the tensors are equal, false otherwise.
-  TENSOR_LIBRARY_API bool operator==(const tensor& other) const;
+  TENSOR_LIBRARY_API bool operator==(const arch::tensor<_Tp>& other) const;
 
   /// @brief Compares this tensor with another tensor for inequality.
   /// @param other The tensor to compare with.
   /// @return True if the tensors are not equal, false otherwise.
-  TENSOR_LIBRARY_API bool operator!=(const tensor& other) const;
+  TENSOR_LIBRARY_API bool operator!=(const arch::tensor<_Tp>& other) const;
 
   /// @brief Adds the elements of another tensor to this tensor.
   /// @param other The tensor to add.
   /// @return A new tensor containing the result of the addition.
-  TENSOR_LIBRARY_API tensor operator+(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> operator+(const arch::tensor<_Tp>& other) const;
 
   /// @brief Subtracts the elements of another tensor from this tensor.
   /// @param other The tensor to subtract.
   /// @return A new tensor containing the result of the subtraction.
-  TENSOR_LIBRARY_API tensor operator-(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> operator-(const arch::tensor<_Tp>& other) const;
 
   /// @brief Adds a scalar value to each element of the tensor.
   /// @param value The scalar value to add.
   /// @return A new tensor containing the result of the addition.
-  TENSOR_LIBRARY_API tensor operator+(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> operator+(const value_type value) const;
 
   /// @brief Subtracts a scalar value from each element of the tensor.
   /// @param value The scalar value to subtract.
   /// @return A new tensor containing the result of the subtraction.
-  TENSOR_LIBRARY_API tensor operator-(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> operator-(const value_type value) const;
 
   /// @brief Multiply a scalar value with each element of the tensor.
   /// @param value The scalar value to multiply with.
   /// @return A new tensor containing the result of the multiplication.
-  TENSOR_LIBRARY_API tensor operator*(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> operator*(const value_type value) const;
 
   /// @brief Multiply each element of the input tensor with each element of the
   /// tensor.
   /// @param other The tensor to multiply with.
   /// @return A new tensor containing the result of the multiplication.
-  TENSOR_LIBRARY_API tensor operator*(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> operator*(const arch::tensor<_Tp>& other) const;
 
   /// @brief Subtracts the elements of another tensor from this tensor and
   /// updates the current tensor.
   /// @param other The tensor to subtract.
   /// @return A \ref to the current tensor after the subtraction.
-  TENSOR_LIBRARY_API tensor& operator-=(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& operator-=(const arch::tensor<_Tp>& other);
 
   /// @brief Adds the elements of another tensor to this tensor and updates the
   /// current tensor.
   /// @param other The tensor to add.
   /// @return A \ref to the current tensor after the addition.
-  TENSOR_LIBRARY_API tensor& operator+=(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& operator+=(const arch::tensor<_Tp>& other);
 
   /// @brief Multiplies the elements of this tensor by the elements of another
   /// tensor and updates the current tensor.
   /// @param other The tensor to multiply with.
   /// @return A \ref to the current tensor after the multiplication.
-  TENSOR_LIBRARY_API tensor& operator*=(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& operator*=(const arch::tensor<_Tp>& other);
 
   /// @brief Divides the elements of this tensor by the elements of another
   /// tensor and updates the current tensor.
   /// @param other The tensor to divide by.
   /// @return A \ref to the current tensor after the division.
-  TENSOR_LIBRARY_API tensor& operator/=(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& operator/=(const arch::tensor<_Tp>& other);
 
   /// @brief Adds a scalar value to each element of the tensor and updates the
   /// current tensor.
   /// @param value The scalar value to add.
   /// @return A \ref to the current tensor after the addition.
-  TENSOR_LIBRARY_API tensor& operator+=(const_reference value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& operator+=(const_reference value);
 
   /// @brief Subtracts a scalar value from each element of the tensor and
   /// updates the current tensor.
   /// @param value The scalar value to subtract.
   /// @return A \ref to the current tensor after the subtraction.
-  TENSOR_LIBRARY_API tensor& operator-=(const_reference value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& operator-=(const_reference value);
 
   /// @brief Divides each element of the tensor by a scalar value and updates
   /// the current tensor.
   /// @param value The scalar value to divide by.
   /// @return A \ref to the current tensor after the division.
-  TENSOR_LIBRARY_API tensor& operator/=(const_reference value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& operator/=(const_reference value);
 
   /// @brief Divides each element of the tensor by the corresponding element of
   /// the other tensor
   /// @param other The other tensor to divide by (should not contain a zero)
   /// @return A tensor the contains the result of the division
-  TENSOR_LIBRARY_API tensor operator/(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> operator/(const arch::tensor<_Tp>& other) const;
 
   /// @brief Divides each element of the tensor by a scalar value
   /// @param value The scalar value to divide by (non zero)
   /// @return A tensor the contains the result of the division
-  TENSOR_LIBRARY_API tensor operator/(const_reference value) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> operator/(const_reference value) const;
 
   /// @brief Multiplies each element of the tensor by a scalar value and updates
   /// the current tensor.
   /// @param value The scalar value to multiply with.
   /// @return A \ref to the current tensor after the multiplication.
-  TENSOR_LIBRARY_API tensor& operator*=(const_reference value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& operator*=(const_reference value);
 
   /// @brief Assigns the values of another tensor to this tensor.
   /// @param other The tensor to assign from.
   /// @return A \ref to the current tensor after the assignment.
-  TENSOR_LIBRARY_API tensor& operator=(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& operator=(const arch::tensor<_Tp>& other) const;
 
   /// @brief Moves the values of another tensor to this tensor.
   /// @param other The tensor to move from.
   /// @return A \ref to the current tensor after the move.
-  TENSOR_LIBRARY_API tensor& operator=(tensor&& other) const TENSOR_NOEXCEPT;
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& operator=(arch::tensor<_Tp>&& other) const TENSOR_NOEXCEPT;
 
   /// @brief Assigns the values of another tensor to this tensor (default
   /// implementation).
   /// @param other The tensor to assign from.
   /// @return A \ref to the current tensor after the assignment.
-  TENSOR_LIBRARY_API tensor& operator=(const tensor&) = default;
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& operator=(const arch::tensor<_Tp>&) = default;
 
-  TENSOR_LIBRARY_API tensor<bool>& operator!();
-  TENSOR_LIBRARY_API const tensor<bool>& operator!() const;
+  TENSOR_LIBRARY_API arch::tensor<bool>& operator!();
+  TENSOR_LIBRARY_API const arch::tensor<bool>& operator!() const;
 
   /*
     /// @brief Extracts a slice of the tensor along the specified dimension.
@@ -368,344 +370,344 @@ class tensor: public TensorBase<_Tp, std::vector<_Tp>>
   /// tensor.
   /// @param other The tensor to compare with.
   /// @return A new tensor containing the element-wise maximum values.
-  TENSOR_LIBRARY_API tensor fmax(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> fmax(const arch::tensor<_Tp>& other) const;
 
   /// @brief Computes the element-wise maximum between this tensor and a scalar
   /// value.
   /// @param value The scalar value to compare with.
   /// @return A new tensor containing the element-wise maximum values.
-  TENSOR_LIBRARY_API tensor fmax(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> fmax(const value_type value) const;
 
   /// @brief Computes the element-wise floating-point remainder of division with
   /// another tensor.
   /// @param other The tensor to divide by.
   /// @return A new tensor containing the element-wise remainders.
-  TENSOR_LIBRARY_API tensor fmod(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> fmod(const arch::tensor<_Tp>& other) const;
 
   /// @brief Computes the element-wise floating-point remainder of division with
   /// a scalar value.
   /// @param value The scalar value to divide by.
   /// @return A new tensor containing the element-wise remainders.
-  TENSOR_LIBRARY_API tensor fmod(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> fmod(const value_type value) const;
 
   /// @brief Computes the fractional part of each element in the tensor.
   /// @return A new tensor containing the fractional parts.
-  TENSOR_LIBRARY_API tensor frac() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> frac() const;
 
   /// @brief Computes the base-10 logarithm of each element in the tensor.
   /// @return A new tensor containing the base-10 logarithm of each element.
-  TENSOR_LIBRARY_API tensor log10() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> log10() const;
 
   /// @brief Computes the base-2 logarithm of each element in the tensor.
   /// @return A new tensor containing the base-2 logarithm of each element.
-  TENSOR_LIBRARY_API tensor log2() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> log2() const;
 
   /// @brief Computes the exponential (e^x) of each element in the tensor.
   /// @return A new tensor containing the exponential of each element.
-  TENSOR_LIBRARY_API tensor exp() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> exp() const;
 
   /// @brief Computes the square root of each element in the tensor.
   /// @return A new tensor containing the square root of each element.
-  TENSOR_LIBRARY_API tensor sqrt() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> sqrt() const;
 
   /// @brief Extracts a specific row from the tensor.
   /// @param index The index of the row to extract.
   /// @return A new tensor containing the specified row.
-  TENSOR_LIBRARY_API tensor row(const index_type index) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> row(const index_type index) const;
 
   /// @brief Extracts a specific column from the tensor.
   /// @param index The index of the column to extract.
   /// @return A new tensor containing the specified column.
-  TENSOR_LIBRARY_API tensor col(const index_type index) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> col(const index_type index) const;
 
   /// @brief Computes the ceiling of each element in the tensor (rounds up to
   /// the nearest integer).
   /// @return A new tensor containing the ceiling of each element.
-  TENSOR_LIBRARY_API tensor ceil() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> ceil() const;
 
   /// @brief Computes the floor of each element in the tensor (rounds down to
   /// the nearest integer).
   /// @return A new tensor containing the floor of each element.
-  TENSOR_LIBRARY_API tensor floor() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> floor() const;
 
   /// @brief Creates a copy of the tensor.
   /// @return A new tensor that is a clone of the current tensor.
-  TENSOR_LIBRARY_API tensor clone() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> clone() const;
 
   /// @brief Clamps the values of the tensor to the specified minimum and
   /// maximum range.
   /// @param min_val A pointer to the minimum value (optional).
   /// @param max_val A pointer to the maximum value (optional).
   /// @return A new tensor with values clamped to the specified range.
-  TENSOR_LIBRARY_API tensor clamp(const_reference min_val = std::numeric_limits<value_type>::lowest(),
-                                  const_reference max_val = std::numeric_limits<value_type>::max()) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> clamp(const_reference min_val = std::numeric_limits<value_type>::lowest(),
+                                             const_reference max_val = std::numeric_limits<value_type>::max()) const;
 
   /// @brief Computes the cosine of each element in the tensor.
   /// @return A new tensor containing the cosine of each element.
-  TENSOR_LIBRARY_API tensor cos() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> cos() const;
 
   /// @brief Computes the hyperbolic cosine (cosh) of each element in the
   /// tensor.
   /// @return A new tensor containing the hyperbolic cosine of each element.
-  TENSOR_LIBRARY_API tensor cosh() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> cosh() const;
 
   /// @brief Computes the arc cosine (inverse cosine) of each element in the
   /// tensor.
   /// @return A new tensor containing the arc cosine of each element.
-  TENSOR_LIBRARY_API tensor acos() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> acos() const;
 
   /// @brief Computes the inverse hyperbolic cosine (acosh) of each element in
   /// the tensor.
   /// @return A new tensor containing the inverse hyperbolic cosine of each
   /// element.
-  TENSOR_LIBRARY_API tensor acosh() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> acosh() const;
 
   /// @brief Computes the tangent of each element in the tensor.
   /// @return A new tensor containing the tangent of each element.
-  TENSOR_LIBRARY_API tensor tan() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> tan() const;
 
   /// @brief Computes the hyperbolic tangent (tanh) of each element in the
   /// tensor.
   /// @return A new tensor containing the hyperbolic tangent of each element.
-  TENSOR_LIBRARY_API tensor tanh() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> tanh() const;
 
   /// @brief Computes the arc tangent (inverse tangent) of each element in the
   /// tensor.
   /// @return A new tensor containing the arc tangent of each element.
-  TENSOR_LIBRARY_API tensor atan() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> atan() const;
 
   /// @brief Computes the inverse hyperbolic tangent (atanh) of each element in
   /// the tensor.
   /// @return A new tensor containing the inverse hyperbolic tangent of each
   /// element.
-  TENSOR_LIBRARY_API tensor atanh() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> atanh() const;
 
   /// @brief Computes the sine of each element in the tensor.
   /// @return A new tensor containing the sine of each element.
-  TENSOR_LIBRARY_API tensor sin() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> sin() const;
 
   /// @brief Computes the normalized sinc function (sine(x)/x) of each element
   /// in the tensor.
   /// @return A new tensor containing the sinc function values of each element.
-  TENSOR_LIBRARY_API tensor sinc() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> sinc() const;
 
   /// @brief Computes the hyperbolic sine (sinh) of each element in the tensor.
   /// @return A new tensor containing the hyperbolic sine of each element.
-  TENSOR_LIBRARY_API tensor sinh() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> sinh() const;
 
   /// @brief Computes the arc sine (inverse sine) of each element in the tensor.
   /// @return A new tensor containing the arc sine of each element.
-  TENSOR_LIBRARY_API tensor asin() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> asin() const;
 
   /// @brief Computes the inverse hyperbolic sine (asinh) of each element in the
   /// tensor.
   /// @return A new tensor containing the inverse hyperbolic sine of each
   /// element.
-  TENSOR_LIBRARY_API tensor asinh() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> asinh() const;
 
   /// @brief Computes the absolute value of each element in the tensor.
   /// @return A new tensor containing the absolute value of each element.
-  TENSOR_LIBRARY_API tensor abs() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> abs() const;
 
   /// @brief Performs a bitwise NOT operation on each element of the tensor.
   /// @return A new tensor containing the result of the bitwise NOT operation.
-  TENSOR_LIBRARY_API tensor bitwise_not() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> bitwise_not() const;
 
   /// @brief Performs a bitwise AND operation between the tensor and a scalar
   /// value.
   /// @param value The scalar value to apply the bitwise AND operation with.
   /// @return A new tensor containing the result of the bitwise AND operation.
-  TENSOR_LIBRARY_API tensor bitwise_and(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> bitwise_and(const value_type value) const;
 
   /// @brief Performs a bitwise AND operation between the tensor and another
   /// tensor.
   /// @param other The tensor to apply the bitwise AND operation with.
   /// @return A new tensor containing the result of the bitwise AND operation.
-  TENSOR_LIBRARY_API tensor bitwise_and(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> bitwise_and(const arch::tensor<_Tp>& other) const;
 
   /// @brief Performs a bitwise OR operation between the tensor and a scalar
   /// value.
   /// @param value The scalar value to apply the bitwise OR operation with.
   /// @return A new tensor containing the result of the bitwise OR operation.
-  TENSOR_LIBRARY_API tensor bitwise_or(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> bitwise_or(const value_type value) const;
 
   /// @brief Performs a bitwise OR operation between the tensor and another
   /// tensor.
   /// @param other The tensor to apply the bitwise OR operation with.
   /// @return A new tensor containing the result of the bitwise OR operation.
-  TENSOR_LIBRARY_API tensor bitwise_or(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> bitwise_or(const arch::tensor<_Tp>& other) const;
 
   /// @brief Performs a bitwise XOR operation between the tensor and a scalar
   /// value.
   /// @param value The scalar value to apply the bitwise XOR operation with.
   /// @return A new tensor containing the result of the bitwise XOR operation.
-  TENSOR_LIBRARY_API tensor bitwise_xor(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> bitwise_xor(const value_type value) const;
 
   /// @brief Performs a bitwise XOR operation between the tensor and another
   /// tensor.
   /// @param other The tensor to apply the bitwise XOR operation with.
   /// @return A new tensor containing the result of the bitwise XOR operation.
-  TENSOR_LIBRARY_API tensor bitwise_xor(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> bitwise_xor(const arch::tensor<_Tp>& other) const;
 
   /// @brief Performs a bitwise left shift operation on each element of the
   /// tensor by a specified amount.
   /// @param amount The number of bits to shift left.
   /// @return A new tensor containing the result of the bitwise left shift
   /// operation.
-  TENSOR_LIBRARY_API tensor bitwise_left_shift(const int amount) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> bitwise_left_shift(const int amount) const;
 
   /// @brief Performs a bitwise right shift operation on each element of the
   /// tensor by a specified amount.
   /// @param amount The number of bits to shift right.
   /// @return A new tensor containing the result of the bitwise right shift
   /// operation.
-  TENSOR_LIBRARY_API tensor bitwise_right_shift(const int amount) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> bitwise_right_shift(const int amount) const;
 
   /// @brief Performs matrix multiplication between the tensor and another
   /// tensor.
   /// @param other The tensor to multiply with.
   /// @return A new tensor containing the result of the matrix multiplication.
-  TENSOR_LIBRARY_API tensor matmul(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> matmul(const arch::tensor<_Tp>& other) const;
 
   /// @brief Reshapes the tensor to a specified shape.
   /// @param shape The desired shape for the tensor.
   /// @return A new tensor with the specified shape.
-  TENSOR_LIBRARY_API tensor reshape(const shape::Shape shape) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> reshape(const shape::Shape shape) const;
 
   /// @brief Reshapes the tensor to match the shape of another tensor.
   /// @param other The tensor whose shape is to be matched.
   /// @return A new tensor reshaped to match the shape of the given tensor.
-  TENSOR_LIBRARY_API tensor reshape_as(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> reshape_as(const arch::tensor<_Tp>& other) const;
 
   /// @brief Computes the cross product between the tensor and another tensor.
   /// @param other The tensor to compute the cross product with.
   /// @return A new tensor containing the cross product.
-  TENSOR_LIBRARY_API tensor cross_product(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> cross_product(const arch::tensor<_Tp>& other) const;
 
   /// @brief Computes the absolute value of each element in a given tensor.
   /// @param tensor The tensor to compute the absolute values of.
   /// @return A new tensor containing the absolute values of the input tensor.
-  TENSOR_LIBRARY_API tensor absolute(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> absolute(const arch::tensor<_Tp>& other) const;
 
   /// @brief Computes the dot product between the tensor and another tensor.
   /// @param other The tensor to compute the dot product with.
   /// @return A scalar tensor containing the result of the dot product.
-  TENSOR_LIBRARY_API tensor dot(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> dot(const arch::tensor<_Tp>& other) const;
 
   /// @brief Applies the ReLU activation function to the tensor.
   /// @return A new tensor where negative values are replaced with zero.
-  TENSOR_LIBRARY_API tensor relu() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> relu() const;
 
   /// @brief Fills the tensor with a specified scalar value.
   /// @param value The scalar value to fill the tensor with.
   /// @return A new tensor filled with the specified value.
-  TENSOR_LIBRARY_API tensor fill(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> fill(const value_type value) const;
 
   /// @brief Fills the tensor with the values from another tensor.
   /// @param other The tensor whose values are to be used for filling.
   /// @return A new tensor filled with the values from the specified tensor.
-  TENSOR_LIBRARY_API tensor fill(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> fill(const arch::tensor<_Tp>& other) const;
 
   /// @brief Resizes the tensor to a specified shape, keeping its data
   /// consistent.
   /// @param shape_ The desired shape for the tensor.
   /// @return A new tensor resized to the specified shape.
-  TENSOR_LIBRARY_API tensor resize_as(const shape::Shape shape_) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> resize_as(const shape::Shape shape_) const;
 
   /// @brief Checks if all elements in the tensor are non-zero.
   /// @return A scalar tensor containing true if all elements are non-zero,
   /// otherwise false.
-  TENSOR_LIBRARY_API tensor all() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> all() const;
 
   /// @brief Checks if any element in the tensor is non-zero.
   /// @return A scalar tensor containing true if any element is non-zero,
   /// otherwise false.
-  TENSOR_LIBRARY_API tensor any() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> any() const;
 
   /// @brief Computes the determinant of the tensor.
   /// @return A scalar tensor containing the determinant of the tensor.
-  TENSOR_LIBRARY_API tensor det() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> det() const;
 
   /// @brief Computes the square of each element in the tensor.
   /// @return A new tensor containing the squares of the elements.
-  TENSOR_LIBRARY_API tensor square() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> square() const;
 
   /// @brief Applies the sigmoid activation function to each element in the
   /// tensor.
   /// @return A new tensor containing the sigmoid values of the elements.
-  TENSOR_LIBRARY_API tensor sigmoid() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> sigmoid() const;
 
   /// @brief Applies a clipped ReLU activation function to the tensor.
   /// @return A new tensor where negative values are replaced with zero, and
   /// positive values are clipped to a maximum value.
-  TENSOR_LIBRARY_API tensor clipped_relu(const value_type clip_limit) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> clipped_relu(const value_type clip_limit) const;
 
   /// @brief Computes the remainder of division between each element and a
   /// scalar value.
   /// @param value The scalar value to divide by.
   /// @return A new tensor containing the remainders.
-  TENSOR_LIBRARY_API tensor remainder(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> remainder(const value_type value) const;
 
   /// @brief Computes the remainder of division between each element of the
   /// tensor and another tensor.
   /// @param other The tensor to divide by.
   /// @return A new tensor containing the remainders.
-  TENSOR_LIBRARY_API tensor remainder(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> remainder(const arch::tensor<_Tp>& other) const;
 
   /// @brief Computes the element-wise maximum between the tensor and another
   /// tensor.
   /// @param other The tensor to compare with.
   /// @return A new tensor containing the element-wise maximum values.
-  TENSOR_LIBRARY_API tensor maximum(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> maximum(const arch::tensor<_Tp>& other) const;
 
   /// @brief Computes the element-wise maximum between the tensor and a scalar
   /// value.
   /// @param value The scalar value to compare with.
   /// @return A new tensor containing the element-wise maximum values.
-  TENSOR_LIBRARY_API tensor maximum(const_reference value) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> maximum(const_reference value) const;
 
   /// @brief Computes the distance between the tensor and another tensor.
   /// @param other The tensor to compute the distance from.
   /// @return A scalar tensor containing the computed distance.
-  TENSOR_LIBRARY_API tensor dist(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> dist(const arch::tensor<_Tp>& other) const;
 
   /// @brief Computes the distance between the tensor and a scalar value.
   /// @param value The scalar value to compute the distance from.
   /// @return A scalar tensor containing the computed distance.
-  TENSOR_LIBRARY_API tensor dist(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> dist(const value_type value) const;
 
   /// @brief Computes the element-wise negation of the tensor.
   /// @return A new tensor with all elements negated.
-  TENSOR_LIBRARY_API tensor negative() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> negative() const;
 
   /// @brief Permutes the dimensions of the tensor.
   /// @param dimension The order of dimensions for permutation.
   /// @return A new tensor with permuted dimensions.
-  TENSOR_LIBRARY_API tensor permute(const index_type dimension) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> permute(const index_type dimension) const;
 
   /// @brief Computes the element-wise greatest common divisor (GCD) between the
   /// tensor and another tensor.
   /// @param other The tensor to compute the GCD with.
   /// @return A new tensor containing the element-wise GCD values.
-  TENSOR_LIBRARY_API tensor gcd(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> gcd(const arch::tensor<_Tp>& other) const;
 
   /// @brief Computes the element-wise greatest common divisor (GCD) between the
   /// tensor and a scalar value.
   /// @param value The scalar value to compute the GCD with.
   /// @return A new tensor containing the element-wise GCD values.
-  TENSOR_LIBRARY_API tensor gcd(const value_type value) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> gcd(const value_type value) const;
 
   /// @brief Computes the element-wise power of the tensor, raising each element
   /// to the power of the corresponding element in another tensor.
   /// @param other The tensor representing the exponents.
   /// @return A new tensor containing the element-wise power values.
-  TENSOR_LIBRARY_API tensor pow(const tensor& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> pow(const arch::tensor<_Tp>& other) const;
 
   /// @brief Computes the element-wise power of the tensor, raising each element
   /// to the power of a scalar value.
   /// @param value The scalar exponent value.
   /// @return A new tensor containing the element-wise power values.
-  TENSOR_LIBRARY_API tensor pow(const value_type value) const;
+  TENSOR_LIBRARY_API tensor<_Tp> pow(const value_type value) const;
 
   /// @brief Computes the cumulative product of elements along a specified
   /// dimension.
@@ -713,14 +715,14 @@ class tensor: public TensorBase<_Tp, std::vector<_Tp>>
   /// Default is -1 (last dimension).
   /// @return A new tensor containing the cumulative product along the specified
   /// dimension.
-  TENSOR_LIBRARY_API tensor cumprod(index_type dimension = -1) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> cumprod(index_type dimension = -1) const;
 
   /// @brief Concatenates the tensor with a list of other tensors along a
   /// specified dimension.
   /// @param _others A vector of tensors to concatenate.
   /// @param _dim The dimension along which to concatenate the tensors.
   /// @return A new tensor resulting from the concatenation.
-  TENSOR_LIBRARY_API tensor cat(const std::vector<tensor>& _others, index_type _dim) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> cat(const std::vector<arch::tensor<_Tp>>& _others, index_type _dim) const;
 
   /// @brief Finds the indices of the maximum values along a specified
   /// dimension.
@@ -728,22 +730,22 @@ class tensor: public TensorBase<_Tp, std::vector<_Tp>>
   /// maximum values.
   /// @return A new tensor containing the indices of the maximum values along
   /// the specified dimension.
-  TENSOR_LIBRARY_API tensor argmax(index_type dimension) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> argmax(index_type dimension) const;
 
   /// @brief Adds a dimension of size 1 at the specified axis.
   /// @param dimension The dimension where the new axis will be added.
   /// @return A new tensor with the added dimension.
-  TENSOR_LIBRARY_API tensor unsqueeze(index_type dimension) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> unsqueeze(index_type dimension) const;
 
   /// @brief Creates a tensor filled with zeros, with the specified shape.
   /// @param shape_ The shape of the tensor to be created.
   /// @return A new tensor filled with zeros.
-  TENSOR_LIBRARY_API tensor zeros(const shape::Shape& shape_);
+  TENSOR_LIBRARY_API arch::tensor<_Tp> zeros(const shape::Shape& shape_);
 
   /// @brief Creates a tensor filled with ones, with the specified shape.
   /// @param shape_ The shape of the tensor to be created.
   /// @return A new tensor filled with ones.
-  TENSOR_LIBRARY_API tensor ones(const shape::Shape& shape_);
+  TENSOR_LIBRARY_API arch::tensor<_Tp> ones(const shape::Shape& shape_);
 
   /// @brief Creates a tensor filled with random values, with the specified
   /// shape.
@@ -751,26 +753,26 @@ class tensor: public TensorBase<_Tp, std::vector<_Tp>>
   /// @param bounded Whether the random values should be bounded (default is
   /// false).
   /// @return A new tensor filled with random values.
-  TENSOR_LIBRARY_API tensor randomize(const shape::Shape& shape_, bool bounded = false);
+  TENSOR_LIBRARY_API arch::tensor<_Tp> randomize(const shape::Shape& shape_, bool bounded = false);
 
   /// @brief Extracts the minor matrix by removing the specified row and column.
   /// @param a The row index to remove.
   /// @param b The column index to remove.
   /// @return A new tensor representing the minor matrix.
-  TENSOR_LIBRARY_API tensor get_minor(index_type a, index_type b) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> get_minor(index_type a, index_type b) const;
 
   /// @brief Expands the tensor to match the shape of another tensor along a
   /// specified dimension.
   /// @param shape_ The target shape for expansion.
   /// @param dimension The dimension along which the tensor will be expanded.
   /// @return A new tensor expanded to the specified shape.
-  TENSOR_LIBRARY_API tensor expand_as(shape::Shape shape_, index_type dimension) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> expand_as(shape::Shape shape_, index_type dimension) const;
 
   /// @brief Computes the element-wise least common multiple (LCM) with another
   /// tensor.
   /// @param other The tensor to compute the LCM with.
   /// @return A new tensor containing the element-wise LCM values.
-  TENSOR_LIBRARY_API tensor lcm(const shape::Shape& other) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> lcm(const shape::Shape& other) const;
 
   /// @brief Computes the mean (average) of all elements in the tensor.
   /// @return The mean value of all elements in the tensor.
@@ -790,140 +792,140 @@ class tensor: public TensorBase<_Tp, std::vector<_Tp>>
   /// @brief Appends a value to the end of the tensor.
   /// @param v The value to be appended to the tensor.
   /// @return A \ref to the tensor after the value has been appended.
-  TENSOR_LIBRARY_API tensor& push_back(value_type v) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& push_back(value_type v);
 
   /// @brief Removes the last element from the tensor.
   /// @return A \ref to the tensor after the last element has been removed.
-  TENSOR_LIBRARY_API tensor& pop_back() const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& pop_back() const;
 
   /// @brief Computes the square root of each element in the tensor, modifying
   /// the tensor in place.
   /// @return A \ref to the tensor after the square root has been computed.
-  TENSOR_LIBRARY_API tensor& sqrt_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& sqrt_();
 
   /// @brief Computes the exponential of each element in the tensor, modifying
   /// the tensor in place.
   /// @return A \ref to the tensor after the exponential has been computed.
-  TENSOR_LIBRARY_API tensor& exp_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& exp_();
 
   /// @brief Computes the base-2 logarithm of each element in the tensor,
   /// modifying the tensor in place.
   /// @return A \ref to the tensor after the base-2 logarithm has been
   /// computed.
-  TENSOR_LIBRARY_API tensor& log2_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& log2_();
 
   /// @brief Computes the base-10 logarithm of each element in the tensor,
   /// modifying the tensor in place.
   /// @return A \ref to the tensor after the base-10 logarithm has been
   /// computed.
-  TENSOR_LIBRARY_API tensor& log10_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& log10_();
 
   /// @brief Computes the fractional part of each element in the tensor,
   /// modifying the tensor in place.
   /// @return A \ref to the tensor after the fractional part has been
   /// computed.
-  TENSOR_LIBRARY_API tensor& frac_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& frac_();
 
   /// @brief Computes the element-wise modulus (remainder) of each element in
   /// the tensor with another tensor, modifying the tensor in place.
   /// @param other The tensor to compute the modulus with.
   /// @return A \ref to the tensor after the modulus operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& fmod_(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& fmod_(const arch::tensor<_Tp>& other);
 
   /// @brief Computes the element-wise modulus (remainder) of each element in
   /// the tensor with a scalar value, modifying the tensor in place.
   /// @param value The scalar value to compute the modulus with.
   /// @return A \ref to the tensor after the modulus operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& fmod_(const value_type value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& fmod_(const value_type value);
 
   /// @brief Computes the cosine of each element in the tensor, modifying the
   /// tensor in place.
   /// @return A \ref to the tensor after the cosine has been computed.
-  TENSOR_LIBRARY_API tensor& cos_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& cos_();
 
   /// @brief Computes the hyperbolic cosine of each element in the tensor,
   /// modifying the tensor in place.
   /// @return A \ref to the tensor after the hyperbolic cosine has been
   /// computed.
-  TENSOR_LIBRARY_API tensor& cosh_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& cosh_();
 
   /// @brief Computes the inverse cosine (arc cosine) of each element in the
   /// tensor, modifying the tensor in place.
   /// @return A \ref to the tensor after the inverse cosine has been
   /// computed.
-  TENSOR_LIBRARY_API tensor& acos_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& acos_();
 
   /// @brief Computes the inverse hyperbolic cosine of each element in the
   /// tensor, modifying the tensor in place.
   /// @return A \ref to the tensor after the inverse hyperbolic cosine has
   /// been computed.
-  TENSOR_LIBRARY_API tensor& acosh_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& acosh_();
 
   /// @brief Computes the tangent of each element in the tensor, modifying the
   /// tensor in place.
   /// @return A \ref to the tensor after the tangent has been computed.
-  TENSOR_LIBRARY_API tensor& tan_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& tan_();
 
   /// @brief Computes the hyperbolic tangent of each element in the tensor,
   /// modifying the tensor in place.
   /// @return A \ref to the tensor after the hyperbolic tangent has been
   /// computed.
-  TENSOR_LIBRARY_API tensor& tanh_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& tanh_();
 
   /// @brief Computes the inverse tangent (arc tangent) of each element in the
   /// tensor, modifying the tensor in place.
   /// @return A \ref to the tensor after the inverse tangent has been
   /// computed.
-  TENSOR_LIBRARY_API tensor& atan_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& atan_();
 
   /// @brief Computes the inverse hyperbolic tangent of each element in the
   /// tensor, modifying the tensor in place.
   /// @return A \ref to the tensor after the inverse hyperbolic tangent has
   /// been computed.
-  TENSOR_LIBRARY_API tensor& atanh_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& atanh_();
 
   /// @brief Computes the sine of each element in the tensor, modifying the
   /// tensor in place.
   /// @return A \ref to the tensor after the sine has been computed.
-  TENSOR_LIBRARY_API tensor& sin_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& sin_();
 
   /// @brief Computes the hyperbolic sine of each element in the tensor,
   /// modifying the tensor in place.
   /// @return A \ref to the tensor after the hyperbolic sine has been
   /// computed.
-  TENSOR_LIBRARY_API tensor& sinh_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& sinh_();
 
   /// @brief Computes the inverse sine (arc sine) of each element in the tensor,
   /// modifying the tensor in place.
   /// @return A \ref to the tensor after the inverse sine has been
   /// computed.
-  TENSOR_LIBRARY_API tensor& asin_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& asin_();
 
   /// @brief Computes the inverse hyperbolic sine of each element in the tensor,
   /// modifying the tensor in place.
   /// @return A \ref to the tensor after the inverse hyperbolic sine has
   /// been computed.
-  TENSOR_LIBRARY_API tensor& asinh_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& asinh_();
 
   /// @brief Applies the ceiling function to each element in the tensor,
   /// modifying the tensor in place.
   /// @return A \ref to the tensor after the ceiling function has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& ceil_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& ceil_();
 
   /// @brief Applies the floor function to each element in the tensor, modifying
   /// the tensor in place.
   /// @return A \ref to the tensor after the floor function has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& floor_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& floor_();
 
   /// @brief Applies the ReLU activation function to each element in the tensor,
   /// modifying the tensor in place.
   /// @return A \ref to the tensor after the ReLU function has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& relu_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& relu_();
 
   /// @brief Clamps each element of the tensor to the given range [min_val,
   /// max_val], modifying the tensor in place.
@@ -932,126 +934,125 @@ class tensor: public TensorBase<_Tp, std::vector<_Tp>>
   /// @param max_val The maximum value for clamping, or nullptr to skip the
   /// maximum bound.
   /// @return A \ref to the tensor after the clamping has been applied.
-  TENSOR_LIBRARY_API tensor& clamp_(const_reference min_val = std::numeric_limits<value_type>::lowest(),
-                                    const_reference max_val = std::numeric_limits<value_type>::max());
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& clamp_(const_reference min_val = std::numeric_limits<value_type>::lowest(),
+                                               const_reference max_val = std::numeric_limits<value_type>::max());
 
-  TENSOR_LIBRARY_API tensor clamp_min(const_reference min_val) const;
-  TENSOR_LIBRARY_API tensor clamp_max(const_reference max_val) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> clamp_min(const_reference min_val) const;
+  TENSOR_LIBRARY_API arch::tensor<_Tp> clamp_max(const_reference max_val) const;
 
-  TENSOR_LIBRARY_API tensor& clamp_min_(const_reference min_val);
-  TENSOR_LIBRARY_API tensor& clamp_max_(const_reference max_val);
-
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& clamp_min_(const_reference min_val);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& clamp_max_(const_reference max_val);
 
   /// @brief Computes the absolute value of each element in the tensor,
   /// modifying the tensor in place.
   /// @return A \ref to the tensor after the absolute value has been
   /// computed.
-  TENSOR_LIBRARY_API tensor& abs_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& abs_();
 
   /// @brief Permutes the dimensions of the tensor according to the specified
   /// dimension, modifying the tensor in place.
   /// @param dimension The dimension along which the permutation is applied.
   /// @return A \ref to the tensor after the permutation has been applied.
-  TENSOR_LIBRARY_API tensor& permute_(const index_type dimension);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& permute_(const index_type dimension);
 
   /// @brief Repeats the tensor according to the specified dimensions, modifying
   /// the tensor in place.
   /// @param d The dimensions to repeat the tensor along.
   /// @return A \ref to the tensor after the repeat operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& repeat_(const container_type& d, int dimension = 0);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& repeat_(const container_type& d, int dimension = 0);
 
   /// @brief Negates each element in the tensor, modifying the tensor in place.
   /// @return A \ref to the tensor after the negation has been applied.
-  TENSOR_LIBRARY_API tensor& negative_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& negative_();
 
   /// @brief Transposes the tensor, modifying the tensor in place.
   /// @return A \ref to the tensor after the transposition has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& transpose_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& transpose_();
 
   /// @brief Adds an extra dimension at the specified index, modifying the
   /// tensor in place.
   /// @param dimension The index at which to insert the new dimension.
   /// @return A \ref to the tensor after the unsqueeze operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& unsqueeze_(index_type dimension);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& unsqueeze_(index_type dimension);
 
   /// @brief Removes the dimension at the specified index, modifying the tensor
   /// in place.
   /// @param dimension The index of the dimension to squeeze.
   /// @return A \ref to the tensor after the squeeze operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& squeeze_(index_type dimension);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& squeeze_(index_type dimension);
 
   /// @brief Resizes the tensor to the specified shape, modifying the tensor in
   /// place.
   /// @param shape_ The new shape to resize the tensor to.
   /// @return A \ref to the tensor after the resize operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& resize_as_(const shape::Shape sh_);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& resize_as_(const shape::Shape sh_);
 
   /// @brief Computes the distance between the tensor and another tensor,
   /// modifying the tensor in place.
   /// @param other The tensor to compute the distance with.
   /// @return A \ref to the tensor after the distance operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& dist_(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& dist_(const arch::tensor<_Tp>& other);
 
   /// @brief Computes the distance between the tensor and a scalar value,
   /// modifying the tensor in place.
   /// @param value The scalar value to compute the distance with.
   /// @return A \ref to the tensor after the distance operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& dist_(const value_type value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& dist_(const value_type value);
 
   /// @brief Computes the element-wise maximum of the tensor and another tensor,
   /// modifying the tensor in place.
   /// @param other The tensor to compare with.
   /// @return A \ref to the tensor after the element-wise maximum operation
   /// has been applied.
-  TENSOR_LIBRARY_API tensor& maximum_(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& maximum_(const arch::tensor<_Tp>& other);
 
   /// @brief Computes the element-wise maximum of the tensor and a scalar value,
   /// modifying the tensor in place.
   /// @param value The scalar value to compare with.
   /// @return A \ref to the tensor after the element-wise maximum operation
   /// has been applied.
-  TENSOR_LIBRARY_API tensor& maximum_(const value_type value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& maximum_(const value_type value);
 
   /// @brief Computes the element-wise remainder of the tensor and a scalar
   /// value, modifying the tensor in place.
   /// @param value The scalar value to compute the remainder with.
   /// @return A \ref to the tensor after the element-wise remainder
   /// operation has been applied.
-  TENSOR_LIBRARY_API tensor& remainder_(const value_type value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& remainder_(const value_type value);
 
   /// @brief Computes the element-wise remainder of the tensor and another
   /// tensor, modifying the tensor in place.
   /// @param other The tensor to compute the remainder with.
   /// @return A \ref to the tensor after the element-wise remainder
   /// operation has been applied.
-  TENSOR_LIBRARY_API tensor& remainder_(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& remainder_(const arch::tensor<_Tp>& other);
 
   /// @brief Fills the tensor with the specified scalar value, modifying the
   /// tensor in place.
   /// @param value The scalar value to fill the tensor with.
   /// @return A \ref to the tensor after the fill operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& fill_(const value_type value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& fill_(const value_type value);
 
   /// @brief Fills the tensor with the values from another tensor, modifying the
   /// tensor in place.
   /// @param other The tensor whose values are used to fill this tensor.
   /// @return A \ref to the tensor after the fill operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& fill_(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& fill_(const arch::tensor<_Tp>& other);
 
   /// @brief Applies the element-wise sigmoid function to the tensor, modifying
   /// the tensor in place.
   /// @return A \ref to the tensor after the sigmoid operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& sigmoid_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& sigmoid_();
 
   /// @brief Applies the element-wise clipped ReLU function to the tensor,
   /// modifying the tensor in place.
@@ -1059,102 +1060,102 @@ class tensor: public TensorBase<_Tp, std::vector<_Tp>>
   /// @param clip_limit The limit to which values in the tensor are clipped.
   /// @return A \ref to the tensor after the clipped ReLU operation has
   /// been applied.
-  TENSOR_LIBRARY_API tensor& clipped_relu_(const value_type clip_limit);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& clipped_relu_(const value_type clip_limit);
 
   /// @brief Applies the element-wise square function to the tensor, modifying
   /// the tensor in place.
   /// @return A \ref to the tensor after the square operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& square_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& square_();
 
   /// @brief Raises the tensor elements to the power of the elements of another
   /// tensor, modifying the tensor in place.
   /// @param other The tensor whose elements are used as exponents.
   /// @return A \ref to the tensor after the element-wise power operation
   /// has been applied.
-  TENSOR_LIBRARY_API tensor& pow_(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& pow_(const arch::tensor<_Tp>& other);
 
   /// @brief Raises the tensor elements to the power of a scalar value,
   /// modifying the tensor in place.
   /// @param value The scalar value to which tensor elements are raised.
   /// @return A \ref to the tensor after the element-wise power operation
   /// has been applied.
-  TENSOR_LIBRARY_API tensor& pow_(const value_type value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& pow_(const value_type value);
 
   /// @brief Applies the element-wise sinc function to the tensor, modifying the
   /// tensor in place.
   /// @return A \ref to the tensor after the sinc operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& sinc_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& sinc_();
 
   /// @brief Performs a bitwise left shift operation on the tensor elements,
   /// modifying the tensor in place.
   /// @param amount The number of positions to shift the bits.
   /// @return A \ref to the tensor after the bitwise left shift operation
   /// has been applied.
-  TENSOR_LIBRARY_API tensor& bitwise_left_shift_(const int amount);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& bitwise_left_shift_(const int amount);
 
   /// @brief Performs a bitwise right shift operation on the tensor elements,
   /// modifying the tensor in place.
   /// @param amount The number of positions to shift the bits.
   /// @return A \ref to the tensor after the bitwise right shift operation
   /// has been applied.
-  TENSOR_LIBRARY_API tensor& bitwise_right_shift_(const int amount);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& bitwise_right_shift_(const int amount);
 
   /// @brief Performs a bitwise AND operation between the tensor and a scalar
   /// value, modifying the tensor in place.
   /// @param value The scalar value to apply the bitwise AND operation with.
   /// @return A \ref to the tensor after the bitwise AND operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& bitwise_and_(const value_type value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& bitwise_and_(const value_type value);
 
   /// @brief Performs a bitwise AND operation between the tensor and another
   /// tensor, modifying the tensor in place.
   /// @param other The tensor to apply the bitwise AND operation with.
   /// @return A \ref to the tensor after the bitwise AND operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& bitwise_and_(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& bitwise_and_(const arch::tensor<_Tp>& other);
 
   /// @brief Performs a bitwise OR operation between the tensor and a scalar
   /// value, modifying the tensor in place.
   /// @param value The scalar value to apply the bitwise OR operation with.
   /// @return A \ref to the tensor after the bitwise OR operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& bitwise_or_(const value_type value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& bitwise_or_(const value_type value);
 
   /// @brief Performs a bitwise OR operation between the tensor and another
   /// tensor, modifying the tensor in place.
   /// @param other The tensor to apply the bitwise OR operation with.
   /// @return A \ref to the tensor after the bitwise OR operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& bitwise_or_(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& bitwise_or_(const arch::tensor<_Tp>& other);
 
   /// @brief Performs a bitwise XOR operation between the tensor and a scalar
   /// value, modifying the tensor in place.
   /// @param value The scalar value to apply the bitwise XOR operation with.
   /// @return A \ref to the tensor after the bitwise XOR operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& bitwise_xor_(const value_type value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& bitwise_xor_(const value_type value);
 
   /// @brief Performs a bitwise XOR operation between the tensor and another
   /// tensor, modifying the tensor in place.
   /// @param other The tensor to apply the bitwise XOR operation with.
   /// @return A \ref to the tensor after the bitwise XOR operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& bitwise_xor_(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& bitwise_xor_(const arch::tensor<_Tp>& other);
 
   /// @brief Performs a bitwise NOT operation on the tensor elements, modifying
   /// the tensor in place.
   /// @return A \ref to the tensor after the bitwise NOT operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& bitwise_not_();
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& bitwise_not_();
 
   /// @brief Reshapes the tensor to a new shape specified by an initializer list
   /// of dimensions, modifying the tensor in place.
   /// @param new_shape The new shape of the tensor.
   /// @return A \ref to the tensor after the reshape operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& view(std::initializer_list<index_type> new_shape);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& view(std::initializer_list<index_type> new_shape);
 
   /// @brief Applies the element-wise maximum function between the tensor and
   /// another tensor, modifying the tensor in place.
@@ -1162,7 +1163,7 @@ class tensor: public TensorBase<_Tp, std::vector<_Tp>>
   /// with.
   /// @return A \ref to the tensor after the element-wise maximum operation
   /// has been applied.
-  TENSOR_LIBRARY_API tensor& fmax_(const tensor& other);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& fmax_(const arch::tensor<_Tp>& other);
 
   /// @brief Applies the element-wise maximum function between the tensor and a
   /// scalar value, modifying the tensor in place.
@@ -1170,7 +1171,7 @@ class tensor: public TensorBase<_Tp, std::vector<_Tp>>
   /// with.
   /// @return A \ref to the tensor after the element-wise maximum operation
   /// has been applied.
-  TENSOR_LIBRARY_API tensor& fmax_(const value_type value);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& fmax_(const value_type value);
 
   /// @brief Randomizes the values in the tensor with the specified shape,
   /// modifying the tensor in place.
@@ -1179,7 +1180,8 @@ class tensor: public TensorBase<_Tp, std::vector<_Tp>>
   /// they will not.
   /// @return A \ref to the tensor after the randomization operation has
   /// been applied.
-  TENSOR_LIBRARY_API tensor& randomize_(const shape::Shape& sh, bool bounded = false);
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& randomize_(const std::optional<shape::Shape>& sh      = std::nullopt,
+                                                   bool                               bounded = false);
 
 
   /// @brief Fills the tensor with zeros, modifying the tensor in place.
@@ -1187,23 +1189,23 @@ class tensor: public TensorBase<_Tp, std::vector<_Tp>>
   /// filled with zeros.
   /// @return A \ref to the tensor after the zero-fill operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& zeros_(shape::Shape sh = {});
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& zeros_(shape::Shape sh = {});
 
   /// @brief Fills the tensor with ones, modifying the tensor in place.
   /// @param shape_ The shape to which the tensor will be resized before being
   /// filled with ones.
   /// @return A \ref to the tensor after the one-fill operation has been
   /// applied.
-  TENSOR_LIBRARY_API tensor& ones_(shape::Shape shape_ = {});
+  TENSOR_LIBRARY_API arch::tensor<_Tp>& ones_(shape::Shape shape_ = {});
 
-  void print() const {
+  void print() const
+  {
     printRecursive(0, 0, this->shape());
     std::cout << std::endl;
   }
 
-  TENSOR_LIBRARY_API tensor<index_type> argmax_(index_type dimension) const;
-  TENSOR_LIBRARY_API tensor<index_type> argsort(index_type dimension = -1, bool ascending = true) const;
-
+  TENSOR_LIBRARY_API arch::tensor<index_type> argmax_(index_type dimension) const;
+  TENSOR_LIBRARY_API arch::tensor<index_type> argsort(index_type dimension = -1, bool ascending = true) const;
 
  private:
   TENSOR_NODISCARD std::size_t computeStride(std::size_t dimension, const shape_type& shape) const TENSOR_NOEXCEPT;
@@ -1216,24 +1218,31 @@ class tensor: public TensorBase<_Tp, std::vector<_Tp>>
   bool is_cuda_device() const;
 };  // tensor class
 
+}  // namespace arch
+
 template<class _Tp>
-TENSOR_INLINE bool tensor<_Tp>::is_cuda_device() const {
+TENSOR_INLINE bool arch::tensor<_Tp>::is_cuda_device() const
+{
   return (this->device() == Device::CUDA);
 }
 
 template<class _Tp>
-TENSOR_NODISCARD TENSOR_INLINE _f32 tensor<_Tp>::frac(const_reference value) TENSOR_NOEXCEPT {
+TENSOR_NODISCARD TENSOR_INLINE _f32 arch::tensor<_Tp>::frac(const_reference value) TENSOR_NOEXCEPT
+{
   return std::fmod(static_cast<float32_t>(value), 1.0f);
 }
 
 template<class _Tp>
-TENSOR_INLINE typename tensor<_Tp>::index_type tensor<_Tp>::compute_outer_size(const index_type dimension) const {
+TENSOR_INLINE typename arch::tensor<_Tp>::index_type
+arch::tensor<_Tp>::compute_outer_size(const index_type dimension) const
+{
   // just a placeholder for now
   return 0;
 }
 
 template<class _Tp>
-void tensor<_Tp>::printRecursive(std::size_t index, std::size_t depth, const shape_type& shape) const {
+void arch::tensor<_Tp>::printRecursive(std::size_t index, std::size_t depth, const shape_type& shape) const
+{
   if (depth == shape.size() - 1)
   {
     std::cout << "[";
@@ -1293,8 +1302,9 @@ void tensor<_Tp>::printRecursive(std::size_t index, std::size_t depth, const sha
 }
 
 template<class _Tp>
-TENSOR_NODISCARD TENSOR_INLINE std::size_t tensor<_Tp>::computeStride(std::size_t       dimension,
-                                                                      const shape_type& shape) const TENSOR_NOEXCEPT {
+TENSOR_NODISCARD TENSOR_INLINE std::size_t
+arch::tensor<_Tp>::computeStride(std::size_t dimension, const shape_type& shape) const TENSOR_NOEXCEPT
+{
   std::size_t stride = 1;
 
   for (const auto& elem : shape)
@@ -1306,10 +1316,10 @@ TENSOR_NODISCARD TENSOR_INLINE std::size_t tensor<_Tp>::computeStride(std::size_
 }
 
 template<>
-class tensor<bool>;  // explicit instantiation
+class arch::tensor<bool>;  // explicit instantiation
 
 template<>
-class tensor<bool>: public TensorBase<bool>
+class arch::tensor<bool>: public TensorBase<bool>
 {
  public:
   using self                   = tensor;
@@ -1331,7 +1341,8 @@ class tensor<bool>: public TensorBase<bool>
   bool                 is_cuda_tensor_ = false;
 
  public:
-  tensor() {
+  tensor()
+  {
     shape_  = shape::Shape();
     device_ = Device::CPU;
     data_   = data_t();
@@ -1340,18 +1351,22 @@ class tensor<bool>: public TensorBase<bool>
   explicit tensor(const shape::Shape& shape_, value_type v, Device d = Device::CPU) :
       shape_(shape_),
       data_(shape_.size(), v),
-      device_(d) {}
+      device_(d)
+  {
+  }
 
   explicit tensor(const shape::Shape& shape_, Device d = Device::CPU) :
       shape_(shape_),
-      device_(d) {
+      device_(d)
+  {
     index_type s = shape_.size();
     data_        = data_t(s);
   }
 
   explicit tensor(const shape::Shape& sh, const data_t& d, Device dev = Device::CPU) :
       shape_(sh),
-      device_(dev) {
+      device_(dev)
+  {
 
     if (d.size() != static_cast<std::size_t>(shape_.flatten_size()))
     {
@@ -1365,15 +1380,20 @@ class tensor<bool>: public TensorBase<bool>
   tensor(const tensor& t) :
       data_(t.storage()),
       shape_(t.shape()),
-      device_(t.device()) {}
+      device_(t.device())
+  {
+  }
 
   tensor(tensor&& t) TENSOR_NOEXCEPT: data_(std::move(t.storage())),
                                       shape_(std::move(t.shape())),
-                                      device_(std::move(t.device())) {}
+                                      device_(std::move(t.device()))
+  {
+  }
 
   tensor(const shape::Shape& sh, std::initializer_list<value_type> init_list, Device d = Device::CPU) :
       shape_(sh),
-      device_(d) {
+      device_(d)
+  {
 
     if (init_list.size() != static_cast<std::size_t>(shape_.flatten_size()))
     {
@@ -1386,7 +1406,9 @@ class tensor<bool>: public TensorBase<bool>
   tensor(const shape::Shape& shape_, const tensor& other) :
       data_(other.storage()),
       shape_(shape_),
-      device_(other.device()) {}
+      device_(other.device())
+  {
+  }
 
   data_t storage() const TENSOR_NOEXCEPT { return data_; }
 
@@ -1400,14 +1422,16 @@ class tensor<bool>: public TensorBase<bool>
 
   bool operator!=(const tensor& other) const { return !(*this == other); }
 
-  TENSOR_INLINE tensor<bool>& operator=(const tensor<bool>& other) {
+  TENSOR_INLINE arch::tensor<bool>& operator=(const arch::tensor<bool>& other)
+  {
     shape_ = other.shape();
     data_  = other.storage();
     shape_.compute_strides();
     return *this;
   }
 
-  tensor<bool>& operator=(tensor<bool>&& other) TENSOR_NOEXCEPT {
+  arch::tensor<bool>& operator=(arch::tensor<bool>&& other) TENSOR_NOEXCEPT
+  {
     if (this != &other)
     {
       data_  = std::move(other.storage());
@@ -1417,7 +1441,8 @@ class tensor<bool>: public TensorBase<bool>
     return *this;
   }
 
-  reference at(shape_type idx) {
+  reference at(shape_type idx)
+  {
     if (idx.empty())
     {
       throw error::index_error("Passing an empty vector as indices for a tensor");
@@ -1433,7 +1458,8 @@ class tensor<bool>: public TensorBase<bool>
     return data_[i];
   }
 
-  reference operator[](const index_type idx) {
+  reference operator[](const index_type idx)
+  {
     if (idx < 0 || idx >= data_.size())
     {
       throw error::index_error("input index is out of bounds");
@@ -1454,7 +1480,8 @@ class tensor<bool>: public TensorBase<bool>
 
   std::size_t n_dims() const TENSOR_NOEXCEPT { return shape_.size(); }
 
-  index_type size(const index_type dimension) const {
+  index_type size(const index_type dimension) const
+  {
     if (dimension < 0 || dimension > static_cast<index_type>(shape_.size()))
     {
       throw std::invalid_argument("dimension input is out of range");
@@ -1470,7 +1497,8 @@ class tensor<bool>: public TensorBase<bool>
 
   index_type capacity() const TENSOR_NOEXCEPT { return data_.capacity(); }
 
-  tensor<bool> logical_not() const {
+  arch::tensor<bool> logical_not() const
+  {
     if (empty())
     {
       return self({0});
@@ -1481,7 +1509,8 @@ class tensor<bool>: public TensorBase<bool>
     return t;
   }
 
-  tensor<bool> logical_or(const value_type value) const {
+  arch::tensor<bool> logical_or(const value_type value) const
+  {
     if (empty())
     {
       return self({0});
@@ -1492,7 +1521,8 @@ class tensor<bool>: public TensorBase<bool>
     return t;
   }
 
-  tensor<bool> logical_or(const tensor& other) const {
+  arch::tensor<bool> logical_or(const tensor& other) const
+  {
     if (empty())
     {
       return self({0});
@@ -1503,7 +1533,8 @@ class tensor<bool>: public TensorBase<bool>
     return t;
   }
 
-  tensor<bool> logical_and(const value_type value) const {
+  arch::tensor<bool> logical_and(const value_type value) const
+  {
     if (empty())
     {
       return self({0});
@@ -1514,7 +1545,8 @@ class tensor<bool>: public TensorBase<bool>
     return t;
   }
 
-  tensor<bool> logical_and(const tensor& other) const {
+  arch::tensor<bool> logical_and(const tensor& other) const
+  {
     if (empty())
     {
       return self({0});
@@ -1525,7 +1557,8 @@ class tensor<bool>: public TensorBase<bool>
     return t;
   }
 
-  tensor<bool> logical_xor(const value_type value) const {
+  arch::tensor<bool> logical_xor(const value_type value) const
+  {
     if (empty())
     {
       return self({0});
@@ -1536,7 +1569,8 @@ class tensor<bool>: public TensorBase<bool>
     return t;
   }
 
-  tensor<bool> logical_xor(const tensor& other) const {
+  arch::tensor<bool> logical_xor(const tensor& other) const
+  {
     if (empty())
     {
       return self({0});
@@ -1547,7 +1581,8 @@ class tensor<bool>: public TensorBase<bool>
     return t;
   }
 
-  tensor<bool>& logical_not_() {
+  arch::tensor<bool>& logical_not_()
+  {
     for (index_type i = 0; i < data_.size(); ++i)
     {
       data_[i] = ~(data_[i]);
@@ -1556,7 +1591,8 @@ class tensor<bool>: public TensorBase<bool>
     return *this;
   }
 
-  tensor<bool>& logical_or_(const value_type value) {
+  arch::tensor<bool>& logical_or_(const value_type value)
+  {
     for (index_type i = 0; i < data_.size(); ++i)
     {
       data_[i] = (data_[i] || value);
@@ -1565,7 +1601,8 @@ class tensor<bool>: public TensorBase<bool>
     return *this;
   }
 
-  tensor<bool>& logical_or_(const tensor& other) {
+  arch::tensor<bool>& logical_or_(const tensor& other)
+  {
     for (index_type i = 0; i < data_.size(); ++i)
     {
       data_[i] = (data_[i] || other[i]);
@@ -1574,7 +1611,8 @@ class tensor<bool>: public TensorBase<bool>
     return *this;
   }
 
-  tensor<bool>& logical_and_(const value_type value) {
+  arch::tensor<bool>& logical_and_(const value_type value)
+  {
     for (index_type i = 0; i < data_.size(); ++i)
     {
       data_[i] = (data_[i] && value);
@@ -1583,7 +1621,8 @@ class tensor<bool>: public TensorBase<bool>
     return *this;
   }
 
-  tensor<bool>& logical_and_(const tensor& other) {
+  arch::tensor<bool>& logical_and_(const tensor& other)
+  {
     for (index_type i = 0; i < data_.size(); ++i)
     {
       data_[i] = (data_[i] && other[i]);
@@ -1592,7 +1631,8 @@ class tensor<bool>: public TensorBase<bool>
     return *this;
   }
 
-  tensor<bool>& logical_xor_(const value_type value) {
+  arch::tensor<bool>& logical_xor_(const value_type value)
+  {
     for (index_type i = 0; i < data_.size(); ++i)
     {
       data_[i] = (data_[i] xor value);
@@ -1601,7 +1641,8 @@ class tensor<bool>: public TensorBase<bool>
     return *this;
   }
 
-  tensor<bool>& logical_xor_(const tensor& other) {
+  arch::tensor<bool>& logical_xor_(const tensor& other)
+  {
     for (index_type i = 0; i < data_.size(); ++i)
     {
       data_[i] = (data_[i] xor other[i]);
@@ -1610,7 +1651,8 @@ class tensor<bool>: public TensorBase<bool>
     return *this;
   }
 
-  tensor<bool> operator!() const {
+  arch::tensor<bool> operator!() const
+  {
     data_t ret(this->size(0));
 
     for (index_type i = 0; i < this->size(0); ++i)
@@ -1618,20 +1660,21 @@ class tensor<bool>: public TensorBase<bool>
       ret[i] = !data_[i];
     }
 
-    return tensor<bool>(std::move(this->shape()), std::move(ret));
+    return arch::tensor<bool>(std::move(this->shape()), std::move(ret));
   }
 
-  tensor<bool>
-  slice(index_type dimension, std::optional<index_type> start, std::optional<index_type> end, index_type step) const {
+  arch::tensor<bool>
+  slice(index_type dimension, std::optional<index_type> start, std::optional<index_type> end, index_type step) const
+  {
     if (dimension < 0 || dimension >= static_cast<index_type>(data_.size()))
     {
       throw error::shape_error("Dimension out of range");
     }
 
-    tensor<bool> ret;
-    index_type   s       = shape_[dimension];
-    index_type   start_i = start.value_or(0);
-    index_type   end_i   = end.value_or(0);
+    arch::tensor<bool> ret;
+    index_type         s       = shape_[dimension];
+    index_type         start_i = start.value_or(0);
+    index_type         end_i   = end.value_or(0);
 
     if (start_i < 0)
     {
@@ -1661,7 +1704,8 @@ class tensor<bool>: public TensorBase<bool>
     return ret;
   }
 
-  tensor<bool> row(const index_type index) const {
+  arch::tensor<bool> row(const index_type index) const
+  {
     if (shape_.size() != 2)
     {
       throw error::shape_error("Cannot get a row from a non two dimensional tensor");
@@ -1685,7 +1729,8 @@ class tensor<bool>: public TensorBase<bool>
     return self(shape::Shape({shape_[1]}), r);
   }
 
-  tensor<bool> col(const index_type index) const {
+  arch::tensor<bool> col(const index_type index) const
+  {
     if (shape_.size() != 2)
     {
       throw error::index_error("Cannot get a column from a non two dimensional tensor");
@@ -1707,13 +1752,15 @@ class tensor<bool>: public TensorBase<bool>
     return self(shape::Shape({shape_[0]}), c);
   }
 
-  tensor<bool> clone() const {
+  arch::tensor<bool> clone() const
+  {
     data_t       d = data_;
     shape::Shape s = shape_;
     return self(std::move(s), std::move(d));
   }
 
-  tensor<bool> reshape(const shape::Shape shape_) const {
+  arch::tensor<bool> reshape(const shape::Shape shape_) const
+  {
     data_t     d = data_;
     index_type s = shape_.size();
 
@@ -1727,9 +1774,10 @@ class tensor<bool>: public TensorBase<bool>
     return self(std::move(shape_), std::move(d));
   }
 
-  tensor<bool> reshape_as(const tensor& other) const { return reshape(other.shape()); }
+  arch::tensor<bool> reshape_as(const tensor& other) const { return reshape(other.shape()); }
 
-  tensor<bool> transpose() const {
+  arch::tensor<bool> transpose() const
+  {
     if (shape_.equal(shape::Shape({shape_[0], shape_[1], 1})) || shape_.equal(shape::Shape({1, shape_[0], shape_[1]})))
     {
       throw error::shape_error("Matrix transposition can only be done on 2D tensors");
@@ -1751,7 +1799,8 @@ class tensor<bool>: public TensorBase<bool>
     return ret;
   }
 
-  tensor<bool>& transpose_() {
+  arch::tensor<bool>& transpose_()
+  {
     if (shape_.size() != 2)
     {
       throw error::shape_error("Transpose operation is only valid for 2D tensors");
@@ -1776,17 +1825,19 @@ class tensor<bool>: public TensorBase<bool>
     return *this;
   }
 
-  tensor<bool>& resize_as_(const shape_type shape_) { return *this; }
+  arch::tensor<bool>& resize_as_(const shape_type shape_) { return *this; }
 
-  tensor<bool> squeeze(const index_type dimension) const {
+  arch::tensor<bool> squeeze(const index_type dimension) const
+  {
     self ret = clone();
     ret.squeeze_(dimension);
     return ret;
   }
 
-  tensor<bool>& squeeze_(const index_type dimension) { return *this; }
+  arch::tensor<bool>& squeeze_(const index_type dimension) { return *this; }
 
-  tensor<bool> cat(const std::vector<tensor<value_type>>& others, index_type dimension) const {
+  arch::tensor<bool> cat(const std::vector<tensor<value_type>>& others, index_type dimension) const
+  {
     for (const tensor& t : others)
     {
       index_type i = 0;
@@ -1821,7 +1872,8 @@ class tensor<bool>: public TensorBase<bool>
     return self(std::move(ret_sh), std::move(c));
   }
 
-  tensor<bool> unsqueeze(const index_type dimension) const {
+  arch::tensor<bool> unsqueeze(const index_type dimension) const
+  {
     if (dimension < 0 || dimension > static_cast<index_type>(shape_.size()))
     {
       throw error::index_error("Dimension out of range in unsqueeze");
@@ -1838,7 +1890,8 @@ class tensor<bool>: public TensorBase<bool>
     return ret;
   }
 
-  tensor<bool>& randomize_(const shape::Shape& sh = {}) {
+  arch::tensor<bool>& randomize_(const shape::Shape& sh = {})
+  {
     if (shape_.empty() && sh.empty())
     {
       throw error::shape_error("Shape must be initialized");
@@ -1864,7 +1917,8 @@ class tensor<bool>: public TensorBase<bool>
     return *this;
   }
 
-  tensor<bool>& push_back(value_type v) {
+  arch::tensor<bool>& push_back(value_type v)
+  {
     if (shape_.size() != 1)
     {
       throw error::shape_error("push_back is only supported for one dimensional tensors");
@@ -1876,7 +1930,8 @@ class tensor<bool>: public TensorBase<bool>
     return *this;
   }
 
-  tensor<bool>& pop_back(value_type v) {
+  arch::tensor<bool>& pop_back(value_type v)
+  {
     if (shape_.size() != 1)
     {
       throw error::shape_error("push_back is only supported for one dimensional tensors");
@@ -1888,7 +1943,8 @@ class tensor<bool>: public TensorBase<bool>
     return *this;
   }
 
-  tensor<bool>& view(std::initializer_list<index_type> sh) {
+  arch::tensor<bool>& view(std::initializer_list<index_type> sh)
+  {
     shape::Shape new_shape(sh);
     index_type   s = new_shape.flatten_size();
 
@@ -1902,13 +1958,15 @@ class tensor<bool>: public TensorBase<bool>
     return *this;
   }
 
-  void print() const {
+  void print() const
+  {
     printRecursive(0, 0, shape_);
     std::cout << std::endl;
   }
 
  private:
-  void printRecursive(std::size_t index, std::size_t depth, const shape::Shape& shape) const {
+  void printRecursive(std::size_t index, std::size_t depth, const shape::Shape& shape) const
+  {
     if (depth == shape.size() - 1)
     {
       std::cout << "[";
@@ -1960,7 +2018,8 @@ class tensor<bool>: public TensorBase<bool>
     }
   }
 
-  index_type compute_outer_size(const index_type dimension) const {
+  index_type compute_outer_size(const index_type dimension) const
+  {
     // just a placeholder for now
     return 0;
   }

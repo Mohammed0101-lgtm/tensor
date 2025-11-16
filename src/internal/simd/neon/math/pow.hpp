@@ -6,15 +6,16 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp>& pow_(tensor<_Tp>& t, const _Tp value) {
+arch::tensor<_Tp>& pow_(arch::tensor<_Tp>& t, const _Tp value)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
   }
 
-  std::vector<_Tp>& data_    = t.storage_();
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_    = t.storage_();
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  _u64                                        i        = 0;
 
   for (; i < simd_end; i += t.simd_width)
   {
@@ -40,7 +41,8 @@ tensor<_Tp>& pow_(tensor<_Tp>& t, const _Tp value) {
 }
 
 template<class _Tp>
-tensor<_Tp>& pow_(tensor<_Tp>& t, const tensor<_Tp>& other) {
+arch::tensor<_Tp>& pow_(arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
@@ -51,10 +53,10 @@ tensor<_Tp>& pow_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Tensors shapes must be equal");
   }
 
-  std::vector<_Tp>&       a        = t.storage_();
-  const std::vector<_Tp>& b        = other.storage_();
-  const std::size_t       size     = a.size();
-  const std::size_t       simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type&       a        = t.storage_();
+  const typename arch::tensor<_Tp>::container_type& b        = other.storage_();
+  const std::size_t                                 size     = a.size();
+  const std::size_t                                 simd_end = size - (size % t.simd_width);
 
   _Tp* __restrict aptr       = a.data();
   const _Tp* __restrict bptr = b.data();

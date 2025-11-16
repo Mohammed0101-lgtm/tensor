@@ -6,15 +6,16 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_u64> argmax_(const tensor<_Tp>& t, const _u64 dimension) {
+arch::tensor<_u64> argmax_(const arch::tensor<_Tp>& t, const _u64 dimension)
+{
   if (dimension < 0 || dimension >= t.shape().size())
   {
     throw error::index_error("Dimension out of range in argmax");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  tensor<_u64>      ret;
-  shape::Shape      ret_sh = t.shape();
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  arch::tensor<_u64>                          ret;
+  shape::Shape                                ret_sh = t.shape();
   ret_sh.__value_.erase(ret_sh.__value_.begin() + dimension);
   ret.shape() = ret_sh;
   ret.storage_().resize(ret_sh.flatten_size());
@@ -91,15 +92,16 @@ tensor<_u64> argmax_(const tensor<_Tp>& t, const _u64 dimension) {
 }
 
 template<class _Tp>
-tensor<_Tp> argmax(const tensor<_Tp>& t, _u64 dimension) {
+arch::tensor<_Tp> argmax(const arch::tensor<_Tp>& t, _u64 dimension)
+{
   if (dimension < 0 || dimension >= t.shape().size())
   {
     throw error::index_error("Dimension out of range in argmax");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  tensor<_Tp>       ret;
-  shape::Shape      ret_sh = t.shape();
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  arch::tensor<_Tp>                           ret;
+  shape::Shape                                ret_sh = t.shape();
 
   ret_sh.__value_.erase(ret_sh.__value_.begin() + dimension);
   ret.shape_ = ret_sh;
@@ -150,9 +152,10 @@ tensor<_Tp> argmax(const tensor<_Tp>& t, _u64 dimension) {
 }
 
 template<class _Tp>
-tensor<_u64> argsort(const tensor<_Tp>& t, _u64 d, bool ascending) {
-  std::vector<_Tp>& data_    = t.storage_();
-  _u64              adjusted = (d < 0) ? d + data_.size() : d;
+arch::tensor<_u64> argsort(const arch::tensor<_Tp>& t, _u64 d, bool ascending)
+{
+  typename arch::tensor<_Tp>::container_type& data_    = t.storage_();
+  _u64                                        adjusted = (d < 0) ? d + data_.size() : d;
 
   if (adjusted != 0)
   {
@@ -217,7 +220,7 @@ tensor<_u64> argsort(const tensor<_Tp>& t, _u64 d, bool ascending) {
   std::sort(indices.__value_.begin(), indices.__value_.end(),
             [&](_u64 a, _u64 b) { return ascending ? data_[a] < data_[b] : data_[a] > data_[b]; });
 
-  return tensor<_u64>(std::move(indices));
+  return arch::tensor<_u64>(std::move(indices));
 }
 
 }

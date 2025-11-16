@@ -3,10 +3,11 @@
 #include "tensor.hpp"
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::matmul(const tensor& other) const {
-  static_assert(internal::types::has_times_operator_v<value_type>,
+arch::tensor<_Tp> arch::tensor<_Tp>::matmul(const tensor& other) const
+{
+  static_assert(internal::concepts::has_times_operator_v<value_type>,
                 "Error: value_type must support multiplication (*) for matmul");
-  static_assert(internal::types::has_plus_operator_v<value_type>,
+  static_assert(internal::concepts::has_plus_operator_v<value_type>,
                 "Error: value_type must support addition (+) for matmul");
 
   if (this->n_dims() < 2 || other.n_dims() < 2)
@@ -55,13 +56,13 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& other) const {
   }
 
   shape_type     result_shape = {h, w1};
-  container_type result_data(h * w1, value_type(0));
+  container_type result_data(h * w1, value_type(0.0f));
 
   for (int64_t i = 0; i < h; ++i)
   {
     for (int64_t j = 0; j < w1; ++j)
     {
-      value_type sum = value_type(0);
+      value_type sum = value_type(0.0f);
 
       for (int64_t k = 0; k < w; ++k)
       {
@@ -72,5 +73,5 @@ tensor<_Tp> tensor<_Tp>::matmul(const tensor& other) const {
     }
   }
 
-  return tensor<_Tp>(std::move(result_shape), std::move(result_data));
+  return arch::tensor<_Tp>(std::move(result_shape), std::move(result_data));
 }

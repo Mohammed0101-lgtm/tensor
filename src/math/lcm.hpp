@@ -7,7 +7,8 @@
 inline int64_t __lcm(const int64_t a, const int64_t b) { return (a * b) / std::gcd(a, b); }
 
 template<class _Tp>
-inline typename tensor<_Tp>::index_type tensor<_Tp>::lcm() const {
+inline typename arch::tensor<_Tp>::index_type arch::tensor<_Tp>::lcm() const
+{
   if (!std::is_arithmetic_v<value_type>)
   {
     throw error::type_error("Type must be arithmetic");
@@ -25,7 +26,8 @@ inline typename tensor<_Tp>::index_type tensor<_Tp>::lcm() const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::lcm(const tensor& other) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::lcm(const tensor& other) const
+{
   if (this->empty())
   {
     return self({0});

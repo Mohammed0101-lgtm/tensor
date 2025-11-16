@@ -15,24 +15,32 @@ struct Shape
   shape_type __value_;
   Strides    __strides_;
 
-  Shape() {
+  Shape()
+  {
     __value_   = shape_type();
     __strides_ = Strides();
   }
 
   Shape(const shape_type sh) noexcept :
       __value_(sh),
-      __strides_(sh) {}
+      __strides_(sh)
+  {
+  }
 
   Shape(std::initializer_list<index> list) noexcept :
       __value_(list),
-      __strides_(__value_) {}
+      __strides_(__value_)
+  {
+  }
 
   explicit Shape(const std::size_t size) noexcept :
-      __value_(size) {}
+      __value_(size)
+  {
+  }
 
 
-  index size(const index dim) const {
+  index size(const index dim) const
+  {
     if (dim >= __value_.size())
     {
       throw error::shape_error("Dimension out of range");
@@ -54,7 +62,8 @@ struct Shape
 
   index flatten_size() const { return compute_size(); }
 
-  bool operator==(const Shape& other) const {
+  bool operator==(const Shape& other) const
+  {
     return this->__value_ == other.__value_ && this->__strides_ == other.__strides_;
   }
 
@@ -64,7 +73,8 @@ struct Shape
 
   bool empty() const { return __value_.empty(); }
 
-  bool equal(const Shape& other) const {
+  bool equal(const Shape& other) const
+  {
     std::size_t size_x = size();
     std::size_t size_y = other.size();
 
@@ -93,7 +103,8 @@ struct Shape
 
   void compute_strides() noexcept { __strides_.compute_strides(__value_); }
 
-  index compute_index(const shape_type& idx) const {
+  index compute_index(const shape_type& idx) const
+  {
     if (idx.size() != __value_.size())
     {
       throw error::index_error("compute_index : input indices does not match the tensor shape");
@@ -111,7 +122,8 @@ struct Shape
   }
 
 
-  inline std::size_t computeStride(std::size_t dimension, const shape::Shape& shape) const noexcept {
+  inline std::size_t computeStride(std::size_t dimension, const shape::Shape& shape) const noexcept
+  {
     std::size_t stride = 1;
 
     for (const auto& elem : shape.__value_)
@@ -125,7 +137,8 @@ struct Shape
   // implicit conversion to std::vector<uint64_t> needed
 
  private:
-  int compute_size() const {
+  int compute_size() const
+  {
     int size = 1;
 
     for (const auto& dim : __value_)

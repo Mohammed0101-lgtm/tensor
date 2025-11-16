@@ -5,13 +5,14 @@
 
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::log2_() {
+arch::tensor<_Tp>& arch::tensor<_Tp>::log2_()
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::log2_(*this);
   }
@@ -32,7 +33,8 @@ tensor<_Tp>& tensor<_Tp>::log2_() {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::log2() const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::log2() const
+{
   if (this->empty())
   {
     return self({0});

@@ -6,7 +6,8 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp> cross_product(const tensor<_Tp>& t, const tensor<_Tp>& other) {
+arch::tensor<_Tp> cross_product(const arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
@@ -22,22 +23,23 @@ tensor<_Tp> cross_product(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Cross product can only be performed on 3-element vectors");
   }
 
-  tensor<_Tp>       ret({3});
-  std::vector<_Tp>& data_    = t.storage_();
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  neon_type<_Tp>    a        = neon_load<_Tp>(data_.data());
-  neon_type<_Tp>    b        = neon_load<_Tp>(other.storage().data());
-  neon_type<_Tp>    a_yzx    = neon_ext<_Tp>(a, a, 1);
-  neon_type<_Tp>    b_yzx    = neon_ext<_Tp>(b, b, 1);
-  neon_type<_Tp>    result   = neon_sub<_Tp>(neon_mul<_Tp>(a_yzx, b), neon_mul<_Tp>(a, b_yzx));
-  result                     = neon_ext(result, result, 3);
+  arch::tensor<_Tp>                           ret({3});
+  typename arch::tensor<_Tp>::container_type& data_    = t.storage_();
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  neon_type<_Tp>                              a        = neon_load<_Tp>(data_.data());
+  neon_type<_Tp>                              b        = neon_load<_Tp>(other.storage().data());
+  neon_type<_Tp>                              a_yzx    = neon_ext<_Tp>(a, a, 1);
+  neon_type<_Tp>                              b_yzx    = neon_ext<_Tp>(b, b, 1);
+  neon_type<_Tp>                              result = neon_sub<_Tp>(neon_mul<_Tp>(a_yzx, b), neon_mul<_Tp>(a, b_yzx));
+  result                                             = neon_ext(result, result, 3);
   neon_store<_Tp>(ret.storage().data(), result);
 
   return ret;
 }
 
 template<class _Tp>
-tensor<_Tp> dot(const tensor<_Tp>& t, const tensor<_Tp>& other) {
+arch::tensor<_Tp> dot(const arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
@@ -56,12 +58,12 @@ tensor<_Tp> dot(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     }
   }
 
-  std::vector<_Tp>& data_      = t.storage_();
-  const _Tp*        this_data  = data_.data();
-  const _Tp*        other_data = other.storage().data();
-  const std::size_t size       = data_.size();
-  _Tp               ret        = 0;
-  const _u64        simd_end   = data_.size() - (data_.size() % t.simd_width);
+  typename arch::tensor<_Tp>::container_type& data_      = t.storage_();
+  const _Tp*                                  this_data  = data_.data();
+  const _Tp*                                  other_data = other.storage().data();
+  const std::size_t                           size       = data_.size();
+  _Tp                                         ret        = 0;
+  const _u64                                  simd_end   = data_.size() - (data_.size() % t.simd_width);
 
   if constexpr (std::is_floating_point_v<_Tp>)
   {

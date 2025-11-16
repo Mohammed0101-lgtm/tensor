@@ -6,16 +6,17 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp>& sigmoid_(tensor<_Tp>& t) {
+arch::tensor<_Tp>& sigmoid_(arch::tensor<_Tp>& t)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  using neon_type         = typename std::conditional<std::is_same_v<_Tp, _f32>, neon_f32, void>::type;
-  const _u64 simd_end     = data_.size() - (data_.size() % t.simd_width);
-  _u64       i            = 0;
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  using neon_type     = typename std::conditional<std::is_same_v<_Tp, _f32>, neon_f32, void>::type;
+  const _u64 simd_end = data_.size() - (data_.size() % t.simd_width);
+  _u64       i        = 0;
 
   if constexpr (std::is_same_v<_Tp, _f32>)
   {

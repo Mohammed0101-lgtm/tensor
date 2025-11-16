@@ -1,8 +1,8 @@
 #pragma once
 
 #include "error.hpp"
-#include <vector>
 #include <iostream>
+#include <vector>
 
 
 namespace shape {
@@ -16,7 +16,8 @@ struct Strides
 
   Strides() { __value_ = strides_type(); }
 
-  Strides(const std::vector<index>& shape) {
+  Strides(const std::vector<index>& shape)
+  {
     /*
          if (shape.empty())
          {
@@ -40,9 +41,12 @@ struct Strides
   }
 
   Strides(const Strides& other) noexcept :
-      __value_(other.__value_) {}
+      __value_(other.__value_)
+  {
+  }
 
-  Strides& operator=(const Strides& other) noexcept {
+  Strides& operator=(const Strides& other) noexcept
+  {
     if (this != &other)
     {
       __value_ = other.__value_;
@@ -61,7 +65,8 @@ struct Strides
 
   index n_dims() const noexcept { return __value_.size(); }
 
-  void compute_strides(const std::vector<index>& shape_) noexcept {
+  void compute_strides(const std::vector<index>& shape_) noexcept
+  {
     if (shape_.empty())
     {
       __value_ = strides_type();

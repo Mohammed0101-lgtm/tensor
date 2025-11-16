@@ -6,7 +6,8 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-double mean(const tensor<_Tp>& t) {
+double mean(const arch::tensor<_Tp>& t)
+{
   double m = 0.0;
 
   if (t.empty())
@@ -14,10 +15,10 @@ double mean(const tensor<_Tp>& t) {
     return m;
   }
 
-  std::vector<_Tp>& data_    = t.storage_();
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  neon_type<_Tp>    sum_vec  = neon_dup<_Tp>(_Tp(0.0f));
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_    = t.storage_();
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  neon_type<_Tp>                              sum_vec  = neon_dup<_Tp>(_Tp(0.0f));
+  _u64                                        i        = 0;
 
   for (; i < simd_end; i += t.simd_width)
   {

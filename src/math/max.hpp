@@ -3,7 +3,8 @@
 #include "tensor.hpp"
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::fmax(const tensor& other) const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::fmax(const tensor& other) const
+{
   if (this->empty())
   {
     return self({0});
@@ -15,7 +16,8 @@ inline tensor<_Tp> tensor<_Tp>::fmax(const tensor& other) const {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::fmax(const value_type value) const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::fmax(const value_type value) const
+{
   if (this->empty())
   {
     return self({0});
@@ -27,13 +29,14 @@ inline tensor<_Tp> tensor<_Tp>::fmax(const value_type value) const {
 }
 
 template<class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::fmax_(const value_type value) {
+inline arch::tensor<_Tp>& arch::tensor<_Tp>::fmax_(const value_type value)
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::fmax_(*this, value);
   }
@@ -54,13 +57,14 @@ inline tensor<_Tp>& tensor<_Tp>::fmax_(const value_type value) {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::fmax_(const tensor& other) {
+arch::tensor<_Tp>& arch::tensor<_Tp>::fmax_(const tensor& other)
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::fmax_(*this, other);
   }
@@ -87,7 +91,8 @@ tensor<_Tp>& tensor<_Tp>::fmax_(const tensor& other) {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::maximum(const tensor& other) const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::maximum(const tensor& other) const
+{
   if (this->empty())
   {
     return self({0});
@@ -99,7 +104,8 @@ inline tensor<_Tp> tensor<_Tp>::maximum(const tensor& other) const {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::maximum(const_reference value) const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::maximum(const_reference value) const
+{
   if (this->empty())
   {
     return self({0});
@@ -111,13 +117,14 @@ inline tensor<_Tp> tensor<_Tp>::maximum(const_reference value) const {
 }
 
 template<class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::maximum_(const tensor& other) {
+inline arch::tensor<_Tp>& arch::tensor<_Tp>::maximum_(const tensor& other)
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::maximum_(*this, other);
   }
@@ -139,13 +146,14 @@ inline tensor<_Tp>& tensor<_Tp>::maximum_(const tensor& other) {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::maximum_(const value_type value) {
+arch::tensor<_Tp>& arch::tensor<_Tp>::maximum_(const value_type value)
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::maximum_(*this, value);
   }

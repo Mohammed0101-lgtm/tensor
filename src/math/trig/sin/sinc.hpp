@@ -5,13 +5,14 @@
 
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::sinc_() {
+arch::tensor<_Tp>& arch::tensor<_Tp>::sinc_()
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::sinc_(*this);
   }
@@ -34,7 +35,8 @@ tensor<_Tp>& tensor<_Tp>::sinc_() {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::sinc() const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::sinc() const
+{
   if (this->empty())
   {
     return self({0});

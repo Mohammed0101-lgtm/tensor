@@ -3,7 +3,8 @@
 #include "tensor.hpp"
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::sigmoid() const {
+arch::tensor<_Tp> arch::tensor<_Tp>::sigmoid() const
+{
   if (this->empty())
   {
     return self({0});
@@ -15,7 +16,8 @@ tensor<_Tp> tensor<_Tp>::sigmoid() const {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::sigmoid_() {
+arch::tensor<_Tp>& arch::tensor<_Tp>::sigmoid_()
+{
   if (!std::is_arithmetic_v<value_type>)
   {
     throw error::type_error("Type must be arithmetic");

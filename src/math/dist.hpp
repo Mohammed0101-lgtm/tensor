@@ -5,7 +5,8 @@
 
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::dist(const tensor& other) const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::dist(const tensor& other) const
+{
   if (this->empty())
   {
     return self({0});
@@ -17,7 +18,8 @@ inline tensor<_Tp> tensor<_Tp>::dist(const tensor& other) const {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::dist(const value_type value) const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::dist(const value_type value) const
+{
   if (this->empty())
   {
     return self({0});
@@ -29,13 +31,14 @@ inline tensor<_Tp> tensor<_Tp>::dist(const value_type value) const {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::dist_(const tensor& other) {
+arch::tensor<_Tp>& arch::tensor<_Tp>::dist_(const tensor& other)
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::dist_(*this, other);
   }
@@ -50,7 +53,7 @@ tensor<_Tp>& tensor<_Tp>::dist_(const tensor& other) {
     throw error::shape_error("Tensors shapes must be equal");
   }
 
-  if constexpr (!internal::types::has_minus_operator_v<value_type>)
+  if constexpr (!internal::concepts::has_minus_operator_v<value_type>)
   {
     throw error::operator_error("Value type must have a minus operator");
   }
@@ -67,13 +70,14 @@ tensor<_Tp>& tensor<_Tp>::dist_(const tensor& other) {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::dist_(const value_type value) {
+arch::tensor<_Tp>& arch::tensor<_Tp>::dist_(const value_type value)
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::dist_(*this, value);
   }
@@ -83,7 +87,7 @@ tensor<_Tp>& tensor<_Tp>::dist_(const value_type value) {
     throw error::type_error("Type must be arithmetic");
   }
 
-  if constexpr (!internal::types::has_minus_operator_v<value_type>)
+  if constexpr (!internal::concepts::has_minus_operator_v<value_type>)
   {
     throw error::operator_error("Value type must have a minus operator");
   }

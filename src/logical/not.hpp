@@ -5,7 +5,8 @@
 
 
 template<class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::logical_not_() {
+inline arch::tensor<_Tp>& arch::tensor<_Tp>::logical_not_()
+{
   if (this->empty())
   {
     return *this;
@@ -17,13 +18,14 @@ inline tensor<_Tp>& tensor<_Tp>::logical_not_() {
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::logical_not() const {
+arch::tensor<bool> arch::tensor<_Tp>::logical_not() const
+{
   if (this->empty())
   {
-    return tensor<bool>({0});
+    return arch::tensor<bool>({0});
   }
 
-  tensor<bool> ret = bool_();
+  arch::tensor<bool> ret = bool_();
   ret.logical_not_();
   return ret;
 }

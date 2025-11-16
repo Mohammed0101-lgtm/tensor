@@ -1,5 +1,6 @@
 #pragma once
 
+#include "concepts.hpp"
 #include "tensor.hpp"
 #include "types.hpp"
 
@@ -7,8 +8,9 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<bool> equal(const tensor<_Tp>& t, const tensor<_Tp>& other) {
-  if constexpr (!internal::types::has_equal_operator_v<_Tp>)
+arch::tensor<bool> equal(const arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
+  if constexpr (!internal::concepts::has_equal_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have equal to operator");
   }
@@ -18,10 +20,10 @@ tensor<bool> equal(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Tensors shapes must be equal");
   }
 
-  std::vector<_Tp>& data_    = t.storage_();
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  std::vector<bool> ret(data_.size());
-  _u64              i = 0;
+  typename arch::tensor<_Tp>::container_type& data_    = t.storage_();
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  std::vector<bool>                           ret(data_.size());
+  _u64                                        i = 0;
 
   for (; i < simd_end; i += t.simd_width)
   {
@@ -42,21 +44,22 @@ tensor<bool> equal(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     ret[i] = (data_[i] == other[i]);
   }
 
-  return tensor<bool>(t.shape(), std::move(ret));
+  return arch::tensor<bool>(t.shape(), std::move(ret));
 }
 
 template<class _Tp>
-tensor<bool> equal(const tensor<_Tp>& t, const _Tp value) {
-  if constexpr (!internal::types::has_equal_operator_v<_Tp>)
+arch::tensor<bool> equal(const arch::tensor<_Tp>& t, const _Tp value)
+{
+  if constexpr (!internal::concepts::has_equal_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have equal to operator");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  std::vector<bool> ret(data_.size());
-  const _u64        simd_end = data_.size() - (data_.size() % 4);
-  _u64              i        = 0;
-  neon_type<_Tp>    val_vec  = neon_dup<_Tp>(value);
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  std::vector<bool>                           ret(data_.size());
+  const _u64                                  simd_end = data_.size() - (data_.size() % 4);
+  _u64                                        i        = 0;
+  neon_type<_Tp>                              val_vec  = neon_dup<_Tp>(value);
 
   for (; i < simd_end; i += t.simd_width)
   {
@@ -76,12 +79,13 @@ tensor<bool> equal(const tensor<_Tp>& t, const _Tp value) {
     ret[i] = (data_[i] == value);
   }
 
-  return tensor<bool>(std::move(t.shape()), std::move(ret));
+  return arch::tensor<bool>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<bool> less_equal(const tensor<_Tp>& t, const tensor<_Tp>& other) {
-  if constexpr (!internal::types::has_less_operator_v<_Tp>)
+arch::tensor<bool> less_equal(const arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
+  if constexpr (!internal::concepts::has_less_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have less than operator");
   }
@@ -91,10 +95,10 @@ tensor<bool> less_equal(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Tensors shapes must be equal");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  std::vector<_u32> ret(data_.size());
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  std::vector<_u32>                           ret(data_.size());
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  _u64                                        i        = 0;
 
   for (; i < simd_end; i += t.simd_width)
   {
@@ -118,20 +122,21 @@ tensor<bool> less_equal(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     d[i] = (data_[i] <= other[i]);
   }
 
-  return tensor<bool>(std::move(t.shape()), std::move(d));
+  return arch::tensor<bool>(std::move(t.shape()), std::move(d));
 }
 
 template<class _Tp>
-tensor<bool> less_equal(const tensor<_Tp>& t, const _Tp value) {
-  if constexpr (!internal::types::has_less_equal_operator_v<_Tp>)
+arch::tensor<bool> less_equal(const arch::tensor<_Tp>& t, const _Tp value)
+{
+  if constexpr (!internal::concepts::has_less_equal_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have less than or equal to operator");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  std::vector<_u32> ret(data_.size());
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  std::vector<_u32>                           ret(data_.size());
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  _u64                                        i        = 0;
 
   for (; i < simd_end; i += t.simd_width)
   {
@@ -154,20 +159,21 @@ tensor<bool> less_equal(const tensor<_Tp>& t, const _Tp value) {
     to_bool[i] = ret[i] == 1 ? true : false;
   }
 
-  return tensor<bool>(std::move(t.shape()), std::move(to_bool));
+  return arch::tensor<bool>(std::move(t.shape()), std::move(to_bool));
 }
 
 template<class _Tp>
-tensor<bool> greater(const tensor<_Tp>& t, const _Tp value) {
-  if constexpr (!internal::types::has_greater_operator_v<_Tp>)
+arch::tensor<bool> greater(const arch::tensor<_Tp>& t, const _Tp value)
+{
+  if constexpr (!internal::concepts::has_greater_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have greater than operator");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  std::vector<_u32> ret(data_.size());
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  std::vector<_u32>                           ret(data_.size());
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  _u64                                        i        = 0;
 
   for (; i < simd_end; i += t.simd_width)
   {
@@ -189,12 +195,13 @@ tensor<bool> greater(const tensor<_Tp>& t, const _Tp value) {
     to_bool[j] = ret[j] == 1 ? true : false;
   }
 
-  return tensor<bool>(std::move(t.shape()), std::move(to_bool));
+  return arch::tensor<bool>(std::move(t.shape()), std::move(to_bool));
 }
 
 template<class _Tp>
-tensor<bool> greater(const tensor<_Tp>& t, const tensor<_Tp>& other) {
-  if constexpr (!internal::types::has_greater_operator_v<_Tp>)
+arch::tensor<bool> greater(const arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
+  if constexpr (!internal::concepts::has_greater_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have greater than operator");
   }
@@ -204,10 +211,10 @@ tensor<bool> greater(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Tensors must have the same shape");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  std::vector<_u32> ret(data_.size());
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  std::vector<_u32>                           ret(data_.size());
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  _u64                                        i        = 0;
 
   for (; i < simd_end; i += t.simd_width)
   {
@@ -230,20 +237,21 @@ tensor<bool> greater(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     to_bool[i] = ret[i] == 1 ? true : false;
   }
 
-  return tensor<bool>(std::move(t.shape()), std::move(to_bool));
+  return arch::tensor<bool>(std::move(t.shape()), std::move(to_bool));
 }
 
 template<class _Tp>
-tensor<bool> greater_equal(const tensor<_Tp>& t, const _Tp value) {
-  if constexpr (!internal::types::has_greater_equal_operator_v<_Tp>)
+arch::tensor<bool> greater_equal(const arch::tensor<_Tp>& t, const _Tp value)
+{
+  if constexpr (!internal::concepts::has_greater_equal_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have greater than or equal to operator");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  std::vector<_u32> ret(data_.size());
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  std::vector<_u32>                           ret(data_.size());
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  _u64                                        i        = 0;
 
   for (; i < simd_end; i += t.simd_width)
   {
@@ -265,12 +273,13 @@ tensor<bool> greater_equal(const tensor<_Tp>& t, const _Tp value) {
     to_bool[j] = ret[j] == 1 ? true : false;
   }
 
-  return tensor<bool>(std::move(t.shape()), std::move(to_bool));
+  return arch::tensor<bool>(std::move(t.shape()), std::move(to_bool));
 }
 
 template<class _Tp>
-tensor<bool> greater_equal(const tensor<_Tp>& t, const tensor<_Tp>& other) {
-  if constexpr (!internal::types::has_greater_equal_operator_v<_Tp>)
+arch::tensor<bool> greater_equal(const arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
+  if constexpr (!internal::concepts::has_greater_equal_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have greater than or equal to operator");
   }
@@ -280,10 +289,10 @@ tensor<bool> greater_equal(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Tensors shapes must be equal");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  std::vector<_u32> ret(data_.size());
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  std::vector<_u32>                           ret(data_.size());
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  _u64                                        i        = 0;
 
   for (; i < simd_end; i += t.simd_width)
   {
@@ -305,35 +314,39 @@ tensor<bool> greater_equal(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     to_bool[j] = ret[j] == 1 ? true : false;
   }
 
-  return tensor<bool>(std::move(t.shape()), std::move(to_bool));
+  return arch::tensor<bool>(std::move(t.shape()), std::move(to_bool));
 }
 
 
 template<class _Tp>
-tensor<bool> not_equal(const tensor<_Tp>& t, const _Tp value) {
-  tensor<bool> a = t.equal(value);
-  a              = a.logical_not_();
+arch::tensor<bool> not_equal(const arch::tensor<_Tp>& t, const _Tp value)
+{
+  arch::tensor<bool> a = t.equal(value);
+  a                    = a.logical_not_();
   return a;
 }
 
 template<class _Tp>
-tensor<bool> not_equal(const tensor<_Tp>& t, const tensor<_Tp>& other) {
-  tensor<bool> a = t.equal(other);
-  a              = a.logical_not_();
+arch::tensor<bool> not_equal(const arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
+  arch::tensor<bool> a = t.equal(other);
+  a                    = a.logical_not_();
   return a;
 }
 
 template<class _Tp>
-inline tensor<bool> less(const tensor<_Tp>& t, const _Tp value) {
-  tensor<bool> a = t.greater_equal(value);
-  a              = a.logical_not_();
+inline arch::tensor<bool> less(const arch::tensor<_Tp>& t, const _Tp value)
+{
+  arch::tensor<bool> a = t.greater_equal(value);
+  a                    = a.logical_not_();
   return a;
 }
 
 template<class _Tp>
-inline tensor<bool> less(const tensor<_Tp>& t, const tensor<_Tp>& other) {
-  tensor<bool> a = t.greater_equal(other);
-  a              = a.logical_not_();
+inline arch::tensor<bool> less(const arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
+  arch::tensor<bool> a = t.greater_equal(other);
+  a                    = a.logical_not_();
   return a;
 }
 

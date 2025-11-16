@@ -3,7 +3,8 @@
 #include "tensor.hpp"
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::cross_product(const tensor& other) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::cross_product(const tensor& other) const
+{
   if (this->empty() || other.empty())
   {
     throw std::invalid_argument("Cannot cross product an empty vector");
@@ -31,7 +32,8 @@ tensor<_Tp> tensor<_Tp>::cross_product(const tensor& other) const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::dot(const tensor& other) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::dot(const tensor& other) const
+{
   if (this->empty() || other.empty())
   {
     throw std::invalid_argument("Cannot dot product an empty vector");
@@ -67,7 +69,8 @@ tensor<_Tp> tensor<_Tp>::dot(const tensor& other) const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::cumprod(index_type dimension) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::cumprod(index_type dimension) const
+{
   if (dimension == -1)
   {
     container_type flat = this->storage_();

@@ -7,18 +7,19 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp> matmul(const tensor<_Tp>& t, const tensor<_Tp>& other) {
+arch::tensor<_Tp> matmul(const arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
   }
 
-  if constexpr (!internal::types::has_plus_operator_v<_Tp>)
+  if constexpr (!internal::concepts::has_plus_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have a plus operator");
   }
 
-  if constexpr (!internal::types::has_times_operator_v<_Tp>)
+  if constexpr (!internal::concepts::has_times_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have times operator");
   }
@@ -50,10 +51,10 @@ tensor<_Tp> matmul(const tensor<_Tp>& t, const tensor<_Tp>& other) {
   }
 
 
-  std::vector<_Tp>& data_  = t.storage_();
-  shape::Shape      ret_sh = {t.shape()[0], other.shape()[1]};
-  std::vector<_Tp>  ret_d(ret_sh[0] * ret_sh[1], _Tp(0));
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
+  typename arch::tensor<_Tp>::container_type& data_  = t.storage_();
+  shape::Shape                                ret_sh = {t.shape()[0], other.shape()[1]};
+  typename arch::tensor<_Tp>::container_type  ret_d(ret_sh[0] * ret_sh[1], _Tp(0));
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
 
   if constexpr (std::is_same_v<_Tp, _f32>)
   {

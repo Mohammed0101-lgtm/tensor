@@ -7,17 +7,18 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-_u64 count_nonzero(const tensor<_Tp>& t, _u64 dimension) {
+_u64 count_nonzero(const arch::tensor<_Tp>& t, _u64 dimension)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
   }
 
-  std::vector<_Tp>& data_       = t.storage_();
-  _u64              c           = 0;
-  _u64              local_count = 0;
-  _u64              i           = 0;
-  const _u64        simd_end    = data_.size() - (data_.size() % t.simd_width);
+  typename arch::tensor<_Tp>::container_type& data_       = t.storage_();
+  _u64                                        c           = 0;
+  _u64                                        local_count = 0;
+  _u64                                        i           = 0;
+  const _u64                                  simd_end    = data_.size() - (data_.size() % t.simd_width);
 
   if (dimension == 0)
   {
@@ -56,7 +57,8 @@ _u64 count_nonzero(const tensor<_Tp>& t, _u64 dimension) {
 }
 
 template<class _Tp>
-tensor<_Tp>& zeros_(tensor<_Tp>& t, shape::Shape shape_) {
+arch::tensor<_Tp>& zeros_(arch::tensor<_Tp>& t, shape::Shape shape_)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
@@ -71,8 +73,8 @@ tensor<_Tp>& zeros_(tensor<_Tp>& t, shape::Shape shape_) {
     shape_ = shape_;
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  std::size_t       s     = shape_.flatten_size();
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  std::size_t                                 s     = shape_.flatten_size();
   data_.resize(s);
   t.shape().compute_strides();
   const _u64     simd_end = s - (s % t.simd_width);
@@ -93,7 +95,8 @@ tensor<_Tp>& zeros_(tensor<_Tp>& t, shape::Shape shape_) {
 }
 
 template<class _Tp>
-tensor<_Tp>& ones_(tensor<_Tp>& t, shape::Shape shape_) {
+arch::tensor<_Tp>& ones_(arch::tensor<_Tp>& t, shape::Shape shape_)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
@@ -108,8 +111,8 @@ tensor<_Tp>& ones_(tensor<_Tp>& t, shape::Shape shape_) {
     shape_ = shape_;
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  std::size_t       s     = t.shape_.flatten_size();
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  std::size_t                                 s     = t.shape_.flatten_size();
   data_.resize(s);
   t.shape_.compute_strides();
   const _u64     simd_end = s - (s % t.simd_width);
@@ -130,7 +133,8 @@ tensor<_Tp>& ones_(tensor<_Tp>& t, shape::Shape shape_) {
 }
 
 template<class _Tp>
-tensor<_Tp>& randomize_(tensor<_Tp>& t, const shape::Shape& sh, bool bounded) {
+arch::tensor<_Tp>& randomize_(arch::tensor<_Tp>& t, const shape::Shape& sh, bool bounded)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
@@ -151,8 +155,8 @@ tensor<_Tp>& randomize_(tensor<_Tp>& t, const shape::Shape& sh, bool bounded) {
     t.shape_ = sh;
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  _u64              s     = t.shape_.flatten_size();
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  _u64                                        s     = t.shape_.flatten_size();
   data_.resize(s);
   t.shape_.compute_strides();
   std::random_device                   rd;
@@ -222,15 +226,16 @@ tensor<_Tp>& randomize_(tensor<_Tp>& t, const shape::Shape& sh, bool bounded) {
 }
 
 template<class _Tp>
-tensor<_Tp>& negative_(tensor<_Tp>& t) {
+arch::tensor<_Tp>& negative_(arch::tensor<_Tp>& t)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
   }
 
-  std::vector<_Tp>& data_    = t.storage_();
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_    = t.storage_();
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  _u64                                        i        = 0;
 
   if constexpr (std::is_same_v<_Tp, _f32>)
   {
@@ -275,14 +280,15 @@ tensor<_Tp>& negative_(tensor<_Tp>& t) {
 }
 
 template<class _Tp>
-tensor<_Tp>& fill_(tensor<_Tp>& t, const _Tp& value) {
+arch::tensor<_Tp>& fill_(arch::tensor<_Tp>& t, const _Tp& value)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  const _u64        s     = t.shape().flatten_size();
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  const _u64                                  s     = t.shape().flatten_size();
   data_.resize(s);
   t.shape_().compute_strides();
   const _u64     simd_end = s - (s % t.simd_width);
@@ -303,7 +309,8 @@ tensor<_Tp>& fill_(tensor<_Tp>& t, const _Tp& value) {
 }
 
 template<class _Tp>
-tensor<_Tp>& fill_(tensor<_Tp>& t, const tensor<_Tp>& other) {
+arch::tensor<_Tp>& fill_(arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
@@ -314,8 +321,8 @@ tensor<_Tp>& fill_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Shapes of tensors must match for fill operation");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  const _u64        s     = t.shape().flatten_size();
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  const _u64                                  s     = t.shape().flatten_size();
   data_.resize(s);
   t.shape_().compute_strides();
   const _u64 simd_end = s - (s % t.simd_width);
@@ -334,5 +341,4 @@ tensor<_Tp>& fill_(tensor<_Tp>& t, const tensor<_Tp>& other) {
 
   return t;
 }
-
 }

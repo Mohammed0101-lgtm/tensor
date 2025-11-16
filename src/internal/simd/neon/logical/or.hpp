@@ -7,7 +7,8 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp>& logical_or_(tensor<_Tp>& t, const tensor<_Tp>& other) {
+arch::tensor<_Tp>& logical_or_(arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
   if (!std::is_integral_v<_Tp>)
   {
     throw error::type_error("Cannot get the element wise not of non-integral values");
@@ -18,9 +19,9 @@ tensor<_Tp>& logical_or_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Tensors shapes must be equal");
   }
 
-  std::vector<_Tp>& data_    = t.storage_();
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_    = t.storage_();
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  _u64                                        i        = 0;
 
   if constexpr (std::is_unsigned_v<_Tp>)
   {
@@ -52,15 +53,16 @@ tensor<_Tp>& logical_or_(tensor<_Tp>& t, const tensor<_Tp>& other) {
 }
 
 template<class _Tp>
-tensor<_Tp>& logical_or_(tensor<_Tp>& t, const _Tp value) {
+arch::tensor<_Tp>& logical_or_(arch::tensor<_Tp>& t, const _Tp value)
+{
   if (!std::is_integral_v<_Tp>)
   {
     throw error::type_error("Cannot perform logical OR on non-integral values");
   }
 
-  std::vector<_Tp>& data_    = t.storage_();
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_    = t.storage_();
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  _u64                                        i        = 0;
 
   if constexpr (std::is_signed_v<_Tp> || std::is_same_v<_Tp, bool>)
   {

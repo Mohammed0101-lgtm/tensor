@@ -3,4 +3,5 @@
 #include "tensor.hpp"
 
 
-namespace internal::simd::neon {}
+namespace internal::simd::neon {
+}

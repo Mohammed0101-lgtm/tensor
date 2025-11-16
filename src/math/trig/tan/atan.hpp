@@ -5,13 +5,14 @@
 
 
 template<class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::atan_() {
+inline arch::tensor<_Tp>& arch::tensor<_Tp>::atan_()
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::atan_(*this);
   }
@@ -32,7 +33,8 @@ inline tensor<_Tp>& tensor<_Tp>::atan_() {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::atan() const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::atan() const
+{
   if (this->empty())
   {
     return self({0});

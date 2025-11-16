@@ -6,18 +6,19 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp> transpose(const tensor<_Tp>& t) {
+arch::tensor<_Tp> transpose(const arch::tensor<_Tp>& t)
+{
   if (!t.shape().equal(shape::Shape({t.shape()[0], t.shape()[1]})))
   {
     throw error::shape_error("Matrix transposition can only be done on 2D tensors");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  tensor            ret({t.shape()[1], t.shape()[0]});
-  const _u64        rows     = t.shape()[0];
-  const _u64        cols     = t.shape()[1];
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  tensor                                      ret({t.shape()[1], t.shape()[0]});
+  const _u64                                  rows     = t.shape()[0];
+  const _u64                                  cols     = t.shape()[1];
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  _u64                                        i        = 0;
 
   for (; i < rows; i += t.simd_width)
   {

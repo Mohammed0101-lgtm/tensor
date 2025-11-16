@@ -7,15 +7,16 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp>& bitwise_not_(tensor<_Tp>& t) {
+arch::tensor<_Tp>& bitwise_not_(arch::tensor<_Tp>& t)
+{
   if (!std::is_integral_v<_Tp> && !std::is_same_v<_Tp, bool>)
   {
     throw error::type_error("Cannot perform a bitwise not on non-integral value");
   }
 
-  std::vector<_Tp>& data_    = t.storage_();
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_    = t.storage_();
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  _u64                                        i        = 0;
 
   if constexpr (std::is_signed_v<_Tp>)
   {

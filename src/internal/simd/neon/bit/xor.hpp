@@ -7,16 +7,17 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp>& bitwise_xor_(tensor<_Tp>& t, const _Tp value) {
+arch::tensor<_Tp>& bitwise_xor_(arch::tensor<_Tp>& t, const _Tp value)
+{
   if (!std::is_integral_v<_Tp>)
   {
     throw error::type_error("Cannot perform a bitwise XOR on non-integral values");
   }
 
-  std::vector<_Tp>& data_    = t.storage_();
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  neon_type<_Tp>    val_vec  = neon_dup<_Tp>(value);
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_    = t.storage_();
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  neon_type<_Tp>                              val_vec  = neon_dup<_Tp>(value);
+  _u64                                        i        = 0;
 
   for (; i < simd_end; i += t.simd_width)
   {
@@ -34,7 +35,8 @@ tensor<_Tp>& bitwise_xor_(tensor<_Tp>& t, const _Tp value) {
 }
 
 template<class _Tp>
-tensor<_Tp>& bitwise_xor_(tensor<_Tp>& t, const tensor<_Tp>& other) {
+arch::tensor<_Tp>& bitwise_xor_(arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
   if (!std::is_integral_v<_Tp>)
   {
     throw error::type_error("Cannot perform a bitwise XOR on non-integral values");
@@ -45,9 +47,9 @@ tensor<_Tp>& bitwise_xor_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Tensors shapes must be equal");
   }
 
-  std::vector<_Tp>& data_    = t.storage_();
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_    = t.storage_();
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  _u64                                        i        = 0;
 
   for (; i < simd_end; i += t.simd_width)
   {

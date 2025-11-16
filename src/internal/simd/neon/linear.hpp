@@ -7,7 +7,8 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp> absolute(const tensor<_Tp>& t, const tensor<_Tp>& other) {
+arch::tensor<_Tp> absolute(const arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
@@ -23,10 +24,10 @@ tensor<_Tp> absolute(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Tensors must have the same shape");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  _u64              s     = t.storage().size();
-  std::vector<_Tp>  a(s);
-  _u64              i = 0;
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  _u64                                        s     = t.storage().size();
+  typename arch::tensor<_Tp>::container_type  a(s);
+  _u64                                        i = 0;
 
   if constexpr (std::is_floating_point_v<_Tp>)
   {
@@ -52,11 +53,12 @@ tensor<_Tp> absolute(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     a[i] = static_cast<_Tp>(std::abs(data_[i]));
   }
 
-  return tensor<_Tp>(std::move(t.shape()), std::move(a));
+  return arch::tensor<_Tp>(std::move(t.shape()), std::move(a));
 }
 
 template<class _Tp>
-tensor<_Tp> absolute_(const tensor<_Tp>& t, const tensor<_Tp>& other) {
+arch::tensor<_Tp> absolute_(const arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
@@ -67,10 +69,10 @@ tensor<_Tp> absolute_(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     return t;
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  _u64              s     = t.storage().size();
-  std::vector<_Tp>  a(s);
-  _u64              i = 0;
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  _u64                                        s     = t.storage().size();
+  typename arch::tensor<_Tp>::container_type  a(s);
+  _u64                                        i = 0;
 
   if constexpr (std::is_floating_point_v<_Tp>)
   {

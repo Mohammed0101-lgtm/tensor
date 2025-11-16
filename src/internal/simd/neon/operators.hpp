@@ -1,13 +1,16 @@
 #pragma once
 
+#include "concepts.hpp"
 #include "tensor.hpp"
+#include "internal/simd/neon/alias.hpp"
 
 
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp> operator_plus(const tensor<_Tp>& t, const tensor<_Tp>& other) {
-  if constexpr (!types::has_plus_operator_v<_Tp>)
+arch::tensor<_Tp> operator_plus(const arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
+  if constexpr (!internal::concepts::has_plus_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have a plus operator");
   }
@@ -17,11 +20,11 @@ tensor<_Tp> operator_plus(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Cannot add two tensors with different shapes");
   }
 
-  const std::vector<_Tp>& a        = t.storage_();
-  const std::vector<_Tp>& b        = other.storage_();
-  const std::size_t       size     = a.size();
-  const _u64              simd_end = size - (size % t.simd_width);
-  std::vector<_Tp>        ret(size);
+  const typename arch::tensor<_Tp>::container_type& a        = t.storage_();
+  const typename arch::tensor<_Tp>::container_type& b        = other.storage_();
+  const std::size_t                                 size     = a.size();
+  const _u64                                        simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type        ret(size);
 
   _Tp* __restrict r_ptr       = ret.data();
   const _Tp* __restrict a_ptr = a.data();
@@ -42,12 +45,13 @@ tensor<_Tp> operator_plus(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     r_ptr[i] = a_ptr[i] + b_ptr[i];
   }
 
-  return tensor<_Tp>(std::move(t.shape()), std::move(ret));
+  return arch::tensor<_Tp>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<_Tp>& operator_plus_eq(tensor<_Tp>& t, const tensor<_Tp>& other) {
-  if constexpr (!types::has_plus_operator_v<_Tp>)
+arch::tensor<_Tp>& operator_plus_eq(arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
+  if constexpr (!internal::concepts::has_plus_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have a plus operator");
   }
@@ -57,10 +61,10 @@ tensor<_Tp>& operator_plus_eq(tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Cannot add two tensors with different shapes");
   }
 
-  std::vector<_Tp>&       a        = t.storage_();
-  const std::vector<_Tp>& b        = other.storage_();
-  const std::size_t       size     = a.size();
-  const _u64              simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type&       a        = t.storage_();
+  const typename arch::tensor<_Tp>::container_type& b        = other.storage_();
+  const std::size_t                                 size     = a.size();
+  const _u64                                        simd_end = size - (size % t.simd_width);
 
   _Tp* __restrict a_ptr       = a.data();
   const _Tp* __restrict b_ptr = b.data();
@@ -84,17 +88,18 @@ tensor<_Tp>& operator_plus_eq(tensor<_Tp>& t, const tensor<_Tp>& other) {
 }
 
 template<class _Tp>
-tensor<_Tp> operator_plus(const tensor<_Tp>& t, const _Tp value) {
-  if constexpr (!types::has_plus_operator_v<_Tp>)
+arch::tensor<_Tp> operator_plus(const arch::tensor<_Tp>& t, const _Tp value)
+{
+  if constexpr (!internal::concepts::has_plus_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have a plus operator");
   }
 
-  const std::vector<_Tp>& a        = t.storage_();
-  const std::size_t       size     = a.size();
-  const _u64              simd_end = size - (size % t.simd_width);
-  std::vector<_Tp>        ret(size);
-  neon_type<_Tp>          v_vec = neon_dup<_Tp>(value);
+  const typename arch::tensor<_Tp>::container_type& a        = t.storage_();
+  const std::size_t                                 size     = a.size();
+  const _u64                                        simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type        ret(size);
+  neon_type<_Tp>                                    v_vec = neon_dup<_Tp>(value);
 
   _Tp* __restrict r_ptr       = ret.data();
   const _Tp* __restrict a_ptr = a.data();
@@ -113,20 +118,21 @@ tensor<_Tp> operator_plus(const tensor<_Tp>& t, const _Tp value) {
     r_ptr[i] = a_ptr[i] + value;
   }
 
-  return tensor<_Tp>(std::move(t.shape()), std::move(ret));
+  return arch::tensor<_Tp>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<_Tp>& operator_plus_eq(tensor<_Tp>& t, const _Tp& value) {
-  if constexpr (!types::has_equal_operator_v<_Tp>)
+arch::tensor<_Tp>& operator_plus_eq(arch::tensor<_Tp>& t, const _Tp& value)
+{
+  if constexpr (!internal::concepts::has_equal_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have a plus operator");
   }
 
-  std::vector<_Tp>& a        = t.storage_();
-  std::size_t       size     = a.size();
-  const _u64        simd_end = size - (size % t.simd_width);
-  neon_type<_Tp>    v_vec    = neon_dup<_Tp>(value);
+  typename arch::tensor<_Tp>::container_type& a        = t.storage_();
+  std::size_t                                 size     = a.size();
+  const _u64                                  simd_end = size - (size % t.simd_width);
+  neon_type<_Tp>                              v_vec    = neon_dup<_Tp>(value);
 
   _Tp* __restrict a_ptr = a.data();
 
@@ -148,8 +154,9 @@ tensor<_Tp>& operator_plus_eq(tensor<_Tp>& t, const _Tp& value) {
 }
 
 template<class _Tp>
-tensor<_Tp> operator_minus(const tensor<_Tp>& t, const tensor<_Tp>& other) {
-  if constexpr (!types::has_minus_operator_v<_Tp>)
+arch::tensor<_Tp> operator_minus(const arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
+  if constexpr (!internal::concepts::has_minus_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have a minus operator");
   }
@@ -159,11 +166,11 @@ tensor<_Tp> operator_minus(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Cannot add two tensors with different shapes");
   }
 
-  std::vector<_Tp>& a        = t.storage_();
-  std::vector<_Tp>& b        = other.storage_();
-  std::size_t       size     = a.size();
-  const _u64        simd_end = size - (size % t.simd_width);
-  std::vector<_Tp>  ret(size);
+  typename arch::tensor<_Tp>::container_type& a        = t.storage_();
+  typename arch::tensor<_Tp>::container_type& b        = other.storage_();
+  std::size_t                                 size     = a.size();
+  const _u64                                  simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type  ret(size);
 
   _Tp* __restrict r_ptr       = ret.data();
   const _Tp* __restrict a_ptr = a.data();
@@ -184,20 +191,21 @@ tensor<_Tp> operator_minus(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     r_ptr[i] = a_ptr[i] - b_ptr[i];
   }
 
-  return tensor<_Tp>(std::move(t.shape()), std::move(ret));
+  return arch::tensor<_Tp>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<_Tp> operator_minus(const tensor<_Tp>& t, const _Tp value) {
-  if constexpr (!types::has_minus_operator_v<_Tp>)
+arch::tensor<_Tp> operator_minus(const arch::tensor<_Tp>& t, const _Tp value)
+{
+  if constexpr (!internal::concepts::has_minus_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have a minus operator");
   }
 
-  std::vector<_Tp>& data_    = t.storage_();
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  std::vector<_Tp>  ret(data_.size());
-  neon_type<_Tp>    val_vec = neon_dup<_Tp>(value);
+  typename arch::tensor<_Tp>::container_type& data_    = t.storage_();
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  typename arch::tensor<_Tp>::container_type  ret(data_.size());
+  neon_type<_Tp>                              val_vec = neon_dup<_Tp>(value);
 
 #pragma omp parallel for
   for (std::size_t i = 0; i < simd_end; i += t.simd_width)
@@ -213,14 +221,15 @@ tensor<_Tp> operator_minus(const tensor<_Tp>& t, const _Tp value) {
     ret[i] = data_[i] - value;
   }
 
-  return tensor<_Tp>(std::move(t.shape()), std::move(ret));
+  return arch::tensor<_Tp>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<_Tp>& operator_minus_eq(tensor<_Tp>& t, const tensor<_Tp>& other) {
+arch::tensor<_Tp>& operator_minus_eq(arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
   using namespace internal;
 
-  if constexpr (!types::has_minus_operator_v<_Tp>)
+  if constexpr (!internal::concepts::has_minus_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have a minus operator");
   }
@@ -230,10 +239,10 @@ tensor<_Tp>& operator_minus_eq(tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Tensors shapes must be equal");
   }
 
-  std::vector<_Tp>&       a        = t.storage_();
-  const std::vector<_Tp>& b        = other.storage_();
-  const std::size_t       size     = a.size();
-  const _u64              simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type&       a        = t.storage_();
+  const typename arch::tensor<_Tp>::container_type& b        = other.storage_();
+  const std::size_t                                 size     = a.size();
+  const _u64                                        simd_end = size - (size % t.simd_width);
 
   _Tp* __restrict a_ptr       = a.data();
   const _Tp* __restrict b_ptr = b.data();
@@ -257,10 +266,11 @@ tensor<_Tp>& operator_minus_eq(tensor<_Tp>& t, const tensor<_Tp>& other) {
 }
 
 template<class _Tp>
-tensor<_Tp> operator_times(const tensor<_Tp>& t, const tensor<_Tp>& other) {
+arch::tensor<_Tp> operator_times(const arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
   using namespace internal;
 
-  if constexpr (!types::has_times_operator_v<_Tp>)
+  if constexpr (!internal::concepts::has_times_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have a times operator");
   }
@@ -270,12 +280,12 @@ tensor<_Tp> operator_times(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Tensors shapes must be equal");
   }
 
-  const std::vector<_Tp>& a        = t.storage_();
-  const std::vector<_Tp>& b        = other.storage_();
-  const std::size_t       size     = a.size();
-  const std::size_t       simd_end = size - (size % t.simd_width);
+  const typename arch::tensor<_Tp>::container_type& a        = t.storage_();
+  const typename arch::tensor<_Tp>::container_type& b        = other.storage_();
+  const std::size_t                                 size     = a.size();
+  const std::size_t                                 simd_end = size - (size % t.simd_width);
 
-  std::vector<_Tp> result(size);
+  typename arch::tensor<_Tp>::container_type result(size);
 
   _Tp* __restrict r_ptr       = result.data();
   const _Tp* __restrict a_ptr = a.data();
@@ -296,13 +306,13 @@ tensor<_Tp> operator_times(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     r_ptr[i] = a_ptr[i] * b_ptr[i];
   }
 
-  return tensor<_Tp>(std::move(t.shape()), std::move(result));
+  return arch::tensor<_Tp>(std::move(t.shape()), std::move(result));
 }
 
 /*
 template<class _Tp>
-tensor<_Tp> operator_times(const tensor<_Tp>&   t, const tensor<_Tp>&   other) {
-    if constexpr (!types::has_times_operator_v<_Tp>)
+arch::tensor<_Tp> operator_times(const arch::tensor<_Tp>&   t, const arch::tensor<_Tp>&   other) {
+    if constexpr (!internal::concepts::has_times_operator_v<_Tp>)
     {
         throw error::operator_error("Value type must have a times operator");
     }
@@ -334,15 +344,16 @@ tensor<_Tp> operator_times(const tensor<_Tp>&   t, const tensor<_Tp>&   other) {
     }
     
     // Move result into tensor without copy
-    std::vector<_Tp> vec(out, out + size);
+    typename arch::tensor<_Tp>::container_type vec(out, out + size);
     std::free(out);  // don't forget to free it
-    return tensor<_Tp>(t.shape(), std::move(vec));
+    return arch::tensor<_Tp>(t.shape(), std::move(vec));
 }
 */
 
 template<class _Tp>
-tensor<_Tp>& operator_times_eq(tensor<_Tp>& t, const tensor<_Tp>& other) {
-  if constexpr (!types::has_minus_operator_v<_Tp>)
+arch::tensor<_Tp>& operator_times_eq(arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
+  if constexpr (!internal::concepts::has_minus_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have a minus operator");
   }
@@ -352,10 +363,10 @@ tensor<_Tp>& operator_times_eq(tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Tensors shapes must be equal");
   }
 
-  std::vector<_Tp>& a        = t.storage_();
-  std::vector<_Tp>& b        = other.storage_();
-  std::size_t       size     = a.size();
-  const _u64        simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type& a        = t.storage_();
+  typename arch::tensor<_Tp>::container_type& b        = other.storage_();
+  std::size_t                                 size     = a.size();
+  const _u64                                  simd_end = size - (size % t.simd_width);
 
   _Tp* __restrict a_ptr       = a.data();
   const _Tp* __restrict b_ptr = b.data();
@@ -379,16 +390,17 @@ tensor<_Tp>& operator_times_eq(tensor<_Tp>& t, const tensor<_Tp>& other) {
 }
 
 template<class _Tp>
-tensor<_Tp>& operator_times_eq(tensor<_Tp>& t, const _Tp& value) {
-  if constexpr (!types::has_minus_operator_v<_Tp>)
+arch::tensor<_Tp>& operator_times_eq(arch::tensor<_Tp>& t, const _Tp& value)
+{
+  if constexpr (!internal::concepts::has_minus_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have a minus operator");
   }
 
-  std::vector<_Tp>& a        = t.storage_();
-  std::size_t       size     = a.size();
-  const _u64        simd_end = size - (size % t.simd_width);
-  neon_type<_Tp>    v_vec    = neon_dup<_Tp>(value);
+  typename arch::tensor<_Tp>::container_type& a        = t.storage_();
+  std::size_t                                 size     = a.size();
+  const _u64                                  simd_end = size - (size % t.simd_width);
+  neon_type<_Tp>                              v_vec    = neon_dup<_Tp>(value);
 
   _Tp* __restrict a_ptr = a.data();
 
@@ -410,16 +422,17 @@ tensor<_Tp>& operator_times_eq(tensor<_Tp>& t, const _Tp& value) {
 }
 
 template<class _Tp>
-tensor<_Tp>& operator_minus_eq(tensor<_Tp>& t, const _Tp& value) {
-  if constexpr (!types::has_minus_operator_v<_Tp>)
+arch::tensor<_Tp>& operator_minus_eq(arch::tensor<_Tp>& t, const _Tp& value)
+{
+  if constexpr (!internal::concepts::has_minus_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have a minus operator");
   }
 
-  std::vector<_Tp>& a        = t.storage_();
-  std::size_t       size     = a.size();
-  const _u64        simd_end = size - (size % t.simd_width);
-  neon_type<_Tp>    v_vec    = neon_dup<_Tp>(value);
+  typename arch::tensor<_Tp>::container_type& a        = t.storage_();
+  std::size_t                                 size     = a.size();
+  const _u64                                  simd_end = size - (size % t.simd_width);
+  neon_type<_Tp>                              v_vec    = neon_dup<_Tp>(value);
 
   _Tp* __restrict a_ptr = a.data();
 
@@ -441,13 +454,14 @@ tensor<_Tp>& operator_minus_eq(tensor<_Tp>& t, const _Tp& value) {
 }
 
 template<class _Tp>
-tensor<_Tp> operator_divide(const tensor<_Tp>& t, const _Tp& value) {
+arch::tensor<_Tp> operator_divide(const arch::tensor<_Tp>& t, const _Tp& value)
+{
   if (t.empty())
   {
-    return tensor<_Tp>(std::move(t.shape()), {});
+    return arch::tensor<_Tp>(std::move(t.shape()), {});
   }
 
-  if (!types::has_divide_operator_v<_Tp>)
+  if (!internal::concepts::has_divide_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have a divide operator");
   }
@@ -457,11 +471,11 @@ tensor<_Tp> operator_divide(const tensor<_Tp>& t, const _Tp& value) {
     throw std::logic_error("Cannot divide by zero : undefined operation");
   }
 
-  std::vector<_Tp>& a        = t.storage_();
-  std::size_t       size     = a.size();
-  neon_type<_Tp>    v_vec    = neon_dup<_Tp>(value);
-  const _u64        simd_end = size - (size % t.simd_width);
-  std::vector<_Tp>  ret(size);
+  typename arch::tensor<_Tp>::container_type& a        = t.storage_();
+  std::size_t                                 size     = a.size();
+  neon_type<_Tp>                              v_vec    = neon_dup<_Tp>(value);
+  const _u64                                  simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type  ret(size);
 
   const _Tp* __restrict a_ptr = a.data();
   _Tp* __restrict r_ptr       = ret.data();
@@ -478,17 +492,18 @@ tensor<_Tp> operator_divide(const tensor<_Tp>& t, const _Tp& value) {
     r_ptr[i] = a_ptr[i] / value;
   }
 
-  return tensor<_Tp>(std::move(t.shape()), std::move(ret));
+  return arch::tensor<_Tp>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<_Tp> operator_divide(const tensor<_Tp>& t, const tensor<_Tp>& other) {
+arch::tensor<_Tp> operator_divide(const arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
   if (t.empty())
   {
-    return tensor<_Tp>(std::move(t.shape()), {});
+    return arch::tensor<_Tp>(std::move(t.shape()), {});
   }
 
-  if (!types::has_divide_operator_v<_Tp>)
+  if (!internal::concepts::has_divide_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have a divide operator");
   }
@@ -503,11 +518,11 @@ tensor<_Tp> operator_divide(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw std::logic_error("Cannot divide by zero : undefined operation");
   }
 
-  std::vector<_Tp>& a        = t.storage_();
-  std::vector<_Tp>& b        = other.storage_();
-  std::size_t       size     = a.size();
-  const _u64        simd_end = size - (size % t.simd_width);
-  std::vector<_Tp>  ret(size);
+  typename arch::tensor<_Tp>::container_type& a        = t.storage_();
+  typename arch::tensor<_Tp>::container_type& b        = other.storage_();
+  std::size_t                                 size     = a.size();
+  const _u64                                  simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type  ret(size);
 
   _Tp* __restrict r_ptr       = ret.data();
   const _Tp* __restrict a_ptr = a.data();
@@ -528,17 +543,18 @@ tensor<_Tp> operator_divide(const tensor<_Tp>& t, const tensor<_Tp>& other) {
     r_ptr[i] = a_ptr[i] / b_ptr[i];
   }
 
-  return tensor<_Tp>(std::move(t.shape()), std::move(ret));
+  return arch::tensor<_Tp>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<_Tp>& operator_divide_eq(tensor<_Tp>& t, const _Tp& value) {
+arch::tensor<_Tp>& operator_divide_eq(arch::tensor<_Tp>& t, const _Tp& value)
+{
   if (t.empty())
   {
     return t;
   }
 
-  if (!types::has_divide_operator_v<_Tp>)
+  if (!internal::concepts::has_divide_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have a divide operator");
   }
@@ -548,11 +564,11 @@ tensor<_Tp>& operator_divide_eq(tensor<_Tp>& t, const _Tp& value) {
     throw std::logic_error("Cannot divide by zero : undefined operation");
   }
 
-  std::vector<_Tp>& a        = t.storage_();
-  std::size_t       size     = a.size();
-  const _u64        simd_end = size - (size % t.simd_width);
-  neon_type<_Tp>    v_vec    = neon_dup<_Tp>(value);
-  std::vector<_Tp>  ret(size);
+  typename arch::tensor<_Tp>::container_type& a        = t.storage_();
+  std::size_t                                 size     = a.size();
+  const _u64                                  simd_end = size - (size % t.simd_width);
+  neon_type<_Tp>                              v_vec    = neon_dup<_Tp>(value);
+  typename arch::tensor<_Tp>::container_type  ret(size);
 
   _Tp* __restrict a_ptr = a.data();
 
@@ -574,13 +590,14 @@ tensor<_Tp>& operator_divide_eq(tensor<_Tp>& t, const _Tp& value) {
 }
 
 template<class _Tp>
-tensor<_Tp>& operator_divide_eq(tensor<_Tp>& t, const tensor<_Tp>& other) {
+arch::tensor<_Tp>& operator_divide_eq(arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
   if (t.empty())
   {
     return t;
   }
 
-  if (!types::has_divide_operator_v<_Tp>)
+  if (!internal::concepts::has_divide_operator_v<_Tp>)
   {
     throw error::operator_error("Value type must have a divide operator");
   }
@@ -595,11 +612,11 @@ tensor<_Tp>& operator_divide_eq(tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw std::logic_error("Cannot divide by zero : undefined operation");
   }
 
-  std::vector<_Tp>& a        = t.storage_();
-  std::vector<_Tp>& b        = other.storage_();
-  std::size_t       size     = a.size();
-  const _u64        simd_end = size - (size % t.simd_width);
-  std::vector<_Tp>  ret(size);
+  typename arch::tensor<_Tp>::container_type& a        = t.storage_();
+  typename arch::tensor<_Tp>::container_type& b        = other.storage_();
+  std::size_t                                 size     = a.size();
+  const _u64                                  simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type  ret(size);
 
   _Tp* __restrict a_ptr       = a.data();
   const _Tp* __restrict b_ptr = other.storage_().data();
@@ -621,5 +638,4 @@ tensor<_Tp>& operator_divide_eq(tensor<_Tp>& t, const tensor<_Tp>& other) {
 
   return t;
 }
-
 }

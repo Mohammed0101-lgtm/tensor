@@ -7,7 +7,7 @@ namespace internal::simd::neon {
 
 /*
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::neon_slice(_u64                dimension,
+arch::tensor<_Tp> arch::tensor<_Tp>::neon_slice(_u64                dimension,
                                     std::optional<_u64> start,
                                     std::optional<_u64> end,
                                     _u64                step) const {

@@ -6,14 +6,15 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp>& fmod_(tensor<_Tp>& t, const _Tp value) {
+arch::tensor<_Tp>& fmod_(arch::tensor<_Tp>& t, const _Tp value)
+{
   if constexpr (!std::is_floating_point_v<_Tp>)
   {
     throw error::type_error("Type must be floating point");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  _u64              i     = 0;
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  _u64                                        i     = 0;
 
   if constexpr (std::is_floating_point_v<_Tp>)
   {
@@ -41,14 +42,15 @@ tensor<_Tp>& fmod_(tensor<_Tp>& t, const _Tp value) {
 }
 
 template<class _Tp>
-tensor<_Tp>& fmod_(tensor<_Tp>& t, const tensor<_Tp>& other) {
+arch::tensor<_Tp>& fmod_(arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
   if (!t.shape().equal(other.shape()))
   {
     throw error::shape_error("Cannot divide two tensors of different shapes : fmax");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  _u64              i     = 0;
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  _u64                                        i     = 0;
 
   if constexpr (std::is_floating_point_v<_Tp>)
   {

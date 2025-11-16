@@ -4,7 +4,8 @@
 
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::remainder(const value_type value) const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::remainder(const value_type value) const
+{
   if (this->empty())
   {
     return self({0});
@@ -16,7 +17,8 @@ inline tensor<_Tp> tensor<_Tp>::remainder(const value_type value) const {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::remainder(const tensor& other) const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::remainder(const tensor& other) const
+{
   if (this->empty())
   {
     return self({0});
@@ -28,13 +30,14 @@ inline tensor<_Tp> tensor<_Tp>::remainder(const tensor& other) const {
 }
 
 template<class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::remainder_(const value_type value) {
+inline arch::tensor<_Tp>& arch::tensor<_Tp>::remainder_(const value_type value)
+{
   if (this->empty())
   {
     return *this;
   }
   /*
-    if (internal::types::using_neon())
+    if (using_neon())
     {
         return internal::simd::neon::remainder_(*this, value);
     }
@@ -60,13 +63,14 @@ inline tensor<_Tp>& tensor<_Tp>::remainder_(const value_type value) {
 }
 
 template<class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::remainder_(const tensor& other) {
+inline arch::tensor<_Tp>& arch::tensor<_Tp>::remainder_(const tensor& other)
+{
   if (this->empty())
   {
     return *this;
   }
   /*
-    if (internal::types::using_neon())
+    if (using_neon())
     {
         return internal::simd::neon::remainder_(*this, other);
     }

@@ -4,7 +4,8 @@
 #include "../types.hpp"
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::abs() const {
+arch::tensor<_Tp> arch::tensor<_Tp>::abs() const
+{
   if (this->empty())
   {
     return self({0});
@@ -16,8 +17,9 @@ tensor<_Tp> tensor<_Tp>::abs() const {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::abs_() {
-  if (internal::types::using_neon())
+arch::tensor<_Tp>& arch::tensor<_Tp>::abs_()
+{
+  if (using_neon())
   {
     return internal::simd::neon::abs_(*this);
   }

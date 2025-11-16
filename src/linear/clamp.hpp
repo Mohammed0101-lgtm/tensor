@@ -3,7 +3,8 @@
 #include "tensor.hpp"
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::clamp_(const_reference min_val, const_reference max_val) {
+arch::tensor<_Tp>& arch::tensor<_Tp>::clamp_(const_reference min_val, const_reference max_val)
+{
   index_type      i = 0;
   container_type& a = this->storage_();
 
@@ -17,7 +18,8 @@ tensor<_Tp>& tensor<_Tp>::clamp_(const_reference min_val, const_reference max_va
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::clamp(const_reference min_val, const_reference max_val) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::clamp(const_reference min_val, const_reference max_val) const
+{
   if (this->empty())
   {
     return self({0});
@@ -29,7 +31,8 @@ tensor<_Tp> tensor<_Tp>::clamp(const_reference min_val, const_reference max_val)
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::floor() const {
+arch::tensor<_Tp> arch::tensor<_Tp>::floor() const
+{
   if (this->empty())
   {
     return self({0});
@@ -41,7 +44,8 @@ tensor<_Tp> tensor<_Tp>::floor() const {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::floor_() {
+arch::tensor<_Tp>& arch::tensor<_Tp>::floor_()
+{
   if (!std::is_floating_point_v<value_type>)
   {
     throw error::type_error("Type must be floating point");
@@ -59,7 +63,8 @@ tensor<_Tp>& tensor<_Tp>::floor_() {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::ceil_() {
+arch::tensor<_Tp>& arch::tensor<_Tp>::ceil_()
+{
   if (!std::is_floating_point_v<value_type>)
   {
     throw error::type_error("Type must be floating point");
@@ -77,7 +82,8 @@ tensor<_Tp>& tensor<_Tp>::ceil_() {
 
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::ceil() const {
+arch::tensor<_Tp> arch::tensor<_Tp>::ceil() const
+{
   if (this->empty())
   {
     return self({0});
@@ -89,21 +95,25 @@ tensor<_Tp> tensor<_Tp>::ceil() const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::clamp_min(const_reference min_val) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::clamp_min(const_reference min_val) const
+{
   return clamp(min_val);
 }
 
 template<class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::clamp_min_(const_reference min_val) {
+inline arch::tensor<_Tp>& arch::tensor<_Tp>::clamp_min_(const_reference min_val)
+{
   return clamp_(min_val);
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::clamp_max(const_reference max_val) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::clamp_max(const_reference max_val) const
+{
   return clamp(std::numeric_limits<value_type>::lowest(), max_val);
 }
 
 template<class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::clamp_max_(const_reference max_val) {
+inline arch::tensor<_Tp>& arch::tensor<_Tp>::clamp_max_(const_reference max_val)
+{
   return clamp_(std::numeric_limits<value_type>::lowest(), max_val);
 }

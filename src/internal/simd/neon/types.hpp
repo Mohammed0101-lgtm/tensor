@@ -6,7 +6,8 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_s16> int16_(const tensor<_Tp>& t) {
+arch::tensor<_s16> int16_(const arch::tensor<_Tp>& t)
+{
   if (!std::is_convertible_v<_Tp, _s16>)
   {
     throw error::type_error("Type must be convertible to 16 bit signed int");
@@ -14,13 +15,13 @@ tensor<_s16> int16_(const tensor<_Tp>& t) {
 
   if (t.empty())
   {
-    return tensor<_s16>(std::move(t.shape()));
+    return arch::tensor<_s16>(std::move(t.shape()));
   }
 
-  std::vector<_Tp>& a    = t.storage_();
-  std::size_t       size = a.size();
-  std::vector<_s16> ret(size);
-  const _u64        simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type& a    = t.storage_();
+  std::size_t                                 size = a.size();
+  std::vector<_s16>                           ret(size);
+  const _u64                                  simd_end = size - (size % t.simd_width);
 
   _s16* __restrict r_ptr      = ret.data();
   const _Tp* __restrict a_ptr = a.data();
@@ -49,11 +50,12 @@ tensor<_s16> int16_(const tensor<_Tp>& t) {
     r_ptr[i] = static_cast<_s16>(a_ptr[i]);
   }
 
-  return tensor<_s16>(std::move(t.shape()), std::move(ret));
+  return arch::tensor<_s16>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<_s32> int32_(const tensor<_Tp>& t) {
+arch::tensor<_s32> int32_(const arch::tensor<_Tp>& t)
+{
   if (!std::is_convertible_v<_Tp, _s32>)
   {
     throw error::type_error("Type must be convertible to 32 bit signed int");
@@ -61,13 +63,13 @@ tensor<_s32> int32_(const tensor<_Tp>& t) {
 
   if (t.empty())
   {
-    return tensor<_s32>(std::move(t.shape()));
+    return arch::tensor<_s32>(std::move(t.shape()));
   }
 
-  std::vector<_Tp>& a    = t.storage_();
-  std::size_t       size = a.size();
-  std::vector<_s32> ret(size);
-  const _u64        simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type& a    = t.storage_();
+  std::size_t                                 size = a.size();
+  std::vector<_s32>                           ret(size);
+  const _u64                                  simd_end = size - (size % t.simd_width);
 
   _Tp* __restrict r_ptr       = ret.data();
   const _Tp* __restrict a_ptr = a.data();
@@ -96,11 +98,12 @@ tensor<_s32> int32_(const tensor<_Tp>& t) {
     r_ptr[i] = static_cast<_s32>(a_ptr[i]);
   }
 
-  return tensor<_s32>(std::move(t.shape()), std::move(ret));
+  return arch::tensor<_s32>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<_u32> uint32_(const tensor<_Tp>& t) {
+arch::tensor<_u32> uint32_(const arch::tensor<_Tp>& t)
+{
   if (!std::is_convertible_v<_Tp, _u32>)
   {
     throw error::type_error("Type must be convertible to unsigned 32 bit int");
@@ -108,13 +111,13 @@ tensor<_u32> uint32_(const tensor<_Tp>& t) {
 
   if (t.empty())
   {
-    return tensor<_u32>(std::move(t.shape()));
+    return arch::tensor<_u32>(std::move(t.shape()));
   }
 
-  std::vector<_Tp>& a    = t.storage_();
-  std::size_t       size = a.size();
-  std::vector<_u32> ret(size);
-  const _u64        simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type& a    = t.storage_();
+  std::size_t                                 size = a.size();
+  std::vector<_u32>                           ret(size);
+  const _u64                                  simd_end = size - (size % t.simd_width);
 
   _u32* __restrict r_ptr      = ret.data();
   const _Tp* __restrict a_ptr = a.data();
@@ -143,11 +146,12 @@ tensor<_u32> uint32_(const tensor<_Tp>& t) {
     r_ptr[i] = static_cast<_u32>(a_ptr[i]);
   }
 
-  return tensor<_u32>(std::move(t.shape()), std::move(ret));
+  return arch::tensor<_u32>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<_f32> float32_(const tensor<_Tp>& t) {
+arch::tensor<_f32> float32_(const arch::tensor<_Tp>& t)
+{
   if (!std::is_convertible_v<_Tp, _f32>)
   {
     throw error::type_error("Type must be convertible to 32 bit float");
@@ -155,13 +159,13 @@ tensor<_f32> float32_(const tensor<_Tp>& t) {
 
   if (t.empty())
   {
-    return tensor<_f32>(std::move(t.shape()));
+    return arch::tensor<_f32>(std::move(t.shape()));
   }
 
-  std::vector<_Tp>& a    = t.storage_();
-  std::size_t       size = a.size();
-  std::vector<_f32> ret(size);
-  const _u64        simd_end = size - (size % (t.simd_width / 2));
+  typename arch::tensor<_Tp>::container_type& a    = t.storage_();
+  std::size_t                                 size = a.size();
+  std::vector<_f32>                           ret(size);
+  const _u64                                  simd_end = size - (size % (t.simd_width / 2));
 
   _f32* __restrict r_ptr      = ret.data();
   const _Tp* __restrict a_ptr = a.data();
@@ -195,11 +199,12 @@ tensor<_f32> float32_(const tensor<_Tp>& t) {
     r_ptr[i] = static_cast<_f32>(a_ptr[i]);
   }
 
-  return tensor<_f32>(std::move(t.shape()), std::move(ret));
+  return arch::tensor<_f32>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<_f64> float64_(const tensor<_Tp>& t) {
+arch::tensor<_f64> float64_(const arch::tensor<_Tp>& t)
+{
   if (!std::is_convertible_v<_Tp, _f64>)
   {
     throw error::type_error("Type must be convertible to 64 bit float");
@@ -207,13 +212,13 @@ tensor<_f64> float64_(const tensor<_Tp>& t) {
 
   if (t.empty())
   {
-    return tensor<_f64>(std::move(t.shape()));
+    return arch::tensor<_f64>(std::move(t.shape()));
   }
 
-  std::vector<_Tp>& a    = t.storage_();
-  std::size_t       size = a.size();
-  std::vector<_f64> ret(size);
-  const _u64        simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type& a    = t.storage_();
+  std::size_t                                 size = a.size();
+  std::vector<_f64>                           ret(size);
+  const _u64                                  simd_end = size - (size % t.simd_width);
 
   _f64* __restrict r_ptr      = ret.data();
   const _Tp* __restrict a_ptr = a.data();
@@ -229,11 +234,12 @@ tensor<_f64> float64_(const tensor<_Tp>& t) {
     r_ptr[i] = static_cast<_f64>(a_ptr[i]);
   }
 
-  return tensor<_f64>(std::move(t.shape()), std::move(ret));
+  return arch::tensor<_f64>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<_u64> uint64_(const tensor<_Tp>& t) {
+arch::tensor<_u64> uint64_(const arch::tensor<_Tp>& t)
+{
   if (!std::is_convertible_v<_Tp, _u64>)
   {
     throw error::type_error("Type must be convertible to unsigned 64 bit int");
@@ -241,13 +247,13 @@ tensor<_u64> uint64_(const tensor<_Tp>& t) {
 
   if (t.empty())
   {
-    return tensor<_u64>(std::move(t.shape()));
+    return arch::tensor<_u64>(std::move(t.shape()));
   }
 
-  std::vector<_Tp>& a    = t.storage_();
-  std::size_t       size = a.size();
-  std::vector<_u64> ret(size);
-  const _u64        simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type& a    = t.storage_();
+  std::size_t                                 size = a.size();
+  std::vector<_u64>                           ret(size);
+  const _u64                                  simd_end = size - (size % t.simd_width);
 
   _u64* __restrict r_ptr      = ret.data();
   const _Tp* __restrict a_ptr = a.data();
@@ -278,11 +284,12 @@ tensor<_u64> uint64_(const tensor<_Tp>& t) {
     r_ptr[i] = static_cast<_u64>(a_ptr[i]);
   }
 
-  return tensor<_u64>(std::move(t.shape()), std::move(ret));
+  return arch::tensor<_u64>(std::move(t.shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<_s64> int64_(const tensor<_Tp>& t) {
+arch::tensor<_s64> int64_(const arch::tensor<_Tp>& t)
+{
   if (!std::is_convertible_v<_Tp, _s64>)
   {
     throw error::type_error("Type must be convertible to 64 bit signed int");
@@ -290,13 +297,13 @@ tensor<_s64> int64_(const tensor<_Tp>& t) {
 
   if (t.empty())
   {
-    return tensor<_s64>(std::move(t.shape()));
+    return arch::tensor<_s64>(std::move(t.shape()));
   }
 
-  std::vector<_Tp>& a    = t.storage_();
-  std::size_t       size = a.size();
-  std::vector<_s64> ret(size);
-  const _u64        simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type& a    = t.storage_();
+  std::size_t                                 size = a.size();
+  std::vector<_s64>                           ret(size);
+  const _u64                                  simd_end = size - (size % t.simd_width);
 
   _s64* __restrict r_ptr      = ret.data();
   const _Tp* __restrict a_ptr = a.data();
@@ -312,7 +319,7 @@ tensor<_s64> int64_(const tensor<_Tp>& t) {
     r_ptr[i] = static_cast<_s64>(a_ptr[i]);
   }
 
-  return tensor<_s64>(std::move(t.shape()), std::move(ret));
+  return arch::tensor<_s64>(std::move(t.shape()), std::move(ret));
 }
 
 }

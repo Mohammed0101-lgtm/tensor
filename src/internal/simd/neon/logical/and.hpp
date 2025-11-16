@@ -7,16 +7,17 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp>& logical_and_(tensor<_Tp>& t, const _Tp value) {
+arch::tensor<_Tp>& logical_and_(arch::tensor<_Tp>& t, const _Tp value)
+{
   if (!std::is_integral_v<_Tp>)
   {
     throw error::type_error("Cannot get the element wise and of non-integral value");
   }
 
-  std::vector<_Tp>& data_    = t.storage_();
-  const std::size_t size     = data_.size();
-  const _u64        simd_end = size - (size % t.simd_width);
-  neon_type<_Tp>    v_vec    = neon_dup<_Tp>(value);
+  typename arch::tensor<_Tp>::container_type& data_    = t.storage_();
+  const std::size_t                           size     = data_.size();
+  const _u64                                  simd_end = size - (size % t.simd_width);
+  neon_type<_Tp>                              v_vec    = neon_dup<_Tp>(value);
 
   _Tp* __restrict a_ptr = data_.data();
 
@@ -37,7 +38,8 @@ tensor<_Tp>& logical_and_(tensor<_Tp>& t, const _Tp value) {
 }
 
 template<class _Tp>
-tensor<_Tp>& logical_and_(tensor<_Tp>& t, const tensor<_Tp>& other) {
+arch::tensor<_Tp>& logical_and_(arch::tensor<_Tp>& t, const arch::tensor<_Tp>& other)
+{
   if constexpr (!std::is_integral_v<_Tp>)
   {
     throw error::type_error("Cannot get the element wise and of non-integral value");
@@ -48,10 +50,10 @@ tensor<_Tp>& logical_and_(tensor<_Tp>& t, const tensor<_Tp>& other) {
     throw error::shape_error("Tensors shapes must be equal");
   }
 
-  std::vector<_Tp>&       a        = t.storage_();
-  const std::vector<_Tp>& b        = other.storage_();
-  const std::size_t       size     = a.size();
-  const _u64              simd_end = size - (size % t.simd_width);
+  typename arch::tensor<_Tp>::container_type&       a        = t.storage_();
+  const typename arch::tensor<_Tp>::container_type& b        = other.storage_();
+  const std::size_t                                 size     = a.size();
+  const _u64                                        simd_end = size - (size % t.simd_width);
 
   _Tp* __restrict a_ptr       = a.data();
   const _Tp* __restrict b_ptr = b.data();

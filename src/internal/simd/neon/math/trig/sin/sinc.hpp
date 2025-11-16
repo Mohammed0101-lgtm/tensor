@@ -4,7 +4,8 @@
 #include "tensor.hpp"
 
 
-inline neon_f32 vsinq_f32(neon_f32 x) {
+inline neon_f32 vsinq_f32(neon_f32 x)
+{
   return {sinf(vgetq_lane_f32(x, 0)), sinf(vgetq_lane_f32(x, 1)), sinf(vgetq_lane_f32(x, 2)),
           sinf(vgetq_lane_f32(x, 3))};
 }
@@ -12,14 +13,15 @@ inline neon_f32 vsinq_f32(neon_f32 x) {
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp>& sinc_(tensor<_Tp>& t) {
+arch::tensor<_Tp>& sinc_(arch::tensor<_Tp>& t)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  _u64              i     = 0;
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  _u64                                        i     = 0;
 
   if constexpr (std::is_floating_point_v<_Tp>)
   {

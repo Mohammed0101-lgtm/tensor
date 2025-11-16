@@ -5,8 +5,9 @@
 
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::bitwise_not_() {
-  if (internal::types::using_neon())
+arch::tensor<_Tp>& arch::tensor<_Tp>::bitwise_not_()
+{
+  if (using_neon())
   {
     return internal::simd::neon::bitwise_not_(*this);
   }
@@ -27,7 +28,8 @@ tensor<_Tp>& tensor<_Tp>::bitwise_not_() {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::bitwise_not() const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::bitwise_not() const
+{
   if (this->empty())
   {
     return self({0});

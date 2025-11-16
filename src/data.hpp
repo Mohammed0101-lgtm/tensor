@@ -6,12 +6,14 @@
 
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::reshape_as(const tensor& other) const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::reshape_as(const tensor& other) const
+{
   return reshape(other.shape());
 }
 
 template<class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::push_back(value_type v) const {
+inline arch::tensor<_Tp>& arch::tensor<_Tp>::push_back(value_type v) 
+{
   if (this->n_dims() != 1)
   {
     throw std::range_error("push_back is only supported for one dimensional tensors");
@@ -24,7 +26,8 @@ inline tensor<_Tp>& tensor<_Tp>::push_back(value_type v) const {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::zeros(const shape::Shape& shape_) {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::zeros(const shape::Shape& shape_)
+{
   if (this->empty())
   {
     return self({0});
@@ -36,13 +39,14 @@ inline tensor<_Tp> tensor<_Tp>::zeros(const shape::Shape& shape_) {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::zeros_(shape::Shape sh) {
+arch::tensor<_Tp>& arch::tensor<_Tp>::zeros_(shape::Shape sh)
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::zeros_(*this, sh);
   }
@@ -67,13 +71,14 @@ tensor<_Tp>& tensor<_Tp>::zeros_(shape::Shape sh) {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::ones_(shape::Shape sh) {
+arch::tensor<_Tp>& arch::tensor<_Tp>::ones_(shape::Shape sh)
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::ones_(*this, sh);
   }
@@ -100,7 +105,8 @@ tensor<_Tp>& tensor<_Tp>::ones_(shape::Shape sh) {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::ones(const shape::Shape& shape_) {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::ones(const shape::Shape& shape_)
+{
   if (this->empty())
   {
     return self({0});
@@ -112,7 +118,8 @@ inline tensor<_Tp> tensor<_Tp>::ones(const shape::Shape& shape_) {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::row(const index_type index) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::row(const index_type index) const
+{
   if (this->empty())
   {
     return self({0});
@@ -137,11 +144,12 @@ tensor<_Tp> tensor<_Tp>::row(const index_type index) const {
     row_data.push_back((*this)[offset + j]);
   }
 
-  return tensor<_Tp>({this->shape()[1]}, std::move(row_data));
+  return arch::tensor<_Tp>({this->shape()[1]}, std::move(row_data));
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::col(const index_type index) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::col(const index_type index) const
+{
   if (this->empty())
   {
     return self({0});
@@ -165,11 +173,12 @@ tensor<_Tp> tensor<_Tp>::col(const index_type index) const {
     col_data.push_back((*this)[this->shape().compute_index({i, index})]);
   }
 
-  return tensor<_Tp>({this->shape()[0]}, std::move(col_data));
+  return arch::tensor<_Tp>({this->shape()[0]}, std::move(col_data));
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::view(std::initializer_list<index_type> sh) {
+arch::tensor<_Tp>& arch::tensor<_Tp>::view(std::initializer_list<index_type> sh)
+{
   shape::Shape sh_(sh);
   index_type   s = sh_.flatten_size();
 
@@ -185,7 +194,8 @@ tensor<_Tp>& tensor<_Tp>::view(std::initializer_list<index_type> sh) {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::randomize(const shape::Shape& shape_, bool bounded) {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::randomize(const shape::Shape& shape_, bool bounded)
+{
   if (this->empty())
   {
     return self({0});
@@ -197,13 +207,15 @@ inline tensor<_Tp> tensor<_Tp>::randomize(const shape::Shape& shape_, bool bound
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::get_minor(index_type a, index_type b) const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::get_minor(index_type a, index_type b) const
+{
   // not implemented yet
   return tensor();
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::randomize_(const shape::Shape& sh, bool bounded) {
+arch::tensor<_Tp>& arch::tensor<_Tp>::randomize_(const std::optional<shape::Shape>& sh, bool bounded)
+{
   if (this->empty())
   {
     return *this;
@@ -214,14 +226,16 @@ tensor<_Tp>& tensor<_Tp>::randomize_(const shape::Shape& sh, bool bounded) {
     throw error::type_error("Cannot bound non floating point data type");
   }
 
-  if (sh.empty() && sh.empty())
+  shape::Shape sh_value = sh.value_or(this->shape());
+
+  if (sh_value.empty())
   {
     throw error::shape_error("randomize_ : Shape must be initialized");
   }
 
-  if (sh.empty() && sh.equal(this->shape()))
+  if (sh_value != this->shape())
   {
-    this->shape_() = sh;
+    this->shape_() = sh_value;
   }
 
   index_type s = this->size(0);
@@ -242,14 +256,16 @@ tensor<_Tp>& tensor<_Tp>::randomize_(const shape::Shape& sh, bool bounded) {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::clone() const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::clone() const
+{
   self ret(this->shape_(), this->storage_(), this->device());
   ret.compute_strides();
   return ret;
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::negative_() {
+arch::tensor<_Tp>& arch::tensor<_Tp>::negative_()
+{
   if (this->empty())
   {
     return *this;
@@ -266,7 +282,8 @@ tensor<_Tp>& tensor<_Tp>::negative_() {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::negative() const {
+arch::tensor<_Tp> arch::tensor<_Tp>::negative() const
+{
   if (this->empty())
   {
     return self({0});
@@ -277,7 +294,8 @@ tensor<_Tp> tensor<_Tp>::negative() const {
   return ret;
 }
 
-inline void _permutations(std::vector<std::vector<int>>& res, std::vector<int>& arr, int idx) {
+inline void _permutations(std::vector<std::vector<int>>& res, std::vector<int>& arr, int idx)
+{
   if (idx == arr.size() - 1)
   {
     res.push_back(arr);
@@ -292,7 +310,8 @@ inline void _permutations(std::vector<std::vector<int>>& res, std::vector<int>& 
   }
 }
 
-inline void _nextPermutation(std::vector<int>& arr) {
+inline void _nextPermutation(std::vector<int>& arr)
+{
   std::vector<std::vector<int>> ret;
   _permutations(ret, arr, 0);
   std::sort(ret.begin(), ret.end());
@@ -317,7 +336,8 @@ inline void _nextPermutation(std::vector<int>& arr) {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::repeat_(const container_type& d, int dimension) {
+arch::tensor<_Tp>& arch::tensor<_Tp>::repeat_(const container_type& d, int dimension)
+{
   if (d.empty())
   {
     throw std::invalid_argument("Cannot repeat an empty data tensor.");
@@ -360,7 +380,8 @@ tensor<_Tp>& tensor<_Tp>::repeat_(const container_type& d, int dimension) {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::fill(const value_type value) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::fill(const value_type value) const
+{
   if (this->empty())
   {
     return self({0});
@@ -372,7 +393,8 @@ tensor<_Tp> tensor<_Tp>::fill(const value_type value) const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::fill(const tensor& other) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::fill(const tensor& other) const
+{
   if (this->empty())
   {
     return self({0});
@@ -384,7 +406,8 @@ tensor<_Tp> tensor<_Tp>::fill(const tensor& other) const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::resize_as(const shape::Shape shape_) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::resize_as(const shape::Shape shape_) const
+{
   if (this->empty())
   {
     return self({0});
@@ -396,7 +419,8 @@ tensor<_Tp> tensor<_Tp>::resize_as(const shape::Shape shape_) const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::all() const {
+arch::tensor<_Tp> arch::tensor<_Tp>::all() const
+{
   bool            result = true;
   container_type& a      = this->storage_();
   index_type      i      = 0;
@@ -417,7 +441,8 @@ tensor<_Tp> tensor<_Tp>::all() const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::any() const {
+arch::tensor<_Tp> arch::tensor<_Tp>::any() const
+{
   bool            result = false;
   container_type& a      = this->storage_();
 
@@ -437,7 +462,8 @@ tensor<_Tp> tensor<_Tp>::any() const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::gcd(const tensor& other) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::gcd(const tensor& other) const
+{
   if (this->empty())
   {
     return self({0});
@@ -465,7 +491,8 @@ tensor<_Tp> tensor<_Tp>::gcd(const tensor& other) const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::gcd(const value_type value) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::gcd(const value_type value) const
+{
   if (this->empty())
   {
     return self({0});
@@ -486,8 +513,9 @@ tensor<_Tp> tensor<_Tp>::gcd(const value_type value) const {
 }
 
 template<class _Tp>
-typename tensor<_Tp>::index_type tensor<_Tp>::count_nonzero(index_type dimension) const {
-  if (internal::types::using_neon())
+typename arch::tensor<_Tp>::index_type arch::tensor<_Tp>::count_nonzero(index_type dimension) const
+{
+  if (using_neon())
   {
     return internal::simd::neon::count_nonzero(*this, dimension);
   }
@@ -524,8 +552,9 @@ typename tensor<_Tp>::index_type tensor<_Tp>::count_nonzero(index_type dimension
 }
 
 template<class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::fill_(const value_type value) {
-  if (internal::types::using_neon())
+inline arch::tensor<_Tp>& arch::tensor<_Tp>::fill_(const value_type value)
+{
+  if (using_neon())
   {
     return internal::simd::neon::fill_(*this, value);
   }
@@ -541,8 +570,9 @@ inline tensor<_Tp>& tensor<_Tp>::fill_(const value_type value) {
 }
 
 template<class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::fill_(const tensor& other) {
-  if (internal::types::using_neon())
+inline arch::tensor<_Tp>& arch::tensor<_Tp>::fill_(const tensor& other)
+{
+  if (using_neon())
   {
     return internal::simd::neon::fill_(*this, other);
   }

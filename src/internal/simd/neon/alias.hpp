@@ -6,10 +6,14 @@
 namespace internal::simd::neon {
 
 template<typename T>
-struct neon_type_selector;
+struct neon_type_selector {
+  using type = void;
+};
 
 template<typename T>
-struct wide_neon_type_selector;
+struct wide_neon_type_selector {
+  using type = void;
+};
 
 template<>
 struct neon_type_selector<_s8>
@@ -150,7 +154,8 @@ template<typename T>
 using wide_neon_type = typename wide_neon_type_selector<T>::type;
 
 template<typename T>
-neon_type<T> neon_load(const T* load_from) {
+neon_type<T> neon_load(const T* load_from)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vld1q_f16(reinterpret_cast<const _f16*>(load_from));
@@ -198,7 +203,8 @@ neon_type<T> neon_load(const T* load_from) {
 }
 
 template<typename T>
-void neon_store(T* store_in, neon_type<T>& store_from) {
+void neon_store(T* store_in, neon_type<T>& store_from)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     vst1q_f16(reinterpret_cast<_f16*>(store_in), store_from);
@@ -246,7 +252,8 @@ void neon_store(T* store_in, neon_type<T>& store_from) {
 }
 
 template<typename T>
-neon_type<T> neon_vabdq(neon_type<T>& a, neon_type<T>& b) {
+neon_type<T> neon_vabdq(neon_type<T>& a, neon_type<T>& b)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vabdq_f16(a, b);
@@ -294,7 +301,8 @@ neon_type<T> neon_vabdq(neon_type<T>& a, neon_type<T>& b) {
 }
 
 template<typename T>
-neon_type<T> neon_add(neon_type<T>& a, neon_type<T>& b) {
+neon_type<T> neon_add(neon_type<T>& a, neon_type<T>& b)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vaddq_f16(a, b);
@@ -342,7 +350,8 @@ neon_type<T> neon_add(neon_type<T>& a, neon_type<T>& b) {
 }
 
 template<typename T>
-neon_type<T> neon_sub(neon_type<T>& a, neon_type<T>& b) {
+neon_type<T> neon_sub(neon_type<T>& a, neon_type<T>& b)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vsubq_f16(a, b);
@@ -390,7 +399,8 @@ neon_type<T> neon_sub(neon_type<T>& a, neon_type<T>& b) {
 }
 
 template<typename T>
-neon_type<T> neon_mul(neon_type<T>& a, neon_type<T>& b) {
+neon_type<T> neon_mul(neon_type<T>& a, neon_type<T>& b)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vmulq_f16(a, b);
@@ -438,7 +448,8 @@ neon_type<T> neon_mul(neon_type<T>& a, neon_type<T>& b) {
 }
 
 template<typename T>
-neon_type<T> neon_dup(T v) {
+neon_type<T> neon_dup(T v)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vdupq_n_f16(v);
@@ -486,7 +497,8 @@ neon_type<T> neon_dup(T v) {
 }
 
 template<typename T>
-neon_type<T> neon_abs(neon_type<T>& a) {
+neon_type<T> neon_abs(neon_type<T>& a)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vabsq_f16(a);
@@ -518,10 +530,13 @@ neon_type<T> neon_abs(neon_type<T>& a) {
 }
 
 template<typename T>
-neon_type<T> neon_vcvtq(neon_type<T>& a) {}
+neon_type<T> neon_vcvtq(neon_type<T>& a)
+{
+}
 
 template<typename T>
-neon_type<T> neon_cgt(neon_type<T>& a, neon_type<T>& b) {
+neon_type<T> neon_cgt(neon_type<T>& a, neon_type<T>& b)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vcgtq_f16(a, b);
@@ -569,7 +584,8 @@ neon_type<T> neon_cgt(neon_type<T>& a, neon_type<T>& b) {
 }
 
 template<typename T>
-neon_type<T> neon_vbslq(neon_type<T>& a, neon_type<T>& b, neon_type<T>& c) {
+neon_type<T> neon_vbslq(neon_type<T>& a, neon_type<T>& b, neon_type<T>& c)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vbslq_f16(a, b, c);
@@ -617,7 +633,8 @@ neon_type<T> neon_vbslq(neon_type<T>& a, neon_type<T>& b, neon_type<T>& c) {
 }
 
 template<typename T>
-neon_type<T> neon_max(neon_type<T>& a, neon_type<T>& b) {
+neon_type<T> neon_max(neon_type<T>& a, neon_type<T>& b)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vmaxq_f16(a, b);
@@ -665,7 +682,8 @@ neon_type<T> neon_max(neon_type<T>& a, neon_type<T>& b) {
 }
 
 template<typename T>
-T neon_maxv(neon_type<T>& a) {
+T neon_maxv(neon_type<T>& a)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vmaxvq_f16(a);
@@ -713,7 +731,8 @@ T neon_maxv(neon_type<T>& a) {
 }
 
 template<typename T>
-neon_type<T> neon_min(neon_type<T>& a, neon_type<T>& b) {
+neon_type<T> neon_min(neon_type<T>& a, neon_type<T>& b)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vminq_f16(a, b);
@@ -761,7 +780,8 @@ neon_type<T> neon_min(neon_type<T>& a, neon_type<T>& b) {
 }
 
 template<typename T, int lane>
-T neon_get_lane(const neon_type<T>& a) {
+T neon_get_lane(const neon_type<T>& a)
+{
   static_assert(lane >= 0 && lane < 4, "Lane index must be a compile-time constant in range 0..3");
 
   if constexpr (std::is_same_v<T, _f16>)
@@ -815,7 +835,8 @@ T neon_get_lane(const neon_type<T>& a) {
 }
 
 template<typename T>
-neon_type<T> neon_shr(neon_type<T> a, const int& b) {
+neon_type<T> neon_shr(neon_type<T> a, const int& b)
+{
   if constexpr (std::is_same_v<T, _s8>)
   {
     return vshlq_s8(a, vdupq_n_s8(-b));
@@ -855,7 +876,8 @@ neon_type<T> neon_shr(neon_type<T> a, const int& b) {
 }
 
 template<typename T>
-neon_type<T> neon_shl(const neon_type<T>& a, const int& b) {
+neon_type<T> neon_shl(const neon_type<T>& a, const int& b)
+{
   if constexpr (std::is_same_v<T, _s8>)
   {
     return vshlq_s8(a, vdupq_n_s8(b));
@@ -895,7 +917,8 @@ neon_type<T> neon_shl(const neon_type<T>& a, const int& b) {
 }
 
 template<typename T>
-neon_type<T> neon_or(neon_type<T>& a, neon_type<T>& b) {
+neon_type<T> neon_or(neon_type<T>& a, neon_type<T>& b)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vorrq_f16(a, b);
@@ -943,7 +966,8 @@ neon_type<T> neon_or(neon_type<T>& a, neon_type<T>& b) {
 }
 
 template<typename T>
-neon_type<T> neon_xor(neon_type<T>& a, neon_type<T>& b) {
+neon_type<T> neon_xor(neon_type<T>& a, neon_type<T>& b)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return veorq_f16(a, b);
@@ -991,7 +1015,8 @@ neon_type<T> neon_xor(neon_type<T>& a, neon_type<T>& b) {
 }
 
 template<typename T>
-neon_type<T> neon_and(neon_type<T>& a, neon_type<T>& b) {
+neon_type<T> neon_and(neon_type<T>& a, neon_type<T>& b)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vandq_f16(a, b);
@@ -1039,7 +1064,8 @@ neon_type<T> neon_and(neon_type<T>& a, neon_type<T>& b) {
 }
 
 template<typename T>
-neon_type<_u32> neon_ceq(neon_type<T>& a, neon_type<T>& b) {
+neon_type<_u32> neon_ceq(neon_type<T>& a, neon_type<T>& b)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vceqq_f16(a, b);
@@ -1087,7 +1113,8 @@ neon_type<_u32> neon_ceq(neon_type<T>& a, neon_type<T>& b) {
 }
 
 template<typename T>
-neon_type<T> neon_ext(neon_type<T>& a, neon_type<T>& b, T& c) {
+neon_type<T> neon_ext(neon_type<T>& a, neon_type<T>& b, T& c)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vextq_f16(a, b, c);
@@ -1135,7 +1162,8 @@ neon_type<T> neon_ext(neon_type<T>& a, neon_type<T>& b, T& c) {
 }
 
 template<typename T>
-T neon_addv(neon_type<T>& a) {
+T neon_addv(neon_type<T>& a)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vaddvq_f16(a);
@@ -1183,7 +1211,8 @@ T neon_addv(neon_type<T>& a) {
 }
 
 template<typename T>
-wide_neon_type<T> wide_neon_load(const T* load_from) {
+wide_neon_type<T> wide_neon_load(const T* load_from)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vld4q_f16(load_from);
@@ -1231,7 +1260,8 @@ wide_neon_type<T> wide_neon_load(const T* load_from) {
 }
 
 template<typename T>
-neon_type<T> neon_cleq(neon_type<T>& a, neon_type<T>& b) {
+neon_type<T> neon_cleq(neon_type<T>& a, neon_type<T>& b)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vcleq_f16(a, b);
@@ -1279,7 +1309,8 @@ neon_type<T> neon_cleq(neon_type<T>& a, neon_type<T>& b) {
 }
 
 template<typename T>
-neon_type<T> neon_div(neon_type<T>& a, neon_type<T>& b) {
+neon_type<T> neon_div(neon_type<T>& a, neon_type<T>& b)
+{
   if (!std::is_floating_point_v<T>)
   {
     throw error::type_error("neon_div is only supported for floating point types.");
@@ -1299,7 +1330,8 @@ neon_type<T> neon_div(neon_type<T>& a, neon_type<T>& b) {
 }
 
 template<typename T>
-neon_type<_u32> neon_cgeq(neon_type<T>& a, neon_type<T>& b) {
+neon_type<_u32> neon_cgeq(neon_type<T>& a, neon_type<T>& b)
+{
   if constexpr (std::is_same_v<T, _f16>)
   {
     return vcgeq_f16(a, b);

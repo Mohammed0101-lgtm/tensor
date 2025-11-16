@@ -3,18 +3,21 @@
 #include "tensor.hpp"
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::relu() const {
+arch::tensor<_Tp> arch::tensor<_Tp>::relu() const
+{
   return clamp_min(value_type(0));
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::relu_() {
-  return clamp_min_(value_type(0));
+arch::tensor<_Tp>& arch::tensor<_Tp>::relu_()
+{
+  return clamp_min_(value_type(0.0f));
 }
 
 template<class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::clipped_relu_(const value_type clip_limit) {
-  if (internal::types::using_neon())
+inline arch::tensor<_Tp>& arch::tensor<_Tp>::clipped_relu_(const value_type clip_limit)
+{
+  if (using_neon())
   {
     return internal::simd::neon::clipped_relu_(*this, clip_limit);
   }
@@ -31,7 +34,8 @@ inline tensor<_Tp>& tensor<_Tp>::clipped_relu_(const value_type clip_limit) {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::clipped_relu(const value_type clip_limit) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::clipped_relu(const value_type clip_limit) const
+{
   if (this->empty())
   {
     return self({0});

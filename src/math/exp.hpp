@@ -4,13 +4,14 @@
 
 
 template<class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::exp_() {
+inline arch::tensor<_Tp>& arch::tensor<_Tp>::exp_()
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::exp_(*this);
   }
@@ -31,7 +32,8 @@ inline tensor<_Tp>& tensor<_Tp>::exp_() {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::exp() const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::exp() const
+{
   if (this->empty())
   {
     return self({0});

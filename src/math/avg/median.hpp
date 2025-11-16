@@ -4,7 +4,8 @@
 
 
 template<class _Tp>
-double tensor<_Tp>::median(const index_type dimension) const {
+double arch::tensor<_Tp>::median(const index_type dimension) const
+{
   if (!std::is_arithmetic_v<value_type>)
   {
     throw error::type_error("Type must be arithmetic");

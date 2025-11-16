@@ -3,7 +3,8 @@
 #include "tensor.hpp"
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::fmod(const tensor& other) const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::fmod(const tensor& other) const
+{
   if (this->empty())
   {
     return self({0});
@@ -15,7 +16,8 @@ inline tensor<_Tp> tensor<_Tp>::fmod(const tensor& other) const {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::fmod(const value_type value) const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::fmod(const value_type value) const
+{
   if (this->empty())
   {
     return self({0});
@@ -27,13 +29,14 @@ inline tensor<_Tp> tensor<_Tp>::fmod(const value_type value) const {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::fmod_(const value_type value) {
+arch::tensor<_Tp>& arch::tensor<_Tp>::fmod_(const value_type value)
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::fmod_(*this, value);
   }
@@ -59,13 +62,14 @@ tensor<_Tp>& tensor<_Tp>::fmod_(const value_type value) {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::fmod_(const tensor& other) {
+arch::tensor<_Tp>& arch::tensor<_Tp>::fmod_(const tensor& other)
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::fmod_(*this, other);
   }

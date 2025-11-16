@@ -6,15 +6,16 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp>& frac_(tensor<_Tp>& t) {
+arch::tensor<_Tp>& frac_(arch::tensor<_Tp>& t)
+{
   if (!std::is_floating_point_v<_Tp>)
   {
     throw error::type_error("Type must be floating point");
   }
 
-  std::vector<_Tp>& data_    = t.storage_();
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_    = t.storage_();
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  _u64                                        i        = 0;
 
   for (; i < simd_end; i += t.simd_width)
   {

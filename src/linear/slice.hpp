@@ -3,8 +3,8 @@
 #include "tensor.hpp"
 /*
 template<class _Tp>
-tensor<_Tp>
-tensor<_Tp>::slice(index_type dimension, std::optional<index_type> start, std::optional<index_type> end, int64_t step) const {
+arch::tensor<_Tp>
+arch::tensor<_Tp>::slice(index_type dimension, std::optional<index_type> start, std::optional<index_type> end, int64_t step) const {
     if (this->empty())
     {
         return self();

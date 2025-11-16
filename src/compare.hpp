@@ -7,13 +7,14 @@
 
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::not_equal(const tensor& other) const {
-  if (internal::types::using_neon())
+arch::tensor<bool> arch::tensor<_Tp>::not_equal(const tensor& other) const
+{
+  if (using_neon())
   {
     return internal::simd::neon::not_equal(*this, other);
   }
 
-  if constexpr (!internal::types::has_not_equal_operator_v<value_type>)
+  if constexpr (!internal::concepts::has_not_equal_operator_v<value_type>)
   {
     throw error::operator_error("Value type must have an equal to operator");
   }
@@ -30,17 +31,18 @@ tensor<bool> tensor<_Tp>::not_equal(const tensor& other) const {
     ret[i] = ((*this)[i] != other[i]);
   }
 
-  return tensor<bool>(std::move(this->shape()), std::move(ret));
+  return arch::tensor<bool>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::not_equal(const value_type value) const {
-  if (internal::types::using_neon())
+arch::tensor<bool> arch::tensor<_Tp>::not_equal(const value_type value) const
+{
+  if (using_neon())
   {
     return internal::simd::neon::not_equal(*this, value);
   }
 
-  if constexpr (!internal::types::has_equal_operator_v<value_type>)
+  if constexpr (!internal::concepts::has_equal_operator_v<value_type>)
   {
     throw error::operator_error("Value type must have an equal to operator");
   }
@@ -54,17 +56,18 @@ tensor<bool> tensor<_Tp>::not_equal(const value_type value) const {
     ret[i++] = (elem != value);
   }
 
-  return tensor<bool>(std::move(this->shape()), std::move(ret));
+  return arch::tensor<bool>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::less(const tensor& other) const {
-  if (internal::types::using_neon())
+arch::tensor<bool> arch::tensor<_Tp>::less(const tensor& other) const
+{
+  if (using_neon())
   {
     return internal::simd::neon::less(*this, other);
   }
 
-  if constexpr (!internal::types::has_less_operator_v<value_type>)
+  if constexpr (!internal::concepts::has_less_operator_v<value_type>)
   {
     throw error::operator_error("Value type must have a less than operator");
   }
@@ -81,17 +84,18 @@ tensor<bool> tensor<_Tp>::less(const tensor& other) const {
     ret[i] = ((*this)[i] < other[i]);
   }
 
-  return tensor<bool>(std::move(this->shape()), std::move(ret));
+  return arch::tensor<bool>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::less(const value_type value) const {
-  if (internal::types::using_neon())
+arch::tensor<bool> arch::tensor<_Tp>::less(const value_type value) const
+{
+  if (using_neon())
   {
     return internal::simd::neon::less(*this, value);
   }
 
-  if constexpr (!internal::types::has_less_operator_v<value_type>)
+  if constexpr (!internal::concepts::has_less_operator_v<value_type>)
   {
     throw error::operator_error("Value type must have a less  than operator");
   }
@@ -106,22 +110,24 @@ tensor<bool> tensor<_Tp>::less(const value_type value) const {
     ++i;
   }
 
-  return tensor<bool>(std::move(this->shape()), std::move(ret));
+  return arch::tensor<bool>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::greater(const tensor& other) const {
+arch::tensor<bool> arch::tensor<_Tp>::greater(const tensor& other) const
+{
   return other.less(*this);
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::greater(const value_type value) const {
-  if (internal::types::using_neon())
+arch::tensor<bool> arch::tensor<_Tp>::greater(const value_type value) const
+{
+  if (using_neon())
   {
     return internal::simd::neon::greater(*this, value);
   }
 
-  if constexpr (!internal::types::has_greater_operator_v<value_type>)
+  if constexpr (!internal::concepts::has_greater_operator_v<value_type>)
   {
     throw error::operator_error("Value type must have a greater than operator");
   }
@@ -135,17 +141,18 @@ tensor<bool> tensor<_Tp>::greater(const value_type value) const {
     ret[i++] = (elem > value);
   }
 
-  return tensor<bool>(std::move(this->shape()), std::move(ret));
+  return arch::tensor<bool>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::equal(const tensor& other) const {
-  if (internal::types::using_neon())
+arch::tensor<bool> arch::tensor<_Tp>::equal(const tensor& other) const
+{
+  if (using_neon())
   {
     return internal::simd::neon::equal(*this, other);
   }
 
-  if constexpr (!internal::types::has_equal_operator_v<value_type>)
+  if constexpr (!internal::concepts::has_equal_operator_v<value_type>)
   {
     throw error::operator_error("Value type must have equal operator");
   }
@@ -165,12 +172,13 @@ tensor<bool> tensor<_Tp>::equal(const tensor& other) const {
     ++i;
   }
 
-  return tensor<bool>(std::move(this->shape()), std::move(ret));
+  return arch::tensor<bool>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::equal(const value_type value) const {
-  if constexpr (!internal::types::has_equal_operator_v<value_type>)
+arch::tensor<bool> arch::tensor<_Tp>::equal(const value_type value) const
+{
+  if constexpr (!internal::concepts::has_equal_operator_v<value_type>)
   {
     throw error::operator_error("Value type must have equal operator");
   }
@@ -184,17 +192,18 @@ tensor<bool> tensor<_Tp>::equal(const value_type value) const {
     ret[i++] = (elem == value);
   }
 
-  return tensor<bool>(std::move(this->shape()), std::move(ret));
+  return arch::tensor<bool>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::less_equal(const tensor& other) const {
-  if (internal::types::using_neon())
+arch::tensor<bool> arch::tensor<_Tp>::less_equal(const tensor& other) const
+{
+  if (using_neon())
   {
     return internal::simd::neon::less_equal(*this, other);
   }
 
-  if constexpr (!internal::types::has_less_equal_operator_v<value_type>)
+  if constexpr (!internal::concepts::has_less_equal_operator_v<value_type>)
   {
     throw error::operator_error("Value type must have a less than or equal to operator");
   }
@@ -211,17 +220,18 @@ tensor<bool> tensor<_Tp>::less_equal(const tensor& other) const {
     ret[i] = ((*this)[i] <= other[i]);
   }
 
-  return tensor<bool>(std::move(this->shape()), std::move(ret), std::move(this->device()));
+  return arch::tensor<bool>(std::move(this->shape()), std::move(ret), std::move(this->device()));
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::less_equal(const value_type value) const {
-  if (internal::types::using_neon())
+arch::tensor<bool> arch::tensor<_Tp>::less_equal(const value_type value) const
+{
+  if (using_neon())
   {
     return internal::simd::neon::less_equal(value);
   }
 
-  if constexpr (!internal::types::has_less_equal_operator_v<value_type>)
+  if constexpr (!internal::concepts::has_less_equal_operator_v<value_type>)
   {
     throw error::operator_error("Value type must have a less than or equal to operator");
   }
@@ -235,22 +245,24 @@ tensor<bool> tensor<_Tp>::less_equal(const value_type value) const {
     ret[i++] = (elem <= value);
   }
 
-  return tensor<bool>(std::move(this->shape()), std::move(ret));
+  return arch::tensor<bool>(std::move(this->shape()), std::move(ret));
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::greater_equal(const tensor& other) const {
+arch::tensor<bool> arch::tensor<_Tp>::greater_equal(const tensor& other) const
+{
   return other.less_equal(*this);
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::greater_equal(const value_type value) const {
-  if (internal::types::using_neon())
+arch::tensor<bool> arch::tensor<_Tp>::greater_equal(const value_type value) const
+{
+  if (using_neon())
   {
     return internal::simd::neon::greater_equal(*this, value);
   }
 
-  if constexpr (!internal::types::has_greater_equal_operator_v<value_type>)
+  if constexpr (!internal::concepts::has_greater_equal_operator_v<value_type>)
   {
     throw error::operator_error("Value type must have a greater than or equal to operator");
   }
@@ -264,5 +276,5 @@ tensor<bool> tensor<_Tp>::greater_equal(const value_type value) const {
     ret[i++] = (elem >= value);
   }
 
-  return tensor<bool>(std::move(this->shape()), std::move(ret));
+  return arch::tensor<bool>(std::move(this->shape()), std::move(ret));
 }

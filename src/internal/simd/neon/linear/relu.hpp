@@ -8,13 +8,14 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp>& relu_(tensor<_Tp>& t) {
+arch::tensor<_Tp>& relu_(arch::tensor<_Tp>& t)
+{
   return clamp_min_(_Tp(0));
 }
 
 /*
 template <class _Tp>
-tensor<_Tp>&   tensor<_Tp>::neon_clipped_relu_(const _Tp clip_limit) {
+arch::tensor<_Tp>&   arch::tensor<_Tp>::neon_clipped_relu_(const _Tp clip_limit) {
   if constexpr (std::is_unsigned_v<_Tp>) return *this;
 
   _u64 s = data_.size();
@@ -50,7 +51,8 @@ tensor<_Tp>&   tensor<_Tp>::neon_clipped_relu_(const _Tp clip_limit) {
 */
 
 template<class _Tp>
-tensor<_Tp>& clipped_relu_(tensor<_Tp>& t, const _Tp clip_limit) {
+arch::tensor<_Tp>& clipped_relu_(arch::tensor<_Tp>& t, const _Tp clip_limit)
+{
   if constexpr (std::is_unsigned_v<_Tp>)
   {
     return t;

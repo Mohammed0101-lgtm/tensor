@@ -4,7 +4,8 @@
 
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::transpose_() {
+arch::tensor<_Tp>& arch::tensor<_Tp>::transpose_()
+{
   if (this->n_dims() != 2)
     throw error::shape_error("Transpose operation is only valid for 2D tensors");
 

@@ -5,8 +5,9 @@
 
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type value) {
-  if (internal::types::using_neon())
+arch::tensor<_Tp>& arch::tensor<_Tp>::logical_and_(const value_type value)
+{
+  if (using_neon())
   {
     return internal::simd::neon::logical_and_(*this, value);
   }
@@ -27,7 +28,8 @@ tensor<_Tp>& tensor<_Tp>::logical_and_(const value_type value) {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::logical_and(const tensor& other) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::logical_and(const tensor& other) const
+{
   if (this->empty())
   {
     return self({0});
@@ -39,7 +41,8 @@ tensor<_Tp> tensor<_Tp>::logical_and(const tensor& other) const {
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::logical_and(const value_type value) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::logical_and(const value_type value) const
+{
   if (this->empty())
   {
     return self({0});
@@ -51,8 +54,9 @@ tensor<_Tp> tensor<_Tp>::logical_and(const value_type value) const {
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::logical_and_(const tensor& other) {
-  if (internal::types::using_neon())
+arch::tensor<_Tp>& arch::tensor<_Tp>::logical_and_(const tensor& other)
+{
+  if (using_neon())
   {
     return internal::simd::neon::logical_and_(*this, other);
   }

@@ -7,17 +7,18 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp>& clamp_(tensor<_Tp>& t, const _Tp& min_val, const _Tp& max_val) {
+arch::tensor<_Tp>& clamp_(arch::tensor<_Tp>& t, const _Tp& min_val, const _Tp& max_val)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
   }
 
-  std::vector<_Tp>& data_    = t.storage_();
-  const _u64        simd_end = data_.size() - (data_.size() % t.simd_width);
-  neon_type<_Tp>    min_vec  = neon_dup<_Tp>(min_val);
-  neon_type<_Tp>    max_vec  = neon_dup<_Tp>(max_val);
-  _u64              i        = 0;
+  typename arch::tensor<_Tp>::container_type& data_    = t.storage_();
+  const _u64                                  simd_end = data_.size() - (data_.size() % t.simd_width);
+  neon_type<_Tp>                              min_vec  = neon_dup<_Tp>(min_val);
+  neon_type<_Tp>                              max_vec  = neon_dup<_Tp>(max_val);
+  _u64                                        i        = 0;
 
   for (; i < simd_end; i += t.simd_width)
   {
@@ -37,14 +38,15 @@ tensor<_Tp>& clamp_(tensor<_Tp>& t, const _Tp& min_val, const _Tp& max_val) {
 }
 
 template<class _Tp>
-tensor<_Tp>& ceil_(tensor<_Tp>& t) {
+arch::tensor<_Tp>& ceil_(arch::tensor<_Tp>& t)
+{
   if (!std::is_floating_point_v<_Tp>)
   {
     throw error::type_error("Type must be floating point");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  _u64              i     = 0;
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  _u64                                        i     = 0;
 
   if constexpr (std::is_floating_point_v<_Tp>)
   {
@@ -65,14 +67,15 @@ tensor<_Tp>& ceil_(tensor<_Tp>& t) {
 }
 
 template<class _Tp>
-tensor<_Tp>& floor_(tensor<_Tp>& t) {
+arch::tensor<_Tp>& floor_(arch::tensor<_Tp>& t)
+{
   if (!std::is_floating_point_v<_Tp>)
   {
     throw error::type_error("Type must be floating point");
   }
 
-  std::vector<_Tp>& data_ = t.storage_();
-  _u64              i     = 0;
+  typename arch::tensor<_Tp>::container_type& data_ = t.storage_();
+  _u64                                        i     = 0;
 
   if constexpr (std::is_floating_point_v<_Tp>)
   {

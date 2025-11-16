@@ -3,7 +3,8 @@
 #include "tensor.hpp"
 
 template<class _Tp>
-tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type dimension) const {
+arch::tensor<typename arch::tensor<_Tp>::index_type> arch::tensor<_Tp>::argmax_(index_type dimension) const
+{
   if (dimension < 0 || dimension >= this->n_dims())
   {
     throw error::index_error("Dimension out of range in argmax");
@@ -11,7 +12,7 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type dimensi
 
   shape::Shape ret_sh = this->shape();
   ret_sh.__value_.erase(ret_sh.__value_.begin() + dimension);
-  tensor<index_type> ret(ret_sh);
+  arch::tensor<index_type> ret(ret_sh);
   ret.storage_().resize(ret_sh.flatten_size());
 
   index_type outer_size = 1;
@@ -57,7 +58,8 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argmax_(index_type dimensi
 }
 
 template<class _Tp>
-tensor<_Tp> tensor<_Tp>::argmax(index_type dimension) const {
+arch::tensor<_Tp> arch::tensor<_Tp>::argmax(index_type dimension) const
+{
   if (dimension < 0 || dimension >= this->n_dims())
   {
     throw error::index_error("Dimension out of range in argmax");
@@ -111,7 +113,8 @@ tensor<_Tp> tensor<_Tp>::argmax(index_type dimension) const {
 }
 
 template<class _Tp>
-tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argsort(index_type d, bool ascending) const {
+arch::tensor<typename arch::tensor<_Tp>::index_type> arch::tensor<_Tp>::argsort(index_type d, bool ascending) const
+{
   index_type adjusted = (d < 0) ? d + this->size(0) : d;
 
   if (adjusted != 0)
@@ -125,5 +128,5 @@ tensor<typename tensor<_Tp>::index_type> tensor<_Tp>::argsort(index_type d, bool
   std::sort(indices.begin(), indices.end(),
             [&](index_type a, index_type b) { return ascending ? (*this)[a]<(*this)[b] : (*this)[a]>(*this)[b]; });
 
-  return tensor<index_type>(std::move(indices));
+  return arch::tensor<index_type>(std::move(indices));
 }

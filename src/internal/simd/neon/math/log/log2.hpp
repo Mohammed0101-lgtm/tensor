@@ -7,16 +7,17 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp>& log2_(tensor<_Tp>& t) {
+arch::tensor<_Tp>& log2_(arch::tensor<_Tp>& t)
+{
   if (!std::is_arithmetic_v<_Tp>)
   {
     throw error::type_error("Type must be arithmetic");
   }
 
-  std::vector<_Tp>& a        = t.storage_();
-  std::size_t       size     = a.size();
-  const _u64        simd_end = size - (size % t.simd_width);
-  _Tp* __restrict a_ptr      = a.data();
+  typename arch::tensor<_Tp>::container_type& a        = t.storage_();
+  std::size_t                                 size     = a.size();
+  const _u64                                  simd_end = size - (size % t.simd_width);
+  _Tp* __restrict a_ptr                                = a.data();
 
   for (std::size_t i = 0; i < simd_end; i += t.simd_width)
   {

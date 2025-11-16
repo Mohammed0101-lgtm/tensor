@@ -4,13 +4,14 @@
 
 
 template<class _Tp>
-inline tensor<_Tp>& tensor<_Tp>::frac_() {
+inline arch::tensor<_Tp>& arch::tensor<_Tp>::frac_()
+{
   if (this->empty())
   {
     return *this;
   }
 
-  if (internal::types::using_neon())
+  if (using_neon())
   {
     return internal::simd::neon::frac_(*this);
   }
@@ -31,7 +32,8 @@ inline tensor<_Tp>& tensor<_Tp>::frac_() {
 }
 
 template<class _Tp>
-inline tensor<_Tp> tensor<_Tp>::frac() const {
+inline arch::tensor<_Tp> arch::tensor<_Tp>::frac() const
+{
   if (this->empty())
   {
     return self({0});

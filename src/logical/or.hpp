@@ -5,7 +5,8 @@
 
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type value) {
+arch::tensor<_Tp>& arch::tensor<_Tp>::logical_or_(const value_type value)
+{
   if constexpr (!std::is_integral_v<value_type>)
   {
     throw error::type_error("Cannot perform logical OR on non-integral and non-boolean values");
@@ -22,31 +23,34 @@ tensor<_Tp>& tensor<_Tp>::logical_or_(const value_type value) {
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::logical_or(const value_type value) const {
+arch::tensor<bool> arch::tensor<_Tp>::logical_or(const value_type value) const
+{
   if (this->empty())
   {
-    return tensor<bool>({0});
+    return arch::tensor<bool>({0});
   }
 
-  tensor<bool> ret = clone().bool_();
+  arch::tensor<bool> ret = clone().bool_();
   ret.logical_or_(value);
   return ret;
 }
 
 template<class _Tp>
-tensor<bool> tensor<_Tp>::logical_or(const tensor& other) const {
+arch::tensor<bool> arch::tensor<_Tp>::logical_or(const tensor& other) const
+{
   if (this->empty())
   {
-    return tensor<bool>({0});
+    return arch::tensor<bool>({0});
   }
 
-  tensor<bool> ret = clone().bool_();
+  arch::tensor<bool> ret = clone().bool_();
   ret.logical_or_(other);
   return ret;
 }
 
 template<class _Tp>
-tensor<_Tp>& tensor<_Tp>::logical_or_(const tensor& other) {
+arch::tensor<_Tp>& arch::tensor<_Tp>::logical_or_(const tensor& other)
+{
   if constexpr (!std::is_integral_v<value_type>)
   {
     throw error::type_error("Cannot get the element wise not of non-integral and non-boolean value");

@@ -6,15 +6,16 @@
 namespace internal::simd::neon {
 
 template<class _Tp>
-tensor<_Tp> sum(const tensor<_Tp>& t, const _u64 axis) {
+arch::tensor<_Tp> sum(const arch::tensor<_Tp>& t, const _u64 axis)
+{
   if (axis < 0 || axis >= static_cast<_u64>(t.shape().size()))
   {
     throw std::invalid_argument("Invalid axis for sum");
   }
 
-  std::vector<_Tp>& data_  = t.storage_();
-  shape::Shape      ret_sh = t.shape();
-  ret_sh[axis]             = 1;
+  typename arch::tensor<_Tp>::container_type& data_  = t.storage_();
+  shape::Shape                                ret_sh = t.shape();
+  ret_sh[axis]                                       = 1;
   _u64         ret_size = std::accumulate(ret_sh.__value_.begin(), ret_sh.__value_.end(), 1, std::multiplies<_u64>());
   shape::Shape ret_data(ret_size, _Tp(0.0f));
   const _u64   axis_size  = t.shape()[axis];
@@ -49,7 +50,7 @@ tensor<_Tp> sum(const tensor<_Tp>& t, const _u64 axis) {
     }
   }
 
-  return tensor<_Tp>(std::move(ret_data), std::move(ret_sh));
+  return arch::tensor<_Tp>(std::move(ret_data), std::move(ret_sh));
 }
 
 }

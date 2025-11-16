@@ -1,10 +1,10 @@
 #pragma once
 
 #include "macros.hpp"
+#include "shape.hpp"
 #include <arm_neon.h>
 #include <cstdint>
 #include <cstdlib>
-#include <shape.hpp>
 #include <stdint.h>
 #include <vector>
 
@@ -57,27 +57,34 @@ class TensorBase
   using const_reference = const value_type&;
 
   static constexpr std::size_t simd_width = _ARM64_REG_WIDTH / sizeof(value_type);
-  static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
+  //static_assert(simd_width % 2 == 0, "register width must divide the size of the data type evenly");
 
   TensorBase() = default;
 
   TensorBase(const TensorBase& t) :
       __data_(t.storage()),
       __shape_(t.shape()),
-      __device_(t.device()) {}
+      __device_(t.device())
+  {
+  }
 
   TensorBase(TensorBase&& t) TENSOR_NOEXCEPT: __data_(std::move(t.storage())),
                                               __shape_(std::move(t.shape())),
-                                              __device_(std::move(t.device())) {}
+                                              __device_(std::move(t.device()))
+  {
+  }
 
   TensorBase(const shape::Shape& sh, const TensorBase& other) :
       __data_(other.storage()),
       __shape_(__shape_),
-      __device_(other.device()) {}
+      __device_(other.device())
+  {
+  }
 
   TensorBase(const shape::Shape& sh, std::initializer_list<value_type> init_list, Device d = Device::CPU) :
       __shape_(sh),
-      __device_(d) {
+      __device_(d)
+  {
     if (init_list.size() != static_cast<std::size_t>(__shape_.flatten_size()))
     {
       throw std::invalid_argument("Initializer list size must match tensor size");
@@ -89,20 +96,23 @@ class TensorBase
   explicit TensorBase(const shape::Shape& sh, const_reference v, Device d = Device::CPU) :
       __shape_(sh),
       __data_(sh.flatten_size(), v),
-      __device_(d) {
+      __device_(d)
+  {
     __shape_.compute_strides();
   }
 
   explicit TensorBase(const shape::Shape& sh, Device d = Device::CPU) :
       __shape_(sh),
-      __device_(d) {
+      __device_(d)
+  {
     __data_ = Container(__shape_.flatten_size());
     __shape_.compute_strides();
   }
 
   explicit TensorBase(const shape::Shape& sh, const Container& d, Device dev = Device::CPU) :
       __shape_(sh),
-      __device_(dev) {
+      __device_(dev)
+  {
 
     if (d.size() != static_cast<std::size_t>(__shape_.flatten_size()))
     {
@@ -115,7 +125,8 @@ class TensorBase
   }
 
  protected:
-  void compute_strides() const {
+  void compute_strides() const
+  {
     if (__shape_.empty())
     {
       throw error::shape_error("Shape must be initialized before computing strides");
@@ -136,7 +147,8 @@ class TensorBase
 
   TENSOR_LIBRARY_API Device device() const TENSOR_NOEXCEPT { return __device_; }
 
-  TENSOR_LIBRARY_API void set_device(const Device d) TENSOR_NOEXCEPT {
+  TENSOR_LIBRARY_API void set_device(const Device d) TENSOR_NOEXCEPT
+  {
     __device_         = d;
     __is_cuda_tensor_ = __device_ == Device::CUDA;
   }
@@ -149,7 +161,8 @@ class TensorBase
 
   TENSOR_NODISCARD TENSOR_LIBRARY_API std::size_t n_dims() const TENSOR_NOEXCEPT { return __shape_.size(); }
 
-  TENSOR_NODISCARD TENSOR_LIBRARY_API index_type size(const index_type dimension) const {
+  TENSOR_NODISCARD TENSOR_LIBRARY_API index_type size(const index_type dimension) const
+  {
     if (dimension < 0 || dimension > static_cast<index_type>(n_dims()))
     {
       throw std::invalid_argument("dimension input is out of range");
@@ -165,7 +178,8 @@ class TensorBase
 
   TENSOR_NODISCARD TENSOR_LIBRARY_API index_type capacity() const TENSOR_NOEXCEPT { return __data_.capacity(); }
 
-  TENSOR_LIBRARY_API index_type hash() const {
+  TENSOR_LIBRARY_API index_type hash() const
+  {
     index_type            hash_v = 0;
     std::hash<value_type> hasher;
     for (const auto& elem : __data_)
@@ -175,7 +189,8 @@ class TensorBase
     return hash_v;
   }
 
-  TENSOR_NODISCARD TENSOR_LIBRARY_API reference at_(shape::Shape idx) const {
+  TENSOR_NODISCARD TENSOR_LIBRARY_API reference at_(shape::Shape idx) const
+  {
     if (idx.empty())
     {
       throw error::index_error("Passing an empty vector as indices for a tensor");
@@ -193,7 +208,8 @@ class TensorBase
 
   TENSOR_NODISCARD TENSOR_LIBRARY_API const_reference at(const shape::Shape idx) const { return this->at_(idx); }
 
-  TENSOR_LIBRARY_API reference operator[](const index_type idx) {
+  TENSOR_LIBRARY_API reference operator[](const index_type idx)
+  {
     if (idx < 0 || idx >= __data_.size())
     {
       throw error::index_error("input index is out of bounds");
@@ -202,7 +218,8 @@ class TensorBase
     return __data_[idx];
   }
 
-  TENSOR_LIBRARY_API const_reference operator[](const index_type idx) const {
+  TENSOR_LIBRARY_API const_reference operator[](const index_type idx) const
+  {
     if (idx < 0 || idx >= __data_.size())
     {
       throw error::index_error("input index is out of bounds");
@@ -211,34 +228,38 @@ class TensorBase
     return __data_[idx];
   }
 
-  TENSOR_LIBRARY_API reference operator()(std::initializer_list<index_type> index_list) {
+  TENSOR_LIBRARY_API reference operator()(std::initializer_list<index_type> index_list)
+  {
     return at_(shape::Shape(index_list));
   }
 
-  TENSOR_LIBRARY_API const_reference operator()(std::initializer_list<index_type> index_list) const {
+  TENSOR_LIBRARY_API const_reference operator()(std::initializer_list<index_type> index_list) const
+  {
     return at(shape::Shape(index_list));
   }
 
   TENSOR_LIBRARY_API bool empty() const { return __data_.empty(); }
 
-  TENSOR_LIBRARY_API TensorBase<bool> bool_() const {
+  TENSOR_LIBRARY_API TensorBase<bool> bool_() const
+  {
     if (!std::is_convertible_v<value_type, bool>)
     {
       throw error::type_error("Type must be convertible to bool");
     }
 
-    std::vector<bool> d(__data_.size());
+    std::vector<bool> ret(__data_.size());
     index_type        i = 0;
 
     for (const auto& elem : __data_)
     {
-      d[i++] = bool(elem);
+      ret[i++] = bool(elem);
     }
 
-    return tensor<bool>(this->shape(), d);
+    return TensorBase<bool>(std::move(this->shape()), std::move(ret));
   }
 
-  void print() const {
+  void print() const
+  {
     printRecursive(0, 0, this->shape());
     std::cout << std::endl;
   }

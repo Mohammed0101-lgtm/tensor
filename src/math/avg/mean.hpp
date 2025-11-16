@@ -4,7 +4,8 @@
 
 
 template<class _Tp>
-double tensor<_Tp>::mean() const {
+double arch::tensor<_Tp>::mean() const
+{
   if (!std::is_arithmetic_v<value_type>)
   {
     throw error::type_error("Type must be arithmetic");
