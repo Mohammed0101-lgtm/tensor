@@ -12,7 +12,8 @@ using vec     = std::vector<uint64_t>;
 vec univ_shape = {2, 2};
 
 
-TEST(StridesTest, ConstructorsTest) {
+TEST(StridesTest, ConstructorsTest)
+{
   strides default_constructor;
   strides shape_constructor(univ_shape);
   strides copy_constructor(shape_constructor);
@@ -20,14 +21,16 @@ TEST(StridesTest, ConstructorsTest) {
   EXPECT_NO_THROW();
 }
 
-TEST(StridesTest, CopyOperatorTest) {
+TEST(StridesTest, CopyOperatorTest)
+{
   strides other(univ_shape);
   strides copy = other;
 
   EXPECT_EQ(other, copy);  // this tests the equal operator automatically for free
 }
 
-TEST(StridesTest, GetTest) {
+TEST(StridesTest, GetTest)
+{
   struct
   {
     vec shape;
@@ -63,7 +66,8 @@ TEST(StridesTest, GetTest) {
   }
 }
 
-TEST(StridesTest, NdimsTest) {
+TEST(StridesTest, NdimsTest)
+{
   strides one({1});
   strides two({1, 2});
   strides three({1, 2, 3});

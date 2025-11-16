@@ -2,16 +2,18 @@
 #include <gtest/gtest.h>
 
 
-TEST(OperatorsTest, LinearAccessOperatorTest) {
-  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+TEST(OperatorsTest, LinearAccessOperatorTest)
+{
+  arch::tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
 
   int expected = 4;
 
   EXPECT_EQ(t[3], expected);
 }
 
-TEST(OperatorsTest, MultiDimensionalAccessOperator) {
-  tensor<int> ten({2, 3}, {1, 2, 3, 4, 5, 6});
+TEST(OperatorsTest, MultiDimensionalAccessOperator)
+{
+  arch::tensor<int> ten({2, 3}, {1, 2, 3, 4, 5, 6});
 
   int expected  = 6;
   int expected1 = 2;
@@ -20,21 +22,23 @@ TEST(OperatorsTest, MultiDimensionalAccessOperator) {
   EXPECT_EQ(ten({1, 2}), expected);
 }
 
-TEST(OperatorsTest, EmptyTest) {
-  tensor<int> t;
-  tensor<int> q({1, 2}, {1, 2});
+TEST(OperatorsTest, EmptyTest)
+{
+  arch::tensor<int> t;
+  arch::tensor<int> q({1, 2}, {1, 2});
 
   EXPECT_TRUE(t.empty());
   EXPECT_FALSE(q.empty());
 }
 
-TEST(OperatorsTest, EqualOperatorTest) {
-  tensor<int> t;
-  tensor<int> q;
+TEST(OperatorsTest, EqualOperatorTest)
+{
+  arch::tensor<int> t;
+  arch::tensor<int> q;
 
-  tensor<int> a({1, 2}, {1, 2});
-  tensor<int> b({2, 1}, {1, 2});
-  tensor<int> c({1, 2}, {1, 2});
+  arch::tensor<int> a({1, 2}, {1, 2});
+  arch::tensor<int> b({2, 1}, {1, 2});
+  arch::tensor<int> c({1, 2}, {1, 2});
 
   EXPECT_TRUE(t == q);
   EXPECT_TRUE(a == c);
@@ -42,13 +46,14 @@ TEST(OperatorsTest, EqualOperatorTest) {
   EXPECT_FALSE(a == b);
 }
 
-TEST(OperatorsTest, NotEqualOperatorTest) {
-  tensor<int> t;
-  tensor<int> q;
+TEST(OperatorsTest, NotEqualOperatorTest)
+{
+  arch::tensor<int> t;
+  arch::tensor<int> q;
 
-  tensor<int> a({1, 2}, {1, 2});
-  tensor<int> b({2, 1}, {1, 2});
-  tensor<int> c({1, 2}, {1, 2});
+  arch::tensor<int> a({1, 2}, {1, 2});
+  arch::tensor<int> b({2, 1}, {1, 2});
+  arch::tensor<int> c({1, 2}, {1, 2});
 
   EXPECT_TRUE(a != b);
   EXPECT_TRUE(t != a);
@@ -56,38 +61,42 @@ TEST(OperatorsTest, NotEqualOperatorTest) {
   EXPECT_FALSE(a != c);
 }
 
-TEST(OperatorsTest, PlusOperatorTest) {
-  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+TEST(OperatorsTest, PlusOperatorTest)
+{
+  arch::tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  arch::tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
 
-  tensor<int> expected({2, 3}, {2, 4, 6, 8, 10, 12});
+  arch::tensor<int> expected({2, 3}, {2, 4, 6, 8, 10, 12});
 
   EXPECT_EQ(t + q, expected);
 }
 
-TEST(OperatorsTest, PlusValueOperatorTest) {
-  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  tensor<int> expected({2, 3}, {2, 3, 4, 5, 6, 7});
+TEST(OperatorsTest, PlusValueOperatorTest)
+{
+  arch::tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  arch::tensor<int> expected({2, 3}, {2, 3, 4, 5, 6, 7});
 
   int q = 1;
 
   EXPECT_EQ(t + q, expected);
 }
 
-TEST(OperatorsTest, PlusEqualOperatorTest) {
-  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+TEST(OperatorsTest, PlusEqualOperatorTest)
+{
+  arch::tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  arch::tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
 
-  tensor<int> expected({2, 3}, {2, 4, 6, 8, 10, 12});
+  arch::tensor<int> expected({2, 3}, {2, 4, 6, 8, 10, 12});
 
   t += q;
 
   EXPECT_EQ(t, expected);
 }
 
-TEST(OperatorsTest, PlusEqualValueOperatorTest) {
-  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  tensor<int> expected({2, 3}, {2, 3, 4, 5, 6, 7});
+TEST(OperatorsTest, PlusEqualValueOperatorTest)
+{
+  arch::tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  arch::tensor<int> expected({2, 3}, {2, 3, 4, 5, 6, 7});
 
   int q = 1;
   t += q;
@@ -95,37 +104,41 @@ TEST(OperatorsTest, PlusEqualValueOperatorTest) {
   EXPECT_EQ(t, expected);
 }
 
-TEST(OperatorsTest, MinusOperatorTest) {
-  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+TEST(OperatorsTest, MinusOperatorTest)
+{
+  arch::tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  arch::tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
 
-  tensor<int> expected({2, 3}, {0, 0, 0, 0, 0, 0});
-
-  EXPECT_EQ(t - q, expected);
-}
-
-TEST(OperatorsTest, MinusValueOperatorTest) {
-  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  tensor<int> expected({2, 3}, {0, 1, 2, 3, 4, 5});
-  int         q = 1;
+  arch::tensor<int> expected({2, 3}, {0, 0, 0, 0, 0, 0});
 
   EXPECT_EQ(t - q, expected);
 }
 
-TEST(OperatorsTest, MinusEqualOperatorTest) {
-  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+TEST(OperatorsTest, MinusValueOperatorTest)
+{
+  arch::tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  arch::tensor<int> expected({2, 3}, {0, 1, 2, 3, 4, 5});
+  int               q = 1;
 
-  tensor<int> expected({2, 3}, {0, 0, 0, 0, 0, 0});
+  EXPECT_EQ(t - q, expected);
+}
+
+TEST(OperatorsTest, MinusEqualOperatorTest)
+{
+  arch::tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  arch::tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+
+  arch::tensor<int> expected({2, 3}, {0, 0, 0, 0, 0, 0});
 
   t -= q;
 
   EXPECT_EQ(t, expected);
 }
 
-TEST(OperatorsTest, MinusEqualValueOperatorTest) {
-  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  tensor<int> expected({2, 3}, {0, 1, 2, 3, 4, 5});
+TEST(OperatorsTest, MinusEqualValueOperatorTest)
+{
+  arch::tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  arch::tensor<int> expected({2, 3}, {0, 1, 2, 3, 4, 5});
 
   int q = 1;
   t -= q;
@@ -133,38 +146,42 @@ TEST(OperatorsTest, MinusEqualValueOperatorTest) {
   EXPECT_EQ(t, expected);
 }
 
-TEST(OperatorsTest, TimesOperatorTest) {
-  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+TEST(OperatorsTest, TimesOperatorTest)
+{
+  arch::tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  arch::tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
 
-  tensor<int> expected({2, 3}, {1, 4, 9, 16, 25, 36});
-
-  EXPECT_EQ(t * q, expected);
-}
-
-TEST(OperatorsTest, TimesValueOperatorTest) {
-  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  int         q = 2;
-
-  tensor<int> expected({2, 3}, {2, 4, 6, 8, 10, 12});
+  arch::tensor<int> expected({2, 3}, {1, 4, 9, 16, 25, 36});
 
   EXPECT_EQ(t * q, expected);
 }
 
-TEST(OperatorsTest, TimesEqualOperatorTest) {
-  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+TEST(OperatorsTest, TimesValueOperatorTest)
+{
+  arch::tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  int               q = 2;
 
-  tensor<int> expected({2, 3}, {1, 4, 9, 16, 25, 36});
+  arch::tensor<int> expected({2, 3}, {2, 4, 6, 8, 10, 12});
+
+  EXPECT_EQ(t * q, expected);
+}
+
+TEST(OperatorsTest, TimesEqualOperatorTest)
+{
+  arch::tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  arch::tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+
+  arch::tensor<int> expected({2, 3}, {1, 4, 9, 16, 25, 36});
 
   t *= q;
 
   EXPECT_EQ(t, expected);
 }
 
-TEST(OperatorsTest, TimesEqualValueOperatorTest) {
-  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  tensor<int> expected({2, 3}, {2, 4, 6, 8, 10, 12});
+TEST(OperatorsTest, TimesEqualValueOperatorTest)
+{
+  arch::tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  arch::tensor<int> expected({2, 3}, {2, 4, 6, 8, 10, 12});
 
   int q = 2;
   t *= q;
@@ -172,45 +189,50 @@ TEST(OperatorsTest, TimesEqualValueOperatorTest) {
   EXPECT_EQ(t, expected);
 }
 
-TEST(OperatorsTest, DivideOperatorTest) {
-  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+TEST(OperatorsTest, DivideOperatorTest)
+{
+  arch::tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  arch::tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
 
-  tensor<int> expected({2, 3}, {1, 1, 1, 1, 1, 1});
+  arch::tensor<int> expected({2, 3}, {1, 1, 1, 1, 1, 1});
 
   EXPECT_EQ(t / q, expected);
 }
 
-TEST(OperatorsTest, DivideValueOperatorTest) {
-  tensor<float> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  tensor<float> expected({2, 3}, {0.5, 1, 1.5, 2, 2.5, 3});
+TEST(OperatorsTest, DivideValueOperatorTest)
+{
+  arch::tensor<float> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  arch::tensor<float> expected({2, 3}, {0.5, 1, 1.5, 2, 2.5, 3});
 
   float q = 2;
 
   EXPECT_EQ(t / q, expected);
 }
 
-TEST(OperatorsTest, DivideValueOperatorExceptionTest) {
-  tensor<float> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  float         q = 0;
+TEST(OperatorsTest, DivideValueOperatorExceptionTest)
+{
+  arch::tensor<float> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  float               q = 0;
 
   EXPECT_THROW(t / q, std::logic_error);
 }
 
-TEST(OperatorsTest, DivideEqualOperatorTest) {
-  tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
+TEST(OperatorsTest, DivideEqualOperatorTest)
+{
+  arch::tensor<int> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  arch::tensor<int> q({2, 3}, {1, 2, 3, 4, 5, 6});
 
-  tensor<int> expected({2, 3}, {1, 1, 1, 1, 1, 1});
+  arch::tensor<int> expected({2, 3}, {1, 1, 1, 1, 1, 1});
 
   t /= q;
 
   EXPECT_EQ(t, expected);
 }
 
-TEST(OperatorsTest, DivideEqualValueOperatorTest) {
-  tensor<float> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  tensor<float> expected({2, 3}, {0.5, 1, 1.5, 2, 2.5, 3});
+TEST(OperatorsTest, DivideEqualValueOperatorTest)
+{
+  arch::tensor<float> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  arch::tensor<float> expected({2, 3}, {0.5, 1, 1.5, 2, 2.5, 3});
 
   float q = 2;
   t /= q;
@@ -221,9 +243,10 @@ TEST(OperatorsTest, DivideEqualValueOperatorTest) {
   }
 }
 
-TEST(OperatorsTest, DivideEqualValueOperatorExceptionTest) {
-  tensor<float> t({2, 3}, {1, 2, 3, 4, 5, 6});
-  float         q = 0;
+TEST(OperatorsTest, DivideEqualValueOperatorExceptionTest)
+{
+  arch::tensor<float> t({2, 3}, {1, 2, 3, 4, 5, 6});
+  float               q = 0;
 
   EXPECT_THROW(t /= q, std::logic_error);
 }

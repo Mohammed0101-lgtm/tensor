@@ -2,10 +2,11 @@
 #include <gtest/gtest.h>
 
 
-TEST(TensorTanTest, TanValues) {
-  tensor<float>  t({2}, {0.0, M_PI / 4});
-  tensor<float>  result = t.tan();
-  tensor<double> expected({2}, {std::tan(0.0), std::tan(M_PI / 4)});
+TEST(TensorTanTest, TanValues)
+{
+  arch::tensor<float>  t({2}, {0.0, M_PI / 4});
+  arch::tensor<float>  result = t.tan();
+  arch::tensor<double> expected({2}, {std::tan(0.0), std::tan(M_PI / 4)});
 
   for (std::size_t i = 0; i < expected.size(0); ++i)
   {

@@ -2,8 +2,9 @@
 #include <gtest/gtest.h>
 
 
-TEST(TensorSincTest, InplaceSincBasic) {
-  tensor<double> t({3}, {0.0, 0.5, 1.0});
+TEST(TensorSincTest, InplaceSincBasic)
+{
+  arch::tensor<double> t({3}, {0.0, 0.5, 1.0});
   t.sinc_();
   std::vector<double> expected = {1.0, std::sin(M_PI * 0.5) / (M_PI * 0.5), std::sin(M_PI * 1.0) / (M_PI * 1.0)};
 
